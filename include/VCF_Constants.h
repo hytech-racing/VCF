@@ -45,10 +45,10 @@ const float FR_LOADCELL_SCALE = 0.1149f; //Values are from the old MCU rev15 // 
 const float FR_LOADCELL_OFFSET = 13.526f / FR_LOADCELL_SCALE;
 const float FL_LOADCELL_SCALE = 0.118f;
 const float FL_LOADCELL_OFFSET = 25.721f / FL_LOADCELL_SCALE;
-const float RL_SUS_POT_SCALE = 1;
-const float RL_SUS_POT_OFFSET = 0;
-const float RR_SUS_POT_SCALE = 1;
-const float RR_SUS_POT_OFFSET = 0;
+const float FR_SUS_POT_SCALE = 1;
+const float FR_SUS_POT_OFFSET = 0;
+const float FL_SUS_POT_SCALE = 1;
+const float FL_SUS_POT_OFFSET = 0;
 
 const float ACCEL_1_SCALE = 1; // TODO: Figure out what these should be
 const float ACCEL_1_OFFSET = 0;
