@@ -1,24 +1,43 @@
+#ifdef ARDUINO
 #include <Arduino.h>
-#include <VCF_Tasks.h>
+#endif
 
-// put function declarations here:
-int myFunction(int, int);
+
+
+/* From shared_firmware_types libdep */
+#include "SharedFirmwareTypes.h"
+
+/* From HT_SCHED libdep */
+#include "ht_sched.hpp"
+
+/* From Arduino Libraries */
+#include "QNEthernet.h"
+
+/* Local includes */
+#include "VCF_Globals.h"
+#include "VCF_Constants.h"
+#include "VCF_Tasks.h"
+
+
+
+/* Scheduler setup */
+const HT_SCHED::Scheduler& scheduler = HT_SCHED::Scheduler::getInstance();
+
+
+
+/* Ethernet message sockets */ // TODO: Move this into its own interface
+qindesign::network::EthernetUDP protobuf_send_socket;
+qindesign::network::EthernetUDP protobuf_recv_socket;
+
+
 
 void setup() {
-  // put your setup code here, to run once:
-  int result = myFunction(2, 3);
+    scheduler.setTimingFunction(micros);
+
+    scheduler.schedule(read_adc1_task);
+    scheduler.schedule(read_adc2_task);
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
-  task1();
-  delay(1000);
-  task2();
-  delay(1000);
-  task3();
-}
-
-// put function definitions here:
-int myFunction(int x, int y) {
-  return x + y;
+    scheduler.run();
 }
