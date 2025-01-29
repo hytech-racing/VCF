@@ -36,10 +36,11 @@ const int BRAKE_2_CHANNEL         = 5;
 // const int UNUSED_CHANNEL       = 7;
 
 /* Scaling and offset */
-const float STEERING_1_SCALE = 1; // TODO: Figure out what these mean
+const float STEERING_1_SCALE = 0.02197265; // TODO: Figure out what these mean
 const float STEERING_1_OFFSET = 0;
-const float STEERING_2_SCALE = 1;
+const float STEERING_2_SCALE = 0.02197265; // TODO: Figure out if steering 2 = steering 1
 const float STEERING_2_OFFSET = 0;
+// Scale for steering sensor = 0.02197265 . Offset has to be mechanically determined
 
 const float FR_LOADCELL_SCALE = 0.1149f; //Values are from the old MCU rev15 // TODO: Calibrate load cells
 const float FR_LOADCELL_OFFSET = 13.526f / FR_LOADCELL_SCALE;
