@@ -61,36 +61,27 @@ bool init_read_gpio_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo
     pinMode(BTN_MODE_READ, INPUT);
     pinMode(BTN_START_READ, INPUT);
     pinMode(BTN_DATA_READ, INPUT); // this is an analog pin, so technically no need to use pinMode
-
-    // Setting digital controls D5-D0 as inputs
-    pinMode(DIAL_EXPANDER_SDA, INPUT);
-    pinMode(DIAL_EXPANDER_SCL, INPUT);
-    pinMode(BUZZER_CTRL, INPUT);
-    pinMode(DASH_NEOPIXEL, INPUT);
-    pinMode(DASH_TX, INPUT);
-    pinMode(DASH_RX, INPUT);
-
-    // Setting digital SPI controls D13-D11 as inputs
-    pinMode(SPI_CLK, INPUT);
-    pinMode(SPI_MISO, INPUT);
-    pinMode(SPI_MOSI, INPUT);
-
-    // Setting ADC chip select D33 and D34 as inputs
-    pinMode(ADC1_CS, INPUT);
-    pinMode(ADC2_CS, INPUT);
-
-    // Setting telemetry CAN controls D29 and D28 as inputs
-    pinMode(TELEM_CAN_TX, INPUT);
-    pinMode(TELEM_CAN_RX, INPUT);
     
     return true;
 }
 bool run_read_gpio_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
 {
     // Doing digital read on all digital inputs
+    int dimButton = digitalRead(BTN_DIM_READ);
+    int presetButton = digitalRead(BTN_PRESET_READ);
+    int mcCycleButton = digitalRead(BTN_MC_CYCLE_READ);
+    int modeButton = digitalRead(BTN_MODE_READ);
+    int startButton = digitalRead(BTN_START_READ);
+    int dataButton = analogRead(BTN_DATA_READ); // this is on an analog pin, so technically need to use analogRead
     
-    // Doing analog read on all analog inputs
-    
+
+    interface_data.dash_input_state.dim_btn_is_pressed = dimButton;
+    inteface_data.dash_input_state.preset_btn_is_pressed = presetButton;
+    interface_data.dash_input_state.mc_cycle_btn_is_pressed = mcCycleButton;
+    interface_data.dash_input_state.mode_btn_is_pressed = modeButton;
+    interface_data.dash_input_state.start_btn_is_pressed = startButton;
+    interface_data.dash_input_state.data_btn = dataButton;
+
     return true;
 }
 
