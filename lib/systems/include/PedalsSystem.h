@@ -1,9 +1,3 @@
-/*
-basic test cases for the pedals component class
-version 1.0
-rough draft
-author: Lucas Plant
-*/
 // VCF interface/system data - has all pedals data - global. Analog readings of 4 pedals sensors - all data that is in pedal system data
 // Accel,brake, regen percent = know what each reps - use last years function - tic/update pedal system function. take in reference to vcf interface data
 // analog value into the pesal systems stuff. 
@@ -14,24 +8,8 @@ author: Lucas Plant
 #define PEDALSSYSTEM
 #include <math.h>
 #include <tuple>
-#include "AnalogSensorsInterface.h"
 
-#include "SysClock.h"
-
-/// @brief system interface struct that contains the data from the pedal system
-struct PedalsSystemData_s
-{
-    bool accelImplausible : 1;
-    bool brakeImplausible : 1;
-    bool brakePressed : 1;
-    bool accelPressed : 1;
-    bool mechBrakeActive : 1;
-    bool brakeAndAccelPressedImplausibility : 1;
-    bool implausibilityExceededMaxDuration : 1;
-    float accelPercent;
-    float brakePercent;
-    float regenPercent;
-}
+#include "SharedFirmwareTypes.h"
 
 /// @brief Pedals params struct that will hold min / max that will be used for evaluateion.
 struct PedalsParams
@@ -61,82 +39,57 @@ public:
                  const PedalsParams &brakeParams)
     {
         setParams(accelParams, brakeParams);
-        implausibilityStartTime_ = 0;
+        _implausibilityStartTime = 0;
     }
 
     void setParams(const PedalsParams &accelParams,
                    const PedalsParams &brakeParams)
     {
-        accelParams_ = accelParams;
-        brakeParams_ = brakeParams;
+        _accelParams = accelParams;
+        _brakeParams = brakeParams;
     }
 
     const PedalsSystemData_s &getPedalsSystemData()
     {
-        return data_;
+        return _data;
     }
 
     PedalsSystemData_s getPedalsSystemDataCopy()
     {
-        return data_;
+        return _data;
     }
 
     float getMechBrakeActiveThreshold()
     {
-        return brakeParams_.mechanical_activation_percentage;
+        return _brakeParams.mechanical_activation_percentage;
     }
 
-    /// @brief overloaded tick function that runs the evaluation of the pedals system.
+    /// @brief Tick function that runs the evaluation of the pedals system.
     ///        evaluates brake using only min and max params for sensor 1 (min_pedal_1 / max_pedal_1).
-    /// @param tick current system time tick
-    /// @param accel1 accel 1 sensor reading with scaled and offset value from 0 to 1
-    /// @param accel2 accel 2 sensor reading with scaled and offset value from 0 to 1
-    /// @param brake brake sensor reading with scaled and offset value from 0 to 1
-    void tick(const SysTick_s &tick,
-              const AnalogConversion_s &accel1,
-              const AnalogConversion_s &accel2,
-              const AnalogConversion_s &brake);
+    /// @param curr_millis The current timestamp, in milliseconds.
+    /// @param interface_data A reference to the interface_data global.
+    /// @param use_both_brake_sensors True if we should use both brake sensors for implausibility. False if otherwise.
+    void tick(unsigned long curr_millis, VCFInterfaceData_s &interface_data, bool use_both_brake_sensors);
 
-    /// @brief
-    /// @param tick
-    /// @param accel1
-    /// @param accel2
-    /// @param brake1
-    /// @param brake2
-    void tick(const SysTick_s &tick,
-              const AnalogConversion_s &accel1,
-              const AnalogConversion_s &accel2,
-              const AnalogConversion_s &brake1,
-              const AnalogConversion_s &brake2);
-
-    /// @brief
-    /// @param accel1
-    /// @param accel2
-    /// @param brake1
-    /// @param brake2
-    /// @param curr_time
-    /// @return
-    PedalsSystemData_s evaluate_pedals(const AnalogConversion_s &accel1,
-                                       const AnalogConversion_s &accel2,
-                                       const AnalogConversion_s &brake1,
-                                       const AnalogConversion_s &brake2,
-                                       unsigned long curr_time);
-    /// @brief
-    /// @param accel1
-    /// @param accel2
-    /// @param brake
-    /// @param curr_time
-    /// @return
-    PedalsSystemData_s evaluate_pedals(const AnalogConversion_s &accel1,
-                                       const AnalogConversion_s &accel2,
-                                       const AnalogConversion_s &brake,
-                                       unsigned long curr_time);
+    /// @brief Pedal evaluation function that takes in the direct analog values of the pedals and
+    ///        returns all of the pedals system data.
+    PedalsSystemData_s evaluate_pedals(uint32_t accel1_analog,
+                                       uint32_t accel2_analog,
+                                       uint32_t brake1_analog,
+                                       uint32_t brake2_analog,
+                                       unsigned long curr_millis);
+    /// @brief Overloaded pedal evaluation function that takes in direct analog values of pedals (but
+    //         ignores brake sensor 2) and returns the PedalsSystemData.
+    PedalsSystemData_s evaluate_pedals(uint32_t accel1,
+                                       uint32_t accel2,
+                                       uint32_t brake,
+                                       unsigned long curr_millis);
 
 private:
-    PedalsSystemData_s data_{};
-    PedalsParams accelParams_{};
-    PedalsParams brakeParams_{};
-    unsigned long implausibilityStartTime_;
+    PedalsSystemData_s _data{};
+    PedalsParams _accelParams{};
+    PedalsParams _brakeParams{};
+    unsigned long _implausibilityStartTime;
     float remove_deadzone_(float conversion_input, float deadzone);
     bool max_duration_of_implausibility_exceeded_(unsigned long curr_time);
 
@@ -156,8 +109,8 @@ private:
     /// @param params
     /// @param max_percent_diff
     /// @return
-    bool evaluate_pedal_implausibilities_(const AnalogConversion_s &pedalData1,
-                                          const AnalogConversion_s &pedalData2,
+    bool evaluate_pedal_implausibilities_(int pedalData1_analog,
+                                          int pedalData2_analog,
                                           const PedalsParams &params,
                                           float max_percent_diff);
 
@@ -165,7 +118,7 @@ private:
     /// @param pedalData
     /// @param params
     /// @return
-    bool evaluate_pedal_implausibilities_(const AnalogConversion_s &pedalData, const PedalsParams &params);
+    bool evaluate_pedal_implausibilities_(int pedalData, const PedalsParams &params);
 
     /// @brief function to determine if the pedals and the brakes are pressed at the same time.
     ///        evaluates brake being pressed with mech brake activation threshold AFTER removing
@@ -175,23 +128,23 @@ private:
     /// @param brakePedalData1
     /// @param brakePedalData2
     /// @return true if accel and brake pressed at the same time, false otherwise
-    bool evaluate_brake_and_accel_pressed_(const AnalogConversion_s &accelPedalData1,
-                                           const AnalogConversion_s &accelPedalData2,
-                                           const AnalogConversion_s &brakePedalData1,
-                                           const AnalogConversion_s &brakePedalData2);
+    bool evaluate_brake_and_accel_pressed_(int accelPedalData1_analog,
+                                           int accelPedalData2_analog,
+                                           int brakePedalData1_analog,
+                                           int brakePedalData2_analog);
 
     /// @brief overloaded version that evaluates with only one brake pedal value
     /// @param accelPedalData1
     /// @param accelPedalData2
     /// @param brakePedalData
     /// @return
-    bool evaluate_brake_and_accel_pressed_(const AnalogConversion_s &accelPedalData1,
-                                           const AnalogConversion_s &accelPedalData2,
-                                           const AnalogConversion_s &brakePedalData);
+    bool evaluate_brake_and_accel_pressed_(int accelPedalData1_analog,
+                                           int accelPedalData2_analog,
+                                           int brakePedalData_analog);
     /// @brief This checks to see if any pedal sensor is out of range :(
     /// @param PedalData The analog pedal Value
     /// @return 
-    bool evaluate_pedal_oor(const AnalogConversion_s &pedalData,
+    bool evaluate_pedal_oor(int pedalData_analog,
                            int min,
                            int max);
     /// @brief
@@ -200,7 +153,7 @@ private:
     /// @param max
     /// @param implaus_margin_scale
     /// @return
-    bool evaluate_min_max_pedal_implausibilities_(const AnalogConversion_s &pedalData,
+    bool evaluate_min_max_pedal_implausibilities_(int pedalData_analog,
                                                   int min,
                                                   int max,
                                                   float implaus_margin_scale);
