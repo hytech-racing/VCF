@@ -60,7 +60,7 @@ bool init_read_gpio_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo
     pinMode(BTN_MC_CYCLE_READ, INPUT);
     pinMode(BTN_MODE_READ, INPUT);
     pinMode(BTN_START_READ, INPUT);
-    // pinMode(BTN_DATA_READ, INPUT); this is an analog pin, so technically no need for pinMode as analogRead will setup the pin
+    pinMode(BTN_DATA_READ, INPUT);
     
     return true;
 }
@@ -72,14 +72,14 @@ bool run_read_gpio_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo&
     int mcCycleButton = digitalRead(BTN_MC_CYCLE_READ);
     int modeButton = digitalRead(BTN_MODE_READ);
     int startButton = digitalRead(BTN_START_READ);
-    int dataButton = analogRead(BTN_DATA_READ); // this is on an analog pin, so technically need to use analogRead
+    int dataButton = digitalRead(BTN_DATA_READ);
     
     interface_data.dash_input_state.dim_btn_is_pressed = dimButton;
     interface_data.dash_input_state.preset_btn_is_pressed = presetButton;
-    interface_data.dash_input_state.mc_cycle_btn_is_pressed = mcCycleButton;
+    interface_data.dash_input_state.mc_reset_btn_is_pressed = mcCycleButton;
     interface_data.dash_input_state.mode_btn_is_pressed = modeButton;
     interface_data.dash_input_state.start_btn_is_pressed = startButton;
-    interface_data.dash_input_state.data_btn = dataButton;
+    interface_data.dash_input_state.data_btn_is_pressed = dataButton;
 
     return true;
 }
