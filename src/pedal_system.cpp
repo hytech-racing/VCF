@@ -2,6 +2,7 @@
 #include <tuple>
 #include "pedal_system.h"
 #include "VCF_Globals.h"
+#include "SharedFirmwareTypes.h"
 #include "SysClock.h"
 
 // VCF interface/system data - has all pedals data - global. Analog readings of 4 pedals sensors - all data that is in pedal system data
@@ -26,34 +27,36 @@ const AnalogConversion_s & accel2, const AnalogConversion_s & brake)
 }
 
 // New Logic - do ADC conversion directly
+void conversion(const PedalSensorData_s & pedals_data){
+    pedals_data.accel1 = (pedals_data.accel1 - ACCEL_1_OFFSET) * ACCEL_1_SCALE;
+    pedals_data.accel2 = (pedals_data.accel2 - ACCEL_2_OFFSET) * ACCEL_2_SCALE;
+    pedals_data.accel1 = (pedals_data.brake1 - ACCEL_1_OFFSET) * BRAKE_1_SCALE;
+    pedals_data.brake2 = (pedals_data.brake2-BRAKE_2_OFFSET) * BRAKE_2_SCALE;
+
+}
 
 
 //convert accel to float
 //What this is doing - analogConversion_s object reference given
 // to accel1, accel2, brake1, brake2. This, instead of being converted from 0-1, can be processed raw. 
-
-PedalsSystemData_s PedalsSystem::evaluate_pedals(const VCFInterfaceData_s &accel1,
-                                                 const VCFInterfaceData_s &accel2,
-                                                 const VCFInterfaceData_s &brake1,
-                                                 const VCFInterfaceData_s &brake2,
-                                                 unsigned long curr_time)
+PedalsSystemData_s PedalsSystem::evaluate_pedals(const PedalSensorData_s & pedals_data, unsigned long curr_time)
 {
+    conversion(pedals_data);
     PedalsSystemData_s out;
-    accel1 = (ACCEL_1_CHANNEL + ACCEL_1_OFFSET) * ACCEL_1_SCALE;
-    accel2 = (ACCEL_2_CHANNEL + ACCEL_2_OFFSET) * ACCEL_2_SCALE;
-    brake1 = (BRAKE_1_CHANNEL + BRAKE_1_OFFSET) * BRAKE_1_SCALE;
-    brake2 = (BRAKE_2_CHANNEL + BRAKE_2_OFFSET) * BRAKE_2_SCALE;
+    int accel1 = pedals_data.accel1;
+    int accel2 = pedals_data.accel2;
+    int brake1 = pedals_data.brake1;
+    int brake2 = pedals_data.brake2;
+
     out.accelPressed = pedal_is_active_(accel1,accel2, accelParams_,false);
     out.accelImplausible = evaluate_pedal_implausibilities_(accel1,accel2,accelParams_,0.1);
     auto percent = (out.accelImplausible) ? accel1 : (accel1 + accel2) / 2.0;
     out.accelPercent = remove_deadzone_(percent, accelParams_.deadzone_margin);
     out.accelPercent = std::max(out.accelPercent, 0.0f);
-    
-
     out.brakeImplausible = evaluate_pedal_implausibilities_(brake1, brake2, brakeParams_, 0.25);
     out.brakeAndAccelPressedImplausibility = evaluate_brake_and_accel_pressed_(accel1, accel2, brake1, brake2);
     bool implausibility = (out.brakeAndAccelPressedImplausibility || out.brakeImplausible || out.accelImplausible);
-        if (implausibility && (implausibilityStartTime_ == 0))
+    if (implausibility && (implausibilityStartTime_ == 0))
     {
         implausibilityStartTime_ = curr_time;
     }
@@ -67,9 +70,10 @@ PedalsSystemData_s PedalsSystem::evaluate_pedals(const VCFInterfaceData_s &accel
     out.accelPercent = (oor) ? 0 : out.accelPercent;
 
     
-    out.brakePercent = brake1; //Brake 1 or Brake 2 here? also this is to determine percent brake pressed using globals from VCF
+    out.brakePercent = (brake1 + brake2)/2; //Brake 1 or Brake 2 here? also this is to determine percent brake pressed using globals from VCF
     out.brakePercent = remove_deadzone_(out.brakePercent, brakeParams_.deadzone_margin);
-    out.brakePressed = brake1 >= brakeParams_.activation_percentage;
+    out.brakePressed = pedal_is_active_(brake1,brake2,brakeParams_, false);
+
 
     out.mechBrakeActive = out.brakePercent >= brakeParams_.mechanical_activation_percentage;
     out.regenPercent = std::max(std::min(out.brakePercent / brakeParams_.mechanical_activation_percentage, 1.0f), 0.0f);
@@ -77,6 +81,71 @@ PedalsSystemData_s PedalsSystem::evaluate_pedals(const VCFInterfaceData_s &accel
     
     out.implausibilityExceededMaxDuration = max_duration_of_implausibility_exceeded_(curr_time);
     return out;
+
+}
+
+//Pedal System has 2 brakes - what would we use for 1 brake?
+/*
+
+PedalsSystemData_s PedalsSystem::evaluate_pedals(const PedalSensorData_s & pedals_data, unsigned long curr_time)
+{
+    PedalsSystemData_s out;
+    conversion(pedals_data);
+    // accel1 = (ACCEL_1_CHANNEL + ACCEL_1_OFFSET) * ACCEL_1_SCALE;
+    // accel2 = (ACCEL_2_CHANNEL + ACCEL_2_OFFSET) * ACCEL_2_SCALE;
+    // brake1 = (BRAKE_1_CHANNEL + BRAKE_1_OFFSET) * BRAKE_1_SCALE;
+    // brake2 = (BRAKE_2_CHANNEL + BRAKE_2_OFFSET) * BRAKE_2_SCALE;
+    out.accelPressed = pedal_is_active_(accel1,accel2, accelParams_,false);
+    out.accelImplausible = evaluate_pedal_implausibilities_(accel1,accel2,accelParams_,0.1);
+    auto percent = (out.accelImplausible) ? accel1 : (accel1 + accel2) / 2.0;
+    out.accelPercent = remove_deadzone_(percent, accelParams_.deadzone_margin);
+    out.accelPercent = std::max(out.accelPercent, 0.0f);
+    out.brakeImplausible = evaluate_pedal_implausibilities_(brake1, brake2, brakeParams_, 0.25);
+    out.brakeAndAccelPressedImplausibility = evaluate_brake_and_accel_pressed_(accel1, accel2, brake1, brake2);
+    bool implausibility = (out.brakeAndAccelPressedImplausibility || out.brakeImplausible || out.accelImplausible);
+    if (implausibility && (implausibilityStartTime_ == 0))
+    {
+        implausibilityStartTime_ = curr_time;
+    }
+    else if ((!implausibility) && ((out.accelPercent <= 0.05)))
+    {
+        implausibilityStartTime_ = 0;
+    }
+
+    bool oor = implausibility && (evaluate_pedal_oor(accel1, accelParams_.min_sensor_pedal_1, accelParams_.max_sensor_pedal_1) 
+            || evaluate_pedal_oor(accel2, accelParams_.min_sensor_pedal_2, accelParams_.max_sensor_pedal_2));
+    out.accelPercent = (oor) ? 0 : out.accelPercent;
+
+    
+    out.brakePercent = (brake1 +brake2)/2; //Brake 1 or Brake 2 here? also this is to determine percent brake pressed using globals from VCF
+    out.brakePercent = remove_deadzone_(out.brakePercent, brakeParams_.deadzone_margin);
+    out.brakePressed = pedal_is_active_(brake1,brake2,brakeParams_, false);
+
+
+    out.mechBrakeActive = out.brakePercent >= brakeParams_.mechanical_activation_percentage;
+    out.regenPercent = std::max(std::min(out.brakePercent / brakeParams_.mechanical_activation_percentage, 1.0f), 0.0f);
+
+    
+    out.implausibilityExceededMaxDuration = max_duration_of_implausibility_exceeded_(curr_time);
+    return out;
+}
+*/
+
+bool PedalsSystem::max_duration_of_implausibility_exceeded_(unsigned long curr_time)
+{
+    if (implausibilityStartTime_ != 0)
+    {
+        return ((curr_time - implausibilityStartTime_) > 100);
+    }
+    else
+    {
+        return false;
+    }
+}
+
+bool PedalsSystem::evaluate_pedal_implausibilities_(const PedalSensorData_s & pedals_data, const PedalsParams &params)
+{
+    return evaluate_min_max_pedal_implausibilities_(pedals_data, params.min_pedal_1, params.max_pedal_1, params.implausibility_margin);
 }
 
 
