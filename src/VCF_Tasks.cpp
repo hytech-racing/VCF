@@ -51,4 +51,20 @@ bool run_read_adc2_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo&
 
     return true;
 }
+
+bool init_buzzer_control_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
+{
+    pinMode(BUZZER_CONTROL, INPUT);
+
+    return true;
+}
+bool run_buzzer_control_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
+{
+    int buzzer_state = digitalRead(BUZZER_CONTROL);
+
+    vcr_system_data.buzzer_is_active = buzzer_state;
+    
+    return true;
+}
+
 HT_TASK::Task read_adc2_task = HT_TASK::Task(init_read_adc2_task, run_read_adc2_task, 10, 1000UL); // 1000us is 1kHz //NOLINT

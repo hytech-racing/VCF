@@ -9,7 +9,7 @@
 const int ADC1_CS = 33; // MCP3208. ADC1 in VCF schematic. Used for steering, sus pots, and load cells.
 const int ADC2_CS = 34; // MCP3208. ADC2 in VCF schematic. Used for pedal position sensors.
 
-
+const int BUZZER_CONTROL = 3;
 
 /* -------------------------------------------------- */
 /*                 ADC pins and configs               */
