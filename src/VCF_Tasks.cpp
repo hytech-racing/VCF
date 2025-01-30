@@ -18,11 +18,11 @@ bool run_read_adc1_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo&
     adc_1.sample(); // Samples all eight channels.
     adc_1.convert(); // Converts all eight channels.
 
-    interface_data.steering_unfiltered.analog_steering_unfiltered_degrees = adc_1.data.conversions[STEERING_1_CHANNEL].conversion; // Only using steering 1 for now
-    interface_data.front_loadcells_unfiltered.FL_loadcell_unfiltered_pounds = adc_1.data.conversions[FL_LOADCELL_CHANNEL].conversion;
-    interface_data.front_loadcells_unfiltered.FR_loadcell_unfiltered_pounds = adc_1.data.conversions[FR_LOADCELL_CHANNEL].conversion;
-    interface_data.front_suspots_unfiltered.FL_sus_pot_unfiltered_analog = adc_1.data.conversions[FL_SUS_POT_CHANNEL].raw; // Just use raw for suspots
-    interface_data.front_suspots_unfiltered.FR_sus_pot_unfiltered_analog = adc_1.data.conversions[FR_SUS_POT_CHANNEL].raw; // Just use raw for suspots
+    interface_data.steering_data.analog_steering_degrees = adc_1.data.conversions[STEERING_1_CHANNEL].conversion; // Only using steering 1 for now
+    interface_data.front_loadcell_data.FL_loadcell_analog = adc_1.data.conversions[FL_LOADCELL_CHANNEL].conversion;
+    interface_data.front_loadcell_data.FR_loadcell_analog = adc_1.data.conversions[FR_LOADCELL_CHANNEL].conversion;
+    interface_data.front_suspot_data.FL_sus_pot_analog = adc_1.data.conversions[FL_SUS_POT_CHANNEL].raw; // Just use raw for suspots
+    interface_data.front_suspot_data.FR_sus_pot_analog = adc_1.data.conversions[FR_SUS_POT_CHANNEL].raw; // Just use raw for suspots
 
     return true;
 }
@@ -44,10 +44,10 @@ bool run_read_adc2_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo&
     adc_2.sample(); // Samples all eight channels.
     adc_2.convert(); // Converts all eight channels.
 
-    interface_data.pedals_unfiltered.accel1_unfiltered_percent = adc_2.data.conversions[ACCEL_1_CHANNEL].conversion;
-    interface_data.pedals_unfiltered.accel2_unfiltered_percent = adc_2.data.conversions[ACCEL_2_CHANNEL].conversion;
-    interface_data.pedals_unfiltered.brake1_unfiltered_percent = adc_2.data.conversions[BRAKE_1_CHANNEL].conversion;
-    interface_data.pedals_unfiltered.brake1_unfiltered_percent = adc_2.data.conversions[BRAKE_2_CHANNEL].conversion;
+    interface_data.pedals_data.accel_1 = adc_2.data.conversions[ACCEL_1_CHANNEL].conversion;
+    interface_data.pedals_data.accel_2 = adc_2.data.conversions[ACCEL_2_CHANNEL].conversion;
+    interface_data.pedals_data.brake_1 = adc_2.data.conversions[BRAKE_1_CHANNEL].conversion;
+    interface_data.pedals_data.brake_2 = adc_2.data.conversions[BRAKE_2_CHANNEL].conversion;
 
     return true;
 }
