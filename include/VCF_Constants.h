@@ -20,8 +20,7 @@ const int BTN_MC_CYCLE_READ = 8;
 const int BTN_MODE_READ = 7;
 const int BTN_START_READ = 6;
 const int BTN_DATA_READ = 22;
-
-
+const int BUZZER_CONTROL_PIN = 3;
 
 /* -------------------------------------------------- */
 /*                 ADC pins and configs               */
