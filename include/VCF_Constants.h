@@ -2,13 +2,24 @@
 #define VCF_CONSTANTS
 
 
-
 /* -------------------------------------------------- */
 /*                 Teensy 4.1 GPIO pins               */
 /* -------------------------------------------------- */
+
+
+
+
+
+// Digital Pins on Teensy
 const int ADC1_CS = 33; // MCP3208. ADC1 in VCF schematic. Used for steering, sus pots, and load cells.
 const int ADC2_CS = 34; // MCP3208. ADC2 in VCF schematic. Used for pedal position sensors.
 
+const int BTN_DIM_READ = 10;
+const int BTN_PRESET_READ = 9;
+const int BTN_MC_CYCLE_READ = 8;
+const int BTN_MODE_READ = 7;
+const int BTN_START_READ = 6;
+const int BTN_DATA_READ = 22;
 const int BUZZER_CONTROL_PIN = 3;
 
 /* -------------------------------------------------- */
