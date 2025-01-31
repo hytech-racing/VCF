@@ -9,7 +9,7 @@
 const int ADC1_CS = 33; // MCP3208. ADC1 in VCF schematic. Used for steering, sus pots, and load cells.
 const int ADC2_CS = 34; // MCP3208. ADC2 in VCF schematic. Used for pedal position sensors.
 
-
+const int BUZZER_CONTROL_PIN = 3;
 
 /* -------------------------------------------------- */
 /*                 ADC pins and configs               */
@@ -36,9 +36,9 @@ const int BRAKE_2_CHANNEL         = 5;
 // const int UNUSED_CHANNEL       = 7;
 
 /* Scaling and offset */
-const float STEERING_1_SCALE = 0.02197265; // TODO: Figure out what these mean
+const float STEERING_1_SCALE = 0.02197265f; // TODO: Figure out what these mean
 const float STEERING_1_OFFSET = 0;
-const float STEERING_2_SCALE = 0.02197265; // TODO: Figure out if steering 2 = steering 1
+const float STEERING_2_SCALE = 0.02197265f; // TODO: Figure out if steering 2 = steering 1
 const float STEERING_2_OFFSET = 0;
 // Scale for steering sensor = 0.02197265 . Offset has to be mechanically determined
 

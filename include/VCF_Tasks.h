@@ -57,6 +57,13 @@ bool init_read_adc2_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo
 bool run_read_adc2_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
 extern HT_TASK::Task read_adc2_task;
 
+/**
+ * The buzzer_control task will control the buzzer control pin. This function relies on the 
+ * buzzer_control pin definition in VCF_Constants.h;
+ */
+bool init_buzzer_control_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
+bool run_buzzer_control_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
+extern HT_TASK::Task buzzer_control_task;
 
 
 #endif /* VCF_TASKS */

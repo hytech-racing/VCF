@@ -17,11 +17,12 @@
 #include "VCF_Globals.h"
 #include "VCF_Constants.h"
 #include "VCF_Tasks.h"
+#include "PedalsSystem.h"
 
 
 
 /* Scheduler setup */
-const HT_SCHED::Scheduler& scheduler = HT_SCHED::Scheduler::getInstance();
+HT_SCHED::Scheduler& scheduler = HT_SCHED::Scheduler::getInstance();
 
 
 
@@ -36,6 +37,7 @@ void setup() {
 
     scheduler.schedule(read_adc1_task);
     scheduler.schedule(read_adc2_task);
+    scheduler.schedule(buzzer_control_task);
 }
 
 void loop() {

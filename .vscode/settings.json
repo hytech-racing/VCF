@@ -1,5 +1,6 @@
 {
     "files.associations": {
+        "*.asm": "riscv",
         "utility": "cpp",
         "array": "cpp",
         "tuple": "cpp",
@@ -50,6 +51,9 @@
         "xmemory": "cpp",
         "xstring": "cpp",
         "xtr1common": "cpp",
-        "xutility": "cpp"
+        "xutility": "cpp",
+        "chrono": "cpp",
+        "mutex": "cpp",
+        "*.tpp": "cpp"
     }
 }
