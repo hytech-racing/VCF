@@ -13,6 +13,7 @@
 /* Interface and system data structs */
 extern VCFInterfaceData_s interface_data; // NOLINT
 extern VCFSystemData_s system_data; // NOLINT
+extern VCRSystemData_s vcr_system_data; // NOLINT
 
 /* ADC setup */
 constexpr unsigned int channels_within_mcp_adc = 8;
