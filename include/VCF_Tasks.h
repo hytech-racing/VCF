@@ -63,7 +63,7 @@ extern HT_TASK::Task read_adc2_task;
  */
 bool init_buzzer_control_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
 bool run_buzzer_control_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
-
+extern HT_TASK::Task buzzer_control_task;
 
 
 #endif /* VCF_TASKS */

@@ -54,15 +54,13 @@ bool run_read_adc2_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo&
 
 bool init_buzzer_control_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
 {
-    pinMode(BUZZER_CONTROL, INPUT);
+    pinMode(BUZZER_CONTROL_PIN, OUTPUT);
 
     return true;
 }
 bool run_buzzer_control_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
 {
-    int buzzer_state = digitalRead(BUZZER_CONTROL);
-
-    vcr_system_data.buzzer_is_active = buzzer_state;
+    digitalWrite(BUZZER_CONTROL_PIN, vcr_system_data.buzzer_is_active);
     
     return true;
 }
