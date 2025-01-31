@@ -55,6 +55,7 @@ extern HT_TASK::Task read_adc1_task;
  */
 bool init_read_adc2_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
 bool run_read_adc2_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
+extern HT_TASK::Task read_adc2_task;
 
 
 /**
@@ -63,9 +64,8 @@ bool run_read_adc2_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo&
  */
 bool init_read_gpio_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
 bool run_read_gpio_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
+extern HT_TASK::Task read_gpio_task;
 
-
-extern HT_TASK::Task read_adc2_task;
 
 
 
