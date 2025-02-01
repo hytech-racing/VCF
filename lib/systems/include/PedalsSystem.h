@@ -73,17 +73,23 @@ public:
 
     /// @brief Pedal evaluation function that takes in the direct analog values of the pedals and
     ///        returns all of the pedals system data.
-    PedalsSystemData_s evaluate_pedals(uint32_t accel1_analog,
-                                       uint32_t accel2_analog,
-                                       uint32_t brake1_analog,
-                                       uint32_t brake2_analog,
-                                       unsigned long curr_millis);
+
+    /// I want to change this - can we take in one PedalSystemData_s struct reference and obtain the values from that and just have a boolean for 1 or 2 brakes?
+
+    PedalsSystemData_s evaluate_pedals(PedalSensorData_s pedal_data,
+                                       unsigned long curr_millis,
+                                       bool two_brakes);
     /// @brief Overloaded pedal evaluation function that takes in direct analog values of pedals (but
     //         ignores brake sensor 2) and returns the PedalsSystemData.
+    // lets get rid of this we only need one method it makes the code so much cleaner most of the code is the same anyway
+    /*
+    
     PedalsSystemData_s evaluate_pedals(uint32_t accel1,
                                        uint32_t accel2,
                                        uint32_t brake,
                                        unsigned long curr_millis);
+
+    */
 
 private:
     PedalsSystemData_s _data{};
@@ -127,6 +133,7 @@ private:
     /// @param accelPedalData2
     /// @param brakePedalData1
     /// @param brakePedalData2
+    //QUESTION - Can we change this to just use 1 Struct? 
     /// @return true if accel and brake pressed at the same time, false otherwise
     bool evaluate_brake_and_accel_pressed_(int accelPedalData1_analog,
                                            int accelPedalData2_analog,
@@ -165,6 +172,14 @@ private:
     /// @param check_mech_activation if this is true, function will check percentages against the mechanical activation percentage
     /// @return true or false accordingly
     bool pedal_is_active_(float pedal1ConvertedData, float pedal2ConvertedData, const PedalsParams &params, bool check_mech_activation);
+
+    /// @brief check whether or not SINGLE pedal is active according to input. returns true if pedal is over threshold. removes deadzone.
+    /// @param pedal1ConvertedData the value 0 to 1 of the first pedal without deadzone removed
+    /// @param params the pedal parameters for this specific pedal
+    /// @param check_mech_activation if this is true, function will check percentages against the mechanical activation percentage
+    /// @return true or false accordingly
+    bool pedal_is_active_(float pedal1ConvertedData, const PedalsParams &params, bool check_mech_activation);
+
 
 };
 
