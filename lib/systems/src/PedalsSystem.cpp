@@ -51,7 +51,7 @@ PedalsSystemData_s PedalsSystem::evaluate_pedals(PedalSensorData_s pedals_data, 
     } else{
         out.brake_is_implausible = evaluate_pedal_implausibilities_(brake_1, _brakeParams);
         out.brake_and_accel_pressed_implausibility_high = evaluate_brake_and_accel_pressed_(accel_1, accel_2, brake_1);
-        out.brake_percent = brake_1/2;
+        out.brake_percent = brake_1;
         out.brake_is_pressed = pedal_is_active_(brake_1, _brakeParams, false);
     }
     bool implausibility = (out.accel_is_implausible || out.brake_and_accel_pressed_implausibility_high || out.brake_is_implausible);
