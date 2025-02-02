@@ -13,31 +13,19 @@ void PedalsSystem::tick(unsigned long curr_millis, VCFInterfaceData_s & interfac
     _data = evaluate_pedals(interface_data.pedals_data, curr_millis, use_both_brake_sensors);
 }
 
-//converts the paramater needed - eg. accel1, accel2, brake1, or brake2. takes in int32, returns int32. 
+//CONVERSION HELPER METHOD - converts the paramater needed - eg. accel1, accel2, brake1, or brake2. takes in int32, returns int32. 
 // the data inputted should be a raw reading- from a PedalSensorData_s reference
-uint32_t conversion(PedalSensorData_s pedals_data, uint32_t data){
-    if(data == pedals_data.accel_1){
-        return pedals_data.accel_1;
-    } else if (data == pedals_data.accel_2){
-        return pedals_data.accel_2; 
-    } else if (data == pedals_data.brake_1){
-        return pedals_data.brake_1;
-    } else if (data == pedals_data.brake_2){
-        return pedals_data.brake_2;
-    }
-}
-//convert accel to float
-//What this is doing - analogConversion_s object reference given
-// to accel1, accel2, brake1, brake2. This, instead of being converted from 0-1, can be processed raw. 
-// Take in a reference to PedalsSystem_data struct - and obtain the analog values from there. Utilize helper methods to convert. 
+// update 2/2/2025 - i dont think we need this if the pedalsdata struct already has everything we need. 
+
+
 
 PedalsSystemData_s PedalsSystem::evaluate_pedals(PedalSensorData_s pedals_data, unsigned long curr_millis, bool twobrakes)
 {
     PedalsSystemData_s out = {};
-    int accel_1 = conversion(pedals_data, pedals_data.accel_1);
-    int accel_2 = conversion(pedals_data, pedals_data.accel_2);
-    int brake_1 = conversion(pedals_data, pedals_data.brake_1);
-    int brake_2 = conversion(pedals_data, pedals_data.brake_2);
+    int accel_1 = pedals_data.accel_1; 
+    int accel_2 = pedals_data.accel_2;
+    int brake_1 = pedals_data.brake_1;
+    int brake_2 = pedals_data.brake_2; 
     out.accel_is_pressed = pedal_is_active_(accel_1,accel_2, _accelParams, false);
     out.accel_is_implausible = evaluate_pedal_implausibilities_(accel_1, accel_2, _accelParams, 0.1);
     auto percent = (out.accel_is_implausible) ? accel_1 : (accel_1 + accel_2) / 2.0;
@@ -45,12 +33,12 @@ PedalsSystemData_s PedalsSystem::evaluate_pedals(PedalSensorData_s pedals_data, 
     out.accel_percent = std::max(out.accel_percent, 0.0f);
     if(twobrakes){
         out.brake_is_implausible = evaluate_pedal_implausibilities_(brake_1,brake_2,_brakeParams, 0.1);
-        out.brake_and_accel_pressed_implausibility_high = evaluate_brake_and_accel_pressed_(accel_1, accel_2, brake_1, brake_2);
+        out.brake_and_accel_pressed_implausibility_high = evaluate_brake_and_accel_pressed_(pedals_data, twobrakes);
         out.brake_percent = (brake_1 + brake_2) / 2;
         out.brake_is_pressed = pedal_is_active_(brake_1, brake_2, _brakeParams, false);
     } else{
         out.brake_is_implausible = evaluate_pedal_implausibilities_(brake_1, _brakeParams);
-        out.brake_and_accel_pressed_implausibility_high = evaluate_brake_and_accel_pressed_(accel_1, accel_2, brake_1);
+        out.brake_and_accel_pressed_implausibility_high = evaluate_brake_and_accel_pressed_(pedals_data,twobrakes);
         out.brake_percent = brake_1;
         out.brake_is_pressed = pedal_is_active_(brake_1, _brakeParams, false);
     }
@@ -183,17 +171,15 @@ bool PedalsSystem::evaluate_pedal_oor (int pedal_data, int min, int max){
     return(pedal_data<=min || pedal_data>=max);
 }
 
-bool PedalsSystem::evaluate_brake_and_accel_pressed_(int accelPedalData1_analog, int accelPedalData2_analog, int brakePedalData1_analog, int brakePedalData2_analog){
-    bool accel_pressed = pedal_is_active_(accelPedalData1_analog, accelPedalData2_analog, _accelParams, false);
-    bool mech_brake_pressed = pedal_is_active_(brakePedalData1_analog, brakePedalData2_analog, _brakeParams, true);
-    bool both_pedals_implausible = (accel_pressed && mech_brake_pressed);
-    return both_pedals_implausible;
-}
-
-bool PedalsSystem::evaluate_brake_and_accel_pressed_(int accelPedalData1_analog, int accelPedalData2_analog, int brakePedalData1_analog){
-    bool accel_pressed = pedal_is_active_(accelPedalData1_analog, accelPedalData2_analog, _accelParams, false);
-    float brake_pedal_real = remove_deadzone_(brakePedalData1_analog, _brakeParams.deadzone_margin);
-    bool mech_brake_pressed = brake_pedal_real >= _brakeParams.mechanical_activation_percentage;
+bool PedalsSystem::evaluate_brake_and_accel_pressed_(PedalSensorData_s & pedal_data, bool twopedals){
+    bool accel_pressed = pedal_is_active_(pedal_data.accel_1, pedal_data.accel_2, _accelParams, false);
+    bool mech_brake_pressed = false;
+    float brake_pedal_real = remove_deadzone_(pedal_data.brake_1,_brakeParams.deadzone_margin);
+    if(twopedals){
+        mech_brake_pressed = pedal_is_active_(pedal_data.brake_1,pedal_data.brake_2,_brakeParams,true);
+    } else {
+        mech_brake_pressed = brake_pedal_real >= _brakeParams.mechanical_activation_percentage;
+    }
     bool both_pedals_implausible = (accel_pressed && mech_brake_pressed);
     return both_pedals_implausible;
 }

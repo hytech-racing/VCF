@@ -129,25 +129,10 @@ private:
     /// @brief function to determine if the pedals and the brakes are pressed at the same time.
     ///        evaluates brake being pressed with mech brake activation threshold AFTER removing
     ///        deadzones for both brake and accel
-    /// @param accelPedalData1
-    /// @param accelPedalData2
-    /// @param brakePedalData1
-    /// @param brakePedalData2
-    //QUESTION - Can we change this to just use 1 Struct? 
-    /// @return true if accel and brake pressed at the same time, false otherwise
-    bool evaluate_brake_and_accel_pressed_(int accelPedalData1_analog,
-                                           int accelPedalData2_analog,
-                                           int brakePedalData1_analog,
-                                           int brakePedalData2_analog);
+    /// @param pedal_data
+    /// @param twopedals
+    bool evaluate_brake_and_accel_pressed_(PedalSensorData_s & pedal_data, bool twopedals);
 
-    /// @brief overloaded version that evaluates with only one brake pedal value
-    /// @param accelPedalData1
-    /// @param accelPedalData2
-    /// @param brakePedalData
-    /// @return
-    bool evaluate_brake_and_accel_pressed_(int accelPedalData1_analog,
-                                           int accelPedalData2_analog,
-                                           int brakePedalData_analog);
     /// @brief This checks to see if any pedal sensor is out of range :(
     /// @param PedalData The analog pedal Value
     /// @return 
