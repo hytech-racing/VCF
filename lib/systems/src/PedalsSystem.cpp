@@ -1,9 +1,6 @@
 #include <math.h>
 #include <tuple>
 #include "PedalsSystem.h"
-#include "VCF_Globals.h"
-
-
 
 // VCF interface/system data - has all pedals data - global. Analog readings of 4 pedals sensors - all data that is in pedal system data
 // Accel,brake, regen percent = know what each reps - use last years function - tic/update pedal system function. take in reference to vcf interface data
@@ -20,13 +17,13 @@ void PedalsSystem::tick(unsigned long curr_millis, VCFInterfaceData_s & interfac
 // the data inputted should be a raw reading- from a PedalSensorData_s reference
 uint32_t conversion(PedalSensorData_s pedals_data, uint32_t data){
     if(data == pedals_data.accel_1){
-        return ( pedals_data.accel_1 - ACCEL_1_OFFSET ) * ACCEL_1_SCALE;
+        return pedals_data.accel_1;
     } else if (data == pedals_data.accel_2){
-        return (pedals_data.accel_2 - ACCEL_2_OFFSET) * ACCEL_2_SCALE;
+        return pedals_data.accel_2; 
     } else if (data == pedals_data.brake_1){
-        return (pedals_data.brake_1 - BRAKE_1_OFFSET) * BRAKE_1_SCALE;
+        return pedals_data.brake_1;
     } else if (data == pedals_data.brake_2){
-        return (pedals_data.brake_2 - BRAKE_2_OFFSET) * BRAKE_2_SCALE;
+        return pedals_data.brake_2;
     }
 }
 //convert accel to float
