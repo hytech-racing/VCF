@@ -1,6 +1,6 @@
 #include "VCF_Tasks.h"
 #include "VCF_Globals.h"
-
+#include "VCF_Constants.h"
 
 
 bool init_read_adc1_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
@@ -52,6 +52,40 @@ bool run_read_adc2_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo&
     return true;
 }
 HT_TASK::Task read_adc2_task = HT_TASK::Task(init_read_adc2_task, run_read_adc2_task, 10, 1000UL); // 1000us is 1kHz //NOLINT
+
+bool init_read_gpio_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
+{
+    // Setting digital/analog buttons D10-D6, A8 as inputs
+    pinMode(BTN_DIM_READ, INPUT);
+    pinMode(BTN_PRESET_READ, INPUT);
+    pinMode(BTN_MC_CYCLE_READ, INPUT);
+    pinMode(BTN_MODE_READ, INPUT);
+    pinMode(BTN_START_READ, INPUT);
+    pinMode(BTN_DATA_READ, INPUT);
+    
+    return true;
+}
+bool run_read_gpio_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
+{
+    // Doing digital read on all digital inputs
+    int dimButton = digitalRead(BTN_DIM_READ);
+    int presetButton = digitalRead(BTN_PRESET_READ);
+    int mcCycleButton = digitalRead(BTN_MC_CYCLE_READ);
+    int modeButton = digitalRead(BTN_MODE_READ);
+    int startButton = digitalRead(BTN_START_READ);
+    int dataButton = digitalRead(BTN_DATA_READ);
+    
+    interface_data.dash_input_state.dim_btn_is_pressed = dimButton;
+    interface_data.dash_input_state.preset_btn_is_pressed = presetButton;
+    interface_data.dash_input_state.mc_reset_btn_is_pressed = mcCycleButton;
+    interface_data.dash_input_state.mode_btn_is_pressed = modeButton;
+    interface_data.dash_input_state.start_btn_is_pressed = startButton;
+    interface_data.dash_input_state.data_btn_is_pressed = dataButton;
+
+    return true;
+}
+HT_TASK::Task read_gpio_task = HT_TASK::Task(init_read_gpio_task, run_read_gpio_task, 10, 1000UL); // 1000us is 1kHz //NOLINT
+
 
 bool init_buzzer_control_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
 {
