@@ -115,8 +115,8 @@ private:
     /// @param params
     /// @param max_percent_diff
     /// @return
-    bool evaluate_pedal_implausibilities_(int pedalData1_analog,
-                                          int pedalData2_analog,
+    bool evaluate_pedal_implausibilities_(uint32_t pedalData1_analog,
+                                          uint32_t pedalData2_analog,
                                           const PedalsParams &params,
                                           float max_percent_diff);
 
@@ -124,7 +124,7 @@ private:
     /// @param pedalData
     /// @param params
     /// @return
-    bool evaluate_pedal_implausibilities_(int pedalData, const PedalsParams &params);
+    bool evaluate_pedal_implausibilities_(uint32_t pedalData, const PedalsParams &params);
 
     /// @brief function to determine if the pedals and the brakes are pressed at the same time.
     ///        evaluates brake being pressed with mech brake activation threshold AFTER removing
@@ -136,7 +136,7 @@ private:
     /// @brief This checks to see if any pedal sensor is out of range :(
     /// @param PedalData The analog pedal Value
     /// @return 
-    bool evaluate_pedal_oor(int pedalData_analog,
+    bool evaluate_pedal_oor(uint32_t pedalData_analog,
                            int min,
                            int max);
     /// @brief
@@ -145,7 +145,7 @@ private:
     /// @param max
     /// @param implaus_margin_scale
     /// @return
-    bool evaluate_min_max_pedal_implausibilities_(int pedalData_analog,
+    bool evaluate_min_max_pedal_implausibilities_(uint32_t pedalData_analog,
                                                   int min,
                                                   int max,
                                                   float implaus_margin_scale);
