@@ -26,15 +26,15 @@ PedalsSystemData_s PedalsSystem::evaluate_pedals(PedalSensorData_s pedals_data, 
     uint32_t brake_1 = pedals_data.brake_1;
     uint32_t brake_2 = pedals_data.brake_2; 
     const float scaler = 4096.0;
-    float accel_1_converted = accel_1/scaler;
-    float accel_2_converted = accel_2/scaler;
-    float brake_1_converted = brake_1/scaler;
-    float brake_2_converted = brake_2/scaler;
+    float accel_1_converted = (float)accel_1/scaler;
+    float accel_2_converted = (float)accel_2/scaler;
+    float brake_1_converted = (float)brake_1/scaler;
+    float brake_2_converted = (float)brake_2/scaler;
     const float _implausibility = 0.1;
     const float _halfer = 2.0;
     out.accel_is_pressed = pedal_is_active_(accel_1_converted,accel_2_converted, _accelParams, false);
     out.accel_is_implausible = evaluate_pedal_implausibilities_(accel_1, accel_2, _accelParams, _implausibility);
-    auto percent = (out.accel_is_implausible) ? accel_1 : (accel_1 + accel_2) /_halfer;
+    auto percent = (out.accel_is_implausible) ? accel_1 : (float)(accel_1 + accel_2) /_halfer;
     out.accel_percent = remove_deadzone_(percent, _accelParams.deadzone_margin);
     out.accel_percent = std::max(out.accel_percent, 0.0f);
     if(twobrakes){
@@ -103,7 +103,7 @@ bool PedalsSystem::evaluate_pedal_implausibilities_(uint32_t pedal_data1_analog,
 
 bool PedalsSystem::evaluate_min_max_pedal_implausibilities_(uint32_t pedal_data, int min, int max, float implaus_margin_scale){
     bool pedal_swapped = false;
-    int pedal_margin = abs(max-min) * implaus_margin_scale;
+    float pedal_margin = abs(max-min) * implaus_margin_scale;
     if(min>max){
         pedal_swapped = true;
     }
@@ -180,10 +180,10 @@ bool PedalsSystem::evaluate_pedal_oor (uint32_t pedal_data, int min, int max){
 //converts data by dividing it by 4096
 bool PedalsSystem::evaluate_brake_and_accel_pressed_(PedalSensorData_s & pedal_data, bool twopedals){
     const float scaler = 4096.0;
-    float accel_1_converted = pedal_data.accel_1/scaler;
-    float accel_2_converted = pedal_data.accel_2/scaler;
-    float brake_1_converted = pedal_data.brake_1/scaler;
-    float brake_2_converted = pedal_data.brake_2/scaler;
+    float accel_1_converted = (float)pedal_data.accel_1/scaler;
+    float accel_2_converted = (float)pedal_data.accel_2/scaler;
+    float brake_1_converted = (float)pedal_data.brake_1/scaler;
+    float brake_2_converted = (float)pedal_data.brake_2/scaler;
 
     bool accel_pressed = pedal_is_active_(accel_1_converted, accel_2_converted, _accelParams, false);
     bool mech_brake_pressed = false;
