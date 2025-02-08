@@ -103,14 +103,15 @@ bool PedalsSystem::evaluate_pedal_implausibilities_(uint32_t pedal_data1_analog,
 
 bool PedalsSystem::evaluate_min_max_pedal_implausibilities_(uint32_t pedal_data, int min, int max, float implaus_margin_scale){
     bool pedal_swapped = false;
-    float pedal_margin = abs(max-min) * implaus_margin_scale;
+    float pedal_margin = (float)abs(max-min) * implaus_margin_scale;
     if(min>max){
         pedal_swapped = true;
     }
     // FSAE EV.5.5
     // FSAE T.4.2.10
-    bool pedal_less_than_min = pedal_swapped ? (pedal_data > (min+pedal_margin)) : (pedal_data < (min-pedal_margin));
-    bool pedal_greater_than_max = pedal_swapped ? (pedal_data < (max-pedal_margin)) : (pedal_data > (min+pedal_margin));
+    float float_pedal_data = float(pedal_data);
+    bool pedal_less_than_min = pedal_swapped ? (float_pedal_data > (min+pedal_margin)) : (float_pedal_data < (min-pedal_margin));
+    bool pedal_greater_than_max = pedal_swapped ? (float_pedal_data < (max-pedal_margin)) : (float_pedal_data > (min+pedal_margin));
     if (pedal_less_than_min)
     {
         return true;
@@ -146,7 +147,7 @@ bool PedalsSystem::pedal_is_active_(float pedal1ScaledData, float pedal2ScaledDa
 bool PedalsSystem::pedal_is_active_(float pedal1ScaledData, const PedalsParams& params, bool check_mech_activation)
 {
     float val1_deadzone_removed = remove_deadzone_(pedal1ScaledData, params.deadzone_margin);
-    bool pedal_1_is_active;
+    bool pedal_1_is_active = false; 
     if(check_mech_activation)
     {
         pedal_1_is_active = val1_deadzone_removed >= params.mechanical_activation_percentage;
