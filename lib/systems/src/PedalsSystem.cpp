@@ -8,6 +8,11 @@
 // apps - 2 acceleration position sensors. they both have opposite slopes. determine what is positive and negative slope. Linear interpolation. 
 //get rid of adc
 
+float PedalsSystem::_scale_pedal_val(int raw_pedal_val, float min, float max)
+{
+    return {};
+}
+
 void PedalsSystem::tick(unsigned long curr_millis, VCFInterfaceData_s & interface_data, bool use_both_brake_sensors)
 {
     _data = evaluate_pedals(interface_data.pedals_data, curr_millis, use_both_brake_sensors);
@@ -21,10 +26,10 @@ void PedalsSystem::tick(unsigned long curr_millis, VCFInterfaceData_s & interfac
 PedalsSystemData_s PedalsSystem::evaluate_pedals(PedalSensorData_s pedals_data, unsigned long curr_millis, bool twobrakes)
 {
     PedalsSystemData_s out = {};
-    uint32_t accel_1 = pedals_data.accel_1; 
-    uint32_t accel_2 = pedals_data.accel_2;
-    uint32_t brake_1 = pedals_data.brake_1;
-    uint32_t brake_2 = pedals_data.brake_2; 
+    int accel_1 = pedals_data.accel_1; 
+    int accel_2 = pedals_data.accel_2;
+    int brake_1 = pedals_data.brake_1;
+    int brake_2 = pedals_data.brake_2; 
     const float scaler = 4096.0;
     float accel_1_converted = (float)accel_1/scaler;
     float accel_2_converted = (float)accel_2/scaler;
@@ -34,7 +39,7 @@ PedalsSystemData_s PedalsSystem::evaluate_pedals(PedalSensorData_s pedals_data, 
     const float _halfer = 2.0;
     out.accel_is_pressed = pedal_is_active_(accel_1_converted,accel_2_converted, _accelParams, false);
     out.accel_is_implausible = evaluate_pedal_implausibilities_(accel_1, accel_2, _accelParams, _implausibility);
-    auto percent = (out.accel_is_implausible) ? accel_1 : (float)(accel_1 + accel_2) /_halfer;
+    auto percent = (out.accel_is_implausible) ? accel_1 : static_cast<float>(accel_1 + accel_2) /_halfer;
     out.accel_percent = remove_deadzone_(percent, _accelParams.deadzone_margin);
     out.accel_percent = std::max(out.accel_percent, 0.0f);
     if(twobrakes){
@@ -77,7 +82,7 @@ bool PedalsSystem::max_duration_of_implausibility_exceeded_(unsigned long curr_m
     }
 }
 
-bool PedalsSystem::evaluate_pedal_implausibilities_(uint32_t pedal_data1_analog, uint32_t pedal_data2_analog, const PedalsParams &params, float max_percent_diff){
+bool PedalsSystem::evaluate_pedal_implausibilities_(int pedal_data1_analog, int pedal_data2_analog, const PedalsParams &params, float max_percent_diff){
     bool pedal1_min_max_implaus = evaluate_min_max_pedal_implausibilities_(pedal_data1_analog, params.min_pedal_1, params.max_pedal_1, params.implausibility_margin);
     bool pedal2_min_max_implaus = evaluate_min_max_pedal_implausibilities_(pedal_data2_analog, params.min_pedal_2, params.max_pedal_2, params.implausibility_margin);
     bool sens_not_within_req_percent = (fabs(pedal_data1_analog - pedal_data2_analog) > max_percent_diff);
@@ -95,15 +100,9 @@ bool PedalsSystem::evaluate_pedal_implausibilities_(uint32_t pedal_data1_analog,
     }
 }
 
-bool PedalsSystem::evaluate_pedal_implausibilities_(uint32_t pedal_data1_analog, const PedalsParams &params){
-    return evaluate_min_max_pedal_implausibilities_(pedal_data1_analog, params.min_pedal_1, params.max_pedal_1, params.implausibility_margin);
-}
-
-
-
-bool PedalsSystem::evaluate_min_max_pedal_implausibilities_(uint32_t pedal_data, int min, int max, float implaus_margin_scale){
+bool PedalsSystem::evaluate_min_max_pedal_implausibilities_(int pedal_data, int min, int max, float implaus_margin_scale){
     bool pedal_swapped = false;
-    float pedal_margin = (float)abs(max-min) * implaus_margin_scale;
+    float pedal_margin = static_cast<float>(::abs(max-min) * implaus_margin_scale);
     if(min>max){
         pedal_swapped = true;
     }
@@ -126,6 +125,7 @@ bool PedalsSystem::evaluate_min_max_pedal_implausibilities_(uint32_t pedal_data,
     }
 
 }
+
 bool PedalsSystem::pedal_is_active_(float pedal1ScaledData, float pedal2ScaledData, const PedalsParams& params, bool check_mech_activation)
 {
     float val1_deadzone_removed = remove_deadzone_(pedal1ScaledData, params.deadzone_margin);
@@ -143,21 +143,6 @@ bool PedalsSystem::pedal_is_active_(float pedal1ScaledData, float pedal2ScaledDa
     return (pedal_1_is_active || pedal_2_is_active);
 }
 
-
-bool PedalsSystem::pedal_is_active_(float pedal1ScaledData, const PedalsParams& params, bool check_mech_activation)
-{
-    float val1_deadzone_removed = remove_deadzone_(pedal1ScaledData, params.deadzone_margin);
-    bool pedal_1_is_active = false; 
-    if(check_mech_activation)
-    {
-        pedal_1_is_active = val1_deadzone_removed >= params.mechanical_activation_percentage;
-    } else {
-        pedal_1_is_active = val1_deadzone_removed >= params.activation_percentage;
-    }
-    return (pedal_1_is_active);
-}
-
-
 float PedalsSystem::remove_deadzone_(float conversion_input, float deadzone)
 {
     float range = 1.0 - (deadzone * 2);
@@ -174,7 +159,7 @@ float PedalsSystem::remove_deadzone_(float conversion_input, float deadzone)
     return out;
 }
 
-bool PedalsSystem::evaluate_pedal_oor (uint32_t pedal_data, int min, int max){
+bool PedalsSystem::evaluate_pedal_oor (int pedal_data, int min, int max){
     return(pedal_data<=min || pedal_data>=max);
 }
 
