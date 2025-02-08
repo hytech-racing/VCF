@@ -17,7 +17,7 @@ void PedalsSystem::tick(unsigned long curr_millis, PedalSensorData_s & pedals_da
 {
     _data = evaluate_pedals(pedals_data, curr_millis);
 }
-
+// method to evaluate pedals
 PedalsSystemData_s PedalsSystem::evaluate_pedals(PedalSensorData_s pedals_data, unsigned long curr_millis)
 {
     PedalsSystemData_s out = {};
