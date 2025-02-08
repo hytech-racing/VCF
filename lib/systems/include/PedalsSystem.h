@@ -9,11 +9,11 @@
 #include <math.h>
 #include <tuple>
 
-#include "etl/optional.h"
 
 #include "SharedFirmwareTypes.h"
 
 
+// This struct has the raw data for the pedals
 struct PedalSensorData_s
 {
     int accel_1;
@@ -77,8 +77,8 @@ public:
     /// @brief Tick function that runs the evaluation of the pedals system.
     ///        evaluates brake using only min and max params for sensor 1 (min_pedal_1 / max_pedal_1).
     /// @param curr_millis The current timestamp, in milliseconds.
-    /// @param interface_data A reference to the interface_data global.
-    void tick(unsigned long curr_millis, VCFInterfaceData_s &interface_data);
+    /// @param pedals_data A reference to the PedalSensorData.
+    void tick(unsigned long curr_millis, PedalSensorData_s  & pedals_data);
 
     /// @brief Pedal evaluation function that takes in the direct analog values of the pedals and
     ///        returns all of the pedals system data.
@@ -117,7 +117,7 @@ private:
     ///        deadzones for both brake and accel
     /// @param pedal_data
     /// @param twopedals
-    bool evaluate_brake_and_accel_pressed_(PedalSensorData_s & pedal_data, bool twopedals);
+    bool evaluate_brake_and_accel_pressed_(PedalSensorData_s & pedal_data);
 
     /// @brief This checks to see if any pedal sensor is out of range :(
     /// @param PedalData The analog pedal Value
