@@ -144,7 +144,7 @@ private:
     /// @return true or false accordingly
     bool pedal_is_active_(float pedal1ConvertedData, float pedal2ConvertedData, const PedalsParams &params, bool check_mech_activation);
     
-    float _scale_pedal_val(int raw_pedal_val, float min, float max);
+    float _scale_pedal_val(int raw_pedal_val, int min, int max);
 private:
     PedalsSystemData_s _data{};
     PedalsParams _accelParams{};
