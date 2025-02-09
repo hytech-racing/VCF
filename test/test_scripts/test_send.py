@@ -1,14 +1,15 @@
 import socket
-import struct
 
-UDP_IP = "192.168.1.30"  # Loopback address
-UDP_PORT = 5555  # Port number
-FLOAT_VALUE = 6969.4  # Example float
+BROADCAST_IP = "255.255.255.255"
+PORT = 5005
+MESSAGE = "Hello, UDP!"
 
-sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)  # Create UDP socket
-packed_data = struct.pack("f", FLOAT_VALUE)  # Pack float into bytes
+# Create a UDP socket
+sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 
-sock.sendto(packed_data, (UDP_IP, UDP_PORT))  # Send data
-print(f"Sent: {FLOAT_VALUE}")
-
-sock.close()
+try:
+    print(f"Sending message: {MESSAGE}")
+    sock.sendto(MESSAGE.encode(), (BROADCAST_IP, PORT))
+finally:
+    sock.close()
