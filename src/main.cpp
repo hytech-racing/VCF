@@ -18,8 +18,7 @@
 #include "VCF_Constants.h"
 #include "VCF_Tasks.h"
 #include "PedalsSystem.h"
-
-
+#include "VCFEthernetInterface.h"
 
 /* Scheduler setup */
 HT_SCHED::Scheduler& scheduler = HT_SCHED::Scheduler::getInstance();
