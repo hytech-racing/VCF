@@ -54,6 +54,8 @@
         "xutility": "cpp",
         "chrono": "cpp",
         "mutex": "cpp",
-        "*.tpp": "cpp"
+        "*.tpp": "cpp",
+        "optional": "cpp",
+        "functional": "cpp"
     }
 }

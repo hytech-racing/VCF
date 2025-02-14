@@ -23,20 +23,6 @@
 /* Scheduler setup */
 HT_SCHED::Scheduler& scheduler = HT_SCHED::Scheduler::getInstance();
 
-
-
-/* Ethernet message sockets */ // TODO: Move this into its own interface
-qindesign::network::EthernetUDP protobuf_send_socket;
-qindesign::network::EthernetUDP protobuf_recv_socket;
-
-const IPAddress debug_ip(192, 168, 1, 31); // Computer receive IP
-const IPAddress default_VCF_ip(192, 168, 1, 30);
-const IPAddress default_dns(192, 168, 1, 1); 
-const IPAddress default_gateway(192, 168, 1, 1); 
-const IPAddress car_subnet(255, 255, 255, 30); 
-
-uint16_t port = 7777;
-
 void setup() {
     scheduler.setTimingFunction(micros);
 
@@ -44,9 +30,12 @@ void setup() {
     scheduler.schedule(read_adc2_task);
     scheduler.schedule(buzzer_control_task);
     scheduler.schedule(send_vcf_data_task);
+    scheduler.schedule(recv_vcr_data_task);
 
     qindesign::network::Ethernet.begin(default_VCF_ip, default_dns, default_gateway, car_subnet);
-    protobuf_send_socket.begin(port);
+    protobuf_send_socket.begin(VCF_SEND_PORT);
+    protobuf_recv_socket.begin(VCF_RECV_PORT);
+    
 }
 
 void loop() {

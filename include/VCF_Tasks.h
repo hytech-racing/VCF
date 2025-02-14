@@ -68,10 +68,11 @@ bool init_buzzer_control_task(const unsigned long& sysMicros, const HT_TASK::Tas
 bool run_buzzer_control_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
 extern HT_TASK::Task buzzer_control_task;
 
-
-bool init_send_vcf_data_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
 bool run_send_vcf_data_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
 extern HT_TASK::Task send_vcf_data_task;
+
+bool run_recv_vcr_data_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
+extern HT_TASK::Task recv_vcr_data_task;
 
 
 #endif /* VCF_TASKS */
