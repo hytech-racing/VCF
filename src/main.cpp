@@ -24,13 +24,14 @@
 HT_SCHED::Scheduler& scheduler = HT_SCHED::Scheduler::getInstance();
 
 void setup() {
-    scheduler.setTimingFunction(micros);
+    std::function<unsigned long()> func = micros;
+    scheduler.setTimingFunction(func);
 
-    scheduler.schedule(read_adc1_task);
-    scheduler.schedule(read_adc2_task);
-    scheduler.schedule(buzzer_control_task);
-    scheduler.schedule(send_vcf_data_task);
-    scheduler.schedule(recv_vcr_data_task);
+    //scheduler.schedule(read_adc1_task);
+    //scheduler.schedule(read_adc2_task);
+    //scheduler.schedule(buzzer_control_task);
+    // scheduler.schedule(send_vcf_data_task);
+    // scheduler.schedule(recv_vcr_data_task);
 
     qindesign::network::Ethernet.begin(default_VCF_ip, default_dns, default_gateway, car_subnet);
     protobuf_send_socket.begin(VCF_SEND_PORT);
@@ -40,4 +41,5 @@ void setup() {
 
 void loop() {
     scheduler.run();
+    Serial.println("looping");
 }

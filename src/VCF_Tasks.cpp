@@ -66,6 +66,8 @@ bool init_buzzer_control_task(const unsigned long& sysMicros, const HT_TASK::Tas
 bool run_buzzer_control_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
 {
     digitalWrite(BUZZER_CONTROL_PIN, vcf_data.system_data.buzzer_is_active);
+
+    Serial.println("running");
     
     return true;
 }
@@ -80,9 +82,11 @@ bool run_send_vcf_data_task(const unsigned long& sysMicros, const HT_TASK::TaskI
 
     handle_ethernet_socket_send_pb<hytech_msgs_VCFData_s, hytech_msgs_VCFData_s_size>(debug_ip, VCF_SEND_PORT, &protobuf_send_socket, protoc_struct, &hytech_msgs_VCFData_s_msg);
 
+    Serial.printf("tried to send %f\n", vcf_data.system_data.pedals_system_data.accel_percent);
+
     return true;
 }
-HT_TASK::Task send_vcf_data_task = HT_TASK::Task(HT_TASK::DUMMY_FUNCTION, run_send_vcf_data_task, 11, 1000000UL); // 1 000 000 us is 1Hz //NOLINT
+HT_TASK::Task send_vcf_data_task = HT_TASK::Task(HT_TASK::DUMMY_FUNCTION, run_send_vcf_data_task, 11, 50000UL); // 1 000 000 us is 1Hz //NOLINT
 
 bool run_recv_vcr_data_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
 {

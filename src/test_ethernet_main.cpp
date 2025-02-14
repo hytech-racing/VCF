@@ -10,6 +10,7 @@
 #include <cstring>
 
 #include "ProtobufMsgInterface.h"
+#include "etl/optional.h"
 
 using namespace qindesign::network;
 EthernetUDP socket; 
@@ -62,6 +63,15 @@ void setup()
 
 void loop()
 {
-    test_send();
+    etl::optional<hytech_msgs_VCRData_s> protoc_struct = handle_ethernet_socket_receive<hytech_msgs_VCRData_s_size, hytech_msgs_VCRData_s>(&socket, &hytech_msgs_VCRData_s_msg);
+    if (protoc_struct)
+    {
+        Serial.printf("message RR: %d\n", (*protoc_struct).rear_loadcell_data.RR_loadcell_analog);
+        Serial.printf("message RL: %d\n", (*protoc_struct).rear_loadcell_data.RL_loadcell_analog);
+        
+    } 
+
+
+    //test_send();
     //Serial.println("loopin");
 }
