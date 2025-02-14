@@ -1,5 +1,6 @@
 #include "VCF_Tasks.h"
 #include "VCF_Globals.h"
+#include "ProtobufMsgInterface.h"
 
 
 
@@ -67,4 +68,14 @@ bool run_buzzer_control_task(const unsigned long& sysMicros, const HT_TASK::Task
 }
 HT_TASK::Task buzzer_control_task = HT_TASK::Task(init_buzzer_control_task, run_buzzer_control_task, 10, 1000UL); // 1000us is 1kHz //NOLINT
 
+bool run_send_vcf_data_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
+{
+
+    hal_printf("Ran task %d times.", taskInfo.executions);
+
+    
+
+    return true;
+}
+HT_TASK::Task send_vcf_data_task = HT_TASK::Task(HT_TASK::DUMMY_FUNCTION, run_send_vcf_data_task, 11, 1000000UL); // 1 000 000 us is 1Hz //NOLINT
 

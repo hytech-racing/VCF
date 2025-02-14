@@ -32,6 +32,9 @@
 /* From shared_firmware_types library */
 #include "SharedFirmwareTypes.h"
 
+/* From shared-firware-interfaces library */
+#include "Logger.h";
+
 
 
 /**
@@ -64,6 +67,11 @@ extern HT_TASK::Task read_adc2_task;
 bool init_buzzer_control_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
 bool run_buzzer_control_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
 extern HT_TASK::Task buzzer_control_task;
+
+
+bool init_send_vcf_data_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
+bool run_send_vcf_data_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
+extern HT_TASK::Task send_vcf_data_task;
 
 
 #endif /* VCF_TASKS */
