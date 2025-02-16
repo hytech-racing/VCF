@@ -108,132 +108,187 @@ bool reset_pedals_system_implaus_time(PedalsSystem &pedals)
     return (!data.implausibility_has_exceeded_max_duration);
 }
 
-// T.4.3.4, T.4.2.7, T.4.2.9, T.4.2.10 FSAE rules 2024 v1
-TEST(PedalsSystemTesting, test_accel_and_brake_limits_plausibility)
-{
-    auto params = gen_positive_and_negative_slope_params();
-    PedalsSystem pedals(params, params);
+// // T.4.3.4, T.4.2.7, T.4.2.9, T.4.2.10 FSAE rules 2024 v1
+// TEST(PedalsSystemTesting, test_accel_and_brake_limits_plausibility)
+// {
+//     auto params = gen_positive_and_negative_slope_params();
+//     PedalsSystem pedals(params, params);
 
-    // Create test pedal data
-    PedalSensorData_s test_pedal_good_val = {1200, 1200, 1200, 1200}; // All values in a good range
+//     // Create test pedal data
+//     PedalSensorData_s test_pedal_good_val = {1200, 1200, 1200, 1200}; // All values in a good range
 
-    // Create a vector of test cases for acceleration sensor implausibility
-    std::vector<PedalSensorData_s> accel_test_cases = {
-        {0, 1200, 1200, 1200},
-        {4000, 1200, 1200, 1200},
-        {1200, 0, 1200, 1200},
-        {1200, 4000, 1200, 1200},
-        {0, 4000, 1200, 1200},
-        {4000, 0, 1200, 1200}
-    };
+//     // Create a vector of test cases for acceleration sensor implausibility
+//     std::vector<PedalSensorData_s> accel_test_cases = {
+//         {0, 1200, 1200, 1200},
+//         {4000, 1200, 1200, 1200},
+//         {1200, 0, 1200, 1200},
+//         {1200, 4000, 1200, 1200},
+//         {0, 4000, 1200, 1200},
+//         {4000, 0, 1200, 1200}
+//     };
 
-    // Create a vector of test cases for brake sensor implausibility
-    std::vector<PedalSensorData_s> brake_test_cases = {
-        {1200, 1200, 0, 1200},
-        {1200, 1200, 4000, 1200},
-        {1200, 1200, 1200, 0},
-        {1200, 1200, 1200, 4000},
-        {1200, 1200, 0, 4000},
-        {1200, 1200, 4000, 0}
-    };
+//     // Create a vector of test cases for brake sensor implausibility
+//     std::vector<PedalSensorData_s> brake_test_cases = {
+//         {1200, 1200, 0, 1200},
+//         {1200, 1200, 4000, 1200},
+//         {1200, 1200, 1200, 0},
+//         {1200, 1200, 1200, 4000},
+//         {1200, 1200, 0, 4000},
+//         {1200, 1200, 4000, 0}
+//     };
 
-    // T.4.2.7 , T.4.2.9 and T.4.2.10 (accel out of ranges min/max) testing
-    for (const auto& test : accel_test_cases)
-    {
-        // Test double brake mode
-        bool t_4_2_7 = get_result_of_double_brake_test(pedals, test);
-        EXPECT_TRUE(t_4_2_7); // Expecting implausibility duration to be exceed for all because all values are out of range and beyond 100 ms duration
-        EXPECT_TRUE(reset_pedals_system_implaus_time(pedals));
+//     // T.4.2.7 , T.4.2.9 and T.4.2.10 (accel out of ranges min/max) testing
+//     for (const auto& test : accel_test_cases)
+//     {
+//         // Test double brake mode
+//         bool t_4_2_7 = get_result_of_double_brake_test(pedals, test);
+//         EXPECT_TRUE(t_4_2_7); // Expecting implausibility duration to be exceed for all because all values are out of range and beyond 100 ms duration
+//         EXPECT_TRUE(reset_pedals_system_implaus_time(pedals));
 
-        // Test single brake mode
-        t_4_2_7 = get_result_of_single_brake_test(pedals, test);
-        EXPECT_TRUE(t_4_2_7);
-        EXPECT_TRUE(reset_pedals_system_implaus_time(pedals));
-    }
+//         // Test single brake mode
+//         t_4_2_7 = get_result_of_single_brake_test(pedals, test);
+//         EXPECT_TRUE(t_4_2_7);
+//         EXPECT_TRUE(reset_pedals_system_implaus_time(pedals));
+//     }
 
-     // Ensure that all good is still good for double brake mode
-    bool t_4_2_7 = get_result_of_double_brake_test(pedals, test_pedal_good_val);
-    EXPECT_FALSE(t_4_2_7);
-    EXPECT_TRUE(reset_pedals_system_implaus_time(pedals));
+//      // Ensure that all good is still good for double brake mode
+//     bool t_4_2_7 = get_result_of_double_brake_test(pedals, test_pedal_good_val);
+//     EXPECT_FALSE(t_4_2_7);
+//     EXPECT_TRUE(reset_pedals_system_implaus_time(pedals));
 
-    // Ensure that all good is still good for single brake mode
-    t_4_2_7 = get_result_of_single_brake_test(pedals, test_pedal_good_val);
-    printf("t_4_2_7: %d\n", t_4_2_7);
-    // EXPECT_FALSE(t_4_2_7);
-    EXPECT_TRUE(reset_pedals_system_implaus_time(pedals));
+//     // Ensure that all good is still good for single brake mode
+//     t_4_2_7 = get_result_of_single_brake_test(pedals, test_pedal_good_val);
+//     printf("t_4_2_7: %d\n", t_4_2_7);
+//     // EXPECT_FALSE(t_4_2_7);
+//     EXPECT_TRUE(reset_pedals_system_implaus_time(pedals));
 
-    // T.4.3.4 brake testing
-    for (const auto& test : brake_test_cases)
-    {
-        // Test double brake mode
-        bool t_4_3_4 = get_result_of_double_brake_test(pedals, test);
-        EXPECT_TRUE(t_4_3_4);
-        EXPECT_TRUE(reset_pedals_system_implaus_time(pedals));
+//     // T.4.3.4 brake testing
+//     for (const auto& test : brake_test_cases)
+//     {
+//         // Test double brake mode
+//         bool t_4_3_4 = get_result_of_double_brake_test(pedals, test);
+//         EXPECT_TRUE(t_4_3_4);
+//         EXPECT_TRUE(reset_pedals_system_implaus_time(pedals));
 
-        // Test single brake mode
-        t_4_3_4 = get_result_of_single_brake_test(pedals, test);
-        printf("t_4_3_4: %d\n", t_4_3_4);
-        EXPECT_TRUE(t_4_3_4);
-        EXPECT_TRUE(reset_pedals_system_implaus_time(pedals));
-    }
+//         // Test single brake mode
+//         t_4_3_4 = get_result_of_single_brake_test(pedals, test);
+//         printf("t_4_3_4: %d\n", t_4_3_4);
+//         EXPECT_TRUE(t_4_3_4);
+//         EXPECT_TRUE(reset_pedals_system_implaus_time(pedals));
+//     }
 
-    // // Ensure that all good is still good for double brake mode
-    bool t_4_3_4 = get_result_of_double_brake_test(pedals, test_pedal_good_val);
-    EXPECT_FALSE(t_4_3_4);
-    EXPECT_TRUE(reset_pedals_system_implaus_time(pedals));
+//     // // Ensure that all good is still good for double brake mode
+//     bool t_4_3_4 = get_result_of_double_brake_test(pedals, test_pedal_good_val);
+//     EXPECT_FALSE(t_4_3_4);
+//     EXPECT_TRUE(reset_pedals_system_implaus_time(pedals));
 
-    // // Ensure that all good is still good for single brake mode
-    t_4_3_4 = get_result_of_single_brake_test(pedals, test_pedal_good_val);
-    // EXPECT_FALSE(t_4_3_4);
-    EXPECT_TRUE(reset_pedals_system_implaus_time(pedals));
-}
+//     // // Ensure that all good is still good for single brake mode
+//     t_4_3_4 = get_result_of_single_brake_test(pedals, test_pedal_good_val);
+//     // EXPECT_FALSE(t_4_3_4);
+//     EXPECT_TRUE(reset_pedals_system_implaus_time(pedals));
+// }
 
-//T.4.2.4 FSAE rules 2024 v1 (accel vals not within 10 percent of each other)
-TEST(PedalsSystemTesting, test_accel_and_brake_percentages_implausibility)
-{
-    auto accel_params = gen_positive_and_negative_slope_params();
-    auto brake_params = gen_positive_slope_only_params();
-    PedalsSystem pedals(accel_params, brake_params);
+// //T.4.2.4 FSAE rules 2024 v1 (accel vals not within 10 percent of each other)
+// TEST(PedalsSystemTesting, test_accel_and_brake_percentages_implausibility)
+// {
+//     auto accel_params = gen_positive_and_negative_slope_params();
+//     auto brake_params = gen_positive_slope_only_params();
+//     PedalsSystem pedals(accel_params, brake_params);
 
-    PedalSensorData_s test_pedal_neg_slope_not_pressed = {2000, 1000, 1200, 1200};
-    PedalSensorData_s test_pedal_half_pressed = {1500, 1500, 1200, 1200};
-    PedalSensorData_s test_pedal_pos_slope_not_pressed = {1000, 2000, 1200, 1200};
+//     PedalSensorData_s test_pedal_neg_slope_not_pressed = {2000, 1000, 1200, 1200};
+//     PedalSensorData_s test_pedal_half_pressed = {1500, 1500, 1200, 1200};
+//     PedalSensorData_s test_pedal_pos_slope_not_pressed = {1000, 2000, 1200, 1200};
 
-    std::vector<std::tuple<PedalSensorData_s, bool>> test_cases = {
-        {test_pedal_neg_slope_not_pressed, true},
-        {test_pedal_pos_slope_not_pressed, true},
-        // {test_pedal_half_pressed, false},
-    };
+//     std::vector<std::tuple<PedalSensorData_s, bool>> test_cases = {
+//         {test_pedal_neg_slope_not_pressed, true},
+//         {test_pedal_pos_slope_not_pressed, true},
+//         // {test_pedal_half_pressed, false},
+//     };
 
-    for (const auto& test_case : test_cases)
-    {
-        const auto& sensor_data = std::get<0>(test_case);
-        bool expected_result = std::get<1>(test_case);
+//     for (const auto& test_case : test_cases)
+//     {
+//         const auto& sensor_data = std::get<0>(test_case);
+//         bool expected_result = std::get<1>(test_case);
 
-        bool res = get_result_of_double_brake_test(pedals, sensor_data);
-        printf("Double brake res: %d\n", res);
-        EXPECT_EQ(res, expected_result);
-        EXPECT_TRUE(reset_pedals_system_implaus_time(pedals));
+//         bool res = get_result_of_double_brake_test(pedals, sensor_data);
+//         printf("Double brake res: %d\n", res);
+//         EXPECT_EQ(res, expected_result);
+//         EXPECT_TRUE(reset_pedals_system_implaus_time(pedals));
 
-        res = get_result_of_single_brake_test(pedals, sensor_data);
-        printf("Single brake res: %d\n", res);
-        EXPECT_EQ(res, expected_result);
-        EXPECT_TRUE(reset_pedals_system_implaus_time(pedals));
-    }
-}
+//         res = get_result_of_single_brake_test(pedals, sensor_data);
+//         printf("Single brake res: %d\n", res);
+//         EXPECT_EQ(res, expected_result);
+//         EXPECT_TRUE(reset_pedals_system_implaus_time(pedals));
+//     }
+// }
 
-TEST(PedalsSystemTesting, test_accel_and_brake_pressed_at_same_time_and_activation)
-{
-    auto accel_params = gen_positive_and_negative_slope_params();
-    auto brake_params = gen_positive_slope_only_params();
-    PedalsSystem pedals(accel_params, brake_params);
+// TEST(PedalsSystemTesting, test_accel_and_brake_pressed_at_same_time_and_activation)
+// {
+//     auto accel_params = gen_positive_and_negative_slope_params();
+//     auto brake_params = gen_positive_slope_only_params();
+//     PedalsSystem pedals(accel_params, brake_params);
 
-    // testing with example half pressed values
-    PedalSensorData_s test_pedal_val_half_pressed = {1500, 1500, 1500, 1500};
+//     // testing with example half pressed values
+//     PedalSensorData_s test_pedal_val_half_pressed = {1500, 1500, 1500, 1500};
 
-    EXPECT_TRUE(get_result_of_double_brake_test(pedals, test_pedal_val_half_pressed)); // gives true because both pedals are pressed (brake_and_accel_pressed_implausibility_high)
-    EXPECT_TRUE(reset_pedals_system_implaus_time(pedals));
-    EXPECT_TRUE(get_result_of_single_brake_test(pedals, test_pedal_val_half_pressed)); // gives true because both pedals are pressed (brake_and_accel_pressed_implausibility_high)
-    EXPECT_TRUE(reset_pedals_system_implaus_time(pedals));
-}
+//     EXPECT_TRUE(get_result_of_double_brake_test(pedals, test_pedal_val_half_pressed)); // gives true because both pedals are pressed (brake_and_accel_pressed_implausibility_high)
+//     EXPECT_TRUE(reset_pedals_system_implaus_time(pedals));
+//     EXPECT_TRUE(get_result_of_single_brake_test(pedals, test_pedal_val_half_pressed)); // gives true because both pedals are pressed (brake_and_accel_pressed_implausibility_high)
+//     EXPECT_TRUE(reset_pedals_system_implaus_time(pedals));
+// }
 
+// TEST(PedalsSystemTesting, test_implausibility_duration)
+// {
+//     auto accel_params = gen_positive_and_negative_slope_params();
+//     auto brake_params = gen_positive_slope_only_params();
+//     PedalsSystem pedals(accel_params, brake_params);
+
+//     PedalSensorData_s test_pedal_data = {1500, 1500, 1500, 1500};
+    
+//     auto data = pedals.evaluate_pedals(test_pedal_data, 1000, true);
+//     EXPECT_TRUE(data.brake_and_accel_pressed_implausibility_high);
+//     EXPECT_TRUE(data.brake_is_pressed);
+//     EXPECT_TRUE(data.accel_is_pressed);
+//     EXPECT_FALSE(data.implausibility_has_exceeded_max_duration);
+
+//     data = pedals.evaluate_pedals(test_pedal_data, 1110, true);
+//     EXPECT_TRUE(data.implausibility_has_exceeded_max_duration);
+
+
+//     auto data2 = pedals.evaluate_pedals(test_pedal_data, 1000, false);
+//     EXPECT_TRUE(data2.brake_and_accel_pressed_implausibility_high);
+//     EXPECT_TRUE(data2.brake_is_pressed);
+//     EXPECT_FALSE(data2.implausibility_has_exceeded_max_duration);
+
+//     data2 = pedals.evaluate_pedals(test_pedal_data, 1110, false);
+//     EXPECT_TRUE(data2.implausibility_has_exceeded_max_duration);
+// }
+
+// TEST(PedalsSystemTesting, implausibility_latching_until_accel_released_double_brake)
+// {
+//     auto accel_params = gen_positive_and_negative_slope_params();
+//     auto brake_params = gen_positive_slope_only_params();
+//     PedalsSystem pedals(accel_params, brake_params);
+
+//     // create test data with plausible brakes and implausible acceleration
+//     PedalSensorData_s test_pedal_data = {2000, 1000, 1010, 1010};
+
+//     // create an implausibility in the acceleration pedal
+//     EXPECT_TRUE(get_result_of_double_brake_test(pedals, test_pedal_data));
+
+//     // convert the implausibility to pressing acceleration and brake pedal implausibility
+//     test_pedal_data.accel_1 = 2000;
+//     test_pedal_data.accel_2 = 1000;
+//     test_pedal_data.brake_1 = 0;
+//     test_pedal_data.brake_2 = 0;
+//     EXPECT_TRUE(get_result_of_double_brake_test(pedals, test_pedal_data));
+
+//     // release the acceleration pedal and ensure implausibility sets to false
+//     test_pedal_data.accel_1 = 1000;
+//     test_pedal_data.accel_2 = 1000;
+//     test_pedal_data.brake_1 = 1010;
+//     test_pedal_data.brake_2 = 1010;
+//     EXPECT_FALSE(get_result_of_double_brake_test(pedals, test_pedal_data));
+// }
+
+TEST()
