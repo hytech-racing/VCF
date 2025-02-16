@@ -87,5 +87,19 @@
         "variant": "cpp",
         "vector": "cpp",
         "algorithm": "cpp"
+        "*.tpp": "cpp",
+        "*.tcc": "cpp",
+        "cwctype": "cpp",
+        "deque": "cpp",
+        "unordered_map": "cpp",
+        "vector": "cpp",
+        "algorithm": "cpp",
+        "functional": "cpp",
+        "memory_resource": "cpp",
+        "numeric": "cpp",
+        "random": "cpp",
+        "string_view": "cpp",
+        "numbers": "cpp",
+        "cinttypes": "cpp"
     }
 }

@@ -43,11 +43,13 @@ bool run_read_adc2_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo&
 {
     adc_2.sample(); // Samples all eight channels.
     adc_2.convert(); // Converts all eight channels.
+    /*
 
     interface_data.pedals_data.accel_1 = adc_2.data.conversions[ACCEL_1_CHANNEL].conversion;
     interface_data.pedals_data.accel_2 = adc_2.data.conversions[ACCEL_2_CHANNEL].conversion;
     interface_data.pedals_data.brake_1 = adc_2.data.conversions[BRAKE_1_CHANNEL].conversion;
     interface_data.pedals_data.brake_2 = adc_2.data.conversions[BRAKE_2_CHANNEL].conversion;
+    */
 
     return true;
 }
