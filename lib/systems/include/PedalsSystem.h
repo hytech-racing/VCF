@@ -27,9 +27,9 @@ struct PedalSensorData_s
  */
 struct PedalsParams
 {
-    int min_pedal_1; // Sensor 2 value at min pedal travel (analog 0-4095)
+    int min_pedal_1; // Sensor 1 value at min pedal travel (analog 0-4095)
     int min_pedal_2; // Sensor 2 value at min pedal travel (analog 0-4095)
-    int max_pedal_1; // Sensor 2 value at max pedal travel (analog 0-4095)
+    int max_pedal_1; // Sensor 1 value at max pedal travel (analog 0-4095)
     int max_pedal_2; // Sensor 2 value at max pedal travel (analog 0-4095)
     float activation_percentage; // Percent value (range from 0.0 to 1.0)
     int min_sensor_pedal_1; // Min value that the sensor can output (if ADC reads less than this, sensor is likely unplugged)

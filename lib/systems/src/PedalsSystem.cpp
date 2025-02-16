@@ -2,9 +2,9 @@
 #include <tuple>
 #include "PedalsSystem.h"
 
-float PedalsSystem::_scale_pedal_val(int raw_pedal_val, int min, int max)
+float PedalsSystem::_scale_pedal_val(int analog_pedal_val, int min, int max)
 {
-    return static_cast<float>(raw_pedal_val)/static_cast<float>(max-min);
+    return static_cast<float>(analog_pedal_val)/static_cast<float>(max-min);
 }
 
 PedalsSystemData_s PedalsSystem::evaluate_pedals(PedalSensorData_s pedals_data, unsigned long curr_millis)
@@ -66,7 +66,7 @@ bool PedalsSystem::_max_duration_of_implausibility_exceeded(unsigned long curr_m
 bool PedalsSystem::_evaluate_pedal_implausibilities(int pedal_data1_analog, int pedal_data2_analog, const PedalsParams &params, float max_percent_diff){
     bool pedal1_min_max_implaus = _evaluate_min_max_pedal_implausibilities(pedal_data1_analog, params.min_pedal_1, params.max_pedal_1, params.implausibility_margin);
     bool pedal2_min_max_implaus = _evaluate_min_max_pedal_implausibilities(pedal_data2_analog, params.min_pedal_2, params.max_pedal_2, params.implausibility_margin);
-    bool sens_not_within_req_percent = (fabs(pedal_data1_analog - pedal_data2_analog) > max_percent_diff);
+    bool sens_not_within_req_percent = (fabs(pedal_data1_analog - pedal_data2_analog) > max_percent_diff); // DIVIDE BY 100
     return pedal1_min_max_implaus || pedal2_min_max_implaus || sens_not_within_req_percent;
 }
 
@@ -78,17 +78,19 @@ bool PedalsSystem::_evaluate_min_max_pedal_implausibilities(int pedal_data, int 
     }
     // FSAE EV.5.5
     // FSAE T.4.2.10
-    float float_pedal_data = float(pedal_data);
+    float float_pedal_data = static_cast<float>(pedal_data);
     float min_float = static_cast<float>(min);
     float max_float = static_cast<float>(max);
-    bool pedal_less_than_min = pedal_swapped ? (float_pedal_data > (min_float+pedal_margin)) : (float_pedal_data < (max_float-pedal_margin));
-    bool pedal_greater_than_max = pedal_swapped ? (float_pedal_data < (max_float-pedal_margin)) : (float_pedal_data > (min_float+pedal_margin));
+    bool pedal_less_than_min = pedal_swapped ? (float_pedal_data > (min_float+pedal_margin)) : (float_pedal_data < (min_float+pedal_margin)); //check the logic and fix
+    bool pedal_greater_than_max = pedal_swapped ? (float_pedal_data < (max_float-pedal_margin)) : (float_pedal_data > (max_float-pedal_margin)); // check the logic and fix
     return pedal_less_than_min || pedal_greater_than_max;
 
 }
 
 bool PedalsSystem::_pedal_is_active(float pedal1ScaledData, float pedal2ScaledData, const PedalsParams& params, bool check_mech_activation)
 {
+    pedal1ScaledData = pedal1ScaledData/abs(params.max_sensor_pedal_1 - params.min_sensor_pedal_1);
+    pedal2ScaledData = pedal2ScaledData/abs(params.max_pedal_2- params.min_pedal_2);
     float val1_deadzone_removed = _remove_deadzone(pedal1ScaledData, params.deadzone_margin);
     float val2_deadzone_removed = _remove_deadzone(pedal2ScaledData, params.deadzone_margin);
     bool pedal_1_is_active = false; 
@@ -106,6 +108,7 @@ bool PedalsSystem::_pedal_is_active(float pedal1ScaledData, float pedal2ScaledDa
 
 float PedalsSystem::_remove_deadzone(float conversion_input, float deadzone)
 {
+    // Your conversion input is basically pedal data over abs(max-min) to get it betwen 0-1. Then deadzone is removed from it. 
     const float onner = 1.0;
     float range = onner - (deadzone * 2);
     // e.g. vals from 0 to 1, deadzone is .05, range is .1
