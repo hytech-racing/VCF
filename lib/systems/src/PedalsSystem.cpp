@@ -71,6 +71,7 @@ PedalsSystemData_s PedalsSystem::evaluate_pedals(PedalSensorData_s pedals_data, 
     printf("\n");
     bool oor = implausibility && (_evaluate_pedal_oor(accel_1, _accelParams.min_sensor_pedal_1, _accelParams.max_sensor_pedal_1)
                                  || _evaluate_pedal_oor(accel_2, _accelParams.min_sensor_pedal_2, _accelParams.max_sensor_pedal_2));
+    printf("oor: %d\n", oor);
     out.accel_percent = (oor) ? 0 : out.accel_percent;
     out.brake_percent = (oor) ? 0 : out.brake_percent;
     out.mech_brake_is_active = out.brake_percent >= _brakeParams.mechanical_activation_percentage;
