@@ -10,13 +10,13 @@
 /**
  * Struct that contains the analog (0-4095) values for the four pedals sensors.
  */
-struct PedalSensorData_s
-{
-    int accel_1;
-    int accel_2;
-    int brake_1;
-    int brake_2;
-};
+// struct PedalSensorData_s
+// {
+//     int accel_1;
+//     int accel_2;
+//     int brake_1;
+//     int brake_2;
+// };
 
 /**
  * Pedals params struct that holds min/max values that will be used for evaluation. The accel and brake sensors
