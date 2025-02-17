@@ -64,9 +64,9 @@ PedalsParams gen_positive_slope_only_params()
     params.max_pedal_1 = 4000;
     params.min_pedal_2 = 90;
     params.max_pedal_2 = 4000;
-    params.min_sensor_pedal_1 = 0;
+    params.min_sensor_pedal_1 = 90;
     params.max_sensor_pedal_1 = 4000;
-    params.min_sensor_pedal_2 = 0;
+    params.min_sensor_pedal_2 = 90;
     params.max_sensor_pedal_2 = 4000;
     params.activation_percentage = 0.1;
     params.mechanical_activation_percentage = 0.4;
@@ -280,7 +280,6 @@ TEST(PedalsSystemTesting, implausibility_latching_until_accel_released_double_br
     test_pedal_data.accel_2 = 4000;
     test_pedal_data.brake_1 = 90;
     test_pedal_data.brake_2 = 90;
-    printf("Test 3\n");
     EXPECT_FALSE(get_result_of_double_brake_test(pedals, test_pedal_data));
 }
 
@@ -288,6 +287,23 @@ TEST(PedalsSystemTesting, deadzone_removal_calc_double_brake_ped)
 {
     PedalsSystem params(gen_positive_slope_only_params(), gen_positive_slope_only_params());
 
-    // Test pedal with good values
-    
+    // Test accel pedal with good values (0%, 100%)
+    PedalSensorData_s test_pedal_data = {90, 90, 90, 90};
+    auto data = params.evaluate_pedals(test_pedal_data, 1000);
+    EXPECT_NEAR(data.accel_percent, 0.0, 0.001);;
+
+    test_pedal_data = {3900, 1000, 2000, 2000};
+    data = params.evaluate_pedals(test_pedal_data, 1200);
+    EXPECT_NEAR(data.accel_percent, 1, .001);
+
+    // Testing brake pedal with good values (0%, 50%, 100%)
+    PedalSensorData_s test_brake_pedal_data = {90, 90, 90, 90};
+    data = params.evaluate_pedals(test_brake_pedal_data, 1000);
+    EXPECT_NEAR(data.brake_percent, 0.0, 0.001);
+
+    test_brake_pedal_data = {90, 90, 3900, 1000};
+    data = params.evaluate_pedals(test_brake_pedal_data, 1100);
+    EXPECT_NEAR(data.brake_percent, 1, .001);
 }
+
+

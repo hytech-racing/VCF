@@ -13,13 +13,13 @@
 const int IMPLAUSIBILITY_DURATION = 100; // max durutation if implausibility in milliseconds
 const float _implausibility_percent = 0.10; // 10% implausibility margin. FSAE Rules T.4.2.4
 
-struct PedalSensorData_s
-{
-    int accel_1;
-    int accel_2;
-    int brake_1;
-    int brake_2;
-};
+// struct PedalSensorData_s
+// {
+//     int accel_1;
+//     int accel_2;
+//     int brake_1;
+//     int brake_2;
+// };
 
 /**
  * Pedals params struct that holds min/max values that will be used for evaluation. The accel and brake sensors
