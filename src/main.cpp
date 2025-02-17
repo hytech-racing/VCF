@@ -37,6 +37,7 @@ void setup() {
 
     scheduler.schedule(read_adc1_task);
     scheduler.schedule(read_adc2_task);
+    scheduler.schedule(read_gpio_task);
     scheduler.schedule(buzzer_control_task);
 }
 
