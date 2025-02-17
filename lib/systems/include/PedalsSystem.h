@@ -79,7 +79,22 @@ public:
     PedalsSystemData_s evaluate_pedals(PedalSensorData_s pedal_data, unsigned long curr_millis);
 
 private:
+    /// @brief function to determine the percentageof pedal pressed
+    /// @param pedal1val the value of the first pedal without deadzone removed
+    /// @param pedal2val the value of the second pedal without deadzone removed
+    /// @param params the pedal parameters for this specific pedal
+    float _pedal_percentage(float pedal1val, float pedal2val, const PedalsParams &params);
+
+
+    /// @brief function to remove deadzone from pedal data
+    /// @param conversion_input the value of the pedal without deadzone removed
+    /// @param deadzone the deadzone value for this specific pedal
     float _remove_deadzone(float conversion_input, float deadzone);
+
+
+
+    /// @brief function to determine if the implausibility duration has been exceeded
+    /// @param curr_time the current time in milliseconds
     bool _max_duration_of_implausibility_exceeded(unsigned long curr_time);
 
     /// @brief
