@@ -10,6 +10,8 @@
 /**
  * Struct that contains the analog (0-4095) values for the four pedals sensors.
  */
+const int IMPLAUSIBILITY_DURATION = 100; // max durutation if implausibility in milliseconds
+const float _implausibility_percent = 0.10; // 10% implausibility margin. FSAE Rules T.4.2.4
 struct PedalSensorData_s
 {
     int accel_1;
@@ -101,7 +103,7 @@ private:
     ///    Evaluate pedal implausibilities_ determines if there is a software implausibility
     ///    in the pedals caused by them going out of range.
     ///    Our max/min sensor ranges are calcuated from the pedal min/max values
-    ///    The pedal min/max values are defined in MCU_defs and are the real world raw
+    ///    The pedal min/max values are defined in MCU_defs and are the real world analog
     ///    values that we determine from the pedal output.
     ///    The max/min sensor values are then a certain percent higher than these real world
     ///    values as determined by the implausibility margin. This protects against physical
@@ -113,21 +115,21 @@ private:
     /// @param params
     /// @param max_percent_diff
     /// @return
-    bool _evaluate_pedal_implausibilities(int pedal_1_raw,
-                                          int pedal_2_raw,
+    bool _evaluate_pedal_implausibilities(int pedal_1_analog,
+                                          int pedal_2_analog,
                                           const PedalsParams &params,
                                           float max_percent_diff);
 
     /// @brief function to determine if the pedals and the brakes are pressed at the same time.
     ///        evaluates brake being pressed with mech brake activation threshold AFTER removing
     ///        deadzones for both brake and accel
-    /// @param pedal_data
-    /// @param twopedals
+    /// @param pedal_data the pedal data struct containing the values of the pedals
     bool _evaluate_brake_and_accel_pressed(PedalSensorData_s & pedal_data);
 
-    /// @brief This checks to see if any pedal sensor is out of range :(
-    /// @param PedalData The analog pedal Value
-    /// @return 
+    /// @brief function to determine if the pedal is out of range
+    /// @param pedalData_analog the value of the pedal without deadzone removed
+    /// @param min the min value of the pedal -- min sensor value
+    /// @param max the max value of the pedal -- max sensor value
     bool _evaluate_pedal_oor(int pedalData_analog,
                            int min,
                            int max);
@@ -149,10 +151,6 @@ private:
     /// @param check_mech_activation if this is true, function will check percentages against the mechanical activation percentage
     /// @return true or false accordingly
     bool _pedal_is_active(float pedal1ConvertedData, float pedal2ConvertedData, const PedalsParams &params, bool check_mech_activation);
-    
-    /// @brief Linearly interpolates raw_pedal_val to range from 0.0 (when equal to min) to 1.0 (when equal to max). Does not check for
-    ///        if pedal value is out of range (i.e, function can return <0.0 or >1.0).
-    float _scale_pedal_val(int raw_pedal_val, int min, int max);
     
 private:
     PedalsSystemData_s _data{};
