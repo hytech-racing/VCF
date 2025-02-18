@@ -5,34 +5,6 @@
 #include "SharedFirmwareTypes.h"
 #include <array>
 
-/* 
-Struct from shared firmware types that has pedal system data
-struct PedalsSystemData_s
-{
-    bool accel_is_implausible : 1; // Checks if either accel pedal is out of range OR they disagree by more than 10%
-    bool brake_is_implausible : 1; // Checks if brake sensor is out of range.
-    bool brake_is_pressed : 1; // True if brake pedal is pressed beyond the specified activationPercentage.
-    bool accel_is_pressed : 1; // True if the accel pedal is pressed beyond the specified activationPercentage.
-    bool mech_brake_is_active : 1; // True if the brake pedal is pressed beyond mechanical_activation_percentage.
-    bool brake_and_accel_pressed_implausibility_high : 1; // If accel is pressed at all while mech_brake_is_active.
-    bool implausibility_has_exceeded_max_duration : 1; // True if implausibility lasts more than 100ms
-    float accel_percent;
-    float brake_percent;
-    float regen_percent; // When brake pedal is 0%, regen_percent is 0.0. When brakes are at mechanical_activation_percentage,
-                         // regen_percent is at 1.0. For instance, if mech activation percentage was 60%, then when brake
-                         // travel is at 40%, regen_percent would be 0.667. Beyond that, regen_percent is clamped to 1.0.
-};
-
-Struct from shared firmware types that has pedal sensor data
-struct PedalSensorData_s
-{
-    uint32_t accel_1;
-    uint32_t accel_2;
-    uint32_t brake_1;
-    uint32_t brake_2;
-};
-*/
-
 float get_pedal_conversion_val(float min, float max, float data)
 {
     float scale = 1.0f / (max - min);
@@ -314,4 +286,62 @@ TEST(PedalsSystemTesting, deadzone_removal_calc_double_brake_ped)
     EXPECT_NEAR(data.brake_percent, 1, .001);
 }
 
+TEST(PedalsSystemTesting, brake_value_testing_double)
+{
+    PedalSensorData_s test_pedal_data = {1000, 3000, 870, 870};
+    auto params = gen_positive_slope_only_params();
+    
+    params.deadzone_margin = 0;
+    PedalsSystem pedals(params, params);
 
+    auto data = pedals.evaluate_pedals(test_pedal_data, 1000);
+    EXPECT_NEAR(data.brake_percent, 0.2, 0.001);
+    EXPECT_TRUE(data.brake_is_pressed);
+    EXPECT_FALSE(data.mech_brake_is_active);
+
+    test_pedal_data = {1000, 3000, 2045, 2045};
+    data = pedals.evaluate_pedals(test_pedal_data, 1100);
+    EXPECT_NEAR(data.brake_percent, 0.5, 0.001);
+    EXPECT_TRUE(data.brake_is_pressed);
+    EXPECT_TRUE(data.mech_brake_is_active);
+}
+
+TEST(PedalsSystemTesting, check_accel_never_negative_double)
+{
+    PedalSensorData_s test_pedal_data = {static_cast<uint32_t>(-1000), static_cast<uint32_t>(-3000), 870, 870};
+    auto params = gen_positive_slope_only_params();
+
+    PedalsSystem pedals(params, params);
+    params.deadzone_margin = 0;
+
+    auto data = pedals.evaluate_pedals(test_pedal_data, 1000);
+    EXPECT_TRUE(data.accel_is_implausible);
+    EXPECT_EQ(data.accel_percent, 0.0);
+}
+
+TEST(PedalsSystemTesting, check_accel_pressed)
+{
+    PedalSensorData_s test_pedal_data = {1000, 3000, 90, 90};
+    auto params = gen_positive_slope_only_params();
+
+    PedalsSystem pedals(params, params);
+
+    auto data = pedals.evaluate_pedals(test_pedal_data, 1000);
+    EXPECT_TRUE(data.accel_is_pressed);    
+}
+
+TEST(PedalsSystemTesting, check_accel_oor)
+{
+    PedalSensorData_s test_pedal_oor_hi_val_accel = {5000, 3000, 2000, 2000};
+    PedalSensorData_s test_pedal_oor_lo_val_accel = {0, 3000, 2000, 2000};
+
+    auto params = gen_positive_slope_only_params();
+    PedalsSystem pedals(params, params);
+
+    auto data_oor_hi = pedals.evaluate_pedals(test_pedal_oor_hi_val_accel, 1000);
+    EXPECT_NEAR(data_oor_hi.accel_percent, 0.0, 0.001);
+    EXPECT_TRUE(data_oor_hi.accel_is_implausible);
+    auto data_oor_lo = pedals.evaluate_pedals(test_pedal_oor_lo_val_accel, 1000);
+    EXPECT_NEAR(data_oor_lo.accel_percent, 0.0, 0.001);
+    EXPECT_TRUE(data_oor_lo.accel_is_implausible);
+}
