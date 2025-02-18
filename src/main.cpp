@@ -11,7 +11,7 @@
 #include "ht_sched.hpp"
 
 /* From Arduino Libraries */
-#include "QNEthernet.h"
+// #include "QNEthernet.h"
 
 /* Local includes */
 #include "VCF_Globals.h"
@@ -27,8 +27,8 @@ HT_SCHED::Scheduler& scheduler = HT_SCHED::Scheduler::getInstance();
 
 
 /* Ethernet message sockets */ // TODO: Move this into its own interface
-qindesign::network::EthernetUDP protobuf_send_socket;
-qindesign::network::EthernetUDP protobuf_recv_socket;
+// qindesign::network::EthernetUDP protobuf_send_socket;
+// qindesign::network::EthernetUDP protobuf_recv_socket;
 
 
 
