@@ -12,6 +12,6 @@ VCFInterfaceData_s interface_data;
 VCFSystemData_s system_data;
 VCRSystemData_s vcr_system_data;
 
-/* ADC setup */
-MCP_ADC<channels_within_mcp_adc> adc_1 = MCP_ADC<channels_within_mcp_adc>(ADC1_CS);
-MCP_ADC<channels_within_mcp_adc> adc_2 = MCP_ADC<channels_within_mcp_adc>(ADC2_CS);
+// /* ADC setup */
+// MCP_ADC<channels_within_mcp_adc> adc_1 = MCP_ADC<channels_within_mcp_adc>(ADC1_CS);
+// MCP_ADC<channels_within_mcp_adc> adc_2 = MCP_ADC<channels_within_mcp_adc>(ADC2_CS);
