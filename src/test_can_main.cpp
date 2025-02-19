@@ -5,6 +5,10 @@
 
 VCRData_s vcr_data;
 REAR_SUSPENSION_t rear_sus_msg;
+   DrivebrainInterface& db = DrivebrainInterfaceInstance::instance();
+   VCRInterface vcr;
+   CANInterfaces interfaces(vcr, db);
+
 
 //CANFD_timings_t tmgs;
 
@@ -15,7 +19,6 @@ FlexCAN_Type<CAN3> TELEM_CAN;
 
 
 void receive_can_message() {
-    
 }
 
 void send_can_message() {
@@ -32,7 +35,6 @@ void send_can_message() {
     
 }
 
-
 void setup()
 {
     DrivebrainInterfaceInstance::create(vcr_data.interface_data.rear_loadcell_data, vcr_data.interface_data.rear_suspot_data); 
@@ -44,7 +46,9 @@ void setup()
     delay(2);
 }
 
+auto recv_call = etl::delegate<void(CANInterfaces& , const CAN_message_t& , unsigned long )>::create<VCFCANInterfaceImpl::vcf_CAN_recv>();
 void loop()
 {
     send_can_message();
-}
+    process_ring_buffer(CAN1_rxBuffer, interfaces, millis(), recv_call);
+} 
