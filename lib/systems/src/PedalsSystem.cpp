@@ -1,13 +1,12 @@
 #include <math.h>
 #include "PedalsSystem.h"
-#include <stdio.h>
 
 
 
 float PedalsSystem:: _pedal_percentage(float pedal1val, float pedal2val, const PedalsParams& params)
 {
-    float pedal1percent = abs(static_cast<float>(pedal1val) - (params.min_pedal_1,params.max_pedal_1))/abs(params.max_pedal_1 - params.min_pedal_1);
-    float pedal2percent = abs(static_cast<float>(pedal2val) - (params.min_pedal_2,params.max_pedal_2))/abs(params.max_pedal_2 - params.min_pedal_2);
+    float pedal1percent = abs(static_cast<float>(pedal1val) - params.min_pedal_1)/abs(params.max_pedal_1 - params.min_pedal_1);
+    float pedal2percent = abs(static_cast<float>(pedal2val) - params.min_pedal_2)/abs(params.max_pedal_2 - params.min_pedal_2);
     return (pedal1percent + pedal2percent)/2.0;
 }
 
