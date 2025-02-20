@@ -1,5 +1,6 @@
 #include "VCFCANInterfaceImpl.h"
 
+#include <Arduino.h>
 #include "hytech.h"
 #include <cstdint>
 // // global forwards
@@ -16,16 +17,20 @@ void on_can2_receive(const CAN_message_t &msg)
 {
     uint8_t buf[sizeof(CAN_message_t)];
     memmove(buf, &msg, sizeof(msg));
-    CAN1_rxBuffer.push_back(buf, sizeof(CAN_message_t));
+    CAN1_rxBuffer.push_back(&buf[0], sizeof(CAN_message_t));
 }
 
 void on_telem_can_receive(const CAN_message_t &msg)
 {
     uint8_t buf[sizeof(CAN_message_t)];
     memmove(buf, &msg, sizeof(msg));
-    telem_can_rx_buffer.push_back(buf, sizeof(CAN_message_t));
+    telem_can_rx_buffer.push_back(&buf[0], sizeof(CAN_message_t));
 }
 
+struct CANinterfaces
+{
+
+};
 namespace VCFCANInterfaceImpl
 {
 
@@ -33,19 +38,13 @@ void vcf_CAN_recv(CANInterfaces& interfaces, const CAN_message_t& msg, unsigned 
 {
     switch(msg.id)
     {
-        case MCU_LOAD_CELLS_CANID:
+        case INV1_DYNAMICS_CANID:
         {
-            interfaces.vcr_interface.receive_rearloadcells_message(msg, millis);   
-            break;
-        }
-        case DRIVEBRAIN_TORQUE_LIM_INPUT_CANID:
-        {
-            interfaces.db_interface.receive_drivebrain_torque_lim_command(msg, millis);
-            break;
-        } 
-        case DRIVEBRAIN_SPEED_SET_INPUT_CANID:
-        {
-            interfaces.db_interface.receive_drivebrain_speed_command(msg, millis);
+            INV1_DYNAMICS_t test_msg;
+            
+            Unpack_INV1_DYNAMICS_hytech(&test_msg, &msg.buf[0], msg.len);
+            Serial.print("recvd rpm: ");
+            Serial.println(test_msg.actual_speed_rpm);
             break;
         }
         default:

@@ -18,12 +18,6 @@ bool run_read_adc1_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo&
     adc_1.sample(); // Samples all eight channels.
     adc_1.convert(); // Converts all eight channels.
 
-    interface_data.steering_data.analog_steering_degrees = adc_1.data.conversions[STEERING_1_CHANNEL].conversion; // Only using steering 1 for now
-    interface_data.front_loadcell_data.FL_loadcell_analog = adc_1.data.conversions[FL_LOADCELL_CHANNEL].conversion;
-    interface_data.front_loadcell_data.FR_loadcell_analog = adc_1.data.conversions[FR_LOADCELL_CHANNEL].conversion;
-    interface_data.front_suspot_data.FL_sus_pot_analog = adc_1.data.conversions[FL_SUS_POT_CHANNEL].raw; // Just use raw for suspots
-    interface_data.front_suspot_data.FR_sus_pot_analog = adc_1.data.conversions[FR_SUS_POT_CHANNEL].raw; // Just use raw for suspots
-
     return true;
 }
 HT_TASK::Task read_adc1_task = HT_TASK::Task(init_read_adc1_task, run_read_adc1_task, 10, 1000UL); // 1000us is 1kHz //NOLINT
@@ -44,14 +38,9 @@ bool run_read_adc2_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo&
     adc_2.sample(); // Samples all eight channels.
     adc_2.convert(); // Converts all eight channels.
 
-    interface_data.pedal_sensor_data.accel_1 = adc_2.data.conversions[ACCEL_1_CHANNEL].conversion;
-    interface_data.pedal_sensor_data.accel_2 = adc_2.data.conversions[ACCEL_2_CHANNEL].conversion;
-    interface_data.pedal_sensor_data.brake_1 = adc_2.data.conversions[BRAKE_1_CHANNEL].conversion;
-    interface_data.pedal_sensor_data.brake_2 = adc_2.data.conversions[BRAKE_2_CHANNEL].conversion;
-
+    
     return true;
 }
-HT_TASK::Task read_adc2_task = HT_TASK::Task(init_read_adc2_task, run_read_adc2_task, 10, 1000UL); // 1000us is 1kHz //NOLINT
 
 bool init_read_gpio_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
 {
@@ -75,12 +64,12 @@ bool run_read_gpio_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo&
     int startButton = digitalRead(BTN_START_READ);
     int dataButton = digitalRead(BTN_DATA_READ);
     
-    interface_data.dash_input_state.dim_btn_is_pressed = dimButton;
-    interface_data.dash_input_state.preset_btn_is_pressed = presetButton;
-    interface_data.dash_input_state.mc_reset_btn_is_pressed = mcCycleButton;
-    interface_data.dash_input_state.mode_btn_is_pressed = modeButton;
-    interface_data.dash_input_state.start_btn_is_pressed = startButton;
-    interface_data.dash_input_state.data_btn_is_pressed = dataButton;
+    // interface_data.dash_input_state.dim_btn_is_pressed = dimButton;
+    // interface_data.dash_input_state.preset_btn_is_pressed = presetButton;
+    // interface_data.dash_input_state.mc_reset_btn_is_pressed = mcCycleButton;
+    // interface_data.dash_input_state.mode_btn_is_pressed = modeButton;
+    // interface_data.dash_input_state.start_btn_is_pressed = startButton;
+    // interface_data.dash_input_state.data_btn_is_pressed = dataButton;
 
     return true;
 }
@@ -95,10 +84,7 @@ bool init_buzzer_control_task(const unsigned long& sysMicros, const HT_TASK::Tas
 }
 bool run_buzzer_control_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
 {
-    digitalWrite(BUZZER_CONTROL_PIN, vcr_system_data.buzzer_is_active);
+    // digitalWrite(BUZZER_CONTROL_PIN, vcr_system_data.buzzer_is_active);
     
     return true;
 }
-HT_TASK::Task buzzer_control_task = HT_TASK::Task(init_buzzer_control_task, run_buzzer_control_task, 10, 1000UL); // 1000us is 1kHz //NOLINT
-
-

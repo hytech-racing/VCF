@@ -12,18 +12,18 @@ void PedalsSystem::tick(unsigned long curr_millis, VCFInterfaceData_s &interface
 {
     if (use_both_brake_sensors)
     {
-        _data = evaluate_pedals(interface_data.pedals_data.accel_1,
-                                interface_data.pedals_data.accel_2,
-                                interface_data.pedals_data.brake_1,
-                                interface_data.pedals_data.brake_2,
-                                curr_millis);
+        // _data = evaluate_pedals(interface_data.pedals_data.accel_1,
+        //                         interface_data.pedals_data.accel_2,
+        //                         interface_data.pedals_data.brake_1,
+        //                         interface_data.pedals_data.brake_2,
+        //                         curr_millis);
     }
     else
     {
-        _data = evaluate_pedals(interface_data.pedals_data.accel_1,
-                                interface_data.pedals_data.accel_2,
-                                interface_data.pedals_data.brake_1,
-                                curr_millis);
+        // _data = evaluate_pedals(interface_data.pedals_data.accel_1,
+        //                         interface_data.pedals_data.accel_2,
+        //                         interface_data.pedals_data.brake_1,
+        //                         curr_millis);
     }
 }
 
