@@ -56,20 +56,20 @@ HT_TASK::Task read_adc2_task = HT_TASK::Task(init_read_adc2_task, run_read_adc2_
 bool init_read_gpio_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
 {
     // Setting digital/analog buttons D10-D6, A8 as inputs
-    /*
+    
     pinMode(BTN_DIM_READ, INPUT);
     pinMode(BTN_PRESET_READ, INPUT);
     pinMode(BTN_MC_CYCLE_READ, INPUT);
     pinMode(BTN_MODE_READ, INPUT);
     pinMode(BTN_START_READ, INPUT);
     pinMode(BTN_DATA_READ, INPUT);
-    */
+    
     return true;
 }
 bool run_read_gpio_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
 {
     // Doing digital read on all digital inputs
-    /*
+    
     
     int dimButton = digitalRead(BTN_DIM_READ);
     int presetButton = digitalRead(BTN_PRESET_READ);
@@ -84,7 +84,7 @@ bool run_read_gpio_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo&
     interface_data.dash_input_state.mode_btn_is_pressed = modeButton;
     interface_data.dash_input_state.start_btn_is_pressed = startButton;
     interface_data.dash_input_state.data_btn_is_pressed = dataButton;
-    */
+    
 
     return true;
 }
@@ -93,13 +93,13 @@ HT_TASK::Task read_gpio_task = HT_TASK::Task(init_read_gpio_task, run_read_gpio_
 
 bool init_buzzer_control_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
 {
-    //pinMode(BUZZER_CONTROL_PIN, OUTPUT);
+    pinMode(BUZZER_CONTROL_PIN, OUTPUT);
 
     return true;
 }
 bool run_buzzer_control_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
 {
-    //digitalWrite(BUZZER_CONTROL_PIN, vcr_system_data.buzzer_is_active);
+    digitalWrite(BUZZER_CONTROL_PIN, vcr_system_data.buzzer_is_active);
     
     return true;
 }
