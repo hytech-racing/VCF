@@ -11,7 +11,7 @@
  * Struct that contains the analog (0-4095) values for the four pedals sensors.
  */
 const int IMPLAUSIBILITY_DURATION = 100; // max durutation if implausibility in milliseconds
-const float _implausibility_percent = 0.10; // 10% implausibility margin. FSAE Rules T.4.2.4
+const float imp_perc = static_cast<float>(0.10); // 10% implausibility margin. FSAE Rules T.4.2.4
 
 /**
  * Pedals params struct that holds min/max values that will be used for evaluation. The accel and brake sensors
