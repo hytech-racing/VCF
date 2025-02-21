@@ -7,8 +7,8 @@
 /* From shared_firmware_types libdep */
 #include "SharedFirmwareTypes.h"
 
-/* From HT_SCHED libdep */
-#include "ht_sched.hpp"
+#define _TASK_MICRO_RES // NOLINT
+#include <TScheduler.hpp>
 
 /* From Arduino Libraries */
 #include "QNEthernet.h"
@@ -22,7 +22,7 @@
 
 
 /* Scheduler setup */
-HT_SCHED::Scheduler& scheduler = HT_SCHED::Scheduler::getInstance();
+TsScheduler task_scheduler;
 
 
 
