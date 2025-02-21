@@ -27,12 +27,11 @@ PedalsSystemData_s PedalsSystem::evaluate_pedals(PedalSensorData_s pedals_data, 
     float _brake2_scaled_ = _brake1_scaled_;
 
     // FSAE Rules T.4.2.4
-    const float _implausibility = 0.1;
     out.brake_is_implausible = _evaluate_pedal_implausibilities(brake_1,brake_2,_brakeParams, 1.0);
     out.brake_is_implausible = _evaluate_pedal_implausibilities(brake_1,brake_2,_brakeParams,1.0);
     out.accel_is_pressed = _pedal_is_active(_accel1_scaled_, _accel2_scaled_, _accelParams, false);
     out.brake_is_pressed = _pedal_is_active( _brake1_scaled_, _brake2_scaled_,_brakeParams,false);
-    out.accel_is_implausible = _evaluate_pedal_implausibilities(accel_1, accel_2, _accelParams, _implausibility);
+    out.accel_is_implausible = _evaluate_pedal_implausibilities(accel_1, accel_2, _accelParams, IMPLAUSIBILITY_PERCENT);
     out.accel_is_implausible = _evaluate_pedal_implausibilities(accel_1, accel_2, _accelParams, IMPLAUSIBILITY_PERCENT);
 
 
@@ -88,7 +87,7 @@ bool PedalsSystem::_evaluate_min_max_pedal_implausibilities(int pedal_data, int 
     if(min>max){
         pedal_swapped = true;
     }
-    
+
     // FSAE EV.5.5
     // FSAE T.4.2.10
     float float_pedal_data = static_cast<float>(pedal_data);
