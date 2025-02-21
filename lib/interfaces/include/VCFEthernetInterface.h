@@ -23,7 +23,7 @@ namespace VCFEthernetInterface
      * 
      * @post After this function completes, shared_state will contain the updated buzzer control.
      */
-    void receive_pb_msg_vcr(const hytech_msgs_VCFData_s &msg_in, VCFData_s &shared_state, unsigned long curr_millis);
+    void receive_pb_msg_vcr(const hytech_msgs_VCRData_s &msg_in, VCFData_s &shared_state, unsigned long curr_millis);
 
 }
 

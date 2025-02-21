@@ -10,16 +10,7 @@
 /* Interface and system data structs */
 VCFData_s vcf_data = {};
 
-/* ADC setup */
-MCP_ADC<channels_within_mcp_adc> adc_1 = MCP_ADC<channels_within_mcp_adc>(ADC1_CS);
-MCP_ADC<channels_within_mcp_adc> adc_2 = MCP_ADC<channels_within_mcp_adc>(ADC2_CS);
-
-uint16_t VCF_SEND_PORT = 7777;
-uint16_t VCF_RECV_PORT = 8888;
-
-/* Ethernet socket instantiation */
-qindesign::network::EthernetUDP protobuf_send_socket;
-qindesign::network::EthernetUDP protobuf_recv_socket;
+uint16_t VCF_PORT = EthernetIPDefsInstance::instance().VCFData_port;
 
 /* Ethernet Constants */
 const IPAddress debug_ip(192, 168, 1, 31); // Computer receive IP
