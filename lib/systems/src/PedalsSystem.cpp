@@ -7,7 +7,7 @@ float PedalsSystem:: _pedal_percentage(float pedal1val, float pedal2val, const P
 {
     float pedal1percent = fabs((pedal1val - static_cast<float>(params.min_pedal_1)))/fabs(static_cast<float>(params.max_pedal_1 - (params.min_pedal_1)));
     float pedal2percent = fabs((pedal2val) - static_cast<float>(params.min_pedal_2))/fabs(static_cast<float>(params.max_pedal_2 - params.min_pedal_2));
-    const float divider = 2.0
+    const float divider = 2.0;
     return (pedal1percent + pedal2percent)/divider;
 }
 
