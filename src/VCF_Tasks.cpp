@@ -41,14 +41,6 @@ bool run_read_adc2_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo&
     ADC2Instance::instance().sample();
     ADC2Instance::instance().convert();
 
-    /*
-
-    interface_data.pedals_data.accel_1 = adc_2.data.conversions[ACCEL_1_CHANNEL].conversion;
-    interface_data.pedals_data.accel_2 = adc_2.data.conversions[ACCEL_2_CHANNEL].conversion;
-    interface_data.pedals_data.brake_1 = adc_2.data.conversions[BRAKE_1_CHANNEL].conversion;
-    interface_data.pedals_data.brake_2 = adc_2.data.conversions[BRAKE_2_CHANNEL].conversion;
-    */
-
     return true;
 }
 HT_TASK::Task read_adc2_task = HT_TASK::Task(init_read_adc2_task, run_read_adc2_task, 10, 1000UL); // 1000us is 1kHz //NOLINT
@@ -56,7 +48,6 @@ HT_TASK::Task read_adc2_task = HT_TASK::Task(init_read_adc2_task, run_read_adc2_
 bool init_read_gpio_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
 {
     // Setting digital/analog buttons D10-D6, A8 as inputs
-    
     pinMode(BTN_DIM_READ, INPUT);
     pinMode(BTN_PRESET_READ, INPUT);
     pinMode(BTN_MC_CYCLE_READ, INPUT);
@@ -69,8 +60,6 @@ bool init_read_gpio_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo
 bool run_read_gpio_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
 {
     // Doing digital read on all digital inputs
-    
-    
     int dimButton = digitalRead(BTN_DIM_READ);
     int presetButton = digitalRead(BTN_PRESET_READ);
     int mcCycleButton = digitalRead(BTN_MC_CYCLE_READ);

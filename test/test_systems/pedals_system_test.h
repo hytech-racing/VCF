@@ -194,6 +194,7 @@ TEST(PedalsSystemTesting, test_accel_and_brake_percentages_implausibility)
     }
 }
 
+// EV.4.7.1 FSAE rules 2024 v1
 TEST(PedalsSystemTesting, test_accel_and_brake_pressed_at_same_time_and_activation)
 {
     auto accel_params = gen_positive_and_negative_slope_params();
@@ -211,6 +212,7 @@ TEST(PedalsSystemTesting, test_accel_and_brake_pressed_at_same_time_and_activati
     // Future Implementation: test with real values from the car
 }
 
+// T.4.2.5 FSAE rules 2024 v1
 TEST(PedalsSystemTesting, test_implausibility_duration)
 {
     auto accel_params = gen_positive_and_negative_slope_params();
@@ -230,6 +232,7 @@ TEST(PedalsSystemTesting, test_implausibility_duration)
     EXPECT_TRUE(data.implausibility_has_exceeded_max_duration);
 }
 
+// EV.4.7.2 b FSAE rules 2024 v1
 TEST(PedalsSystemTesting, implausibility_latching_until_accel_released_double_brake)
 {
     auto accel_params = gen_positive_and_negative_slope_params();
@@ -255,6 +258,7 @@ TEST(PedalsSystemTesting, implausibility_latching_until_accel_released_double_br
     EXPECT_FALSE(get_result_of_double_brake_test(pedals, test_pedal_data));
 }
 
+// testing accel and brake pedal percentage accuracies with deadzone
 TEST(PedalsSystemTesting, deadzone_removal_calc_double_brake_ped)
 {
     PedalsSystem params(gen_positive_slope_only_params(), gen_positive_slope_only_params());
@@ -286,6 +290,7 @@ TEST(PedalsSystemTesting, deadzone_removal_calc_double_brake_ped)
     EXPECT_NEAR(data.brake_percent, 1, .001);
 }
 
+// testing mechanical brake and brake activation
 TEST(PedalsSystemTesting, brake_value_testing_double)
 {
     PedalSensorData_s test_pedal_data = {1000, 3000, 870, 870};
@@ -306,6 +311,7 @@ TEST(PedalsSystemTesting, brake_value_testing_double)
     EXPECT_TRUE(data.mech_brake_is_active);
 }
 
+// checking to see that accel pedal can never be negative
 TEST(PedalsSystemTesting, check_accel_never_negative_double)
 {
     PedalSensorData_s test_pedal_data = {static_cast<uint32_t>(-1000), static_cast<uint32_t>(-3000), 870, 870};
@@ -319,6 +325,7 @@ TEST(PedalsSystemTesting, check_accel_never_negative_double)
     EXPECT_EQ(data.accel_percent, 0.0);
 }
 
+// testing that accel pedal marks as pressed
 TEST(PedalsSystemTesting, check_accel_pressed)
 {
     PedalSensorData_s test_pedal_data = {1000, 3000, 90, 90};
@@ -330,6 +337,7 @@ TEST(PedalsSystemTesting, check_accel_pressed)
     EXPECT_TRUE(data.accel_is_pressed);    
 }
 
+// testing that accel percent and accel implaus is marked when pedals are out of range
 TEST(PedalsSystemTesting, check_accel_oor)
 {
     PedalSensorData_s test_pedal_oor_hi_val_accel = {5000, 3000, 2000, 2000};

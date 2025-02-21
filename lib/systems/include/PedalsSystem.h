@@ -7,11 +7,9 @@
 #include "SharedFirmwareTypes.h"
 
 
-/**
- * Struct that contains the analog (0-4095) values for the four pedals sensors.
- */
-const int IMPLAUSIBILITY_DURATION = 100; // max durutation if implausibility in milliseconds
-const float imp_perc = static_cast<float>(0.10); // 10% implausibility margin. FSAE Rules T.4.2.4
+const int IMPLAUSIBILITY_DURATION = 100; // max duration of implausibility in milliseconds. FSAE Rules T.4.3.3
+const float IMPLAUSIBILITY_PERCENT = static_cast<float>(0.10); // 10 percent implausibility margin. FSAE Rules T.4.2.5
+const float ACCELERATION_PERCENT_LIMIT = static_cast<float>(0.05); // acceleration percent limit to start implausibility time
 
 /**
  * Pedals params struct that holds min/max values that will be used for evaluation. The accel and brake sensors
@@ -74,9 +72,9 @@ public:
     PedalsSystemData_s evaluate_pedals(PedalSensorData_s pedal_data, unsigned long curr_millis);
 
 private:
-    /// @brief function to determine the percentageof pedal pressed
-    /// @param pedal1val the value of the first pedal without deadzone removed
-    /// @param pedal2val the value of the second pedal without deadzone removed
+    /// @brief function to determine the percentage of pedal pressed
+    /// @param pedal1val the value of the first pedal without deadzone removed (analog 0-4095)
+    /// @param pedal2val the value of the second pedal without deadzone removed (analog 0-4095)
     /// @param params the pedal parameters for this specific pedal
     float _pedal_percentage(float pedal1val, float pedal2val, const PedalsParams &params);
 
@@ -119,7 +117,7 @@ private:
     /// @param pedal_data the pedal data struct containing the values of the pedals
     bool _evaluate_brake_and_accel_pressed(PedalSensorData_s & pedal_data);
 
-    /// @brief function to determine if the pedal is out of range
+    /// @brief function to determine if the pedal is out of range of the calibrated value for the pedal
     /// @param pedalData_analog the value of the pedal without deadzone removed
     /// @param min the min value of the pedal -- min sensor value
     /// @param max the max value of the pedal -- max sensor value

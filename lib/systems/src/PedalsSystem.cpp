@@ -11,7 +11,7 @@ float PedalsSystem:: _pedal_percentage(float pedal1val, float pedal2val, const P
     return (pedal1percent + pedal2percent)/divider;
 }
 
-///
+
 PedalsSystemData_s PedalsSystem::evaluate_pedals(PedalSensorData_s pedals_data, unsigned long curr_millis)
 {
     PedalsSystemData_s out = {};
@@ -25,12 +25,7 @@ PedalsSystemData_s PedalsSystem::evaluate_pedals(PedalSensorData_s pedals_data, 
     float _accel2_scaled_ = (fabs(static_cast<float>(accel_2 - std::min(_accelParams.min_pedal_2,_accelParams.max_pedal_2)))/fabs(static_cast<float>(_accelParams.max_pedal_2 - _accelParams.min_pedal_2)));
     float _brake1_scaled_ = (fabs(static_cast<float>(brake_1 - std::min(_brakeParams.min_pedal_1,_brakeParams.max_pedal_1)))/fabs(static_cast<float>(_brakeParams.max_pedal_1 - _brakeParams.min_pedal_1)));
     float _brake2_scaled_ = _brake1_scaled_;
-    /*
-    float _accel1_scaled_ = _scale_pedal_val(accel_1,_accelParams.min_pedal_1, _accelParams.max_pedal_1);
-    float _accel2_scaled_ = _scale_pedal_val(accel_2,_accelParams.min_pedal_2, _accelParams.max_pedal_2);
-    float _brake1_scaled_ = _scale_pedal_val(brake_1,_brakeParams.min_pedal_1,_brakeParams.max_pedal_1);
-    float _brake2_scaled_ = _scale_pedal_val(brake_2,_brakeParams.min_pedal_2,_brakeParams.max_pedal_2);
-    */
+
     // FSAE Rules T.4.2.4
     const float _implausibility = 0.1;
     out.brake_is_implausible = _evaluate_pedal_implausibilities(brake_1,brake_2,_brakeParams, 1.0);
@@ -38,7 +33,7 @@ PedalsSystemData_s PedalsSystem::evaluate_pedals(PedalSensorData_s pedals_data, 
     out.accel_is_pressed = _pedal_is_active(_accel1_scaled_, _accel2_scaled_, _accelParams, false);
     out.brake_is_pressed = _pedal_is_active( _brake1_scaled_, _brake2_scaled_,_brakeParams,false);
     out.accel_is_implausible = _evaluate_pedal_implausibilities(accel_1, accel_2, _accelParams, _implausibility);
-    out.accel_is_implausible = _evaluate_pedal_implausibilities(accel_1, accel_2, _accelParams, imp_perc);
+    out.accel_is_implausible = _evaluate_pedal_implausibilities(accel_1, accel_2, _accelParams, IMPLAUSIBILITY_PERCENT);
 
 
     out.brake_and_accel_pressed_implausibility_high = _evaluate_brake_and_accel_pressed(pedals_data);
@@ -50,11 +45,10 @@ PedalsSystemData_s PedalsSystem::evaluate_pedals(PedalSensorData_s pedals_data, 
     out.brake_percent = _remove_deadzone(brake_percent, _brakeParams.deadzone_margin);
     out.brake_percent = std::max(out.brake_percent, 0.0f);
     bool implausibility = (out.accel_is_implausible || out.brake_and_accel_pressed_implausibility_high || out.brake_is_implausible);
-    const float accel_perc_lim = 0.05;
     if (implausibility && (_implausibilityStartTime ==0)){
         _implausibilityStartTime = curr_millis;
     }
-    else if ((!implausibility) && ((out.accel_percent <= accel_perc_lim))){
+    else if ((!implausibility) && ((out.accel_percent <= ACCELERATION_PERCENT_LIMIT))){
         _implausibilityStartTime = 0;
     }
     bool oor = implausibility && (_evaluate_pedal_oor(accel_1, _accelParams.min_sensor_pedal_1, _accelParams.max_sensor_pedal_1)
@@ -85,10 +79,6 @@ bool PedalsSystem::_evaluate_pedal_implausibilities(int pedal_data1_analog, int 
     float pedal1_scaled = (fabs((static_cast<float>(pedal_data1_analog - params.min_pedal_1)) / fabs(static_cast<float>(params.max_pedal_1 - params.min_pedal_1))));
     float pedal2_scaled = (fabs((static_cast<float>(pedal_data2_analog - params.min_pedal_2)) / fabs(static_cast<float>(params.max_pedal_2 - params.min_pedal_2))));
     bool sens_not_within_req_percent = ((fabs(pedal1_scaled - pedal2_scaled)) > max_percent_diff); // DIVIDE BY 100
-    // conditional if the pedals are swapped - if so, swap the min and max values. add this. 
-    // float pedal1_scaled = (static_cast<float>(pedal_data1_analog) - params.min_pedal_1) / abs(params.max_pedal_1 - params.min_pedal_1);
-    // float pedal2_scaled = (static_cast<float>(pedal_data2_analog) - params.min_pedal_2) / abs(params.max_pedal_2 - params.min_pedal_2);
-    // bool sens_not_within_req_percent = (fabs(pedal1_scaled - pedal2_scaled)/100.0 > max_percent_diff);
     return pedal1_min_max_implaus || pedal2_min_max_implaus || sens_not_within_req_percent;
 }
 
@@ -98,6 +88,7 @@ bool PedalsSystem::_evaluate_min_max_pedal_implausibilities(int pedal_data, int 
     if(min>max){
         pedal_swapped = true;
     }
+    
     // FSAE EV.5.5
     // FSAE T.4.2.10
     float float_pedal_data = static_cast<float>(pedal_data);
@@ -157,29 +148,8 @@ bool PedalsSystem::_evaluate_brake_and_accel_pressed(PedalSensorData_s & pedals_
     float _accel2_scaled_ = (fabs(static_cast<float>(accel_2 - std::min(_accelParams.min_pedal_2,_accelParams.max_pedal_2)))/fabs(static_cast<float>(_accelParams.max_pedal_2 - _accelParams.min_pedal_2)));
     float _brake1_scaled_ = (fabs(static_cast<float>(brake_1 - std::min(_brakeParams.min_pedal_1,_brakeParams.max_pedal_1)))/fabs(static_cast<float>(_brakeParams.max_pedal_1 - _brakeParams.min_pedal_1)));
     float _brake2_scaled_ = _brake1_scaled_;
-
-    // float _accel1_scaled_ = abs(static_cast<float>(accel_1) - std::min(_accelParams.min_pedal_1, _accelParams.max_pedal_1))/abs(_accelParams.max_pedal_1 - _accelParams.min_pedal_1);
-    // float _accel2_scaled_ = abs(static_cast<float>(accel_2) - std::min(_accelParams.min_pedal_2, _accelParams.max_pedal_2))/abs(_accelParams.max_pedal_2 - _accelParams.min_pedal_2);
-    // float _brake1_scaled_ = abs(static_cast<float>(brake_1) - std::min(_brakeParams.min_pedal_1, _brakeParams.max_pedal_1))/abs(_brakeParams.max_pedal_1 - _brakeParams.min_pedal_1);
-    // float _brake2_scaled_ = _brake1_scaled_;
-
-    /**
-     * float accel1_scaled = _scale_pedal_val(accel_1,_accelParams.min_pedal_1, _accelParams.max_pedal_1);
-        float accel2_scaled = _scale_pedal_val(accel_2,_accelParams.min_pedal_2, _accelParams.max_pedal_2);
-        float brake1_scaled = _scale_pedal_val(brake_1,_brakeParams.min_pedal_1,_brakeParams.max_pedal_1);
-        float brake2_scaled = _scale_pedal_val(brake_2,_brakeParams.min_pedal_2,_brakeParams.max_pedal_2);
-     * 
-     */
     bool accel_pressed = _pedal_is_active(_accel1_scaled_, _accel2_scaled_, _accelParams, false);
     bool mech_brake_pressed = _pedal_is_active(_brake1_scaled_, _brake2_scaled_,_brakeParams,true);
-
-    /*
-    float accel1_scaled = _scale_pedal_val(accel_1,_accelParams.min_pedal_1, _accelParams.max_pedal_1);
-    float accel2_scaled = _scale_pedal_val(accel_2,_accelParams.min_pedal_2, _accelParams.max_pedal_2);
-    float brake1_scaled = _scale_pedal_val(brake_1,_brakeParams.min_pedal_1,_brakeParams.max_pedal_1);
-    float brake2_scaled = _scale_pedal_val(brake_2,_brakeParams.min_pedal_2,_brakeParams.max_pedal_2);
-    */
-
     bool both_pedals_implausible = (accel_pressed && mech_brake_pressed);
     return both_pedals_implausible;
 }
