@@ -149,10 +149,10 @@ bool PedalsSystem::_evaluate_pedal_oor(int pedal_data, int min, int max){
 }
 
 bool PedalsSystem::_evaluate_brake_and_accel_pressed(PedalSensorData_s & pedals_data){
-    uint32_t accel_1 = pedals_data.accel_1; 
-    uint32_t accel_2 = pedals_data.accel_2;
-    uint32_t brake_1 = pedals_data.brake_1;
-    uint32_t brake_2 = brake_1; 
+    int accel_1 = static_cast<int>(pedals_data.accel_1); 
+    int accel_2 = static_cast<int>(pedals_data.accel_2);
+    int brake_1 = static_cast<int>(pedals_data.brake_1);
+    int brake_2 = static_cast<int>(pedals_data.brake_1); 
     float _accel1_scaled_ = (fabs(static_cast<float>(accel_1 - std::min(_accelParams.min_pedal_1,_accelParams.max_pedal_1)))/fabs(static_cast<float>(_accelParams.max_pedal_1 - _accelParams.min_pedal_1)));
     float _accel2_scaled_ = (fabs(static_cast<float>(accel_2 - std::min(_accelParams.min_pedal_2,_accelParams.max_pedal_2)))/fabs(static_cast<float>(_accelParams.max_pedal_2 - _accelParams.min_pedal_2)));
     float _brake1_scaled_ = (fabs(static_cast<float>(brake_1 - std::min(_brakeParams.min_pedal_1,_brakeParams.max_pedal_1)))/fabs(static_cast<float>(_brakeParams.max_pedal_1 - _brakeParams.min_pedal_1)));
