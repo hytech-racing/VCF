@@ -7,6 +7,8 @@
 /* From shared_firmware_types libdep */
 #include "SharedFirmwareTypes.h"
 
+#define _TASK_MICRO_RES // NOLINT
+#include <TScheduler.hpp>
 
 /* From Arduino Libraries */
 #include "QNEthernet.h"
@@ -20,7 +22,7 @@
 
 
 /* Scheduler setup */
-
+TsScheduler task_scheduler;
 
 
 
@@ -31,14 +33,12 @@ qindesign::network::EthernetUDP protobuf_recv_socket;
 
 
 void setup() {
-    scheduler.setTimingFunction(micros);
-
-    scheduler.enable(read_adc1_task);
-    scheduler.enable(read_adc2_task);
-    scheduler.enable(read_gpio_task);
-    scheduler.enable(buzzer_control_task);
+    read_adc1_task.enable();
+    read_adc2_task.enable();
+    read_gpio_task.enable();
+    buzzer_control_task.enable();
 }
 
 void loop() {
-    scheduler.run();
+    task_scheduler.execute();
 }
