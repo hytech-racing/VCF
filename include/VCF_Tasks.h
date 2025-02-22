@@ -26,8 +26,8 @@
 #ifndef VCF_TASKS
 #define VCF_TASKS
 
-/* From HT_SCHED library */
-#include "ht_sched.hpp"
+#include <TScheduler.hpp>  
+extern TsScheduler task_scheduler;  
 
 /* From shared_firmware_types library */
 #include "SharedFirmwareTypes.h"
