@@ -8,7 +8,7 @@
 #include "SharedFirmwareTypes.h"
 
 /* From HT_SCHED libdep */
-#include "ht_sched.hpp"
+// #include "ht_sched.hpp"
 
 /* From Arduino Libraries */
 #include "QNEthernet.h"
@@ -22,7 +22,7 @@
 
 
 /* Scheduler setup */
-HT_SCHED::Scheduler& scheduler = HT_SCHED::Scheduler::getInstance();
+// HT_SCHED::Scheduler& scheduler = HT_SCHED::Scheduler::getInstance();
 
 
 
@@ -33,14 +33,9 @@ qindesign::network::EthernetUDP protobuf_recv_socket;
 
 
 void setup() {
-    scheduler.setTimingFunction(micros);
-
-    scheduler.schedule(read_adc1_task);
-    scheduler.schedule(read_adc2_task);
-    scheduler.schedule(read_gpio_task);
-    scheduler.schedule(buzzer_control_task);
+    
 }
 
 void loop() {
-    scheduler.run();
+    
 }
