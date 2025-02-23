@@ -24,6 +24,11 @@
 /* Scheduler setup */
 TsScheduler task_scheduler;
 
+/* Task declarations */
+TsTask read_adc1_task(1000, TASK_FOREVER, &run_read_adc1_task, &task_scheduler, false, &init_read_adc1_task);// 1000us is 1kHz //NOLINT
+TsTask read_adc2_task(1000, TASK_FOREVER, &run_read_adc2_task, &task_scheduler, false, &init_read_adc2_task); 
+TsTask read_gpio_task(1000, TASK_FOREVER, &run_read_gpio_task, &task_scheduler, false, &init_read_gpio_task); 
+TsTask buzzer_control_task(1000, TASK_FOREVER, &run_buzzer_control_task, &task_scheduler, false, &init_buzzer_control_task);
 
 
 /* Ethernet message sockets */ // TODO: Move this into its own interface

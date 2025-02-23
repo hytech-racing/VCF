@@ -24,8 +24,6 @@ void run_read_adc1_task()
     interface_data.front_suspot_data.FL_sus_pot_analog = adc_1.data.conversions[FL_SUS_POT_CHANNEL].raw; // Just use raw for suspots
     interface_data.front_suspot_data.FR_sus_pot_analog = adc_1.data.conversions[FR_SUS_POT_CHANNEL].raw; // Just use raw for suspots
 }
-TsTask read_adc1_task(1000, TASK_FOREVER, &run_read_adc1_task, &task_scheduler, false, &init_read_adc1_task); // 1000us is 1kHz //NOLINT
-
 
 bool init_read_adc2_task()
 {
@@ -46,7 +44,6 @@ void run_read_adc2_task()
     interface_data.pedals_data.brake_1 = adc_2.data.conversions[BRAKE_1_CHANNEL].conversion;
     interface_data.pedals_data.brake_2 = adc_2.data.conversions[BRAKE_2_CHANNEL].conversion;
 }
-TsTask read_adc2_task(1000, TASK_FOREVER, &run_read_adc2_task, &task_scheduler, false, &init_read_adc2_task);// 1000us is 1kHz //NOLINT
 
 bool init_read_gpio_task()
 {
@@ -77,7 +74,6 @@ void run_read_gpio_task()
     interface_data.dash_input_state.start_btn_is_pressed = startButton;
     interface_data.dash_input_state.data_btn_is_pressed = dataButton;
 }
-TsTask read_gpio_task(1000, TASK_FOREVER, &run_read_gpio_task, &task_scheduler, false, &init_read_gpio_task);  // 1000us is 1kHz //NOLINT
 
 
 bool init_buzzer_control_task()
@@ -90,4 +86,3 @@ void run_buzzer_control_task()
 {
     digitalWrite(BUZZER_CONTROL_PIN, vcr_system_data.buzzer_is_active);
 }
-TsTask buzzer_control_task(1000, TASK_FOREVER, &run_buzzer_control_task, &task_scheduler, false, &init_buzzer_control_task);
