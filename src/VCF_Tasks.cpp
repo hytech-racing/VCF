@@ -33,7 +33,7 @@ bool init_adc_task()
 
     return true;
 }
-bool run_read_adc1_task()
+void run_read_adc1_task()
 {
     // Samples all eight channels.
     ADCsOnVCFInstance::instance().adc_1.tick();
@@ -44,10 +44,9 @@ bool run_read_adc1_task()
     interface_data.front_suspot_data.FL_sus_pot_analog = ADCsOnVCFInstance::instance().adc_1.data.conversions[FL_SUS_POT_CHANNEL].raw; // Just use raw for suspots
     interface_data.front_suspot_data.FR_sus_pot_analog = ADCsOnVCFInstance::instance().adc_1.data.conversions[FR_SUS_POT_CHANNEL].raw; // Just use raw for suspots
 
-    return true;
 }
 
-bool run_read_adc2_task()
+void run_read_adc2_task()
 {
     // Samples all eight channels.
     ADCsOnVCFInstance::instance().adc_2.tick();
@@ -57,7 +56,6 @@ bool run_read_adc2_task()
     interface_data.pedal_sensor_data.brake_1 = ADCsOnVCFInstance::instance().adc_2.data.conversions[BRAKE_1_CHANNEL].conversion;
     interface_data.pedal_sensor_data.brake_2 = ADCsOnVCFInstance::instance().adc_2.data.conversions[BRAKE_2_CHANNEL].conversion;
 
-    return true;
 }
 
 bool init_read_gpio_task()
@@ -72,7 +70,7 @@ bool init_read_gpio_task()
     
     return true;
 }
-bool run_read_gpio_task()
+void run_read_gpio_task()
 {
     // Doing digital read on all digital inputs
     int dimButton = digitalRead(BTN_DIM_READ);
@@ -88,9 +86,8 @@ bool run_read_gpio_task()
     interface_data.dash_input_state.mode_btn_is_pressed = modeButton;
     interface_data.dash_input_state.start_btn_is_pressed = startButton;
     interface_data.dash_input_state.data_btn_is_pressed = dataButton;
-
-    return true;
 }
+
 
 bool init_buzzer_control_task()
 {
@@ -98,9 +95,7 @@ bool init_buzzer_control_task()
 
     return true;
 }
-bool run_buzzer_control_task()
+void run_buzzer_control_task()
 {
     digitalWrite(BUZZER_CONTROL_PIN, vcr_system_data.buzzer_is_active);
-    
-    return true;
 }
