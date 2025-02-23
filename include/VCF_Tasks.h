@@ -53,7 +53,7 @@
   * store them in structs defined in shared_firmware_types. This function relies on adc_1 being
   * defined in VCFGlobals.h.
   */
- bool init_read_adc1_task();
+ bool init_adc_task();
  void run_read_adc1_task();
  
  
@@ -66,8 +66,7 @@
   * store them in a struct defined in shared_firmware_types. This function relies on adc_2 being
   * defined in VCFGlobals.h.
   */
- bool init_read_adc2_task();
- void run_read_adc2_task();
+  void run_read_adc2_task();
  
  /**
   * The buzzer_control task will control the buzzer control pin. This function relies on the 
