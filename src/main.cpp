@@ -29,7 +29,9 @@ constexpr unsigned long TASK_INTERVAL_PERIOD = 1000; // in us
 
 /* Task declarations */
 // from https://github.com/arkhipenko/TaskScheduler/wiki/API-Task#task note that we will use 
-TsTask read_adc_task(TASK_INTERVAL_PERIOD, TASK_FOREVER, &run_read_adc1_task, &task_scheduler, false, &init_adc_task);// 1000us is 1kHz //NOLINT
+
+TsTask read_adc1_task(TASK_INTERVAL_PERIOD, TASK_FOREVER, &run_read_adc1_task, &task_scheduler, false, &init_adc_task);// 1000us is 1kHz //NOLINT
+TsTask read_adc2_task(TASK_INTERVAL_PERIOD, TASK_FOREVER, &run_read_adc2_task, &task_scheduler, false, &init_adc_task); // init function sets up both adcs
 TsTask read_gpio_task(TASK_INTERVAL_PERIOD, TASK_FOREVER, &run_read_gpio_task, &task_scheduler, false, &init_read_gpio_task); 
 TsTask buzzer_control_task(TASK_INTERVAL_PERIOD, TASK_FOREVER, &run_buzzer_control_task, &task_scheduler, false, &init_buzzer_control_task);
 
@@ -41,7 +43,8 @@ qindesign::network::EthernetUDP protobuf_recv_socket;
 
 
 void setup() {
-    read_adc_task.enable();
+    read_adc1_task.enable();
+    read_adc2_task.enable();
     read_gpio_task.enable();
     buzzer_control_task.enable();
 }

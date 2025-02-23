@@ -50,8 +50,8 @@
  
  /**
   * The read_adc1 task will command adc1 to sample all eight channels, convert the outputs, and
-  * store them in structs defined in shared_firmware_types. This function relies on adc_1 being
-  * defined in VCFGlobals.h.
+  * store them in structs defined in shared_firmware_types. This function relies on the create funtion
+  * of the acd singleton being called.
   */
  bool init_adc_task();
  void run_read_adc1_task();
@@ -63,8 +63,8 @@
   * manually to add sensors.
   * 
   * The read_adc2 task will command adc2 to sample all eight channels, convert the outputs, and
-  * store them in a struct defined in shared_firmware_types. This function relies on adc_2 being
-  * defined in VCFGlobals.h.
+  * store them in a struct defined in shared_firmware_types. This function relies on the create funtion
+  * of the acd singleton being called.
   */
   void run_read_adc2_task();
  
