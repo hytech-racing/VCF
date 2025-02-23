@@ -16,12 +16,6 @@
 /* From Embedded Template Library */
 #include <etl/singleton.h>
 
-// Definitions
-const int MCP_ADC_DEFAULT_SPI_SDI   = 12;
-const int MCP_ADC_DEFAULT_SPI_SDO   = 11;
-const int MCP_ADC_DEFAULT_SPI_CLK   = 13;
-const int MCP_ADC_DEFAULT_SPI_SPEED = 2000000;
-
 /* Interface and system data structs */
 extern VCFInterfaceData_s interface_data; // NOLINT
 extern VCFSystemData_s system_data; // NOLINT
