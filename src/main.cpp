@@ -33,7 +33,7 @@ qindesign::network::EthernetUDP protobuf_recv_socket;
 
 
 void setup() {
-    
+
 }
 
 void loop() {

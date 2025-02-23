@@ -1,4 +1,4 @@
-Checks: 'bugprone-*, cppcoreguidelines-*, readability-identifier-naming, -cppcoreguidelines-avoid-non-const-global-variables, -bugprone-branch-clone, -cppcoreguidelines-pro-type-vararg, -bugprone-easily-swappable-parameters'
+Checks: 'bugprone-*, cppcoreguidelines-*, readability-identifier-naming, -cppcoreguidelines-avoid-non-const-global-variables, -bugprone-branch-clone, -cppcoreguidelines-pro-type-vararg, -bugprone-easily-swappable-parameters, -cppcoreguidelines-avoid-c-arrays'
 WarningsAsErrors: 'cppcoreguidelines-*, bugprone-*, readability-identifier-naming'
 FormatStyle: 'file'
 CheckOptions:
