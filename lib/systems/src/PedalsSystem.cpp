@@ -44,8 +44,8 @@ PedalsSystemData_s PedalsSystem::evaluate_pedals(PedalSensorData_s pedals_data, 
     out.accel_is_implausible = _evaluate_pedal_implausibilities(accel_1, accel_2, _accelParams, IMPLAUSIBILITY_PERCENT);
 
     out.brake_and_accel_pressed_implausibility_high = _evaluate_brake_and_accel_pressed(pedals_data);
-    float accel_percent = _pedal_percentage(static_cast<float>(accel_1),static_cast<float>(accel_2),_accelParams); 
-    float brake_percent = _pedal_percentage(static_cast<float>(brake_1),static_cast<float>(brake_2),_brakeParams); 
+    out.accel_percent = _pedal_percentage(static_cast<float>(accel_1),static_cast<float>(accel_2),_accelParams); 
+    out.brake_percent = _pedal_percentage(static_cast<float>(brake_1),static_cast<float>(brake_2),_brakeParams); 
     bool implausibility = (out.accel_is_implausible || out.brake_and_accel_pressed_implausibility_high || out.brake_is_implausible);
     if (implausibility && (_implausibilityStartTime ==0)){
         _implausibilityStartTime = curr_millis;
