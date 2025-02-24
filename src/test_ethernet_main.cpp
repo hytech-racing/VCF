@@ -20,7 +20,7 @@ EthernetUDP socket;
 void init_ethernet_device()
 {
     Ethernet.begin(EthernetIPDefsInstance::instance().vcf_ip, EthernetIPDefsInstance::instance().default_dns, EthernetIPDefsInstance::instance().default_gateway, EthernetIPDefsInstance::instance().car_subnet);
-    socket.begin(4444);
+    socket.begin(EthernetIPDefsInstance::instance().VCFData_port);
     //recv_socket.begin(5555);
 }
 
