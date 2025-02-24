@@ -27,16 +27,6 @@ using ADC2Instance = etl::singleton<MCP_ADC<channels_within_mcp_adc>>; // MCP320
 
 
 
-/* Ethernet Constants */
-extern const IPAddress debug_ip;
-extern const IPAddress default_VCF_ip;
-extern const IPAddress default_dns;
-extern const IPAddress default_gateway;
-extern const IPAddress car_subnet;
-
-extern uint16_t VCF_PORT;
-
-
 
 
 #endif /* VCF_GLOBALS */

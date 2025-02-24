@@ -1,6 +1,7 @@
 #include "VCF_Tasks.h"
 #include "VCF_Globals.h"
 #include "ProtobufMsgInterface.h"
+#include "EthernetAddressDefs.h"
 #include "hytech_msgs.pb.h"
 #include "etl/optional.h"
 #include "VCFEthernetInterface.h"
@@ -19,8 +20,8 @@ bool init_read_adc1_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo
 }
 bool run_read_adc1_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
 {
-    adc_1.sample(); // Samples all eight channels.
-    adc_1.convert(); // Converts all eight channels.
+    adc_1.tick(); // Samples all eight channels.
+    adc_1.tick(); // Converts all eight channels.
 
     vcf_data.interface_data.steering_data.analog_steering_degrees = adc_1.data.conversions[STEERING_1_CHANNEL].conversion; // Only using steering 1 for now
     vcf_data.interface_data.front_loadcell_data.FL_loadcell_analog = adc_1.data.conversions[FL_LOADCELL_CHANNEL].conversion;
@@ -45,8 +46,8 @@ bool init_read_adc2_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo
 }
 bool run_read_adc2_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
 {
-    adc_2.sample(); // Samples all eight channels.
-    adc_2.convert(); // Converts all eight channels.
+    adc_2.tick(); // Samples all eight channels.
+    adc_2.tick(); // Converts all eight channels.
 
     vcf_data.interface_data.pedal_sensor_data.accel_1 = adc_2.data.conversions[ACCEL_1_CHANNEL].conversion;
     vcf_data.interface_data.pedal_sensor_data.accel_2 = adc_2.data.conversions[ACCEL_2_CHANNEL].conversion;
@@ -66,8 +67,6 @@ bool init_buzzer_control_task(const unsigned long& sysMicros, const HT_TASK::Tas
 bool run_buzzer_control_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
 {
     digitalWrite(BUZZER_CONTROL_PIN, vcf_data.system_data.buzzer_is_active);
-
-    Serial.println("running");
     
     return true;
 }
@@ -80,9 +79,7 @@ bool run_send_vcf_data_task(const unsigned long& sysMicros, const HT_TASK::TaskI
 
     hytech_msgs_VCFData_s protoc_struct = VCFEthernetInterface::make_vcf_data_msg(vcf_data);
 
-    handle_ethernet_socket_send_pb<hytech_msgs_VCFData_s, hytech_msgs_VCFData_s_size>(debug_ip, VCF_SEND_PORT, &protobuf_send_socket, protoc_struct, &hytech_msgs_VCFData_s_msg);
-
-    Serial.printf("tried to send %f\n", vcf_data.system_data.pedals_system_data.accel_percent);
+    handle_ethernet_socket_send_pb<hytech_msgs_VCFData_s, hytech_msgs_VCFData_s_size>(EthernetIPDefsInstance::instance().debug_ip, EthernetIPDefsInstance::instance().VCFData_port, &protobuf_send_socket, protoc_struct, &hytech_msgs_VCFData_s_msg);
 
     return true;
 }
@@ -93,6 +90,8 @@ bool run_recv_vcr_data_task(const unsigned long& sysMicros, const HT_TASK::TaskI
     etl::optional<hytech_msgs_VCRData_s> protoc_struct = handle_ethernet_socket_receive<hytech_msgs_VCRData_s_size, hytech_msgs_VCRData_s>(&protobuf_recv_socket, &hytech_msgs_VCRData_s_msg);
     if (protoc_struct)
     {
+        
+        VCFEthernetInterface::receive_pb_msg_vcr(protoc_struct.value(), vcf_data, millis());
         Serial.println("Received protobuf message!");
         
     }

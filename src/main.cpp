@@ -6,6 +6,7 @@
 
 /* From shared_firmware_types libdep */
 #include "SharedFirmwareTypes.h"
+#include "EthernetAddressDefs.h"
 
 /* From HT_SCHED libdep */
 #include "ht_sched.hpp"
@@ -27,15 +28,17 @@ void setup() {
     std::function<unsigned long()> func = micros;
     scheduler.setTimingFunction(func);
 
-    //scheduler.schedule(read_adc1_task);
-    //scheduler.schedule(read_adc2_task);
-    //scheduler.schedule(buzzer_control_task);
-    // scheduler.schedule(send_vcf_data_task);
-    // scheduler.schedule(recv_vcr_data_task);
+    scheduler.schedule(read_adc1_task);
+    scheduler.schedule(read_adc2_task);
+    scheduler.schedule(buzzer_control_task);
+    scheduler.schedule(send_vcf_data_task);
+    scheduler.schedule(recv_vcr_data_task);
 
-    qindesign::network::Ethernet.begin(default_VCF_ip, default_dns, default_gateway, car_subnet);
-    protobuf_send_socket.begin(VCF_SEND_PORT);
-    protobuf_recv_socket.begin(VCF_RECV_PORT);
+    
+
+    qindesign::network::Ethernet.begin(EthernetIPDefsInstance::instance().vcf_ip, EthernetIPDefsInstance::instance().default_dns, EthernetIPDefsInstance::instance().default_gateway, EthernetIPDefsInstance::instance().car_subnet);
+    protobuf_send_socket.begin(EthernetIPDefsInstance::instance().VCFData_port);
+    protobuf_recv_socket.begin(EthernetIPDefsInstance::instance().VCRData_port);
     
 }
 

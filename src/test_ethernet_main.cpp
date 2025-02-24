@@ -3,7 +3,9 @@
 #include <QNEthernet.h>
 #include "VCFEthernetInterface.h"
 #include "SharedFirmwareTypes.h"
+#include "EthernetAddressDefs.h"
 #include "hytech_msgs.pb.h"
+#include "VCF_Globals.h"
 
 
 #include <array>
@@ -14,34 +16,18 @@
 
 using namespace qindesign::network;
 EthernetUDP socket; 
-//EthernetUDP recv_socket; 
-
-
-const IPAddress default_VCF_ip(192, 168, 1, 30); //(for now) sender
-const IPAddress receive_ip(192, 168, 1, 31); // receiver
-const IPAddress default_dns(192, 168, 1, 1);
-const IPAddress default_gateway(192, 168, 1, 1);
-const IPAddress car_subnet(255, 255, 255, 0);
-uint16_t port1 = 4444;
-uint16_t port2 = 5555;
-//hytech_msgs_VCRData_s msg = hytech_msgs_VCRData_s_init_zero;
-VCFData_s vcf_state;
-//hytech_msgs_VCRData_s msg = {};
-
-// uint8_t default_MCU_MAC_address[6] = 
-//     {0x04, 0xe9, 0xe5, 0x10, 0x1f, 0x22};
 
 void init_ethernet_device()
 {
-    Ethernet.begin(default_VCF_ip, default_dns, default_gateway, car_subnet);
+    Ethernet.begin(EthernetIPDefsInstance::instance().vcf_ip, EthernetIPDefsInstance::instance().default_dns, EthernetIPDefsInstance::instance().default_gateway, EthernetIPDefsInstance::instance().car_subnet);
     socket.begin(4444);
     //recv_socket.begin(5555);
 }
 
 void test_send()
 {
-    hytech_msgs_VCFData_s msg = VCFEthernetInterface::make_vcf_data_msg(vcf_state);
-    if (handle_ethernet_socket_send_pb<hytech_msgs_VCFData_s, hytech_msgs_VCFData_s_size>(receive_ip, port1, &socket, msg, &hytech_msgs_VCFData_s_msg)) {
+    hytech_msgs_VCFData_s msg = VCFEthernetInterface::make_vcf_data_msg(vcf_data);
+    if (handle_ethernet_socket_send_pb<hytech_msgs_VCFData_s, hytech_msgs_VCFData_s_size>(EthernetIPDefsInstance::instance().vcr_ip, EthernetIPDefsInstance::instance().VCRData_port, &socket, msg, &hytech_msgs_VCFData_s_msg)) {
         Serial.println("Sent");
     } else {
         Serial.println("Failed");
