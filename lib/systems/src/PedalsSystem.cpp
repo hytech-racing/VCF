@@ -11,11 +11,11 @@ float PedalsSystem::_pedal_percentage(float pedal1val, float pedal2val, const Pe
     return (pedal1percent + pedal2percent) / divider;
 }
 
-float _pedals_scaler1(int pedalval, const PedalsParams &params){
+float PedalsSystem:: _pedals_scaler1(int pedalval, const PedalsParams &params){
     float pedal1percent = fabs((pedalval - static_cast<float>(params.min_pedal_1)))/fabs(static_cast<float>(params.max_pedal_1 - params.min_pedal_1));
     return pedal1percent;
 }
-float _pedals_scaler2(int pedalval, const PedalsParams &params){
+float PedalsSystem:: _pedals_scaler2(int pedalval, const PedalsParams &params){
     float pedal2percent = fabs((pedalval - static_cast<float>(params.min_pedal_2)))/fabs(static_cast<float>(params.max_pedal_2 - params.min_pedal_2));
     return pedal2percent;
 }
