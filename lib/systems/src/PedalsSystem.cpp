@@ -25,13 +25,13 @@ PedalsSystemData_s PedalsSystem::evaluate_pedals(PedalSensorData_s pedals_data, 
     int accel_1 = static_cast<int>(pedals_data.accel_1); 
     int accel_2 = static_cast<int>(pedals_data.accel_2);
     int brake_1 = static_cast<int>(pedals_data.brake_1);
-    int brake_2 = static_cast<int>(pedals_data.brake_2); // Copying Brake1 data into brake2 as we don't need 2 brakes anymore
+    int brake_2 = static_cast<int>(pedals_data.brake_1); // Copying Brake1 data into brake2 as we don't need 2 brakes anymore
 
 
     float _accel1_scaled_ = _pedals_scaler1(accel_1, _accelParams);
     float _accel2_scaled_ = _pedals_scaler2(accel_2, _accelParams);
     float _brake1_scaled_ = _pedals_scaler1(brake_1, _brakeParams);
-    float _brake2_scaled_ = _pedals_scaler2(brake_2, _brakeParams);
+    float _brake2_scaled_ = _brake1_scaled_; // Copying Brake1 data into brake2 as we don't need 2 brakes anymore
     // FSAE Rules T.4.2.4
     out.brake_is_implausible = _evaluate_pedal_implausibilities(brake_1,brake_2,_brakeParams, 1.0);
     out.brake_is_implausible = _evaluate_pedal_implausibilities(brake_1,brake_2,_brakeParams,1.0);
