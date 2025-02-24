@@ -100,7 +100,7 @@ bool init_buzzer_control_task()
 }
 bool run_buzzer_control_task()
 {
-    digitalWrite(BUZZER_CONTROL_PIN, vcf_data.system_data.buzzer_is_active);
+    digitalWrite(BUZZER_CONTROL_PIN, vcr_system_data.buzzer_is_active);
     
     return true;
 }
