@@ -16,7 +16,7 @@ float PedalsSystem::_pedal_percentage(float pedal1val, float pedal2val, const Pe
 
 float PedalsSystem:: _pedals_scaler1(int pedalval, const PedalsParams& params)
 {
-    return (fabs(static_cast<float>(pedalval - std::min(params.min_pedal_1,params.max_pedal_1))/fabs(static_cast<float>(params.max_pedal_1 - params.min_pedal_1)));
+    return (fabs(static_cast<float>(pedalval - std::min(params.min_pedal_1,params.max_pedal_1)))/fabs(static_cast<float>(params.max_pedal_1 - params.min_pedal_1)));
 }
 
 float PedalsSystem:: _pedals_scaler2(int pedalval, const PedalsParams& params)
