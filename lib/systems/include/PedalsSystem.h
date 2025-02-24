@@ -82,13 +82,13 @@ private:
     /// @param pedalval the value of the pedal without deadzone removed (analog 0-4095)
     /// @param params the pedal parameters for this specific pedal
     /// @return the scaled value of the pedal without deadzone removed (0-1)
-    float _pedals_scaler1(int pedalval, const PedalsParams &params);
+    //float _pedals_scaler1(int pedalval, const PedalsParams &params);
 
     /// @brief function to scale the pedal value to a 0-1 value without deadzone for the second pedal
     /// @param pedalval the value of the pedal without deadzone removed (analog 0-4095)
     /// @param params the pedal parameters for this specific pedal
     /// @return the scaled value of the pedal without deadzone removed (0-1)
-    float _pedals_scaler2(int pedalval, const PedalsParams &params);
+    //float _pedals_scaler2(int pedalval, const PedalsParams &params);
 
 
     /// @brief function to remove deadzone from pedal data
