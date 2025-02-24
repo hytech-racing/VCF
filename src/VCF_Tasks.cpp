@@ -1,102 +1,106 @@
 #include "VCF_Tasks.h"
 #include "VCF_Globals.h"
-#include "ProtobufMsgInterface.h"
-#include "EthernetAddressDefs.h"
-#include "hytech_msgs.pb.h"
-#include "etl/optional.h"
-#include "VCFEthernetInterface.h"
+#include "VCF_Constants.h"
 
 
-
-bool init_read_adc1_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
+bool init_adc_task()
 {
-    adc_1.setChannelScaleAndOffset(STEERING_1_CHANNEL, STEERING_1_SCALE, STEERING_1_OFFSET);
-    adc_1.setChannelScaleAndOffset(STEERING_2_CHANNEL, STEERING_2_SCALE, STEERING_2_OFFSET);
-    adc_1.setChannelScaleAndOffset(FR_SUS_POT_CHANNEL, FR_SUS_POT_SCALE, FR_SUS_POT_OFFSET);
-    adc_1.setChannelScaleAndOffset(FR_LOADCELL_CHANNEL, FR_LOADCELL_SCALE, FR_LOADCELL_OFFSET);
-    adc_1.setChannelScaleAndOffset(FL_SUS_POT_CHANNEL, FL_SUS_POT_SCALE, FL_SUS_POT_OFFSET);
-    adc_1.setChannelScaleAndOffset(FL_LOADCELL_CHANNEL, FL_LOADCELL_SCALE, FL_LOADCELL_OFFSET);
-    return true;
-}
-bool run_read_adc1_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
-{
-    adc_1.tick(); // Samples all eight channels.
-    adc_1.tick(); // Converts all eight channels.
+    // Initilize one at a time to remove dependence on implicit ordering to match channels.
+    float adc_1_scales[channels_within_mcp_adc], adc_1_offsets[channels_within_mcp_adc], adc_2_scales[channels_within_mcp_adc], adc_2_offsets[channels_within_mcp_adc];
+    adc_1_scales[STEERING_1_CHANNEL] = STEERING_1_SCALE;
+    adc_1_offsets[STEERING_1_CHANNEL] = STEERING_1_OFFSET;
+    adc_1_scales[STEERING_2_CHANNEL] = STEERING_2_SCALE;
+    adc_1_offsets[STEERING_2_CHANNEL] = STEERING_2_OFFSET;
+    adc_1_scales[FR_SUS_POT_CHANNEL] = FR_SUS_POT_SCALE;
+    adc_1_offsets[FR_SUS_POT_CHANNEL] = FR_SUS_POT_OFFSET;
+    adc_1_scales[FL_SUS_POT_CHANNEL] = FL_SUS_POT_SCALE;
+    adc_1_offsets[FL_SUS_POT_CHANNEL] = FL_SUS_POT_OFFSET;
+    adc_1_scales[FR_LOADCELL_CHANNEL] = FR_LOADCELL_SCALE;
+    adc_1_offsets[FR_LOADCELL_CHANNEL] = FR_LOADCELL_OFFSET;
+    adc_1_scales[FL_LOADCELL_CHANNEL] = FL_LOADCELL_SCALE;
+    adc_1_offsets[FL_LOADCELL_CHANNEL] = FL_LOADCELL_OFFSET;
 
-    vcf_data.interface_data.steering_data.analog_steering_degrees = adc_1.data.conversions[STEERING_1_CHANNEL].conversion; // Only using steering 1 for now
-    vcf_data.interface_data.front_loadcell_data.FL_loadcell_analog = adc_1.data.conversions[FL_LOADCELL_CHANNEL].conversion;
-    vcf_data.interface_data.front_loadcell_data.FR_loadcell_analog = adc_1.data.conversions[FR_LOADCELL_CHANNEL].conversion;
-    vcf_data.interface_data.front_suspot_data.FL_sus_pot_analog = adc_1.data.conversions[FL_SUS_POT_CHANNEL].raw; // Just use raw for suspots
-    vcf_data.interface_data.front_suspot_data.FR_sus_pot_analog = adc_1.data.conversions[FR_SUS_POT_CHANNEL].raw; // Just use raw for suspots
+    adc_2_scales[ACCEL_1_CHANNEL] = ACCEL_1_SCALE;
+    adc_2_offsets[ACCEL_1_CHANNEL] = ACCEL_1_OFFSET;
+    adc_2_scales[ACCEL_2_CHANNEL] = ACCEL_2_SCALE;
+    adc_2_offsets[ACCEL_2_CHANNEL] = ACCEL_2_OFFSET;
+    adc_2_scales[BRAKE_1_CHANNEL] = BRAKE_1_SCALE;
+    adc_2_offsets[BRAKE_1_CHANNEL] = BRAKE_1_OFFSET;
+    adc_2_scales[BRAKE_2_CHANNEL] = BRAKE_2_SCALE;
+    adc_2_offsets[BRAKE_2_CHANNEL] = BRAKE_2_OFFSET;
 
-    return true;
-}
-HT_TASK::Task read_adc1_task = HT_TASK::Task(init_read_adc1_task, run_read_adc1_task, 10, 1000UL); // 1000us is 1kHz //NOLINT
-
-
-
-bool init_read_adc2_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
-{
-    adc_2.setChannelScaleAndOffset(ACCEL_1_CHANNEL, ACCEL_1_SCALE, ACCEL_1_OFFSET);
-    adc_2.setChannelScaleAndOffset(ACCEL_2_CHANNEL, ACCEL_2_SCALE, ACCEL_2_OFFSET);
-    adc_2.setChannelScaleAndOffset(BRAKE_1_CHANNEL, BRAKE_1_SCALE, BRAKE_1_OFFSET);
-    adc_2.setChannelScaleAndOffset(BRAKE_2_CHANNEL, BRAKE_2_SCALE, BRAKE_2_OFFSET);
+    ADCsOnVCFInstance::create(adc_1_scales, adc_1_offsets, adc_2_scales, adc_2_offsets);
 
     return true;
 }
-bool run_read_adc2_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
+bool run_read_adc1_task()
 {
-    adc_2.tick(); // Samples all eight channels.
-    adc_2.tick(); // Converts all eight channels.
+    // Samples all eight channels.
+    ADCsOnVCFInstance::instance().adc_1.tick();
 
-    vcf_data.interface_data.pedal_sensor_data.accel_1 = adc_2.data.conversions[ACCEL_1_CHANNEL].conversion;
-    vcf_data.interface_data.pedal_sensor_data.accel_2 = adc_2.data.conversions[ACCEL_2_CHANNEL].conversion;
-    vcf_data.interface_data.pedal_sensor_data.brake_1 = adc_2.data.conversions[BRAKE_1_CHANNEL].conversion;
-    vcf_data.interface_data.pedal_sensor_data.brake_2 = adc_2.data.conversions[BRAKE_2_CHANNEL].conversion;
+    interface_data.steering_data.analog_steering_degrees = ADCsOnVCFInstance::instance().adc_1.data.conversions[STEERING_1_CHANNEL].conversion; // Only using steering 1 for now
+    interface_data.front_loadcell_data.FL_loadcell_analog = ADCsOnVCFInstance::instance().adc_1.data.conversions[FL_LOADCELL_CHANNEL].conversion;
+    interface_data.front_loadcell_data.FR_loadcell_analog = ADCsOnVCFInstance::instance().adc_1.data.conversions[FR_LOADCELL_CHANNEL].conversion;
+    interface_data.front_suspot_data.FL_sus_pot_analog = ADCsOnVCFInstance::instance().adc_1.data.conversions[FL_SUS_POT_CHANNEL].raw; // Just use raw for suspots
+    interface_data.front_suspot_data.FR_sus_pot_analog = ADCsOnVCFInstance::instance().adc_1.data.conversions[FR_SUS_POT_CHANNEL].raw; // Just use raw for suspots
 
     return true;
 }
-HT_TASK::Task read_adc2_task = HT_TASK::Task(init_read_adc2_task, run_read_adc2_task, 10, 1000UL); // 1000us is 1kHz //NOLINT
 
-bool init_buzzer_control_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
+bool run_read_adc2_task()
+{
+    // Samples all eight channels.
+    ADCsOnVCFInstance::instance().adc_2.tick();
+
+    interface_data.pedal_sensor_data.accel_1 = ADCsOnVCFInstance::instance().adc_2.data.conversions[ACCEL_1_CHANNEL].conversion;
+    interface_data.pedal_sensor_data.accel_2 = ADCsOnVCFInstance::instance().adc_2.data.conversions[ACCEL_2_CHANNEL].conversion;
+    interface_data.pedal_sensor_data.brake_1 = ADCsOnVCFInstance::instance().adc_2.data.conversions[BRAKE_1_CHANNEL].conversion;
+    interface_data.pedal_sensor_data.brake_2 = ADCsOnVCFInstance::instance().adc_2.data.conversions[BRAKE_2_CHANNEL].conversion;
+
+    return true;
+}
+
+bool init_read_gpio_task()
+{
+    // Setting digital/analog buttons D10-D6, A8 as inputs
+    pinMode(BTN_DIM_READ, INPUT);
+    pinMode(BTN_PRESET_READ, INPUT);
+    pinMode(BTN_MC_CYCLE_READ, INPUT);
+    pinMode(BTN_MODE_READ, INPUT);
+    pinMode(BTN_START_READ, INPUT);
+    pinMode(BTN_DATA_READ, INPUT);
+    
+    return true;
+}
+bool run_read_gpio_task()
+{
+    // Doing digital read on all digital inputs
+    int dimButton = digitalRead(BTN_DIM_READ);
+    int presetButton = digitalRead(BTN_PRESET_READ);
+    int mcCycleButton = digitalRead(BTN_MC_CYCLE_READ);
+    int modeButton = digitalRead(BTN_MODE_READ);
+    int startButton = digitalRead(BTN_START_READ);
+    int dataButton = digitalRead(BTN_DATA_READ);
+    
+    interface_data.dash_input_state.dim_btn_is_pressed = dimButton;
+    interface_data.dash_input_state.preset_btn_is_pressed = presetButton;
+    interface_data.dash_input_state.mc_reset_btn_is_pressed = mcCycleButton;
+    interface_data.dash_input_state.mode_btn_is_pressed = modeButton;
+    interface_data.dash_input_state.start_btn_is_pressed = startButton;
+    interface_data.dash_input_state.data_btn_is_pressed = dataButton;
+
+    return true;
+}
+
+bool init_buzzer_control_task()
 {
     pinMode(BUZZER_CONTROL_PIN, OUTPUT);
 
     return true;
 }
-bool run_buzzer_control_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
+bool run_buzzer_control_task()
 {
     digitalWrite(BUZZER_CONTROL_PIN, vcf_data.system_data.buzzer_is_active);
     
     return true;
 }
-HT_TASK::Task buzzer_control_task = HT_TASK::Task(init_buzzer_control_task, run_buzzer_control_task, 10, 1000UL); // 1000us is 1kHz //NOLINT
-
-bool run_send_vcf_data_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
-{
-
-    vcf_data.system_data.pedals_system_data.accel_percent = (taskInfo.executions % 100) / 100.0f;
-
-    hytech_msgs_VCFData_s protoc_struct = VCFEthernetInterface::make_vcf_data_msg(vcf_data);
-
-    handle_ethernet_socket_send_pb<hytech_msgs_VCFData_s, hytech_msgs_VCFData_s_size>(EthernetIPDefsInstance::instance().debug_ip, EthernetIPDefsInstance::instance().VCFData_port, &protobuf_send_socket, protoc_struct, &hytech_msgs_VCFData_s_msg);
-
-    return true;
-}
-HT_TASK::Task send_vcf_data_task = HT_TASK::Task(HT_TASK::DUMMY_FUNCTION, run_send_vcf_data_task, 11, 50000UL); // 1 000 000 us is 1Hz //NOLINT
-
-bool run_recv_vcr_data_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
-{
-    etl::optional<hytech_msgs_VCRData_s> protoc_struct = handle_ethernet_socket_receive<hytech_msgs_VCRData_s_size, hytech_msgs_VCRData_s>(&protobuf_recv_socket, &hytech_msgs_VCRData_s_msg);
-    if (protoc_struct)
-    {
-        
-        VCFEthernetInterface::receive_pb_msg_vcr(protoc_struct.value(), vcf_data, millis());
-        Serial.println("Received protobuf message!");
-        
-    }
-
-    return true;
-}
-HT_TASK::Task recv_vcr_data_task = HT_TASK::Task(HT_TASK::DUMMY_FUNCTION, run_recv_vcr_data_task, 11, 1000UL); // 1 000 us is 1kHz //NOLINT
-
