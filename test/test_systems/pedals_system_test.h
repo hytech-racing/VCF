@@ -55,14 +55,6 @@ bool get_result_of_double_brake_test(PedalsSystem &pedals, const PedalSensorData
     return data.implausibility_has_exceeded_max_duration;
 }
 
-// returns true if implausibility has exceeded max duration for single brake test
-bool get_result_of_single_brake_test(PedalsSystem &pedals, const PedalSensorData_s &sensor_data)
-{
-    auto data = pedals.evaluate_pedals(sensor_data, 1000);
-    data = pedals.evaluate_pedals(sensor_data, 1110);
-    return data.implausibility_has_exceeded_max_duration;
-}
-
 // resets implausibility time and returns true always
 bool reset_pedals_system_implaus_time(PedalsSystem &pedals)
 {
@@ -80,7 +72,7 @@ bool reset_pedals_system_implaus_time(PedalsSystem &pedals)
     return (!data.implausibility_has_exceeded_max_duration);
 }
 
-// T.4.3.4, T.4.2.7, T.4.2.9, T.4.2.10 FSAE rules 2024 v1
+// T.4.3.4, T.4.2.7, T.4.2.10 FSAE rules 2025 v1
 TEST(PedalsSystemTesting, test_accel_and_brake_limits_plausibility)
 {
     auto params = gen_positive_and_negative_slope_params();
@@ -109,28 +101,17 @@ TEST(PedalsSystemTesting, test_accel_and_brake_limits_plausibility)
         {90, 90, 4000, 0}
     };
 
-    // T.4.2.7 , T.4.2.9 and T.4.2.10 (accel out of ranges min/max) testing
+    // T.4.2.4 and T.4.2.10 (accel out of ranges min/max) testing
     for (const auto& test : accel_test_cases)
     {
         // Test double brake mode
         bool t_4_2_7 = get_result_of_double_brake_test(pedals, test);
         EXPECT_TRUE(t_4_2_7); // Expecting implausibility duration to be exceed for all because all values are out of range and beyond 100 ms duration
         EXPECT_TRUE(reset_pedals_system_implaus_time(pedals));
-
-        // Test single brake mode
-        t_4_2_7 = get_result_of_single_brake_test(pedals, test);
-        EXPECT_TRUE(t_4_2_7);
-        EXPECT_TRUE(reset_pedals_system_implaus_time(pedals));
     }
 
     // Ensure that all good is still good for double brake mode
     bool t_4_2_7 = get_result_of_double_brake_test(pedals, test_pedal_good_val);
-    EXPECT_FALSE(t_4_2_7);
-    EXPECT_TRUE(reset_pedals_system_implaus_time(pedals));
-
-    // Ensure that all good is still good for single brake mode
-    t_4_2_7 = get_result_of_single_brake_test(pedals, test_pedal_good_val);
-    printf("t_4_2_7: %d\n", t_4_2_7);
     EXPECT_FALSE(t_4_2_7);
     EXPECT_TRUE(reset_pedals_system_implaus_time(pedals));
 
@@ -141,26 +122,15 @@ TEST(PedalsSystemTesting, test_accel_and_brake_limits_plausibility)
         bool t_4_3_4 = get_result_of_double_brake_test(pedals, test);
         EXPECT_TRUE(t_4_3_4);
         EXPECT_TRUE(reset_pedals_system_implaus_time(pedals));
-
-        // Test single brake mode
-        t_4_3_4 = get_result_of_single_brake_test(pedals, test);
-        printf("t_4_3_4: %d\n", t_4_3_4);
-        EXPECT_TRUE(t_4_3_4);
-        EXPECT_TRUE(reset_pedals_system_implaus_time(pedals));
     }
 
     // // Ensure that all good is still good for double brake mode
     bool t_4_3_4 = get_result_of_double_brake_test(pedals, test_pedal_good_val);
     EXPECT_FALSE(t_4_3_4);
     EXPECT_TRUE(reset_pedals_system_implaus_time(pedals));
-
-    // // Ensure that all good is still good for single brake mode
-    t_4_3_4 = get_result_of_single_brake_test(pedals, test_pedal_good_val);
-    EXPECT_FALSE(t_4_3_4);
-    EXPECT_TRUE(reset_pedals_system_implaus_time(pedals));
 }
 
-//T.4.2.4 FSAE rules 2024 v1 (accel vals not within 10 percent of each other)
+// T.4.2.4 FSAE rules 2025 v1 (accel vals not within 10 percent of each other)
 TEST(PedalsSystemTesting, test_accel_and_brake_percentages_implausibility)
 {
     auto accel_params = gen_positive_and_negative_slope_params();
@@ -183,18 +153,12 @@ TEST(PedalsSystemTesting, test_accel_and_brake_percentages_implausibility)
         bool expected_result = std::get<1>(test_case);
 
         bool res = get_result_of_double_brake_test(pedals, sensor_data);
-        printf("Double brake res: %d\n", res);
-        EXPECT_EQ(res, expected_result);
-        EXPECT_TRUE(reset_pedals_system_implaus_time(pedals));
-
-        res = get_result_of_single_brake_test(pedals, sensor_data);
-        printf("Single brake res: %d\n", res);
         EXPECT_EQ(res, expected_result);
         EXPECT_TRUE(reset_pedals_system_implaus_time(pedals));
     }
 }
 
-// EV.4.7.1 FSAE rules 2024 v1
+// EV.4.7.1 and EV 4.7.2 FSAE rules 2025 v1
 TEST(PedalsSystemTesting, test_accel_and_brake_pressed_at_same_time_and_activation)
 {
     auto accel_params = gen_positive_and_negative_slope_params();
@@ -204,15 +168,22 @@ TEST(PedalsSystemTesting, test_accel_and_brake_pressed_at_same_time_and_activati
     // testing with example half pressed values
     PedalSensorData_s test_pedal_val_half_pressed = {1000, 3000, 2000, 2000};
 
-    EXPECT_TRUE(get_result_of_double_brake_test(pedals, test_pedal_val_half_pressed)); // gives true because both pedals are pressed (brake_and_accel_pressed_implausibility_high)
-    EXPECT_TRUE(reset_pedals_system_implaus_time(pedals));
-    EXPECT_TRUE(get_result_of_single_brake_test(pedals, test_pedal_val_half_pressed)); // gives true because both pedals are pressed (brake_and_accel_pressed_implausibility_high)
-    EXPECT_TRUE(reset_pedals_system_implaus_time(pedals));
+    auto data = pedals.evaluate_pedals(test_pedal_val_half_pressed, 1000);
+    EXPECT_TRUE(data.accel_is_pressed);
+    EXPECT_TRUE(data.brake_is_pressed);
+    EXPECT_TRUE(data.brake_and_accel_pressed_implausibility_high);
+    
+    // remove pressing both pedals
+    PedalSensorData_s test_pedal_val_unpressed = {90, 90, 90, 90};
+    data = pedals.evaluate_pedals(test_pedal_val_unpressed, 1100);
+    EXPECT_FALSE(data.accel_is_pressed);
+    EXPECT_FALSE(data.brake_is_pressed);
+    EXPECT_FALSE(data.brake_and_accel_pressed_implausibility_high);
 
     // Future Implementation: test with real values from the car
 }
 
-// T.4.2.5 FSAE rules 2024 v1
+// T.4.2.5 FSAE rules 2025 v1
 TEST(PedalsSystemTesting, test_implausibility_duration)
 {
     auto accel_params = gen_positive_and_negative_slope_params();
@@ -232,7 +203,7 @@ TEST(PedalsSystemTesting, test_implausibility_duration)
     EXPECT_TRUE(data.implausibility_has_exceeded_max_duration);
 }
 
-// EV.4.7.2 b FSAE rules 2024 v1
+// EV.4.7.2 a FSAE rules 2025 v1
 TEST(PedalsSystemTesting, implausibility_latching_until_accel_released_double_brake)
 {
     auto accel_params = gen_positive_and_negative_slope_params();
