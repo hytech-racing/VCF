@@ -9,8 +9,8 @@ float PedalsSystem::_pedal_percentage(float pedal1val, float pedal2val, const Pe
     float pedal2percent = fabs((pedal2val - static_cast<float>(params.min_pedal_2)))/fabs(static_cast<float>(params.max_pedal_2 - params.min_pedal_2));
     const float divider = 2.0;
     float percentage = (pedal1percent + pedal2percent) / divider;
-    percentage = _remove_deadzone(percentage, params.deadzone_margin);
-    percentage = std::max(percentage, 0.0f);
+    //percentage = _remove_deadzone(percentage, params.deadzone_margin);
+    //percentage = std::max(percentage, 0.0f);
     return percentage;
 }
 
