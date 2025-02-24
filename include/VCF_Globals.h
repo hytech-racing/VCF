@@ -7,6 +7,9 @@
 /* From shared-firmware-interfaces */
 #include "MCP_ADC.h"
 
+/* From shared-firmware-interfaces */
+#include "EthernetAddressDefs.h"
+
 /* From shared-firmware-types */
 #include "SharedFirmwareTypes.h"
 
@@ -17,9 +20,10 @@
 #include <etl/singleton.h>
 
 /* Interface and system data structs */
-extern VCFInterfaceData_s interface_data; // NOLINT
-extern VCFSystemData_s system_data; // NOLINT
-extern VCRSystemData_s vcr_system_data; // NOLINT
+extern VCFData_s vcf_data; // NOLINT
+extern VCFInterfaceData_s interface_data;
+extern VCFSystemData_s system_data;
+extern VCRSystemData_s vcr_system_data;
 
 /* ADC setup */
 constexpr unsigned int channels_within_mcp_adc = 8;
