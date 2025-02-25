@@ -1,5 +1,6 @@
 #include <math.h>
 #include "PedalsSystem.h"
+#include <stdio.h>
 
 
 
@@ -8,7 +9,8 @@ float PedalsSystem::_pedal_percentage(float pedal1val, float pedal2val, const Pe
     float pedal1percent = fabs((pedal1val - static_cast<float>(params.min_pedal_1)))/fabs(static_cast<float>(params.max_pedal_1 - params.min_pedal_1));
     float pedal2percent = fabs((pedal2val - static_cast<float>(params.min_pedal_2)))/fabs(static_cast<float>(params.max_pedal_2 - params.min_pedal_2));
     const float divider = 2.0;
-    return (pedal1percent + pedal2percent) / divider;
+    float percent = (pedal1percent + pedal2percent) / divider;
+    return _remove_deadzone(percent, params.deadzone_margin);
 }
 
 float PedalsSystem:: _pedals_scaler1(int pedalval, const PedalsParams &params){
@@ -44,10 +46,10 @@ PedalsSystemData_s PedalsSystem::evaluate_pedals(PedalSensorData_s pedals_data, 
     out.brake_and_accel_pressed_implausibility_high = _evaluate_brake_and_accel_pressed(pedals_data);
     float accel_percent = (out.accel_is_implausible) ? _accel1_scaled_ : _pedal_percentage(static_cast<float>(accel_1),static_cast<float>(accel_2),_accelParams); 
     accel_percent = _remove_deadzone(accel_percent, _accelParams.deadzone_margin);
-    out.accel_percent = std::max(out.accel_percent, 0.0f);
+    //out.accel_percent = std::max(out.accel_percent, 0.0f);
     printf("Accel Percent: %f\n", out.accel_percent);
     float brake_percent = (out.brake_is_implausible) ? _brake1_scaled_ : _pedal_percentage(static_cast<float>(brake_1),static_cast<float>(brake_2),_brakeParams);
-    brake_percent = _remove_deadzone(brake_percent, _brakeParams.deadzone_margin);
+    //brake_percent = _remove_deadzone(brake_percent, _brakeParams.deadzone_margin);
     out.brake_percent = std::max(out.brake_percent, 0.0f);
     printf("Brake Percent: %f\n", out.brake_percent);
     bool implausibility = (out.accel_is_implausible || out.brake_and_accel_pressed_implausibility_high || out.brake_is_implausible);
