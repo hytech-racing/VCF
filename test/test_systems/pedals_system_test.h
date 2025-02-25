@@ -239,11 +239,11 @@ TEST(PedalsSystemTesting, deadzone_removal_calc_double_brake_ped)
     auto data = params.evaluate_pedals(test_pedal_data, 1000);
     EXPECT_NEAR(data.accel_percent, 0.0, 0.001);
 
-    test_pedal_data = {2045, 1000, 90, 90};
+    test_pedal_data = {2045, 2045, 90, 90};
     data = params.evaluate_pedals(test_pedal_data, 1100);
     EXPECT_NEAR(data.accel_percent, 0.5, 0.001);
 
-    test_pedal_data = {3999, 1000, 90, 90};
+    test_pedal_data = {3999, 3999, 90, 90};
     data = params.evaluate_pedals(test_pedal_data, 1200);
     EXPECT_NEAR(data.accel_percent, 1, .001);
 
@@ -252,11 +252,11 @@ TEST(PedalsSystemTesting, deadzone_removal_calc_double_brake_ped)
     data = params.evaluate_pedals(test_brake_pedal_data, 1000);
     EXPECT_NEAR(data.brake_percent, 0.0, 0.001);
 
-    test_brake_pedal_data = {90, 90, 2045, 1000};
+    test_brake_pedal_data = {90, 90, 2045, 2045};
     data = params.evaluate_pedals(test_brake_pedal_data, 1100);
     EXPECT_NEAR(data.brake_percent, 0.5, .001);
 
-    test_brake_pedal_data = {90, 90, 3999, 1000};
+    test_brake_pedal_data = {90, 90, 3999, 3999};
     data = params.evaluate_pedals(test_brake_pedal_data, 1200);
     EXPECT_NEAR(data.brake_percent, 1, .001);
 
@@ -265,7 +265,7 @@ TEST(PedalsSystemTesting, deadzone_removal_calc_double_brake_ped)
 // testing mechanical brake and brake activation
 TEST(PedalsSystemTesting, brake_value_testing_double)
 {
-    PedalSensorData_s test_pedal_data = {1000, 3000, 870, 870};
+    PedalSensorData_s test_pedal_data = {3000, 3000, 870, 870};
     auto params = gen_positive_slope_only_params();
     
     params.deadzone_margin = 0;
@@ -276,7 +276,7 @@ TEST(PedalsSystemTesting, brake_value_testing_double)
     EXPECT_TRUE(data.brake_is_pressed);
     EXPECT_FALSE(data.mech_brake_is_active);
 
-    test_pedal_data = {1000, 3000, 2045, 90};
+    test_pedal_data = {3000, 3000, 2045, 2045};
     data = pedals.evaluate_pedals(test_pedal_data, 1100);
     EXPECT_NEAR(data.brake_percent, 0.5, 0.001);
     EXPECT_TRUE(data.brake_is_pressed);
