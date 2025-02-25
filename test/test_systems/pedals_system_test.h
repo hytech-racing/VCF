@@ -243,7 +243,7 @@ TEST(PedalsSystemTesting, deadzone_removal_calc_double_brake_ped)
     data = params.evaluate_pedals(test_pedal_data, 1100);
     EXPECT_NEAR(data.accel_percent, 0.5, 0.001);
 
-    test_pedal_data = {3900, 1000, 90, 90};
+    test_pedal_data = {3999, 1000, 90, 90};
     data = params.evaluate_pedals(test_pedal_data, 1200);
     EXPECT_NEAR(data.accel_percent, 1, .001);
 
@@ -256,7 +256,7 @@ TEST(PedalsSystemTesting, deadzone_removal_calc_double_brake_ped)
     data = params.evaluate_pedals(test_brake_pedal_data, 1100);
     EXPECT_NEAR(data.brake_percent, 0.5, .001);
 
-    test_brake_pedal_data = {90, 90, 3900, 1000};
+    test_brake_pedal_data = {90, 90, 3999, 1000};
     data = params.evaluate_pedals(test_brake_pedal_data, 1200);
     EXPECT_NEAR(data.brake_percent, 1, .001);
 
