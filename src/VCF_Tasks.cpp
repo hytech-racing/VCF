@@ -88,6 +88,7 @@ bool run_read_gpio_task()
     interface_data.dash_input_state.mode_btn_is_pressed = modeButton;
     interface_data.dash_input_state.start_btn_is_pressed = startButton;
     interface_data.dash_input_state.data_btn_is_pressed = dataButton;
+    
 
     return true;
 }
