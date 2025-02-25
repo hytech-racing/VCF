@@ -27,31 +27,29 @@ PedalsSystemData_s PedalsSystem::evaluate_pedals(PedalSensorData_s pedals_data, 
     int accel_1 = static_cast<int>(pedals_data.accel_1); 
     int accel_2 = static_cast<int>(pedals_data.accel_2);
     int brake_1 = static_cast<int>(pedals_data.brake_1);
-    int brake_2 = static_cast<int>(pedals_data.brake_2); // Copying Brake1 data into brake2 as we don't need 2 brakes anymore
+    int brake_2 = static_cast<int>(pedals_data.brake_2); 
 
 
     float _accel1_scaled_ = _pedals_scaler1(accel_1, _accelParams);
     float _accel2_scaled_ = _pedals_scaler2(accel_2, _accelParams);
     float _brake1_scaled_ = _pedals_scaler1(brake_1, _brakeParams);
-    float _brake2_scaled_ = _pedals_scaler2(brake_2, _brakeParams); // Copying Brake1 data into brake2 as we don't need 2 brakes anymore
+    float _brake2_scaled_ = _pedals_scaler2(brake_2, _brakeParams); 
     // FSAE Rules T.4.2.4
     out.brake_is_implausible = _evaluate_pedal_implausibilities(brake_1,brake_2,_brakeParams, 1.0);
-    out.brake_is_implausible = _evaluate_pedal_implausibilities(brake_1,brake_2,_brakeParams,1.0);
     out.accel_is_pressed = _pedal_is_active(_accel1_scaled_, _accel2_scaled_, _accelParams, false);
     out.brake_is_pressed = _pedal_is_active( _brake1_scaled_, _brake2_scaled_,_brakeParams,false);
-    out.accel_is_implausible = _evaluate_pedal_implausibilities(accel_1, accel_2, _accelParams, IMPLAUSIBILITY_PERCENT);
     out.accel_is_implausible = _evaluate_pedal_implausibilities(accel_1, accel_2, _accelParams, IMPLAUSIBILITY_PERCENT);
 
 
     out.brake_and_accel_pressed_implausibility_high = _evaluate_brake_and_accel_pressed(pedals_data);
     float accel_percent = (out.accel_is_implausible) ? _accel1_scaled_ : _pedal_percentage(static_cast<float>(accel_1),static_cast<float>(accel_2),_accelParams); 
-
     out.accel_percent = std::max(accel_percent, 0.0f);
     printf("Accel Percent: %f\n", out.accel_percent);
-    float brake_percent = (out.brake_is_implausible) ? _brake1_scaled_ : _pedal_percentage(static_cast<float>(brake_1),static_cast<float>(brake_2),_brakeParams);
 
+    float brake_percent = (out.brake_is_implausible) ? _brake1_scaled_ : _pedal_percentage(static_cast<float>(brake_1),static_cast<float>(brake_2),_brakeParams);
     out.brake_percent = std::max(brake_percent, 0.0f);
     printf("Brake Percent: %f\n", out.brake_percent);
+    
     bool implausibility = (out.accel_is_implausible || out.brake_and_accel_pressed_implausibility_high || out.brake_is_implausible);
     if (implausibility && (_implausibilityStartTime ==0)){
         _implausibilityStartTime = curr_millis;
