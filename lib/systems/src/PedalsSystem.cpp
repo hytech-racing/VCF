@@ -45,9 +45,11 @@ PedalsSystemData_s PedalsSystem::evaluate_pedals(PedalSensorData_s pedals_data, 
     float accel_percent = (out.accel_is_implausible) ? _accel1_scaled_ : _pedal_percentage(static_cast<float>(accel_1),static_cast<float>(accel_2),_accelParams); 
     out.accel_percent = _remove_deadzone(accel_percent, _accelParams.deadzone_margin);
     out.accel_percent = std::max(out.accel_percent, 0.0f);
-    float brake_percent = (out.brake_is_implausible) ? _brake1_scaled_ : _pedal_percentage(static_cast<float>(brake_1),static_cast<float>(brake_2),_brakeParams); 
+    printf("Accel Percent: %f\n", out.accel_percent);
+    float brake_percent = (out.brake_is_implausible) ? _brake1_scaled_ : _pedal_percentage(static_cast<float>(brake_1),static_cast<float>(brake_2),_brakeParams);
     out.brake_percent = _remove_deadzone(brake_percent, _brakeParams.deadzone_margin);
     out.brake_percent = std::max(out.brake_percent, 0.0f);
+    printf("Brake Percent: %f\n", out.brake_percent);
     bool implausibility = (out.accel_is_implausible || out.brake_and_accel_pressed_implausibility_high || out.brake_is_implausible);
     if (implausibility && (_implausibilityStartTime ==0)){
         _implausibilityStartTime = curr_millis;

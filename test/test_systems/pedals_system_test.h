@@ -62,8 +62,8 @@ bool reset_pedals_system_implaus_time(PedalsSystem &pedals)
     PedalSensorData_s test_pedal_data;
     test_pedal_data.accel_1 = 100;
     test_pedal_data.accel_2 = 3900;
-    test_pedal_data.brake_1 = 0;
-    test_pedal_data.brake_2 = 0;
+    test_pedal_data.brake_1 = 90;
+    test_pedal_data.brake_2 = 90;
 
     auto data = pedals.evaluate_pedals(test_pedal_data, 1000);
     data = pedals.evaluate_pedals(test_pedal_data, 1110);
@@ -79,7 +79,7 @@ TEST(PedalsSystemTesting, test_accel_and_brake_limits_plausibility)
     PedalsSystem pedals(params, params);
 
     // Create test pedal data
-    PedalSensorData_s test_pedal_good_val = {100, 3900, 0, 0}; // All values in a good range
+    PedalSensorData_s test_pedal_good_val = {100, 3900, 90, 90}; // All values in a good range
 
     // Create a vector of test cases for acceleration sensor implausibility
     std::vector<PedalSensorData_s> accel_test_cases = {
@@ -166,7 +166,7 @@ TEST(PedalsSystemTesting, test_accel_and_brake_pressed_at_same_time_and_activati
     PedalsSystem pedals(accel_params, brake_params);
 
     // testing with example half pressed values
-    PedalSensorData_s test_pedal_val_half_pressed = {1000, 3000, 2000, 2000};
+    PedalSensorData_s test_pedal_val_half_pressed = {1000, 3000, 3000, 1000};
 
     auto data = pedals.evaluate_pedals(test_pedal_val_half_pressed, 1000);
     EXPECT_TRUE(data.accel_is_pressed);
@@ -190,7 +190,7 @@ TEST(PedalsSystemTesting, test_implausibility_duration)
     auto brake_params = gen_positive_slope_only_params();
     PedalsSystem pedals(accel_params, brake_params);
 
-    PedalSensorData_s test_pedal_data = {1000, 3000, 2000, 2000};
+    PedalSensorData_s test_pedal_data = {1000, 3000, 3000, 1000};
     
     // Testing accel and brake pressed together
     auto data = pedals.evaluate_pedals(test_pedal_data, 1000);
@@ -211,7 +211,7 @@ TEST(PedalsSystemTesting, implausibility_latching_until_accel_released_double_br
     PedalsSystem pedals(accel_params, brake_params);
 
     // create test data with both pedals pressed
-    PedalSensorData_s test_pedal_data = {3000, 1000, 2000, 2000};
+    PedalSensorData_s test_pedal_data = {3000, 1000, 3000, 1000};
 
     // create an implausibility in the acceleration pedal
     EXPECT_TRUE(get_result_of_double_brake_test(pedals, test_pedal_data));
@@ -243,7 +243,7 @@ TEST(PedalsSystemTesting, deadzone_removal_calc_double_brake_ped)
     data = params.evaluate_pedals(test_pedal_data, 1100);
     EXPECT_NEAR(data.accel_percent, 0.5, 0.001);
 
-    test_pedal_data = {3900, 1000, 2000, 2000};
+    test_pedal_data = {3900, 1000, 90, 90};
     data = params.evaluate_pedals(test_pedal_data, 1200);
     EXPECT_NEAR(data.accel_percent, 1, .001);
 
@@ -259,6 +259,7 @@ TEST(PedalsSystemTesting, deadzone_removal_calc_double_brake_ped)
     test_brake_pedal_data = {90, 90, 3900, 1000};
     data = params.evaluate_pedals(test_brake_pedal_data, 1200);
     EXPECT_NEAR(data.brake_percent, 1, .001);
+
 }
 
 // testing mechanical brake and brake activation
@@ -275,7 +276,7 @@ TEST(PedalsSystemTesting, brake_value_testing_double)
     EXPECT_TRUE(data.brake_is_pressed);
     EXPECT_FALSE(data.mech_brake_is_active);
 
-    test_pedal_data = {1000, 3000, 2045, 2045};
+    test_pedal_data = {1000, 3000, 2045, 90};
     data = pedals.evaluate_pedals(test_pedal_data, 1100);
     EXPECT_NEAR(data.brake_percent, 0.5, 0.001);
     EXPECT_TRUE(data.brake_is_pressed);
@@ -285,7 +286,7 @@ TEST(PedalsSystemTesting, brake_value_testing_double)
 // checking to see that accel pedal can never be negative
 TEST(PedalsSystemTesting, check_accel_never_negative_double)
 {
-    PedalSensorData_s test_pedal_data = {static_cast<uint32_t>(-1000), static_cast<uint32_t>(-3000), 870, 870};
+    PedalSensorData_s test_pedal_data = {static_cast<uint32_t>(-1000), static_cast<uint32_t>(-3000), 870, 90};
     auto params = gen_positive_slope_only_params();
 
     PedalsSystem pedals(params, params);
@@ -311,8 +312,8 @@ TEST(PedalsSystemTesting, check_accel_pressed)
 // testing that accel percent and accel implaus is marked when pedals are out of range
 TEST(PedalsSystemTesting, check_accel_oor)
 {
-    PedalSensorData_s test_pedal_oor_hi_val_accel = {5000, 3000, 2000, 2000};
-    PedalSensorData_s test_pedal_oor_lo_val_accel = {0, 3000, 2000, 2000};
+    PedalSensorData_s test_pedal_oor_hi_val_accel = {5000, 3000, 2000, 90};
+    PedalSensorData_s test_pedal_oor_lo_val_accel = {0, 3000, 2000, 90};
 
     auto params = gen_positive_slope_only_params();
     PedalsSystem pedals(params, params);
