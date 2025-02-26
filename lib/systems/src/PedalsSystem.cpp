@@ -40,6 +40,7 @@ PedalsSystemData_s PedalsSystem::evaluate_pedals(PedalSensorData_s pedals_data, 
     // FSAE Rules T.4.2.4
     out.brake_is_implausible = _evaluate_pedal_implausibilities(brake_1,brake_2,_brakeParams, 1.0);
     out.accel_is_pressed = _pedal_is_active(_accel1_scaled_, _accel2_scaled_, _accelParams, false);
+    printf("accel_is_pressed: %d\n", out.accel_is_pressed);
     out.brake_is_pressed = _pedal_is_active( _brake1_scaled_, _brake2_scaled_,_brakeParams,false);
     out.accel_is_implausible = _evaluate_pedal_implausibilities(accel_1, accel_2, _accelParams, IMPLAUSIBILITY_PERCENT);
 
@@ -52,6 +53,7 @@ PedalsSystemData_s PedalsSystem::evaluate_pedals(PedalSensorData_s pedals_data, 
     float brake_percent = (out.brake_is_implausible) ? _brake1_scaled_ : _pedal_percentage(static_cast<float>(brake_1),static_cast<float>(brake_2),_brakeParams);
     printf("\n");
     printf("brake_percent in cpp: %f\n", brake_percent);
+    printf("\n");
     out.brake_percent = std::max(brake_percent, 0.0f);
     bool implausibility = (out.accel_is_implausible || out.brake_and_accel_pressed_implausibility_high || out.brake_is_implausible);
     if (implausibility && (_implausibilityStartTime ==0)){
@@ -62,11 +64,8 @@ PedalsSystemData_s PedalsSystem::evaluate_pedals(PedalSensorData_s pedals_data, 
     }
     bool oor = implausibility && (_evaluate_pedal_oor(accel_1, _accelParams.min_sensor_pedal_1, _accelParams.max_sensor_pedal_1)
                                  || _evaluate_pedal_oor(accel_2, _accelParams.min_sensor_pedal_2, _accelParams.max_sensor_pedal_2));
-    printf("oor: %d\n", oor);
     out.accel_percent = (oor) ? 0 : out.accel_percent;
     out.brake_percent = (oor) ? 0 : out.brake_percent;
-    printf("accel_percent on oor: %f, brake_percent on oor: %f\n", out.accel_percent, out.brake_percent);
-    printf("\n");
     out.mech_brake_is_active = out.brake_percent >= _brakeParams.mechanical_activation_percentage;
     out.implausibility_has_exceeded_max_duration = _max_duration_of_implausibility_exceeded(curr_millis);
     return out;
@@ -124,7 +123,7 @@ bool PedalsSystem::_pedal_is_active(float pedal1ScaledData, float pedal2ScaledDa
         pedal_2_is_active = val2_deadzone_removed >= params.mechanical_activation_percentage;
     } else {
         pedal_1_is_active = val1_deadzone_removed >= params.activation_percentage;
-        pedal_2_is_active = val2_deadzone_removed >= params.activation_percentage;
+        pedal_2_is_active = 1.0 - val2_deadzone_removed >= params.activation_percentage;
     }
     return (pedal_1_is_active || pedal_2_is_active);
 }
