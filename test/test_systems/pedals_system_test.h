@@ -134,7 +134,7 @@ TEST(PedalsSystemTesting, test_accel_and_brake_limits_plausibility)
 TEST(PedalsSystemTesting, test_accel_and_brake_percentages_implausibility)
 {
     auto accel_params = gen_positive_and_negative_slope_params();
-    auto brake_params = gen_positive_slope_only_params();
+    auto brake_params = gen_positive_and_negative_slope_params();
     PedalsSystem pedals(accel_params, brake_params);
 
     PedalSensorData_s test_pedal_neg_slope_not_pressed = {5000, 90, 90, 90};
@@ -162,7 +162,7 @@ TEST(PedalsSystemTesting, test_accel_and_brake_percentages_implausibility)
 TEST(PedalsSystemTesting, test_accel_and_brake_pressed_at_same_time_and_activation)
 {
     auto accel_params = gen_positive_and_negative_slope_params();
-    auto brake_params = gen_positive_slope_only_params();
+    auto brake_params = gen_positive_and_negative_slope_params();
     PedalsSystem pedals(accel_params, brake_params);
 
     // testing with example half pressed values
@@ -187,7 +187,7 @@ TEST(PedalsSystemTesting, test_accel_and_brake_pressed_at_same_time_and_activati
 TEST(PedalsSystemTesting, test_implausibility_duration)
 {
     auto accel_params = gen_positive_and_negative_slope_params();
-    auto brake_params = gen_positive_slope_only_params();
+    auto brake_params = gen_positive_and_negative_slope_params();
     PedalsSystem pedals(accel_params, brake_params);
 
     PedalSensorData_s test_pedal_data = {1000, 3000, 3000, 1000};
@@ -207,7 +207,7 @@ TEST(PedalsSystemTesting, test_implausibility_duration)
 TEST(PedalsSystemTesting, implausibility_latching_until_accel_released_double_brake)
 {
     auto accel_params = gen_positive_and_negative_slope_params();
-    auto brake_params = gen_positive_slope_only_params();
+    auto brake_params = gen_positive_and_negative_slope_params();
     PedalsSystem pedals(accel_params, brake_params);
 
     // create test data with both pedals pressed
@@ -237,15 +237,15 @@ TEST(PedalsSystemTesting, deadzone_removal_calc_double_brake_ped)
     PedalsSystem params(accel_params, brake_params);
 
     // Test accel pedal with good values (0%, 100%)
-    PedalSensorData_s test_pedal_data = {90, 90, 90, 90};
+    PedalSensorData_s test_pedal_data = {90, 4000, 90, 4000};
     auto data = params.evaluate_pedals(test_pedal_data, 1000);
     EXPECT_NEAR(data.accel_percent, 0.0, 0.001);
 
-    test_pedal_data = {2045, 1000, 90, 90};
+    test_pedal_data = {2045, 2045, 90, 4000};
     data = params.evaluate_pedals(test_pedal_data, 1100);
     EXPECT_NEAR(data.accel_percent, 0.5, 0.001);
 
-    test_pedal_data = {3999, 1000, 90, 90};
+    test_pedal_data = {4000, 90, 90, 4000};
     data = params.evaluate_pedals(test_pedal_data, 1200);
     EXPECT_NEAR(data.accel_percent, 1, .001);
 
@@ -254,11 +254,11 @@ TEST(PedalsSystemTesting, deadzone_removal_calc_double_brake_ped)
     data = params.evaluate_pedals(test_brake_pedal_data, 1000);
     EXPECT_NEAR(data.brake_percent, 0.0, 0.001);
 
-    test_brake_pedal_data = {90, 90, 2045, 1000};
+    test_brake_pedal_data = {90, 90, 2045, 90};
     data = params.evaluate_pedals(test_brake_pedal_data, 1100);
     EXPECT_NEAR(data.brake_percent, 0.5, .001);
 
-    test_brake_pedal_data = {90, 90, 3999, 1000};
+    test_brake_pedal_data = {90, 90, 3999, 90};
     data = params.evaluate_pedals(test_brake_pedal_data, 1200);
     EXPECT_NEAR(data.brake_percent, 1, .001);
 
@@ -268,7 +268,7 @@ TEST(PedalsSystemTesting, deadzone_removal_calc_double_brake_ped)
 TEST(PedalsSystemTesting, brake_value_testing_double)
 {
     PedalSensorData_s test_pedal_data = {3000, 3000, 870, 870};
-    auto params = gen_positive_slope_only_params();
+    auto params = gen_positive_and_negative_slope_params();
     
     params.deadzone_margin = 0;
     PedalsSystem pedals(params, params);
@@ -289,7 +289,7 @@ TEST(PedalsSystemTesting, brake_value_testing_double)
 TEST(PedalsSystemTesting, check_accel_never_negative_double)
 {
     PedalSensorData_s test_pedal_data = {static_cast<uint32_t>(-1000), static_cast<uint32_t>(-3000), 870, 90};
-    auto params = gen_positive_slope_only_params();
+    auto params = gen_positive_and_negative_slope_params();
 
     PedalsSystem pedals(params, params);
     params.deadzone_margin = 0;
@@ -303,7 +303,7 @@ TEST(PedalsSystemTesting, check_accel_never_negative_double)
 TEST(PedalsSystemTesting, check_accel_pressed)
 {
     PedalSensorData_s test_pedal_data = {1000, 3000, 90, 90};
-    auto params = gen_positive_slope_only_params();
+    auto params = gen_positive_and_negative_slope_params();
 
     PedalsSystem pedals(params, params);
 
@@ -317,7 +317,7 @@ TEST(PedalsSystemTesting, check_accel_oor)
     PedalSensorData_s test_pedal_oor_hi_val_accel = {5000, 3000, 2000, 90};
     PedalSensorData_s test_pedal_oor_lo_val_accel = {0, 3000, 2000, 90};
 
-    auto params = gen_positive_slope_only_params();
+    auto params = gen_positive_and_negative_slope_params();
     PedalsSystem pedals(params, params);
 
     auto data_oor_hi = pedals.evaluate_pedals(test_pedal_oor_hi_val_accel, 1000);
