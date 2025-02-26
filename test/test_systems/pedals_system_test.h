@@ -237,28 +237,28 @@ TEST(PedalsSystemTesting, deadzone_removal_calc_double_brake_ped)
     PedalsSystem params(accel_params, brake_params);
 
     // Test accel pedal with good values (0%, 100%)
-    PedalSensorData_s test_pedal_data = {90, 4000, 90, 4000};
+    PedalSensorData_s test_pedal_data = {94, 3996, 94, 3996};
     auto data = params.evaluate_pedals(test_pedal_data, 1000);
     EXPECT_NEAR(data.accel_percent, 0.0, 0.001);
 
-    test_pedal_data = {2045, 2045, 90, 4000};
+    test_pedal_data = {2045, 2045, 94, 3996};
     data = params.evaluate_pedals(test_pedal_data, 1100);
     EXPECT_NEAR(data.accel_percent, 0.5, 0.001);
 
-    test_pedal_data = {4000, 90, 90, 4000};
+    test_pedal_data = {3996, 94, 94, 3996};
     data = params.evaluate_pedals(test_pedal_data, 1200);
     EXPECT_NEAR(data.accel_percent, 1, .001);
 
     // Testing brake pedal with good values (0%, 50%, 100%)
-    PedalSensorData_s test_brake_pedal_data = {90, 90, 90, 90};
+    PedalSensorData_s test_brake_pedal_data = {94, 3996, 94, 3996};
     data = params.evaluate_pedals(test_brake_pedal_data, 1000);
     EXPECT_NEAR(data.brake_percent, 0.0, 0.001);
 
-    test_brake_pedal_data = {90, 90, 2045, 90};
+    test_brake_pedal_data = {94, 3996, 2045, 2045};
     data = params.evaluate_pedals(test_brake_pedal_data, 1100);
     EXPECT_NEAR(data.brake_percent, 0.5, .001);
 
-    test_brake_pedal_data = {90, 90, 3999, 90};
+    test_brake_pedal_data = {94, 3996, 3996, 94};
     data = params.evaluate_pedals(test_brake_pedal_data, 1200);
     EXPECT_NEAR(data.brake_percent, 1, .001);
 
