@@ -24,10 +24,14 @@
 /* Scheduler setup */
 // HT_SCHED::Scheduler& scheduler = HT_SCHED::Scheduler::getInstance();
 
-void setup() {
+using namespace qindesign::network;
 
+
+void setup() {
+    Ethernet.begin(EthernetIPDefsInstance::instance().vcf_ip, EthernetIPDefsInstance::instance().default_dns, EthernetIPDefsInstance::instance().default_gateway, EthernetIPDefsInstance::instance().car_subnet);
 }
 
 void loop() {
     
+
 }

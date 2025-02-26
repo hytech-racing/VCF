@@ -19,14 +19,19 @@
 /* From Embedded Template Library */
 #include <etl/singleton.h>
 
+/* Ethernet includes */
+#include "QNEthernet.h"
+
 /* Interface and system data structs */
 extern VCFData_s vcf_data; // NOLINT
-extern VCFInterfaceData_s interface_data;
-extern VCFSystemData_s system_data;
-extern VCRSystemData_s vcr_system_data;
+extern VCRData_s vcr_data;
 
 /* ADC setup */
 constexpr unsigned int channels_within_mcp_adc = 8;
+
+/* Ethernet sockets */
+extern qindesign::network::EthernetUDP VCF_socket;
+extern qindesign::network::EthernetUDP VCR_socket;
 
 /**
  * Bundle of the two ADCs that exist on VCF. This allows us to use a singleton class that has two (and only two!) instances of MCP_ADC.

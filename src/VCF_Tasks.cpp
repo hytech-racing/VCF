@@ -1,7 +1,10 @@
 #include "VCF_Tasks.h"
 #include "VCF_Globals.h"
 #include "VCF_Constants.h"
-
+#include <QNEthernet.h>
+#include "ProtobufMsgInterface.h"
+#include "VCFEthernetInterface.h"
+#include "hytech_msgs.pb.h"
 
 bool init_adc_task()
 {
@@ -38,11 +41,11 @@ bool run_read_adc1_task()
     // Samples all eight channels.
     ADCsOnVCFInstance::instance().adc_1.tick();
 
-    interface_data.steering_data.analog_steering_degrees = ADCsOnVCFInstance::instance().adc_1.data.conversions[STEERING_1_CHANNEL].conversion; // Only using steering 1 for now
-    interface_data.front_loadcell_data.FL_loadcell_analog = ADCsOnVCFInstance::instance().adc_1.data.conversions[FL_LOADCELL_CHANNEL].conversion;
-    interface_data.front_loadcell_data.FR_loadcell_analog = ADCsOnVCFInstance::instance().adc_1.data.conversions[FR_LOADCELL_CHANNEL].conversion;
-    interface_data.front_suspot_data.FL_sus_pot_analog = ADCsOnVCFInstance::instance().adc_1.data.conversions[FL_SUS_POT_CHANNEL].raw; // Just use raw for suspots
-    interface_data.front_suspot_data.FR_sus_pot_analog = ADCsOnVCFInstance::instance().adc_1.data.conversions[FR_SUS_POT_CHANNEL].raw; // Just use raw for suspots
+    vcf_data.interface_data.steering_data.analog_steering_degrees = ADCsOnVCFInstance::instance().adc_1.data.conversions[STEERING_1_CHANNEL].conversion; // Only using steering 1 for now
+    vcf_data.interface_data.front_loadcell_data.FL_loadcell_analog = ADCsOnVCFInstance::instance().adc_1.data.conversions[FL_LOADCELL_CHANNEL].conversion;
+    vcf_data.interface_data.front_loadcell_data.FR_loadcell_analog = ADCsOnVCFInstance::instance().adc_1.data.conversions[FR_LOADCELL_CHANNEL].conversion;
+    vcf_data.interface_data.front_suspot_data.FL_sus_pot_analog = ADCsOnVCFInstance::instance().adc_1.data.conversions[FL_SUS_POT_CHANNEL].raw; // Just use raw for suspots
+    vcf_data.interface_data.front_suspot_data.FR_sus_pot_analog = ADCsOnVCFInstance::instance().adc_1.data.conversions[FR_SUS_POT_CHANNEL].raw; // Just use raw for suspots
 
     return true;
 }
@@ -52,10 +55,10 @@ bool run_read_adc2_task()
     // Samples all eight channels.
     ADCsOnVCFInstance::instance().adc_2.tick();
 
-    interface_data.pedal_sensor_data.accel_1 = ADCsOnVCFInstance::instance().adc_2.data.conversions[ACCEL_1_CHANNEL].conversion;
-    interface_data.pedal_sensor_data.accel_2 = ADCsOnVCFInstance::instance().adc_2.data.conversions[ACCEL_2_CHANNEL].conversion;
-    interface_data.pedal_sensor_data.brake_1 = ADCsOnVCFInstance::instance().adc_2.data.conversions[BRAKE_1_CHANNEL].conversion;
-    interface_data.pedal_sensor_data.brake_2 = ADCsOnVCFInstance::instance().adc_2.data.conversions[BRAKE_2_CHANNEL].conversion;
+    vcf_data.interface_data.pedal_sensor_data.accel_1 = ADCsOnVCFInstance::instance().adc_2.data.conversions[ACCEL_1_CHANNEL].conversion;
+    vcf_data.interface_data.pedal_sensor_data.accel_2 = ADCsOnVCFInstance::instance().adc_2.data.conversions[ACCEL_2_CHANNEL].conversion;
+    vcf_data.interface_data.pedal_sensor_data.brake_1 = ADCsOnVCFInstance::instance().adc_2.data.conversions[BRAKE_1_CHANNEL].conversion;
+    vcf_data.interface_data.pedal_sensor_data.brake_2 = ADCsOnVCFInstance::instance().adc_2.data.conversions[BRAKE_2_CHANNEL].conversion;
 
     return true;
 }
@@ -82,12 +85,12 @@ bool run_read_gpio_task()
     int startButton = digitalRead(BTN_START_READ);
     int dataButton = digitalRead(BTN_DATA_READ);
     
-    interface_data.dash_input_state.dim_btn_is_pressed = dimButton;
-    interface_data.dash_input_state.preset_btn_is_pressed = presetButton;
-    interface_data.dash_input_state.mc_reset_btn_is_pressed = mcCycleButton;
-    interface_data.dash_input_state.mode_btn_is_pressed = modeButton;
-    interface_data.dash_input_state.start_btn_is_pressed = startButton;
-    interface_data.dash_input_state.data_btn_is_pressed = dataButton;
+    vcf_data.interface_data.dash_input_state.dim_btn_is_pressed = dimButton;
+    vcf_data.interface_data.dash_input_state.preset_btn_is_pressed = presetButton;
+    vcf_data.interface_data.dash_input_state.mc_reset_btn_is_pressed = mcCycleButton;
+    vcf_data.interface_data.dash_input_state.mode_btn_is_pressed = modeButton;
+    vcf_data.interface_data.dash_input_state.start_btn_is_pressed = startButton;
+    vcf_data.interface_data.dash_input_state.data_btn_is_pressed = dataButton;
 
     return true;
 }
@@ -100,7 +103,42 @@ bool init_buzzer_control_task()
 }
 bool run_buzzer_control_task()
 {
-    digitalWrite(BUZZER_CONTROL_PIN, vcr_system_data.buzzer_is_active);
+    digitalWrite(BUZZER_CONTROL_PIN, vcr_data.system_data.buzzer_is_active);
     
     return true;
 }
+
+bool init_handle_send_vcf_ethernet_data() {
+    VCF_socket.begin(EthernetIPDefsInstance::instance().VCFData_port);
+
+    return true;
+}
+bool run_handle_send_vcf_ethernet_data() {
+    hytech_msgs_VCFData_s msg = VCFEthernetInterface::make_vcf_data_msg(vcf_data);
+    if(handle_ethernet_socket_send_pb<hytech_msgs_VCFData_s_size, hytech_msgs_VCFData_s>
+            (EthernetIPDefsInstance::instance().vcr_ip, 
+            EthernetIPDefsInstance::instance().VCRData_port, 
+            &VCF_socket, 
+            msg, 
+            &hytech_msgs_VCFData_s_msg)) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+bool init_handle_receive_vcr_ethernet_data() {
+    VCF_socket.begin(EthernetIPDefsInstance::instance().VCFData_port);
+
+    return true;
+}
+
+bool run_handle_receive_vcr_ethernet_data() {
+    etl::optional<hytech_msgs_VCRData_s> protoc_struct = handle_ethernet_socket_receive<hytech_msgs_VCRData_s_size, hytech_msgs_VCRData_s>(&VCF_socket, &hytech_msgs_VCRData_s_msg);
+    if (protoc_struct) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
