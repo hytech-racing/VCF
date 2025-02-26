@@ -267,7 +267,7 @@ TEST(PedalsSystemTesting, deadzone_removal_calc_double_brake_ped)
 // testing mechanical brake and brake activation
 TEST(PedalsSystemTesting, brake_value_testing_double)
 {
-    PedalSensorData_s test_pedal_data = {3000, 3000, 870, 870};
+    PedalSensorData_s test_pedal_data = {94, 3996, 872, 3218};
     auto params = gen_positive_and_negative_slope_params();
     
     params.deadzone_margin = 0;
@@ -278,7 +278,7 @@ TEST(PedalsSystemTesting, brake_value_testing_double)
     EXPECT_TRUE(data.brake_is_pressed);
     EXPECT_FALSE(data.mech_brake_is_active);
 
-    test_pedal_data = {3000, 3000, 2045, 2045};
+    test_pedal_data = {94, 3996, 2045, 2045};
     data = pedals.evaluate_pedals(test_pedal_data, 1100);
     EXPECT_NEAR(data.brake_percent, 0.5, 0.001);
     EXPECT_TRUE(data.brake_is_pressed);
