@@ -55,23 +55,6 @@ bool get_result_of_double_brake_test(PedalsSystem &pedals, const PedalSensorData
     return data.implausibility_has_exceeded_max_duration;
 }
 
-// // resets implausibility time and returns true always
-// bool reset_pedals_system_implaus_time(PedalsSystem &pedals)
-// {
-//     // Populating the test data with plausible values for the pedals
-//     PedalSensorData_s test_pedal_data;
-//     test_pedal_data.accel_1 = 90;
-//     test_pedal_data.accel_2 = 3900;
-//     test_pedal_data.brake_1 = 90;
-//     test_pedal_data.brake_2 = 90;
-
-//     auto data = pedals.evaluate_pedals(test_pedal_data, 1000);
-//     data = pedals.evaluate_pedals(test_pedal_data, 1110);
-
-//     // Always returns true because the plausible values were used
-//     return (!data.implausibility_has_exceeded_max_duration);
-// }
-
 // resets implausibility time and returns true always
 bool reset_pedals_system_implaus_time(PedalsSystem &pedals)
 {
