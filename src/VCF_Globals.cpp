@@ -2,7 +2,6 @@
 #include "VCF_Constants.h"
 
 /* From shared-firmware-interfaces */
-#include "MCP_ADC.h"
 
 /* From shared-firmware-types */
 #include "SharedFirmwareTypes.h"

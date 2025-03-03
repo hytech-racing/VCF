@@ -3,7 +3,6 @@
 #endif
 
 
-
 /* From shared_firmware_types libdep */
 #include "SharedFirmwareTypes.h"
 #include "EthernetAddressDefs.h"
