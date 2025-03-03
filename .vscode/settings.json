@@ -101,5 +101,8 @@
         "string_view": "cpp",
         "numbers": "cpp",
         "cinttypes": "cpp"
+        "*.tpp": "cpp",
+        "optional": "cpp",
+        "functional": "cpp"
     }
 }
