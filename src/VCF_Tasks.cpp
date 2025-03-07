@@ -103,7 +103,7 @@ bool init_buzzer_control_task()
 }
 bool run_buzzer_control_task()
 {
-    digitalWrite(BUZZER_CONTROL_PIN, vcr_data.system_data.buzzer_is_active);
+    digitalWrite(BUZZER_CONTROL_PIN, vcf_data.system_data.buzzer_is_active);
     
     return true;
 }
@@ -114,21 +114,24 @@ bool init_handle_send_vcf_ethernet_data() {
     return true;
 }
 bool run_handle_send_vcf_ethernet_data() {
+    vcf_data.system_data.pedals_system_data.regen_percent = (millis() % 1000) / 1000.0f;
     hytech_msgs_VCFData_s msg = VCFEthernetInterface::make_vcf_data_msg(vcf_data);
     if(handle_ethernet_socket_send_pb<hytech_msgs_VCFData_s_size, hytech_msgs_VCFData_s>
             (EthernetIPDefsInstance::instance().vcr_ip, 
-            EthernetIPDefsInstance::instance().VCRData_port, 
+            EthernetIPDefsInstance::instance().VCFData_port, 
             &VCF_socket, 
             msg, 
             &hytech_msgs_VCFData_s_msg)) {
-        return true;
+        Serial.printf("Sent VCF data with value: ");
+        Serial.println(vcf_data.system_data.pedals_system_data.regen_percent);
     } else {
-        return false;
+        Serial.printf("Did not send VCF data :(\n");
     }
+    return true;
 }
 
 bool init_handle_receive_vcr_ethernet_data() {
-    VCF_socket.begin(EthernetIPDefsInstance::instance().VCFData_port);
+    VCR_socket.begin(EthernetIPDefsInstance::instance().VCRData_port);
 
     return true;
 }
@@ -136,9 +139,11 @@ bool init_handle_receive_vcr_ethernet_data() {
 bool run_handle_receive_vcr_ethernet_data() {
     etl::optional<hytech_msgs_VCRData_s> protoc_struct = handle_ethernet_socket_receive<hytech_msgs_VCRData_s_size, hytech_msgs_VCRData_s>(&VCF_socket, &hytech_msgs_VCRData_s_msg);
     if (protoc_struct) {
-        return true;
+        VCFEthernetInterface::receive_pb_msg_vcr(protoc_struct.value(), vcf_data, millis());
+        Serial.printf("Received VCR message!\n");
     } else {
-        return false;
+        Serial.printf("Did not receive VCR message!\n");
     }
+    return true;
 }
 
