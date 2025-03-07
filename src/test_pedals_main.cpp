@@ -33,16 +33,17 @@ const PedalsParams params = {
 
 void setup(){
     PedalsSystemInstance::create(params, params);
-    Serial.begin(115200);
+    const int begin_time = 115200;
+    Serial.begin(begin_time);
     SPI.begin();
     init_adc_task();
 }
 
 void loop(){
 
-    Serial.print("Accel 1: ");
     ADCsOnVCFInstance::instance().adc_2.tick();
     PedalSensorData_s pedal_sensor_data;
+    
     
     pedal_sensor_data.accel_1 = ADCsOnVCFInstance::instance().adc_2.data.conversions[ACCEL_1_CHANNEL].conversion;
     pedal_sensor_data.accel_2 = ADCsOnVCFInstance::instance().adc_2.data.conversions[ACCEL_2_CHANNEL].conversion;
@@ -91,5 +92,6 @@ void loop(){
     Serial.println(data.brake_percent);
     Serial.println("Regen Percent: ");
     Serial.println(data.regen_percent);    
-    delay(1000);
+    const int delay_time = 1000;
+    delay(delay_time);
 }
