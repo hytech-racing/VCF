@@ -31,21 +31,17 @@ EthernetUDP vcr_data_socket;
 void setup()
 {
     Serial.begin(115200);
-    delay(1000);
-    Serial.println("Bald1");
     EthernetIPDefsInstance::create();
-    Ethernet.begin(EthernetIPDefsInstance::instance().vcf_ip, EthernetIPDefsInstance::instance().default_dns, EthernetIPDefsInstance::instance().default_gateway, EthernetIPDefsInstance::instance().car_subnet);
-    Serial.println("Bald2");
+    uint8_t mac[6];
+    Ethernet.macAddress(mac);
+    Ethernet.begin(mac, EthernetIPDefsInstance::instance().vcf_ip, EthernetIPDefsInstance::instance().default_dns, EthernetIPDefsInstance::instance().default_gateway, EthernetIPDefsInstance::instance().car_subnet);
     init_handle_receive_vcr_ethernet_data();
-    Serial.println("Bald3");
     init_handle_send_vcf_ethernet_data();
-    Serial.println("Bald4");
 }
 
 void loop()
 {
     run_handle_send_vcf_ethernet_data();
     run_handle_receive_vcr_ethernet_data();
-    Serial.println("Bald");
     delay(1000);
 }
