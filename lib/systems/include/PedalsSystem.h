@@ -2,7 +2,7 @@
 #define PEDALSSYSTEM
 #include <math.h>
 #include <tuple>
-#include "etl/singleton.h"
+#include <etl/singleton.h>
 
 
 #include "SharedFirmwareTypes.h"
