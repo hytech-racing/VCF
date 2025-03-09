@@ -2,6 +2,7 @@
 #define PEDALSSYSTEM
 #include <math.h>
 #include <tuple>
+#include <etl/singleton.h>
 
 
 #include "SharedFirmwareTypes.h"
@@ -161,6 +162,8 @@ private:
     PedalsParams _brakeParams{};
     unsigned long _implausibilityStartTime;
 };
+
+using PedalsSystemInstance = etl::singleton<PedalsSystem>;
 
 #endif /* PEDALSSYSTEM */
  
