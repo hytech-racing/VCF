@@ -121,7 +121,7 @@ bool PedalsSystem::_pedal_is_active(float pedal1ScaledData, float pedal2ScaledDa
         pedal_1_is_active = val1_deadzone_removed >= params.activation_percentage;
         pedal_2_is_active = (1.0 - val2_deadzone_removed) >= params.activation_percentage;
     }
-    return (pedal_1_is_active || pedal_2_is_active);
+    return (pedal_1_is_active & pedal_2_is_active);
 }
 
 float PedalsSystem::_remove_deadzone(float conversion_input, float deadzone)
