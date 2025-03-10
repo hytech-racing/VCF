@@ -13,13 +13,13 @@
 #include "PedalsSystem.h"
 #include <stdio.h>
 
+//accel params and brake params
 
-
-const PedalsParams params = {
-    .min_pedal_1 = 1000,
-    .min_pedal_2 = 2000,
-    .max_pedal_1 = 2000,
-    .max_pedal_2 = 1000,
+const PedalsParams accel_params = {
+    .min_pedal_1 = 1790,
+    .min_pedal_2 = 1690,
+    .max_pedal_1 = 2830,
+    .max_pedal_2 = 670,
     .activation_percentage = 0.05,
     .min_sensor_pedal_1 = 90,
     .min_sensor_pedal_2 = 90,
@@ -30,9 +30,24 @@ const PedalsParams params = {
     .mechanical_activation_percentage = 0.05
 };
 
+const PedalsParams brake_params = {
+    .min_pedal_1 = 1180,
+    .min_pedal_2 = 2250,
+    .max_pedal_1 = 1660,
+    .max_pedal_2 = 1770,
+    .activation_percentage = 0.05,
+    .min_sensor_pedal_1 = 90,
+    .min_sensor_pedal_2 = 90,
+    .max_sensor_pedal_1 = 4000,
+    .max_sensor_pedal_2 = 4000,
+    .deadzone_margin = .03,
+    .implausibility_margin = IMPLAUSIBILITY_PERCENT,
+    .mechanical_activation_percentage = 0.65
+};
+
 
 void setup(){
-    PedalsSystemInstance::create(params, params);
+    PedalsSystemInstance::create(accel_params, brake_params); //pass in the two different params
     const int begin_time = 115200;
     Serial.begin(begin_time);
     SPI.begin();
