@@ -315,6 +315,25 @@ TEST(PedalsSystemTesting, check_accel_pressed)
     EXPECT_NEAR(data.accel_percent, 0.2, 0.001);
 }
 
+TEST(PedalsSystemTesting, check_brake_pressed)
+{
+    PedalSensorData_s test_pedal_data = {94, 3996, 2045, 2045};
+    auto params = gen_positive_and_negative_slope_params();
+    params.deadzone_margin = .0;
+
+    PedalsSystem pedals(params, params);
+
+    auto data = pedals.evaluate_pedals(test_pedal_data, 1000);
+    EXPECT_TRUE(data.brake_is_pressed);    
+
+    // Is supposed to fail, will be 0.2
+    test_pedal_data = {90,3900,872,3218}; 
+    PedalsSystem pedals2(params, params);
+    data = pedals2.evaluate_pedals(test_pedal_data, 1000);
+    EXPECT_FALSE(data.brake_is_pressed);
+    EXPECT_NEAR(data.brake_percent, 0.2, 0.001);
+}
+
 // testing that accel percent and accel implaus is marked when pedals are out of range
 TEST(PedalsSystemTesting, check_accel_oor)
 {
