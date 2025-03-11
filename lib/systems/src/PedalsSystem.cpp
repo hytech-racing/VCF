@@ -38,16 +38,25 @@ PedalsSystemData_s PedalsSystem::evaluate_pedals(PedalSensorData_s pedals_data, 
     float brake2_scaled = _pedals_scaler2(brake_2, _brakeParams); 
     // FSAE Rules T.4.2.4
     out.brake_is_implausible = _evaluate_pedal_implausibilities(brake_1, brake_2, _brakeParams, 1.0);
-    out.accel_is_pressed = _pedal_is_active(accel1_scaled, accel2_scaled, _accelParams, false);
-    out.brake_is_pressed = _pedal_is_active( brake1_scaled, brake2_scaled,_brakeParams,false);
     out.accel_is_implausible = _evaluate_pedal_implausibilities(accel_1, accel_2, _accelParams, IMPLAUSIBILITY_PERCENT);
-
-
-    out.brake_and_accel_pressed_implausibility_high = _evaluate_brake_and_accel_pressed(pedals_data);
     float accel_percent = (out.accel_is_implausible) ? accel1_scaled : _pedal_percentage(static_cast<float>(accel_1), static_cast<float>(accel_2), _accelParams); 
     out.accel_percent = std::max(accel_percent, 0.0f);
     float brake_percent = (out.brake_is_implausible) ? brake1_scaled : _pedal_percentage(static_cast<float>(brake_1), static_cast<float>(brake_2), _brakeParams);
     out.brake_percent = std::max(brake_percent, 0.0f);
+
+    //Reimplemtning the accel_is_pressed and brake/accel implaus high directly without a helper method. 
+    //Got rid of pedal_is_active helper method and used accel/brake percent to directly compare it to the activation percentage
+    //Got rid of the eval_brake_and_accel pressed method and just outputted it diretly here
+
+    bool accel_pressed = accel_percent >= _accelParams.activation_percentage;
+    bool brake_pressed = brake_percent >= _brakeParams.activation_percentage;
+    out.accel_is_pressed = accel_pressed;
+    out.brake_is_pressed = brake_pressed;
+    bool mech_brake_pressed = brake_percent >= _brakeParams.mechanical_activation_percentage;
+
+    out.brake_and_accel_pressed_implausibility_high = accel_pressed && mech_brake_pressed;
+
+
     bool implausibility = (out.accel_is_implausible || out.brake_and_accel_pressed_implausibility_high || out.brake_is_implausible);
     if (implausibility && (_implausibilityStartTime == 0))
     {
@@ -107,23 +116,6 @@ bool PedalsSystem::_evaluate_min_max_pedal_implausibilities(int pedal_data, int 
     return pedal_less_than_min || pedal_greater_than_max;
 }
 
-bool PedalsSystem::_pedal_is_active(float pedal1ScaledData, float pedal2ScaledData, const PedalsParams& params, bool check_mech_activation)
-{
-    float val1_deadzone_removed = _remove_deadzone(pedal1ScaledData, params.deadzone_margin);
-    float val2_deadzone_removed = _remove_deadzone(pedal2ScaledData, params.deadzone_margin);
-    bool pedal_1_is_active = false; 
-    bool pedal_2_is_active = false; 
-    if (check_mech_activation)
-    {
-        pedal_1_is_active = val1_deadzone_removed >= params.mechanical_activation_percentage;
-        pedal_2_is_active = (1.0 - val2_deadzone_removed) >= params.mechanical_activation_percentage;
-    } else {
-        pedal_1_is_active = val1_deadzone_removed >= params.activation_percentage;
-        pedal_2_is_active = (1.0 - val2_deadzone_removed) >= params.activation_percentage;
-    }
-    return (pedal_1_is_active & pedal_2_is_active);
-}
-
 float PedalsSystem::_remove_deadzone(float conversion_input, float deadzone)
 {
     // Your conversion input is basically pedal data over abs(max-min) to get it betwen 0-1. Then deadzone is removed from it. 
@@ -145,20 +137,4 @@ float PedalsSystem::_remove_deadzone(float conversion_input, float deadzone)
 bool PedalsSystem::_evaluate_pedal_oor(int pedal_data, int min, int max)
 {
     return (pedal_data <= min || pedal_data >= max);
-}
-
-bool PedalsSystem::_evaluate_brake_and_accel_pressed(PedalSensorData_s & pedals_data)
-{
-    int accel_1 = static_cast<int>(pedals_data.accel_1); 
-    int accel_2 = static_cast<int>(pedals_data.accel_2);
-    int brake_1 = static_cast<int>(pedals_data.brake_1);
-    int brake_2 = static_cast<int>(pedals_data.brake_2); 
-    float accel1_scaled = _pedals_scaler1(accel_1, _accelParams);
-    float accel2_scaled = _pedals_scaler2(accel_2, _accelParams);
-    float brake1_scaled = _pedals_scaler1(brake_1, _brakeParams);
-    float brake2_scaled = _pedals_scaler2(brake_2, _brakeParams);
-    bool accel_pressed = _pedal_is_active(accel1_scaled, accel2_scaled, _accelParams, false);
-    bool mech_brake_pressed = _pedal_is_active(brake1_scaled, brake2_scaled,_brakeParams,true);
-    bool both_pedals_implausible = (accel_pressed && mech_brake_pressed);
-    return both_pedals_implausible;
 }

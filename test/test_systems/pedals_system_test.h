@@ -305,14 +305,29 @@ TEST(PedalsSystemTesting, check_accel_pressed)
     PedalsSystem pedals(params, params);
 
     auto data = pedals.evaluate_pedals(test_pedal_data, 1000);
-    EXPECT_TRUE(data.accel_is_pressed);    
+    EXPECT_TRUE(data.accel_is_pressed);  
 
-    // Is supposed to fail, will be 0.2
     test_pedal_data = {872, 3218, 90, 3900};
     PedalsSystem pedals2(params, params);
     data = pedals2.evaluate_pedals(test_pedal_data, 1000);
     EXPECT_FALSE(data.accel_is_pressed);
     EXPECT_NEAR(data.accel_percent, 0.2, 0.001);
+    
+    test_pedal_data = {2145,1945,94,3996};
+    PedalsSystem pedals3(params,params);
+    data = pedals3.evaluate_pedals(test_pedal_data,1000);
+    EXPECT_TRUE(data.accel_is_pressed);
+
+    test_pedal_data = {0,0,94,3996};
+    PedalsSystem pedals4(params,params);
+    data = pedals3.evaluate_pedals(test_pedal_data,1000);
+    EXPECT_FALSE(data.accel_is_pressed);
+
+    test_pedal_data = {94,3996,94,3996};
+    PedalsSystem pedals5(params,params);
+    data = pedals3.evaluate_pedals(test_pedal_data,1000);
+    EXPECT_FALSE(data.accel_is_pressed);
+    
 }
 
 TEST(PedalsSystemTesting, check_brake_pressed)
