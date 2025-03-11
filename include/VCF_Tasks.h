@@ -71,8 +71,8 @@
   * defined in VCFGlobals.h, and Ethernet constants defined in EthernetAddressDefs.h.
   * 
   */
- bool init_handle_send_vcf_ethernet_data();
- bool run_handle_send_vcf_ethernet_data();
+//  bool init_handle_send_vcf_ethernet_data();
+//  bool run_handle_send_vcf_ethernet_data();
 
 
   /**
@@ -81,8 +81,8 @@
   * defined in EthernetAddressDefs.h.
   * 
   */
- bool init_handle_receive_vcr_ethernet_data();
- bool run_handle_receive_vcr_ethernet_data();
+//  bool init_handle_receive_vcr_ethernet_data();
+//  bool run_handle_receive_vcr_ethernet_data();
 
  
  #endif /* VCF_TASKS */

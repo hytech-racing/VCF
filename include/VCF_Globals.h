@@ -8,7 +8,7 @@
 #include "MCP_ADC.h"
 
 /* From shared-firmware-interfaces */
-#include "EthernetAddressDefs.h"
+// #include "EthernetAddressDefs.h"
 
 /* From shared-firmware-types */
 #include "SharedFirmwareTypes.h"
@@ -20,7 +20,7 @@
 #include <etl/singleton.h>
 
 /* Ethernet includes */
-#include "QNEthernet.h"
+// #include "QNEthernet.h"
 
 /* Interface and system data structs */
 extern VCFData_s vcf_data; // NOLINT
@@ -30,8 +30,8 @@ extern VCRData_s vcr_data;
 constexpr unsigned int channels_within_mcp_adc = 8;
 
 /* Ethernet sockets */
-extern qindesign::network::EthernetUDP VCF_socket;
-extern qindesign::network::EthernetUDP VCR_socket;
+// extern qindesign::network::EthernetUDP VCF_socket;
+// extern qindesign::network::EthernetUDP VCR_socket;
 
 /**
  * Bundle of the two ADCs that exist on VCF. This allows us to use a singleton class that has two (and only two!) instances of MCP_ADC.
