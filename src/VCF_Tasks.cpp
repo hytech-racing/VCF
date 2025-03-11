@@ -1,9 +1,9 @@
 #include "VCF_Tasks.h"
 #include "VCF_Globals.h"
 #include "VCF_Constants.h"
-#include <QNEthernet.h>
+// #include <QNEthernet.h>
 #include "ProtobufMsgInterface.h"
-#include "VCFEthernetInterface.h"
+// #include "VCFEthernetInterface.h"
 #include "hytech_msgs.pb.h"
 
 bool init_adc_task()
@@ -108,37 +108,37 @@ bool run_buzzer_control_task()
     return true;
 }
 
-bool init_handle_send_vcf_ethernet_data() {
-    VCF_socket.begin(EthernetIPDefsInstance::instance().VCFData_port);
+// bool init_handle_send_vcf_ethernet_data() {
+//     VCF_socket.begin(EthernetIPDefsInstance::instance().VCFData_port);
 
-    return true;
-}
-bool run_handle_send_vcf_ethernet_data() {
-    hytech_msgs_VCFData_s msg = VCFEthernetInterface::make_vcf_data_msg(vcf_data);
-    if(handle_ethernet_socket_send_pb<hytech_msgs_VCFData_s_size, hytech_msgs_VCFData_s>
-            (EthernetIPDefsInstance::instance().vcr_ip, 
-            EthernetIPDefsInstance::instance().VCRData_port, 
-            &VCF_socket, 
-            msg, 
-            &hytech_msgs_VCFData_s_msg)) {
-        return true;
-    } else {
-        return false;
-    }
-}
+//     return true;
+// }
+// bool run_handle_send_vcf_ethernet_data() {
+//     hytech_msgs_VCFData_s msg = VCFEthernetInterface::make_vcf_data_msg(vcf_data);
+//     if(handle_ethernet_socket_send_pb<hytech_msgs_VCFData_s_size, hytech_msgs_VCFData_s>
+//             (EthernetIPDefsInstance::instance().vcr_ip, 
+//             EthernetIPDefsInstance::instance().VCRData_port, 
+//             &VCF_socket, 
+//             msg, 
+//             &hytech_msgs_VCFData_s_msg)) {
+//         return true;
+//     } else {
+//         return false;
+//     }
+// }
 
-bool init_handle_receive_vcr_ethernet_data() {
-    VCF_socket.begin(EthernetIPDefsInstance::instance().VCFData_port);
+// bool init_handle_receive_vcr_ethernet_data() {
+//     VCF_socket.begin(EthernetIPDefsInstance::instance().VCFData_port);
 
-    return true;
-}
+//     return true;
+// }
 
-bool run_handle_receive_vcr_ethernet_data() {
-    etl::optional<hytech_msgs_VCRData_s> protoc_struct = handle_ethernet_socket_receive<hytech_msgs_VCRData_s_size, hytech_msgs_VCRData_s>(&VCF_socket, &hytech_msgs_VCRData_s_msg);
-    if (protoc_struct) {
-        return true;
-    } else {
-        return false;
-    }
-}
+// bool run_handle_receive_vcr_ethernet_data() {
+//     etl::optional<hytech_msgs_VCRData_s> protoc_struct = handle_ethernet_socket_receive<hytech_msgs_VCRData_s_size, hytech_msgs_VCRData_s>(&VCF_socket, &hytech_msgs_VCRData_s_msg);
+//     if (protoc_struct) {
+//         return true;
+//     } else {
+//         return false;
+//     }
+// }
 
