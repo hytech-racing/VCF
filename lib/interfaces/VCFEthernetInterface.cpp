@@ -50,4 +50,5 @@ hytech_msgs_VCFData_s VCFEthernetInterface::make_vcf_data_msg(VCFData_s &shared_
 
 void VCFEthernetInterface::receive_pb_msg_vcr(const hytech_msgs_VCRData_s &msg_in, VCFData_s &shared_state, unsigned long curr_millis) {
     shared_state.system_data.buzzer_is_active = msg_in.buzzer_is_active;
+    shared_state.interface_data.pedal_sensor_data.accel_1 = msg_in.rear_loadcell_data.RL_loadcell_analog;
 }

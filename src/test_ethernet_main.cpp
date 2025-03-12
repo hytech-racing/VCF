@@ -45,6 +45,8 @@ void loop()
             while(kk--)
                 Serial.printf("%02X ", *string_ptr++);
             Serial.println("");
+
+            Serial.printf("vcf_data.interface_data.pedal_sensor_data.accel_1 = %d\n", vcf_data.interface_data.pedal_sensor_data.accel_1);
         } else {
             Serial.printf("Did not receive VCR message!\n");
         }
@@ -61,6 +63,7 @@ void loop()
 
         handle_ethernet_socket_send_pb<hytech_msgs_VCFData_s_size>(EthernetIPDefsInstance::instance().vcr_ip, EthernetIPDefsInstance::instance().VCFData_port,
             &vcf_data_socket, send_protoc_struct, hytech_msgs_VCFData_s_fields);
+        
 
         delay(500);
     }
