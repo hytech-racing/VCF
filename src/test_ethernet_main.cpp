@@ -15,48 +15,53 @@
 #include "etl/optional.h"
 
 using namespace qindesign::network;
-EthernetUDP socket; 
+EthernetUDP vcr_data_socket; 
+EthernetUDP vcf_data_socket;
 
-void init_ethernet_device()
-{
-    Ethernet.begin(EthernetIPDefsInstance::instance().vcf_ip, EthernetIPDefsInstance::instance().default_dns, EthernetIPDefsInstance::instance().default_gateway, EthernetIPDefsInstance::instance().car_subnet);
-    socket.begin(EthernetIPDefsInstance::instance().VCFData_port);
-    //recv_socket.begin(5555);
-}
-
-void test_send()
-{
-    hytech_msgs_VCFData_s msg = VCFEthernetInterface::make_vcf_data_msg(vcf_data);
-    if (handle_ethernet_socket_send_pb<hytech_msgs_VCFData_s_size, hytech_msgs_VCFData_s>(EthernetIPDefsInstance::instance().vcr_ip, EthernetIPDefsInstance::instance().VCRData_port, &socket, msg, &hytech_msgs_VCFData_s_msg)) {
-        Serial.println("Sent");
-    } else {
-        Serial.println("Failed");
-    }
-}
-
-void test_receive()
-{
-    //handle_ethernet_socket_receive
-    //curr_millis, socket(recv), msg desc, sizeof buffer, ref to empty protoc struct
-    //return optional struct
-}
+VCFData_s vcf_data = {};
 
 void setup()
 {
-    init_ethernet_device();
+    Serial.begin(115200);
+    EthernetIPDefsInstance::create();
+    uint8_t mac[6];
+    qindesign::network::Ethernet.macAddress(mac);
+    Ethernet.begin(EthernetIPDefsInstance::instance().vcf_ip, EthernetIPDefsInstance::instance().default_dns, EthernetIPDefsInstance::instance().default_gateway, EthernetIPDefsInstance::instance().car_subnet);
+
+    vcr_data_socket.begin(EthernetIPDefsInstance::instance().VCRData_port);
+    vcf_data_socket.begin(EthernetIPDefsInstance::instance().VCFData_port);
 }
 
 void loop()
 {
-    etl::optional<hytech_msgs_VCRData_s> protoc_struct = handle_ethernet_socket_receive<hytech_msgs_VCRData_s_size, hytech_msgs_VCRData_s>(&socket, &hytech_msgs_VCRData_s_msg);
-    if (protoc_struct)
-    {
-        Serial.printf("message RR: %d\n", (*protoc_struct).rear_loadcell_data.RR_loadcell_analog);
-        Serial.printf("message RL: %d\n", (*protoc_struct).rear_loadcell_data.RL_loadcell_analog);
-        
-    } 
+    if (millis() % 1000 < 500) {
+        etl::optional<hytech_msgs_VCRData_s> protoc_struct = handle_ethernet_socket_receive<hytech_msgs_VCRData_s_size, hytech_msgs_VCRData_s>(&vcr_data_socket, &hytech_msgs_VCRData_s_msg);
+        if (protoc_struct) {
+            VCFEthernetInterface::receive_pb_msg_vcr(protoc_struct.value(), vcf_data, millis());
+            
+            Serial.println("Received bytes: (protoc struct value)");
+            char *string_ptr = (char*) &(protoc_struct.value());
+            uint32_t kk = sizeof(protoc_struct.value());
+            while(kk--)
+                Serial.printf("%02X ", *string_ptr++);
+            Serial.println("");
+        } else {
+            Serial.printf("Did not receive VCR message!\n");
+        }
 
+        vcf_data.interface_data.front_loadcell_data.FL_loadcell_analog += 1;
+        hytech_msgs_VCFData_s send_protoc_struct = VCFEthernetInterface::make_vcf_data_msg(vcf_data);
 
-    //test_send();
-    //Serial.println("loopin");
+        Serial.println("Send bytes: (protoc struct value)");
+        char *string_ptr = (char*) &(send_protoc_struct);
+        uint32_t kk = sizeof(send_protoc_struct);
+        while(kk--)
+            Serial.printf("%02X ", *string_ptr++);
+        Serial.println("");
+
+        handle_ethernet_socket_send_pb<hytech_msgs_VCFData_s_size>(EthernetIPDefsInstance::instance().vcr_ip, EthernetIPDefsInstance::instance().VCFData_port,
+            &vcf_data_socket, send_protoc_struct, hytech_msgs_VCFData_s_fields);
+
+        delay(500);
+    }
 }
