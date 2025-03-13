@@ -39,17 +39,17 @@ PedalsSystemData_s PedalsSystem::evaluate_pedals(PedalSensorData_s pedals_data, 
     // FSAE Rules T.4.2.4
     out.brake_is_implausible = _evaluate_pedal_implausibilities(brake_1, brake_2, _brakeParams, 1.0);
     out.accel_is_implausible = _evaluate_pedal_implausibilities(accel_1, accel_2, _accelParams, IMPLAUSIBILITY_PERCENT);
-    float accel_percent = (out.accel_is_implausible) ? accel1_scaled : _pedal_percentage(static_cast<float>(accel_1), static_cast<float>(accel_2), _accelParams); 
+    float accel_percent = (out.accel_is_implausible) ? 0.0f : _pedal_percentage(static_cast<float>(accel_1), static_cast<float>(accel_2), _accelParams); 
     out.accel_percent = std::max(accel_percent, 0.0f);
-    float brake_percent = (out.brake_is_implausible) ? brake1_scaled : _pedal_percentage(static_cast<float>(brake_1), static_cast<float>(brake_2), _brakeParams);
+    float brake_percent = (out.brake_is_implausible) ? 0.0f : _pedal_percentage(static_cast<float>(brake_1), static_cast<float>(brake_2), _brakeParams);
     out.brake_percent = std::max(brake_percent, 0.0f);
 
     //Reimplemtning the accel_is_pressed and brake/accel implaus high directly without a helper method. 
     //Got rid of pedal_is_active helper method and used accel/brake percent to directly compare it to the activation percentage
     //Got rid of the eval_brake_and_accel pressed method and just outputted it diretly here
-
-    bool accel_pressed = accel_percent >= _accelParams.activation_percentage;
-    bool brake_pressed = brake_percent >= _brakeParams.activation_percentage;
+    
+    bool accel_pressed = accel_percent > _accelParams.activation_percentage;
+    bool brake_pressed = brake_percent > _brakeParams.activation_percentage;
     out.accel_is_pressed = accel_pressed;
     out.brake_is_pressed = brake_pressed;
     bool mech_brake_pressed = brake_percent >= _brakeParams.mechanical_activation_percentage;
