@@ -31,10 +31,10 @@ const PedalsParams accel_params = {
 };
 
 const PedalsParams brake_params = {
-    .min_pedal_1 = 1180,
-    .min_pedal_2 = 2500,
-    .max_pedal_1 = 1660,
-    .max_pedal_2 = 1770,
+    .min_pedal_1 = 1100,
+    .min_pedal_2 = 2500, //needs to be calibrated again i think
+    .max_pedal_1 = 2500,
+    .max_pedal_2 = 1100,
     .activation_percentage = 0.05,
     .min_sensor_pedal_1 = 90,
     .min_sensor_pedal_2 = 90,
