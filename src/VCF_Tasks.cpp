@@ -5,6 +5,8 @@
 #include "ProtobufMsgInterface.h"
 #include "VCFEthernetInterface.h"
 #include "hytech_msgs.pb.h"
+#include "VCFCANInterfaceImpl.h"
+#include "CANInterface.h"
 
 bool init_adc_task()
 {
@@ -142,3 +144,17 @@ bool run_handle_receive_vcr_ethernet_data() {
     }
 }
 
+bool handle_CAN_send(unsigned long time_millis, HT_TASK::TaskInfo& info)
+{
+    VCFCANInterfaceObjects& vcf_interface_objects = VCFCANInterfaceImpl::VCFCANInterfaceObjectsInstance::instance();
+    VCFCANInterfaceImpl::send_all_CAN_msgs(vcf_interface_objects.main_can_tx_buffer, &vcf_interface_objects.MAIN_CAN);
+    return true;
+}
+
+bool handle_CAN_receive(unsigned long time_millis, HT_TASK::TaskInfo& info)
+{
+    VCFCANInterfaceObjects& vcf_interface_objects = VCFCANInterfaceImpl::VCFCANInterfaceObjectsInstance::instance();
+    CANInterfaces& vcf_can_interfaces = VCFCANInterfaceImpl::CANInterfacesInstance::instance(); 
+    process_ring_buffer(vcf_interface_objects.main_can_rx_buffer, vcf_can_interfaces, time_millis, vcf_interface_objects.can_recv_switch);
+    return true;
+}

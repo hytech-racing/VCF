@@ -29,6 +29,7 @@
  
  /* From shared_firmware_types library */
  #include "SharedFirmwareTypes.h"
+ #include "ht_task.hpp"
 
  /**
   * The read_adc1 task will command adc1 to sample all eight channels, convert the outputs, and
@@ -84,5 +85,8 @@
  bool init_handle_receive_vcr_ethernet_data();
  bool run_handle_receive_vcr_ethernet_data();
 
+ bool handle_CAN_send(unsigned long time_millis, HT_TASK::TaskInfo& info);
+
+ bool handle_CAN_receive(unsigned long time_millis, HT_TASK::TaskInfo& info); 
  
  #endif /* VCF_TASKS */
