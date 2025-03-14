@@ -30,6 +30,7 @@
 #include "SharedFirmwareTypes.h"
 #include "VCFCANInterfaceImpl.h"
 #include "VCFEthernetInterface.h"
+#include "PedalsSystem.h"
 #include "ht_sched.hpp"
 #include "ht_task.hpp"
 
@@ -38,8 +39,8 @@
  * store them in structs defined in shared_firmware_types. This function relies on adc_1 being
  * defined in VCFGlobals.h.
  */
-bool init_adc_task();
-bool run_read_adc1_task();
+bool init_adc_bundle();
+bool run_read_adc1_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
  
 /**
  * NOTE: These channels are UNUSED BY DEFAULT and exist ONLY FOR TESTING. You may edit this
@@ -49,23 +50,29 @@ bool run_read_adc1_task();
  * store them in a struct defined in shared_firmware_types. This function relies on adc_2 being
  * defined in VCFGlobals.h.
  */
-bool run_read_adc2_task();
+bool run_read_adc2_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
  
  
 /**
  * The buzzer_control task will control the buzzer control pin. This function relies on the 
  * buzzer_control pin definition in VCF_Constants.h;
  */
-bool init_buzzer_control_task();
-bool run_buzzer_control_task();
+bool init_buzzer_control_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
+bool run_buzzer_control_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
+
+
+/**
+ * Updates the PedalsSystem and stores the updated values in the global VCFData struct.
+ */
+bool update_pedals_system(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
  
  
 /**
  * The read_gpio task will read the GPIO pins and store the results in a struct defined in 
  * shared_firmware_types. This function relies on the GPIO pins being defined in VCFConstants.h.
  */
-bool init_read_gpio_task();
-bool run_read_gpio_task();
+bool init_read_gpio_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
+bool run_read_gpio_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
 
 
 /**
@@ -74,8 +81,8 @@ bool run_read_gpio_task();
  * defined in VCFGlobals.h, and Ethernet constants defined in EthernetAddressDefs.h.
  * 
 */
-bool init_handle_send_vcf_ethernet_data();
-bool run_handle_send_vcf_ethernet_data();
+bool init_handle_send_vcf_ethernet_data(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
+bool run_handle_send_vcf_ethernet_data(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
 
 
  /**
@@ -84,13 +91,12 @@ bool run_handle_send_vcf_ethernet_data();
  * defined in EthernetAddressDefs.h.
  * 
  */
-bool init_handle_receive_vcr_ethernet_data();
-bool run_handle_receive_vcr_ethernet_data();
+bool init_handle_receive_vcr_ethernet_data(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
+bool run_handle_receive_vcr_ethernet_data(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
+
 
 bool handle_CAN_send(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo); // NOLINT (capitalization of CAN)
-
 bool handle_CAN_receive(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo); // NOLINT (capitalization of CAN)
-
-bool send_dash_data(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
+bool enqueue_dash_data(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
 
  #endif /* VCF_TASKS */

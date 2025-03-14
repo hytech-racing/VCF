@@ -87,5 +87,18 @@ constexpr unsigned long CAN_RECV_PRIORITY = 5;
 constexpr unsigned long CAN_SEND_PRIORITY = 6;
 constexpr unsigned long DASH_SEND_PRIORITY = 7;
 constexpr unsigned long DASH_SEND_PERIOD = 4000;             // 4 000 us = 250 Hz
+constexpr unsigned long PEDALS_UPDATE_PRIORITY = 10;
+constexpr unsigned long ADC1_SAMPLE_PERIOD = 250;            // 250 us = 4 kHz
+constexpr unsigned long ADC1_TASK_PRIORITY = 3;
+constexpr unsigned long ADC2_SAMPLE_PERIOD = 250;            // 250 us = 4 kHz
+constexpr unsigned long ADC2_TASK_PRIORITY = 4;
+constexpr unsigned long BUZZER_UPDATE_PERIOD = 100000UL;     // 100 000 us = 10 Hz
+constexpr unsigned long BUZZER_UPDATE_PRIORITY = 10;
+
+// Ethernet is lower loop rate because these are not latency-sensitive controls signals.
+constexpr unsigned long ETHERNET_SEND_PERIOD = 10000UL;      // 10 000 us = 100 Hz
+constexpr unsigned long ETHERNET_SEND_PRIORITY = 20;
+constexpr unsigned long ETHERNET_RECV_PERIOD = 10000UL;      // 10 000 us = 100 Hz
+constexpr unsigned long ETHERNET_RECV_PRIORITY = 25;
 
 #endif /* VCF_CONSTANTS */
