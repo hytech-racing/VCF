@@ -1,6 +1,7 @@
 #ifndef VCF_CONSTANTS
 #define VCF_CONSTANTS
 
+
 /* -------------------------------------------------- */
 /*                 Teensy 4.1 GPIO pins               */
 /* -------------------------------------------------- */
@@ -80,7 +81,7 @@ const float BRAKE_2_OFFSET = 0;
 
 
 /* -------------------------------------------------- */
-/*                   Send Periods                    */
+/*                    Task Periods                    */
 /* -------------------------------------------------- */
 constexpr unsigned long CAN_RECV_PRIORITY = 5;
 constexpr unsigned long CAN_SEND_PRIORITY = 6;
