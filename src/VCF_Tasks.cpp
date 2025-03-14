@@ -3,7 +3,7 @@
 #include "VCF_Constants.h"
 #include <QNEthernet.h>
 #include "ProtobufMsgInterface.h"
-// #include "VCFEthernetInterface.h"
+#include "VCFEthernetInterface.h"
 #include "hytech_msgs.pb.h"
 #include "SystemTimeInterface.h"
 #include "Arduino.h"
@@ -85,17 +85,14 @@ bool init_handle_send_vcf_ethernet_data(const unsigned long& sysMicros, const HT
     return true;
 }
 bool run_handle_send_vcf_ethernet_data(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo) {
-    hytech_msgs_VCFData_s msg = VCFEthernetInterface::make_vcf_data_msg(vcf_data);
-    if(handle_ethernet_socket_send_pb<hytech_msgs_VCFData_s_size, hytech_msgs_VCFData_s>
+    hytech_msgs_VCFData_s msg = VCFEthernetInterface::make_vcf_data_msg(vcf_data); 
+    handle_ethernet_socket_send_pb<hytech_msgs_VCFData_s_size, hytech_msgs_VCFData_s>
             (EthernetIPDefsInstance::instance().vcr_ip, 
             EthernetIPDefsInstance::instance().VCFData_port, 
             &VCF_socket, 
-            msg, 
-            &hytech_msgs_VCFData_s_msg)) {
-        return true;
-    } else {
-        return false;
-    }
+            msg,
+            &hytech_msgs_VCFData_s_msg);
+    return true;
 }
 
 bool init_handle_receive_vcr_ethernet_data(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo) {
@@ -104,13 +101,12 @@ bool init_handle_receive_vcr_ethernet_data(const unsigned long& sysMicros, const
     return true;
 }
 
-bool run_handle_receive_vcr_ethernet_data() {
+bool run_handle_receive_vcr_ethernet_data(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo) {
     etl::optional<hytech_msgs_VCRData_s> protoc_struct = handle_ethernet_socket_receive<hytech_msgs_VCRData_s_size, hytech_msgs_VCRData_s>(&VCF_socket, &hytech_msgs_VCRData_s_msg);
     if (protoc_struct) {
-        return true;
-    } else {
-        return false;
+        VCFEthernetInterface::receive_pb_msg_vcr(protoc_struct.value(), vcf_data, millis());
     }
+    return true;
 }
 
 
