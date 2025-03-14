@@ -30,10 +30,9 @@ EthernetUDP vcr_data_socket;
 
 void setup()
 {
-    Serial.begin(115200);
     EthernetIPDefsInstance::create();
-    uint8_t mac[6];
-    Ethernet.macAddress(mac);
+    uint8_t mac[6]; //NOLINT (mac address always 6 bytes)
+    Ethernet.macAddress(&mac[0]);
     Ethernet.begin(mac, EthernetIPDefsInstance::instance().vcf_ip, EthernetIPDefsInstance::instance().default_dns, EthernetIPDefsInstance::instance().default_gateway, EthernetIPDefsInstance::instance().car_subnet);
     init_handle_receive_vcr_ethernet_data();
     init_handle_send_vcf_ethernet_data();
@@ -41,7 +40,4 @@ void setup()
 
 void loop()
 {
-    run_handle_send_vcf_ethernet_data();
-    run_handle_receive_vcr_ethernet_data();
-    delay(1000);
 }

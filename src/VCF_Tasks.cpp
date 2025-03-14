@@ -114,7 +114,6 @@ bool init_handle_send_vcf_ethernet_data() {
     return true;
 }
 bool run_handle_send_vcf_ethernet_data() {
-    vcf_data.system_data.pedals_system_data.regen_percent = (millis() % 1000) / 1000.0f;
     hytech_msgs_VCFData_s msg = VCFEthernetInterface::make_vcf_data_msg(vcf_data);
     if(handle_ethernet_socket_send_pb<hytech_msgs_VCFData_s_size, hytech_msgs_VCFData_s>
             (EthernetIPDefsInstance::instance().vcr_ip, 
@@ -122,20 +121,10 @@ bool run_handle_send_vcf_ethernet_data() {
             &VCF_socket, 
             msg, 
             &hytech_msgs_VCFData_s_msg)) {
-                
-        char *string_ptr = (char*) &msg;
-        uint32_t kk = sizeof(msg);
-        while(kk--)
-            Serial.printf("%02X ", *string_ptr++);
-        Serial.println("");
-
-        Serial.printf("Sent VCF data with value: ");
-        Serial.println(vcf_data.system_data.pedals_system_data.brake_percent);
-        Serial.println(msg.pedals_system_data.brake_percent);
+        return true;
     } else {
-        Serial.printf("Did not send VCF data :(\n");
+        return false;
     }
-    return true;
 }
 
 bool init_handle_receive_vcr_ethernet_data() {
@@ -148,10 +137,9 @@ bool run_handle_receive_vcr_ethernet_data() {
     etl::optional<hytech_msgs_VCRData_s> protoc_struct = handle_ethernet_socket_receive<hytech_msgs_VCRData_s_size, hytech_msgs_VCRData_s>(&VCR_socket, &hytech_msgs_VCRData_s_msg);
     if (protoc_struct) {
         VCFEthernetInterface::receive_pb_msg_vcr(protoc_struct.value(), vcf_data, millis());
-        Serial.printf("Received VCR message!\n");
+        return true;
     } else {
-        Serial.printf("Did not receive VCR message!\n");
+        return false;
     }
-    return true;
 }
 
