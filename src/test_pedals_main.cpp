@@ -12,15 +12,6 @@
 #include "VCF_Tasks.h"
 #include "PedalsSystem.h"
 #include <stdio.h>
-#include "VCFEthernetInterface.h"
-#include "ProtobufMsgInterface.h"
-
-/* Scheduler setup */
-// HT_SCHED::Scheduler& scheduler = HT_SCHED::Scheduler::getInstance();
-
-using namespace qindesign::network;
-EthernetUDP vcf_data_socket;
-EthernetUDP vcr_data_socket;
 
 //accel params and brake params
 
@@ -40,10 +31,10 @@ const PedalsParams accel_params = {
 };
 
 const PedalsParams brake_params = {
-    .min_pedal_1 = 1180,
-    .min_pedal_2 = 2500,
-    .max_pedal_1 = 1660,
-    .max_pedal_2 = 1770,
+    .min_pedal_1 = 1100,
+    .min_pedal_2 = 2500, //needs to be calibrated again i think
+    .max_pedal_1 = 2500,
+    .max_pedal_2 = 1100,
     .activation_percentage = 0.05,
     .min_sensor_pedal_1 = 90,
     .min_sensor_pedal_2 = 90,
@@ -61,13 +52,6 @@ void setup(){
     Serial.begin(begin_time);
     SPI.begin();
     init_adc_task();
-
-    EthernetIPDefsInstance::create();
-    uint8_t mac[6]; //NOLINT (mac address always 6 bytes)
-    Ethernet.macAddress(&mac[0]);
-    Ethernet.begin(mac, EthernetIPDefsInstance::instance().vcf_ip, EthernetIPDefsInstance::instance().default_dns, EthernetIPDefsInstance::instance().default_gateway, EthernetIPDefsInstance::instance().car_subnet);
-    init_handle_receive_vcr_ethernet_data();
-    init_handle_send_vcf_ethernet_data();
 }
 
 void loop(){

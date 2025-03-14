@@ -7,6 +7,14 @@ hytech_msgs_VCFData_s VCFEthernetInterface::make_vcf_data_msg(VCFData_s &shared_
     out.has_front_loadcell_data = true;
     out.has_pedals_system_data = true;
 
+    //has_value
+    out.has_dash_input_state = true;
+    out.has_front_loadcell_data = true;
+    out.has_front_suspot_data = true;
+    out.has_pedals_system_data = true;
+    out.has_steering_data = true;
+    out.has_vcf_ethernet_link_data = true;
+
     // Load cells
     out.front_loadcell_data.FL_loadcell_analog = shared_state.interface_data.front_loadcell_data.FL_loadcell_analog;
     out.front_loadcell_data.FR_loadcell_analog = shared_state.interface_data.front_loadcell_data.FR_loadcell_analog;
