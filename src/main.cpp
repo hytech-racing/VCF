@@ -68,6 +68,8 @@ HT_TASK::Task pedals_update_task(HT_TASK::DUMMY_FUNCTION, update_pedals_system, 
 HT_TASK::Task read_adc1_task(HT_TASK::DUMMY_FUNCTION, run_read_adc1_task, ADC1_TASK_PRIORITY, ADC1_SAMPLE_PERIOD);
 HT_TASK::Task read_adc2_task(HT_TASK::DUMMY_FUNCTION, run_read_adc2_task, ADC2_TASK_PRIORITY, ADC2_SAMPLE_PERIOD);
 HT_TASK::Task buzzer_control_task(init_buzzer_control_task, run_buzzer_control_task, BUZZER_UPDATE_PRIORITY, BUZZER_UPDATE_PERIOD);
+HT_TASK::Task send_vcf_data_ethernet_task(init_handle_send_vcf_ethernet_data, run_handle_send_vcf_ethernet_data, ETHERNET_SEND_PRIORITY, ETHERNET_SEND_PERIOD);
+HT_TASK::Task recv_vcr_data_ethernet_task(init_handle_receive_vcr_ethernet_data, run_handle_receive_vcr_ethernet_data, ETHERNET_RECV_PRIORITY, ETHERNET_RECV_PERIOD);
 
 void setup() {
     Serial.begin(115200); // NOLINT (common baud rate)
@@ -110,6 +112,11 @@ void setup() {
     // Setup CAN
     handle_CAN_setup(can_interface_objects.MAIN_CAN, CAN_baudrate, VCFCANInterfaceImpl::on_main_can_recv);
 
+    EthernetIPDefsInstance::create();
+    uint8_t mac[6]; // NOLINT (mac addresses are always 6 bytes)
+    qindesign::network::Ethernet.macAddress(&mac[0]);
+    qindesign::network::Ethernet.begin(mac, EthernetIPDefsInstance::instance().vcf_ip, EthernetIPDefsInstance::instance().default_dns, EthernetIPDefsInstance::instance().default_gateway, EthernetIPDefsInstance::instance().car_subnet);
+
     // Schedule Tasks
     scheduler.schedule(CAN_receive); 
     scheduler.schedule(CAN_send); 
@@ -117,8 +124,9 @@ void setup() {
     scheduler.schedule(pedals_update_task);
     scheduler.schedule(read_adc1_task);
     scheduler.schedule(read_adc2_task);
+    scheduler.schedule(send_vcf_data_ethernet_task);
+    scheduler.schedule(recv_vcr_data_ethernet_task);
 
-    qindesign::network::Ethernet.begin(EthernetIPDefsInstance::instance().vcf_ip, EthernetIPDefsInstance::instance().default_dns, EthernetIPDefsInstance::instance().default_gateway, EthernetIPDefsInstance::instance().car_subnet);
 }
 
 void loop() {
