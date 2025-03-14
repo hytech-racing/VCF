@@ -23,3 +23,13 @@ outputs:
     - `uint16_t rr_load_cell`
     - `uint16_t rl_shock_pot`
     - `uint16_t rr_shock_pot`
+- `DASH_INPUTS` (length: 2 bytes)
+    - `bool start_button` (1 bit) 
+    - `bool preset_button` (1 bit)
+    - `bool motor_controller_cycle_button` (1 bit)
+    - `bool mode_button` (1 bit)
+    - `bool start_button` (1 bit)
+    - `bool data_button_is_pressed` (1 bit)
+    - `bool left_shifter_button` (1 bit)
+    - `bool right_shifter_button` (1 bit)
+    - `uint8_t dash_dial_mode` (8 bits)
