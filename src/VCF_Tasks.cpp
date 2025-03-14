@@ -3,8 +3,11 @@
 #include "VCF_Constants.h"
 #include <QNEthernet.h>
 #include "ProtobufMsgInterface.h"
-#include "VCFEthernetInterface.h"
+// #include "VCFEthernetInterface.h"
 #include "hytech_msgs.pb.h"
+#include "SystemTimeInterface.h"
+#include "Arduino.h"
+
 
 bool init_adc_task()
 {
@@ -143,3 +146,39 @@ bool run_handle_receive_vcr_ethernet_data() {
     }
 }
 
+
+bool handle_CAN_send(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
+{
+    VCFCANInterfaceObjects& vcf_interface_objects = VCFCANInterfaceImpl::VCFCANInterfaceObjectsInstance::instance();
+    VCFCANInterfaceImpl::send_all_CAN_msgs(vcf_interface_objects.main_can_tx_buffer, &vcf_interface_objects.MAIN_CAN);
+    return true;
+}
+
+bool handle_CAN_receive(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
+{
+    VCFCANInterfaceObjects& vcf_interface_objects = VCFCANInterfaceImpl::VCFCANInterfaceObjectsInstance::instance();
+    CANInterfaces& vcf_can_interfaces = VCFCANInterfaceImpl::CANInterfacesInstance::instance(); 
+    process_ring_buffer(vcf_interface_objects.main_can_rx_buffer, vcf_can_interfaces, sys_time::hal_millis(), vcf_interface_objects.can_recv_switch);
+    return true;
+}
+
+bool send_dash_data(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
+{   
+    CANInterfaces can_interfaces = VCFCANInterfaceImpl::CANInterfacesInstance::instance(); 
+    DashInputState_s dash_outputs = can_interfaces.dash_interface.get_dashboard_outputs();
+
+    DASH_INPUT_t msg_out;
+
+    msg_out.start_button = dash_outputs.start_btn_is_pressed;
+    msg_out.preset_button = dash_outputs.preset_btn_is_pressed;
+    msg_out.motor_controller_cycle_button = dash_outputs.mc_reset_btn_is_pressed;
+    msg_out.mode_button = dash_outputs.mode_btn_is_pressed;
+    msg_out.start_button = dash_outputs.start_btn_is_pressed;
+    msg_out.data_button_is_pressed = dash_outputs.data_btn_is_pressed;
+    msg_out.left_shifter_button = dash_outputs.left_paddle_is_pressed;
+    msg_out.right_shifter_button = dash_outputs.right_paddle_is_pressed;    
+
+    CAN_util::enqueue_msg(&msg_out, &Pack_DASH_INPUT_hytech, VCFCANInterfaceImpl::VCFCANInterfaceObjectsInstance::instance().main_can_tx_buffer);
+    
+    return true;
+}
