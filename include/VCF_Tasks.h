@@ -30,6 +30,11 @@
  /* From shared_firmware_types library */
  #include "SharedFirmwareTypes.h"
 
+ #include "VCFCANInterfaceImpl.h"
+
+#include "ht_sched.hpp"
+#include "ht_task.hpp"
+
  /**
   * The read_adc1 task will command adc1 to sample all eight channels, convert the outputs, and
   * store them in structs defined in shared_firmware_types. This function relies on adc_1 being
@@ -83,6 +88,12 @@
   */
  bool init_handle_receive_vcr_ethernet_data();
  bool run_handle_receive_vcr_ethernet_data();
+
+ bool handle_CAN_send(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
+
+ bool handle_CAN_receive(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo); 
+
+ bool send_dash_data(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
 
  
  #endif /* VCF_TASKS */

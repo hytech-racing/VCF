@@ -5,6 +5,9 @@
 #include "SharedFirmwareTypes.h"
 #include "Arduino.h"
 #include "etl/singleton.h"
+#include "hytech.h"
+#include <Wire.h>
+
 
 // Struct representing dashboard gpios
 struct DashboardGPIOs_s {
@@ -25,20 +28,6 @@ struct DashboardGPIOs_s {
 
 };
 
-// Struct representing button outputs
-struct DashboardOutputs_s {
-
-    // GPIO
-    bool DIM_BUTTON;    
-    bool PRESET_BUTTON; 
-    bool MC_CYCLE_BUTTON; 
-    bool MODE_BUTTON; 
-    bool START_BUTTON; 
-    bool DATA_BUTTON; 
-    bool LEFT_SHIFTER_BUTTON; 
-    bool RIGHT_SHIFTER_BUTTON; 
-};
-
 class DashboardInterface 
 {
     public: 
@@ -56,13 +45,12 @@ class DashboardInterface
             pinMode(_dashboard_gpios.RIGHT_SHIFTER_BUTTON, INPUT_PULLUP); 
         }
 
-        // Receing gpios 
-        DashboardOutputs_s get_dashboard_outputs();
-
+        // Reading gpios 
+        DashInputState_s get_dashboard_outputs();
 
     private: 
         DashboardGPIOs_s _dashboard_gpios; 
-        DashboardOutputs_s _dashboard_outputs;
+        DashInputState_s _dashboard_outputs;
 };
 
 using DashboardInterfaceInstance = etl::singleton<DashboardInterface>;
