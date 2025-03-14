@@ -11,16 +11,23 @@
 
 
 // Digital Pins on Teensy
-const int ADC1_CS = 33; // MCP3208. ADC1 in VCF schematic. Used for steering, sus pots, and load cells.
-const int ADC2_CS = 34; // MCP3208. ADC2 in VCF schematic. Used for pedal position sensors.
+constexpr int ADC1_CS = 33; // MCP3208. ADC1 in VCF schematic. Used for steering, sus pots, and load cells.
+constexpr int ADC2_CS = 34; // MCP3208. ADC2 in VCF schematic. Used for pedal position sensors.
 
-const int BTN_DIM_READ = 10;
-const int BTN_PRESET_READ = 9;
-const int BTN_MC_CYCLE_READ = 8;
-const int BTN_MODE_READ = 7;
-const int BTN_START_READ = 6;
-const int BTN_DATA_READ = 22;
-const int BUZZER_CONTROL_PIN = 3;
+constexpr int BTN_DIM_READ = 10;
+constexpr int BTN_PRESET_READ = 9;
+constexpr int BTN_MC_CYCLE_READ = 8;
+constexpr int BTN_MODE_READ = 7;
+constexpr int BTN_START_READ = 6;
+constexpr int BTN_DATA_READ = 22;
+constexpr int BUZZER_CONTROL_PIN = 3;
+constexpr int RIGHT_SHIFTER = 26;
+constexpr int LEFT_SHIFTER = 27;
+
+constexpr int I2C_SCL = 4;
+constexpr int I2C_SDA = 5;
+
+
 
 /* -------------------------------------------------- */
 /*                 ADC pins and configs               */
@@ -74,9 +81,11 @@ const float BRAKE_2_OFFSET = 0;
 
 
 /* -------------------------------------------------- */
-/*                  Pedal calibration                 */
+/*                    Task Periods                    */
 /* -------------------------------------------------- */
-// I don't know what needs to go here. //TODO: Figure out what additional constants we need for pedals system
-
+constexpr unsigned long CAN_RECV_PRIORITY = 5;
+constexpr unsigned long CAN_SEND_PRIORITY = 6;
+constexpr unsigned long DASH_SEND_PRIORITY = 7;
+constexpr unsigned long DASH_SEND_PERIOD = 4000;             // 4 000 us = 250 Hz
 
 #endif /* VCF_CONSTANTS */
