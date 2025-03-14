@@ -7,11 +7,14 @@
 #include "EthernetAddressDefs.h"
 
 /* From HT_SCHED libdep */
-// #include "ht_sched.hpp"
+#include "ht_sched.hpp"
+#include "ht_task.hpp"
 
-#include <Arduino.h>
+/* From HT_CAN libdep */
+#include "hytech.h"
 
 /* From Arduino Libraries */
+#include "hytech.h"
 #include "QNEthernet.h"
 
 /* Local includes */
@@ -20,17 +23,42 @@
 #include "VCF_Tasks.h"
 #include "PedalsSystem.h"
 #include "DashboardInterface.h"
-// #include "VCFEthernetInterface.h"
+#include "VCFEthernetInterface.h"
 #include "VCFCANInterfaceImpl.h"
-#include "ht_sched.hpp"
-#include "ht_task.hpp"
 
-#include "hytech.h"
 
 /* Scheduler setup */
 HT_SCHED::Scheduler& scheduler = HT_SCHED::Scheduler::getInstance();
 
-using namespace qindesign::network;
+const PedalsParams accel_params = {
+    .min_pedal_1 = 1790,
+    .min_pedal_2 = 1690,
+    .max_pedal_1 = 2830,
+    .max_pedal_2 = 670,
+    .activation_percentage = 0.05,
+    .min_sensor_pedal_1 = 90,
+    .min_sensor_pedal_2 = 90,
+    .max_sensor_pedal_1 = 4000,
+    .max_sensor_pedal_2 = 4000,
+    .deadzone_margin = .03,
+    .implausibility_margin = IMPLAUSIBILITY_PERCENT,
+    .mechanical_activation_percentage = 0.05
+};
+
+const PedalsParams brake_params = {
+    .min_pedal_1 = 1180,
+    .min_pedal_2 = 2500,
+    .max_pedal_1 = 1660,
+    .max_pedal_2 = 1770,
+    .activation_percentage = 0.05,
+    .min_sensor_pedal_1 = 90,
+    .min_sensor_pedal_2 = 90,
+    .max_sensor_pedal_1 = 4000,
+    .max_sensor_pedal_2 = 4000,
+    .deadzone_margin = .03,
+    .implausibility_margin = IMPLAUSIBILITY_PERCENT,
+    .mechanical_activation_percentage = 0.65
+};
 
 // Tasks
 HT_TASK::Task CAN_receive(HT_TASK::DUMMY_FUNCTION, handle_CAN_receive, CAN_RECV_PRIORITY);
@@ -60,6 +88,8 @@ void setup() {
         .DIAL_SCL = I2C_SCL
     };
     DashboardInterfaceInstance::create(dashboard_gpios); // NOLINT (idk why it's saying this is uninitialized. It definitely is.)
+    PedalsSystemInstance::create(accel_params, brake_params); //pass in the two different params
+
 
     // Create can singletons
     VCFCANInterfaceImpl::CANInterfacesInstance::create(DashboardInterfaceInstance::instance()); 
@@ -78,7 +108,7 @@ void setup() {
     scheduler.schedule(CAN_send); 
     scheduler.schedule(dash_CAN_enqueue);
 
-    Ethernet.begin(EthernetIPDefsInstance::instance().vcf_ip, EthernetIPDefsInstance::instance().default_dns, EthernetIPDefsInstance::instance().default_gateway, EthernetIPDefsInstance::instance().car_subnet);
+    qindesign::network::Ethernet.begin(EthernetIPDefsInstance::instance().vcf_ip, EthernetIPDefsInstance::instance().default_dns, EthernetIPDefsInstance::instance().default_gateway, EthernetIPDefsInstance::instance().car_subnet);
 }
 
 void loop() {
