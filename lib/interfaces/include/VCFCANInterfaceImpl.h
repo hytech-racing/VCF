@@ -1,5 +1,5 @@
-#ifndef __VCFCANINTERFACEIMPL_H__
-#define __VCFCANINTERFACEIMPL_H__
+#ifndef VCFCANINTERFACEIMPL_H
+#define VCFCANINTERFACEIMPL_H
 
 
 #include "FlexCAN_T4.h"
@@ -49,4 +49,4 @@ namespace VCFCANInterfaceImpl {
     using CANInterfacesInstance = etl::singleton<CANInterfaces>;
 }
 
-#endif // __VCFCANINTERFACEIMPL_H__
+#endif // VCFCANINTERFACEIMPL_H

@@ -22,7 +22,6 @@
 /* Ethernet includes */
 #include "QNEthernet.h"
 
-
 /* Interface and system data structs */
 extern VCFData_s vcf_data; // NOLINT
 extern VCRData_s vcr_data;
