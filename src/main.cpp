@@ -63,8 +63,11 @@ const PedalsParams brake_params = {
 // Tasks
 HT_TASK::Task CAN_receive(HT_TASK::DUMMY_FUNCTION, handle_CAN_receive, CAN_RECV_PRIORITY);
 HT_TASK::Task CAN_send(HT_TASK::DUMMY_FUNCTION, handle_CAN_send, CAN_SEND_PRIORITY);
-HT_TASK::Task dash_CAN_enqueue(HT_TASK::DUMMY_FUNCTION, send_dash_data, DASH_SEND_PRIORITY, DASH_SEND_PERIOD);
-
+HT_TASK::Task dash_CAN_enqueue(HT_TASK::DUMMY_FUNCTION, enqueue_dash_data, DASH_SEND_PRIORITY, DASH_SEND_PERIOD);
+HT_TASK::Task pedals_update_task(HT_TASK::DUMMY_FUNCTION, update_pedals_system, PEDALS_UPDATE_PRIORITY);
+HT_TASK::Task read_adc1_task(HT_TASK::DUMMY_FUNCTION, run_read_adc1_task, ADC1_TASK_PRIORITY, ADC1_SAMPLE_PERIOD);
+HT_TASK::Task read_adc2_task(HT_TASK::DUMMY_FUNCTION, run_read_adc2_task, ADC2_TASK_PRIORITY, ADC2_SAMPLE_PERIOD);
+HT_TASK::Task buzzer_control_task(init_buzzer_control_task, run_buzzer_control_task, BUZZER_UPDATE_PRIORITY, BUZZER_UPDATE_PERIOD);
 
 void setup() {
     Serial.begin(115200); // NOLINT (common baud rate)
@@ -88,8 +91,12 @@ void setup() {
         .DIAL_SCL = I2C_SCL
     };
     DashboardInterfaceInstance::create(dashboard_gpios); // NOLINT (idk why it's saying this is uninitialized. It definitely is.)
+
+    // Create PedalsSystem singleton
     PedalsSystemInstance::create(accel_params, brake_params); //pass in the two different params
 
+    // Initialize ADCs
+    init_adc_bundle();
 
     // Create can singletons
     VCFCANInterfaceImpl::CANInterfacesInstance::create(DashboardInterfaceInstance::instance()); 
@@ -107,6 +114,9 @@ void setup() {
     scheduler.schedule(CAN_receive); 
     scheduler.schedule(CAN_send); 
     scheduler.schedule(dash_CAN_enqueue);
+    scheduler.schedule(pedals_update_task);
+    scheduler.schedule(read_adc1_task);
+    scheduler.schedule(read_adc2_task);
 
     qindesign::network::Ethernet.begin(EthernetIPDefsInstance::instance().vcf_ip, EthernetIPDefsInstance::instance().default_dns, EthernetIPDefsInstance::instance().default_gateway, EthernetIPDefsInstance::instance().car_subnet);
 }
