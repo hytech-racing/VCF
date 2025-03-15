@@ -11,6 +11,7 @@
 #include "EthernetAddressDefs.h"
 
 /* From shared-firmware-types */
+#include "PedalsSystem.h"
 #include "SharedFirmwareTypes.h"
 
 /* Local includes */
@@ -23,8 +24,8 @@
 #include "QNEthernet.h"
 
 /* Interface and system data structs */
-extern VCFData_s vcf_data; // NOLINT
-extern VCRData_s vcr_data;
+using VCFData_sInstance = etl::singleton<VCFData_s>;
+using VCRData_sInstance = etl::singleton<VCRData_s>;
 
 /* ADC setup */
 constexpr unsigned int channels_within_mcp_adc = 8;

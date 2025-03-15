@@ -1,4 +1,5 @@
 #include "VCF_Tasks.h"
+#include "SharedFirmwareTypes.h"
 #include "VCF_Globals.h"
 #include "VCF_Constants.h"
 #include <QNEthernet.h>
@@ -8,6 +9,8 @@
 #include "VCFCANInterfaceImpl.h"
 #include "CANInterface.h"
 #include "SystemTimeInterface.h"
+#include "PedalsSystem.h"
+
 #include "Arduino.h"
 
 
@@ -46,11 +49,11 @@ bool run_read_adc1_task()
     // Samples all eight channels.
     ADCsOnVCFInstance::instance().adc_1.tick();
 
-    vcf_data.interface_data.steering_data.analog_steering_degrees = ADCsOnVCFInstance::instance().adc_1.data.conversions[STEERING_1_CHANNEL].conversion; // Only using steering 1 for now
-    vcf_data.interface_data.front_loadcell_data.FL_loadcell_analog = ADCsOnVCFInstance::instance().adc_1.data.conversions[FL_LOADCELL_CHANNEL].conversion;
-    vcf_data.interface_data.front_loadcell_data.FR_loadcell_analog = ADCsOnVCFInstance::instance().adc_1.data.conversions[FR_LOADCELL_CHANNEL].conversion;
-    vcf_data.interface_data.front_suspot_data.FL_sus_pot_analog = ADCsOnVCFInstance::instance().adc_1.data.conversions[FL_SUS_POT_CHANNEL].raw; // Just use raw for suspots
-    vcf_data.interface_data.front_suspot_data.FR_sus_pot_analog = ADCsOnVCFInstance::instance().adc_1.data.conversions[FR_SUS_POT_CHANNEL].raw; // Just use raw for suspots
+    VCFData_sInstance::instance().interface_data.steering_data.analog_steering_degrees = ADCsOnVCFInstance::instance().adc_1.data.conversions[STEERING_1_CHANNEL].conversion; // Only using steering 1 for now
+    VCFData_sInstance::instance().interface_data.front_loadcell_data.FL_loadcell_analog = ADCsOnVCFInstance::instance().adc_1.data.conversions[FL_LOADCELL_CHANNEL].conversion;
+    VCFData_sInstance::instance().interface_data.front_loadcell_data.FR_loadcell_analog = ADCsOnVCFInstance::instance().adc_1.data.conversions[FR_LOADCELL_CHANNEL].conversion;
+    VCFData_sInstance::instance().interface_data.front_suspot_data.FL_sus_pot_analog = ADCsOnVCFInstance::instance().adc_1.data.conversions[FL_SUS_POT_CHANNEL].raw; // Just use raw for suspots
+    VCFData_sInstance::instance().interface_data.front_suspot_data.FR_sus_pot_analog = ADCsOnVCFInstance::instance().adc_1.data.conversions[FR_SUS_POT_CHANNEL].raw; // Just use raw for suspots
 
     return true;
 }
@@ -60,10 +63,10 @@ bool run_read_adc2_task()
     // Samples all eight channels.
     ADCsOnVCFInstance::instance().adc_2.tick();
 
-    vcf_data.interface_data.pedal_sensor_data.accel_1 = ADCsOnVCFInstance::instance().adc_2.data.conversions[ACCEL_1_CHANNEL].conversion;
-    vcf_data.interface_data.pedal_sensor_data.accel_2 = ADCsOnVCFInstance::instance().adc_2.data.conversions[ACCEL_2_CHANNEL].conversion;
-    vcf_data.interface_data.pedal_sensor_data.brake_1 = ADCsOnVCFInstance::instance().adc_2.data.conversions[BRAKE_1_CHANNEL].conversion;
-    vcf_data.interface_data.pedal_sensor_data.brake_2 = ADCsOnVCFInstance::instance().adc_2.data.conversions[BRAKE_2_CHANNEL].conversion;
+    VCFData_sInstance::instance().interface_data.pedal_sensor_data.accel_1 = ADCsOnVCFInstance::instance().adc_2.data.conversions[ACCEL_1_CHANNEL].conversion;
+    VCFData_sInstance::instance().interface_data.pedal_sensor_data.accel_2 = ADCsOnVCFInstance::instance().adc_2.data.conversions[ACCEL_2_CHANNEL].conversion;
+    VCFData_sInstance::instance().interface_data.pedal_sensor_data.brake_1 = ADCsOnVCFInstance::instance().adc_2.data.conversions[BRAKE_1_CHANNEL].conversion;
+    VCFData_sInstance::instance().interface_data.pedal_sensor_data.brake_2 = ADCsOnVCFInstance::instance().adc_2.data.conversions[BRAKE_2_CHANNEL].conversion;
 
     return true;
 }
@@ -90,12 +93,12 @@ bool run_read_gpio_task()
     int startButton = digitalRead(BTN_START_READ);
     int dataButton = digitalRead(BTN_DATA_READ);
     
-    vcf_data.interface_data.dash_input_state.dim_btn_is_pressed = dimButton;
-    vcf_data.interface_data.dash_input_state.preset_btn_is_pressed = presetButton;
-    vcf_data.interface_data.dash_input_state.mc_reset_btn_is_pressed = mcCycleButton;
-    vcf_data.interface_data.dash_input_state.mode_btn_is_pressed = modeButton;
-    vcf_data.interface_data.dash_input_state.start_btn_is_pressed = startButton;
-    vcf_data.interface_data.dash_input_state.data_btn_is_pressed = dataButton;
+    VCFData_sInstance::instance().interface_data.dash_input_state.dim_btn_is_pressed = dimButton;
+    VCFData_sInstance::instance().interface_data.dash_input_state.preset_btn_is_pressed = presetButton;
+    VCFData_sInstance::instance().interface_data.dash_input_state.mc_reset_btn_is_pressed = mcCycleButton;
+    VCFData_sInstance::instance().interface_data.dash_input_state.mode_btn_is_pressed = modeButton;
+    VCFData_sInstance::instance().interface_data.dash_input_state.start_btn_is_pressed = startButton;
+    VCFData_sInstance::instance().interface_data.dash_input_state.data_btn_is_pressed = dataButton;
 
     return true;
 }
@@ -108,7 +111,7 @@ bool init_buzzer_control_task()
 }
 bool run_buzzer_control_task()
 {
-    digitalWrite(BUZZER_CONTROL_PIN, vcr_data.system_data.buzzer_is_active);
+    digitalWrite(BUZZER_CONTROL_PIN, VCRData_sInstance::instance().system_data.buzzer_is_active);
     return true;
 }
 
@@ -119,7 +122,7 @@ bool init_handle_send_vcf_ethernet_data() {
 }
 
 bool run_handle_send_vcf_ethernet_data() {
-    hytech_msgs_VCFData_s msg = VCFEthernetInterface::make_vcf_data_msg(vcf_data);
+    hytech_msgs_VCFData_s msg = VCFEthernetInterface::make_vcf_data_msg(VCFData_sInstance::instance());
     if(handle_ethernet_socket_send_pb<hytech_msgs_VCFData_s_size, hytech_msgs_VCFData_s>
             (EthernetIPDefsInstance::instance().vcr_ip, 
             EthernetIPDefsInstance::instance().VCRData_port, 
@@ -178,8 +181,6 @@ bool handle_CAN_send(const unsigned long& sysMicros, const HT_TASK::TaskInfo& ta
 namespace async_tasks 
 {
     // these are async tasks. we want these to run as fast as possible p much
-    
-
     void handle_async_CAN_receive() //NOLINT caps for CAN
     {
         VCFCANInterfaceObjects& vcf_interface_objects = VCFCANInterfaceImpl::VCFCANInterfaceObjectsInstance::instance();
@@ -196,7 +197,7 @@ namespace async_tasks
     {
         handle_async_recvs();
         // TODO: make the vcf data a singleton instance and use the pedals sensor data here from it
-        // PedalsSystemInstance::instance().evaluate_pedals(pedal_sensor_data, sys_time::hal_millis());
+        VCFData_sInstance::instance().system_data.pedals_system_data = PedalsSystemInstance::instance().evaluate_pedals(VCFData_sInstance::instance().interface_data.pedal_sensor_data, sys_time::hal_millis());
         return true;
     }
 };

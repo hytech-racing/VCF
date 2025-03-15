@@ -73,19 +73,15 @@ etl::delegate<void(CANInterfaces &, const CAN_message_t &, unsigned long)> main_
 
 
 void setup() {
-    // hardware setup
-    Serial.begin(115200); // NOLINT (common baud rate)
-    SPI.begin();
-    qindesign::network::Ethernet.begin(EthernetIPDefsInstance::instance().vcf_ip, EthernetIPDefsInstance::instance().default_dns, EthernetIPDefsInstance::instance().default_gateway, EthernetIPDefsInstance::instance().car_subnet);
-    VCFCANInterfaceObjects can_interface_objects = VCFCANInterfaceImpl::VCFCANInterfaceObjectsInstance::instance();
-    const uint32_t CAN_baudrate = 500000;
-    handle_CAN_setup(can_interface_objects.MAIN_CAN, CAN_baudrate, VCFCANInterfaceImpl::on_main_can_recv);
 
+
+    // singleton creations
+
+    EthernetIPDefsInstance::create();
     
-    // Setup scheduler
-    scheduler.setTimingFunction(micros);
-
-    // Create dashboard singleton
+    VCRData_sInstance::create();
+    VCFData_sInstance::create();
+    
     DashboardGPIOs_s dashboard_gpios = {
         .DIM_BUTTON = BTN_DIM_READ,
         .PRESET_BUTTON = BTN_PRESET_READ,
@@ -98,15 +94,27 @@ void setup() {
         .DIAL_SDA = I2C_SDA,
         .DIAL_SCL = I2C_SCL
     };
+
     DashboardInterfaceInstance::create(dashboard_gpios); // NOLINT (idk why it's saying this is uninitialized. It definitely is.)
     PedalsSystemInstance::create(accel_params, brake_params); //pass in the two different params
-
-
+    
     // Create can singletons
     VCFCANInterfaceImpl::CANInterfacesInstance::create(DashboardInterfaceInstance::instance()); 
     
     auto main_can_recv = etl::delegate<void(CANInterfaces &, const CAN_message_t &, unsigned long)>::create<VCFCANInterfaceImpl::vcf_recv_switch>();
     VCFCANInterfaceImpl::VCFCANInterfaceObjectsInstance::create(main_can_recv); // NOLINT (Not sure why it's uninitialized. I think it is.)
+
+    // hardware setup
+    
+    Serial.begin(115200); // NOLINT (common baud rate)
+
+    qindesign::network::Ethernet.begin(EthernetIPDefsInstance::instance().vcf_ip, EthernetIPDefsInstance::instance().default_dns, EthernetIPDefsInstance::instance().default_gateway, EthernetIPDefsInstance::instance().car_subnet);
+    VCFCANInterfaceObjects can_interface_objects = VCFCANInterfaceImpl::VCFCANInterfaceObjectsInstance::instance();
+    const uint32_t CAN_baudrate = 500000;
+    handle_CAN_setup(can_interface_objects.MAIN_CAN, CAN_baudrate, VCFCANInterfaceImpl::on_main_can_recv);
+    
+    // Setup scheduler
+    scheduler.setTimingFunction(micros);
 
     // Schedule Tasks
     scheduler.schedule(async_main); 
