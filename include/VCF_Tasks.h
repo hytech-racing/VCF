@@ -52,7 +52,7 @@ bool run_read_adc1_task();
  * the outputs, and store them in a struct defined in shared_firmware_types.
  * This function relies on adc_2 being defined in VCFGlobals.h.
  */
-bool run_read_adc2_task();
+bool run_read_adc2_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
 
 /**
  * The buzzer_control task will control the buzzer control pin. This function
@@ -91,6 +91,8 @@ bool run_handle_receive_vcr_ethernet_data();
 
 bool send_dash_data(const unsigned long &sysMicros,
                     const HT_TASK::TaskInfo &taskInfo);
+
+bool send_pedals_data(const unsigned long &sys_micros, const HT_TASK::TaskInfo& task_info);
 
 // this task attempts to send any data that is enqueued at 250hz. this will be the max rate that you can send over the CAN bus.
 // you dont have to enqeue at this rate, but this allows us to have 2 layers of rate limiting on CAN sending

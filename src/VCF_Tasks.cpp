@@ -5,6 +5,7 @@
 #include <QNEthernet.h>
 #include "ProtobufMsgInterface.h"
 #include "ht_task.hpp"
+#include "hytech.h"
 #include "hytech_msgs.pb.h"
 #include "VCFCANInterfaceImpl.h"
 #include "CANInterface.h"
@@ -58,11 +59,11 @@ bool run_read_adc1_task()
     return true;
 }
 
-bool run_read_adc2_task()
+bool run_read_adc2_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
 {
     // Samples all eight channels.
     ADCsOnVCFInstance::instance().adc_2.tick();
-
+    // Serial.println("sampling");
     VCFData_sInstance::instance().interface_data.pedal_sensor_data.accel_1 = ADCsOnVCFInstance::instance().adc_2.data.conversions[ACCEL_1_CHANNEL].conversion;
     VCFData_sInstance::instance().interface_data.pedal_sensor_data.accel_2 = ADCsOnVCFInstance::instance().adc_2.data.conversions[ACCEL_2_CHANNEL].conversion;
     VCFData_sInstance::instance().interface_data.pedal_sensor_data.brake_1 = ADCsOnVCFInstance::instance().adc_2.data.conversions[BRAKE_1_CHANNEL].conversion;
@@ -171,8 +172,30 @@ bool send_dash_data(const unsigned long& sysMicros, const HT_TASK::TaskInfo& tas
     return true;
 }
 
+bool send_pedals_data(const unsigned long &sys_micros, const HT_TASK::TaskInfo& task_info)
+{
+    PEDALS_SYSTEM_DATA_t pedals_data = {};
+    pedals_data.accel_implausible = VCFData_sInstance::instance().system_data.pedals_system_data.accel_is_implausible;
+    pedals_data.brake_implausible = VCFData_sInstance::instance().system_data.pedals_system_data.brake_is_implausible;
+    pedals_data.brake_accel_implausibility = VCFData_sInstance::instance().system_data.pedals_system_data.brake_and_accel_pressed_implausibility_high;
+
+    pedals_data.accel_pedal_active = VCFData_sInstance::instance().system_data.pedals_system_data.accel_is_pressed;
+    pedals_data.brake_pedal_active = VCFData_sInstance::instance().system_data.pedals_system_data.brake_is_pressed;
+    pedals_data.mechanical_brake_active = VCFData_sInstance::instance().system_data.pedals_system_data.mech_brake_is_active;
+    pedals_data.implaus_exceeded_max_duration = VCFData_sInstance::instance().system_data.pedals_system_data.implausibility_has_exceeded_max_duration;
+
+    
+    pedals_data.accel_pedal_ro = HYTECH_accel_pedal_ro_toS(VCFData_sInstance::instance().system_data.pedals_system_data.accel_percent);
+    pedals_data.brake_pedal_ro = HYTECH_brake_pedal_ro_toS(VCFData_sInstance::instance().system_data.pedals_system_data.brake_percent);
+    // Serial.println(pedals_data.brake_pedal_ro);
+    // Serial.println(pedals_data.accel_pedal_ro);
+    CAN_util::enqueue_msg(&pedals_data, &Pack_PEDALS_SYSTEM_DATA_hytech, VCFCANInterfaceImpl::VCFCANInterfaceObjectsInstance::instance().main_can_tx_buffer);
+    return true;
+}
+
 bool handle_CAN_send(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
 {
+    // Serial.println("asdf");
     VCFCANInterfaceObjects& vcf_interface_objects = VCFCANInterfaceImpl::VCFCANInterfaceObjectsInstance::instance();
     VCFCANInterfaceImpl::send_all_CAN_msgs(vcf_interface_objects.main_can_tx_buffer, &vcf_interface_objects.MAIN_CAN);
     return true;
@@ -191,13 +214,15 @@ namespace async_tasks
     void handle_async_recvs()
     {
         // ethernet, etc...
+        
         handle_async_CAN_receive();
     }
     bool handle_async_main(const unsigned long& sys_micros, const HT_TASK::TaskInfo& task_info)
     {
         handle_async_recvs();
-        // TODO: make the vcf data a singleton instance and use the pedals sensor data here from it
+        
         VCFData_sInstance::instance().system_data.pedals_system_data = PedalsSystemInstance::instance().evaluate_pedals(VCFData_sInstance::instance().interface_data.pedal_sensor_data, sys_time::hal_millis());
+        // Serial.println(VCFData_sInstance::instance().system_data.pedals_system_data.accel_percent);
         return true;
     }
 };

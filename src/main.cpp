@@ -10,9 +10,6 @@
 #include "ht_sched.hpp"
 #include "ht_task.hpp"
 
-/* From HT_CAN libdep */
-#include "hytech.h"
-
 /* From Arduino Libraries */
 #include "hytech.h"
 #include "QNEthernet.h"
@@ -25,7 +22,6 @@
 #include "DashboardInterface.h"
 #include "VCFEthernetInterface.h"
 #include "VCFCANInterfaceImpl.h"
-
 
 /* CAN Interface stuff */
 #include "VCFCANInterfaceImpl.h"
@@ -68,15 +64,39 @@ const PedalsParams brake_params = {
 HT_TASK::Task CAN_send(HT_TASK::DUMMY_FUNCTION, &handle_CAN_send, CAN_SEND_PRIORITY, CAN_SEND_PERIOD);
 HT_TASK::Task async_main(HT_TASK::DUMMY_FUNCTION, &async_tasks::handle_async_main, MAIN_TASK_PRIORITY);
 HT_TASK::Task dash_CAN_enqueue(HT_TASK::DUMMY_FUNCTION, &send_dash_data, DASH_SEND_PRIORITY, DASH_SEND_PERIOD);
+HT_TASK::Task pedals_message_enqueue(HT_TASK::DUMMY_FUNCTION, &send_pedals_data, PEDALS_PRIORITY, PEDALS_SAMPLE_PERIOD);
 
+HT_TASK::Task pedals_sample(HT_TASK::DUMMY_FUNCTION, &run_read_adc2_task, PEDALS_PRIORITY, PEDALS_SEND_PERIOD);
 etl::delegate<void(CANInterfaces &, const CAN_message_t &, unsigned long)> main_can_recv = etl::delegate<void(CANInterfaces &, const CAN_message_t &, unsigned long)>::create<VCFCANInterfaceImpl::vcf_recv_switch>();
 
-
 void setup() {
+SPI.begin();
+    float adc_1_scales[channels_within_mcp_adc], adc_1_offsets[channels_within_mcp_adc], adc_2_scales[channels_within_mcp_adc], adc_2_offsets[channels_within_mcp_adc];
+    adc_1_scales[STEERING_1_CHANNEL] = STEERING_1_SCALE;
+    adc_1_offsets[STEERING_1_CHANNEL] = STEERING_1_OFFSET;
+    adc_1_scales[STEERING_2_CHANNEL] = STEERING_2_SCALE;
+    adc_1_offsets[STEERING_2_CHANNEL] = STEERING_2_OFFSET;
+    adc_1_scales[FR_SUS_POT_CHANNEL] = FR_SUS_POT_SCALE;
+    adc_1_offsets[FR_SUS_POT_CHANNEL] = FR_SUS_POT_OFFSET;
+    adc_1_scales[FL_SUS_POT_CHANNEL] = FL_SUS_POT_SCALE;
+    adc_1_offsets[FL_SUS_POT_CHANNEL] = FL_SUS_POT_OFFSET;
+    adc_1_scales[FR_LOADCELL_CHANNEL] = FR_LOADCELL_SCALE;
+    adc_1_offsets[FR_LOADCELL_CHANNEL] = FR_LOADCELL_OFFSET;
+    adc_1_scales[FL_LOADCELL_CHANNEL] = FL_LOADCELL_SCALE;
+    adc_1_offsets[FL_LOADCELL_CHANNEL] = FL_LOADCELL_OFFSET;
 
+    adc_2_scales[ACCEL_1_CHANNEL] = ACCEL_1_SCALE;
+    adc_2_offsets[ACCEL_1_CHANNEL] = ACCEL_1_OFFSET;
+    adc_2_scales[ACCEL_2_CHANNEL] = ACCEL_2_SCALE;
+    adc_2_offsets[ACCEL_2_CHANNEL] = ACCEL_2_OFFSET;
+    adc_2_scales[BRAKE_1_CHANNEL] = BRAKE_1_SCALE;
+    adc_2_offsets[BRAKE_1_CHANNEL] = BRAKE_1_OFFSET;
+    adc_2_scales[BRAKE_2_CHANNEL] = BRAKE_2_SCALE;
+    adc_2_offsets[BRAKE_2_CHANNEL] = BRAKE_2_OFFSET;
 
+    ADCsOnVCFInstance::create(adc_1_scales, adc_1_offsets, adc_2_scales, adc_2_offsets);
     // singleton creations
-
+    // (void)init_adc_task();
     EthernetIPDefsInstance::create();
     
     VCRData_sInstance::create();
@@ -97,12 +117,12 @@ void setup() {
 
     DashboardInterfaceInstance::create(dashboard_gpios); // NOLINT (idk why it's saying this is uninitialized. It definitely is.)
     PedalsSystemInstance::create(accel_params, brake_params); //pass in the two different params
+    auto main_can_recv = etl::delegate<void(CANInterfaces &, const CAN_message_t &, unsigned long)>::create<VCFCANInterfaceImpl::vcf_recv_switch>();
+    VCFCANInterfaceImpl::VCFCANInterfaceObjectsInstance::create(main_can_recv); // NOLINT (Not sure why it's uninitialized. I think it is.)
     
     // Create can singletons
     VCFCANInterfaceImpl::CANInterfacesInstance::create(DashboardInterfaceInstance::instance()); 
     
-    auto main_can_recv = etl::delegate<void(CANInterfaces &, const CAN_message_t &, unsigned long)>::create<VCFCANInterfaceImpl::vcf_recv_switch>();
-    VCFCANInterfaceImpl::VCFCANInterfaceObjectsInstance::create(main_can_recv); // NOLINT (Not sure why it's uninitialized. I think it is.)
 
     // hardware setup
     
@@ -120,6 +140,8 @@ void setup() {
     scheduler.schedule(async_main); 
     scheduler.schedule(CAN_send);
     scheduler.schedule(dash_CAN_enqueue);
+    scheduler.schedule(pedals_message_enqueue);
+    scheduler.schedule(pedals_sample);
     
 }
 

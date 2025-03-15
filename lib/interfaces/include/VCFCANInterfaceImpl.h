@@ -33,7 +33,8 @@ struct VCFCANInterfaceObjects {
     VCFCANInterfaceObjects(etl::delegate<void(CANInterfaces &, const CAN_message_t &, unsigned long)> recv_switch): can_recv_switch(recv_switch) 
     {} 
 
-    FlexCAN_Type<CAN3> MAIN_CAN;
+    // FlexCAN_Type<CAN3> MAIN_CAN;
+    // TODO fix this. needs to be a pointer to an in-main global created instance of CAN3. this also cannot be a base type.
     CANRXBufferType main_can_rx_buffer;
     CANTXBufferType main_can_tx_buffer;
     etl::delegate<void(CANInterfaces &, const CAN_message_t &, unsigned long)> can_recv_switch;
