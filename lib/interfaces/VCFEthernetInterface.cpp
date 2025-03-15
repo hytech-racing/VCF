@@ -3,7 +3,7 @@
 
 hytech_msgs_VCFData_s VCFEthernetInterface::make_vcf_data_msg(VCFData_s &shared_state)
 {
-	hytech_msgs_VCFData_s out = {};
+    hytech_msgs_VCFData_s out = {};
     out.has_front_loadcell_data = true;
     out.has_pedals_system_data = true;
 
