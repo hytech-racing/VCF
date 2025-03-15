@@ -106,7 +106,7 @@ bool init_buzzer_control_task()
 }
 bool run_buzzer_control_task()
 {
-    digitalWrite(BUZZER_CONTROL_PIN, vcr_data.system_data.buzzer_is_active);
+    digitalWrite(BUZZER_CONTROL_PIN, vcf_data.system_data.buzzer_is_active);
     
     return true;
 }
@@ -120,7 +120,7 @@ bool run_handle_send_vcf_ethernet_data() {
     hytech_msgs_VCFData_s msg = VCFEthernetInterface::make_vcf_data_msg(vcf_data);
     if(handle_ethernet_socket_send_pb<hytech_msgs_VCFData_s_size, hytech_msgs_VCFData_s>
             (EthernetIPDefsInstance::instance().vcr_ip, 
-            EthernetIPDefsInstance::instance().VCRData_port, 
+            EthernetIPDefsInstance::instance().VCFData_port, 
             &VCF_socket, 
             msg, 
             &hytech_msgs_VCFData_s_msg)) {
@@ -131,14 +131,15 @@ bool run_handle_send_vcf_ethernet_data() {
 }
 
 bool init_handle_receive_vcr_ethernet_data() {
-    VCF_socket.begin(EthernetIPDefsInstance::instance().VCFData_port);
+    VCR_socket.begin(EthernetIPDefsInstance::instance().VCRData_port);
 
     return true;
 }
 
 bool run_handle_receive_vcr_ethernet_data() {
-    etl::optional<hytech_msgs_VCRData_s> protoc_struct = handle_ethernet_socket_receive<hytech_msgs_VCRData_s_size, hytech_msgs_VCRData_s>(&VCF_socket, &hytech_msgs_VCRData_s_msg);
+    etl::optional<hytech_msgs_VCRData_s> protoc_struct = handle_ethernet_socket_receive<hytech_msgs_VCRData_s_size, hytech_msgs_VCRData_s>(&VCR_socket, &hytech_msgs_VCRData_s_msg);
     if (protoc_struct) {
+        VCFEthernetInterface::receive_pb_msg_vcr(protoc_struct.value(), vcf_data, millis());
         return true;
     } else {
         return false;

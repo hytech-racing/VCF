@@ -19,7 +19,7 @@ namespace VCFEthernetInterface
      * for buzzer control!
      * 
      * @param msg_in A reference to a populated protoc struct.
-     * @param shared_state A reference to the VCF state.
+     * @param shared_state A reference to the VCR state.
      * 
      * @post After this function completes, shared_state will contain the updated buzzer control.
      */

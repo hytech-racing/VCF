@@ -3,7 +3,9 @@
 
 hytech_msgs_VCFData_s VCFEthernetInterface::make_vcf_data_msg(VCFData_s &shared_state)
 {
-	hytech_msgs_VCFData_s out;
+	hytech_msgs_VCFData_s out = {};
+    out.has_front_loadcell_data = true;
+    out.has_pedals_system_data = true;
 
     //has_value
     out.has_dash_input_state = true;
@@ -56,6 +58,7 @@ hytech_msgs_VCFData_s VCFEthernetInterface::make_vcf_data_msg(VCFData_s &shared_
     return out;
 }
 
-void VCFEthernetInterface::receive_pb_msg_vcr(const hytech_msgs_VCRData_s &msg_in, VCFData_s &shared_state, unsigned long curr_millis){
+void VCFEthernetInterface::receive_pb_msg_vcr(const hytech_msgs_VCRData_s &msg_in, VCFData_s &shared_state, unsigned long curr_millis) {
     shared_state.system_data.buzzer_is_active = msg_in.buzzer_is_active;
+    shared_state.interface_data.pedal_sensor_data.accel_1 = msg_in.rear_loadcell_data.RL_loadcell_analog;
 }
