@@ -110,6 +110,7 @@ void setup() {
 
     // Schedule Tasks
     scheduler.schedule(async_main); 
+    scheduler.schedule(CAN_send);
     scheduler.schedule(dash_CAN_enqueue);
     
 }
