@@ -30,9 +30,8 @@ struct CANInterfaces {
 
 struct VCFCANInterfaceObjects {
 
-    VCFCANInterfaceObjects(etl::delegate<void(CANInterfaces &, const CAN_message_t &, unsigned long)> recv_switch) {
-        can_recv_switch = recv_switch;
-    } 
+    VCFCANInterfaceObjects(etl::delegate<void(CANInterfaces &, const CAN_message_t &, unsigned long)> recv_switch): can_recv_switch(recv_switch) 
+    {} 
 
     FlexCAN_Type<CAN3> MAIN_CAN;
     CANRXBufferType main_can_rx_buffer;
