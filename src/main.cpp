@@ -27,9 +27,6 @@
 #include "VCFCANInterfaceImpl.h"
 #include "ProtobufMsgInterface.h"
 
-/* Scheduler setup */
-// HT_SCHED::Scheduler& scheduler = HT_SCHED::Scheduler::getInstance();
-
 using namespace qindesign::network;
 EthernetUDP vcf_data_socket;
 EthernetUDP vcr_data_socket;
@@ -96,10 +93,24 @@ void setup() {
     };
     DashboardInterfaceInstance::create(dashboard_gpios); // NOLINT (idk why it's saying this is uninitialized. It definitely is.)
     PedalsSystemInstance::create(accel_params, brake_params); //pass in the two different params
-    const int begin_time = 115200;
-    Serial.begin(begin_time);
-    SPI.begin();
-    init_adc_task();
+
+
+    // Create can singletons
+    VCFCANInterfaceImpl::CANInterfacesInstance::create(DashboardInterfaceInstance::instance()); 
+    
+    etl::delegate<void(CANInterfaces &, const CAN_message_t &, unsigned long)> main_can_recv;
+    main_can_recv = etl::delegate<void(CANInterfaces &, const CAN_message_t &, unsigned long)>::create<VCFCANInterfaceImpl::vcf_recv_switch>();
+    VCFCANInterfaceImpl::VCFCANInterfaceObjectsInstance::create(main_can_recv); // NOLINT (Not sure why it's uninitialized. I think it is.)
+
+    VCFCANInterfaceObjects can_interface_objects = VCFCANInterfaceImpl::VCFCANInterfaceObjectsInstance::instance();
+
+    // Setup CAN
+    handle_CAN_setup(can_interface_objects.MAIN_CAN, CAN_baudrate, VCFCANInterfaceImpl::on_main_can_recv);
+
+    // Schedule Tasks
+    scheduler.schedule(CAN_receive); 
+    scheduler.schedule(CAN_send); 
+    scheduler.schedule(dash_CAN_enqueue);
 
     EthernetIPDefsInstance::create();
     uint8_t mac[6]; //NOLINT (mac address always 6 bytes)
@@ -109,47 +120,6 @@ void setup() {
     init_handle_send_vcf_ethernet_data();
 }
 
-void loop(){
-
-    ADCsOnVCFInstance::instance().adc_2.tick();
-    PedalSensorData_s pedal_sensor_data = {};
-    
-    pedal_sensor_data.accel_1 = ADCsOnVCFInstance::instance().adc_2.data.conversions[ACCEL_1_CHANNEL].conversion;
-    pedal_sensor_data.accel_2 = ADCsOnVCFInstance::instance().adc_2.data.conversions[ACCEL_2_CHANNEL].conversion;
-    pedal_sensor_data.brake_1 = ADCsOnVCFInstance::instance().adc_2.data.conversions[BRAKE_1_CHANNEL].conversion;
-    pedal_sensor_data.brake_2 = ADCsOnVCFInstance::instance().adc_2.data.conversions[BRAKE_2_CHANNEL].conversion;
-    
-    PedalsSystemData_s data = PedalsSystemInstance::instance().evaluate_pedals(pedal_sensor_data, millis());
-
-    Serial.print("Accel 1: ");
-    Serial.println(pedal_sensor_data.accel_1);
-    Serial.print("Accel 2: ");
-    Serial.println(pedal_sensor_data.accel_2);
-    Serial.print("Brake 1: ");
-    Serial.println(pedal_sensor_data.brake_1);
-    Serial.print("Brake 2: ");
-    Serial.println(pedal_sensor_data.brake_2);
-    Serial.print("Accel Implausible: ");
-    Serial.println(data.accel_is_implausible);
-    Serial.print("Brake Implausible: ");
-    Serial.println(data.brake_is_implausible);
-    Serial.print("Brake Pressed: ");
-    Serial.println(data.brake_is_pressed);
-    Serial.print("Accel Pressed: ");
-    Serial.println(data.accel_is_pressed);
-    Serial.print("Mech Brake Active: ");
-    Serial.println(data.mech_brake_is_active);
-    Serial.print("Brake and Accel Implausibility High: ");
-    Serial.println(data.brake_and_accel_pressed_implausibility_high);
-    Serial.print("Implausibility has exceeded max duration: ");
-    Serial.println(data.implausibility_has_exceeded_max_duration);
-    Serial.print("Accel Percent: ");
-    Serial.println(data.accel_percent);
-    Serial.print("Brake Percent: ");
-    Serial.println(data.brake_percent);
-    Serial.print("Regen Percent: ");
-    Serial.println(data.regen_percent);    
-    
-    const int delay_time = 1000;
-    delay(delay_time);
+void loop() {
+    scheduler.run();
 }
