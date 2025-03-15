@@ -1,5 +1,5 @@
-#ifndef __VCFCANINTERFACEIMPL_H__
-#define __VCFCANINTERFACEIMPL_H__
+#ifndef VCFCANINTERFACEIMPL_H
+#define VCFCANINTERFACEIMPL_H
 
 
 #include "FlexCAN_T4.h"
@@ -8,6 +8,8 @@
 #include "etl/singleton.h"
 
 #include "CANInterface.h"
+
+#include "DashboardInterface.h"
 
 #include "SharedFirmwareTypes.h"
 
@@ -20,7 +22,10 @@ template <CAN_DEV_TABLE CAN_DEV> using FlexCAN_Type = FlexCAN_T4<CAN_DEV, RX_SIZ
 
 /* Interfaces accessible to this one */
 struct CANInterfaces {
-    explicit CANInterfaces() {}
+    explicit CANInterfaces(DashboardInterface &dash_int) 
+        : dash_interface(dash_int) {}
+
+    DashboardInterface &dash_interface;
 };
 
 struct VCFCANInterfaceObjects {
@@ -29,7 +34,7 @@ struct VCFCANInterfaceObjects {
         can_recv_switch = recv_switch;
     } 
 
-    FlexCAN_Type<CAN1> MAIN_CAN;
+    FlexCAN_Type<CAN3> MAIN_CAN;
     CANRXBufferType main_can_rx_buffer;
     CANTXBufferType main_can_tx_buffer;
     etl::delegate<void(CANInterfaces &, const CAN_message_t &, unsigned long)> can_recv_switch;
@@ -45,4 +50,4 @@ namespace VCFCANInterfaceImpl {
     using CANInterfacesInstance = etl::singleton<CANInterfaces>;
 }
 
-#endif // __VCFCANINTERFACEIMPL_H__
+#endif // VCFCANINTERFACEIMPL_H

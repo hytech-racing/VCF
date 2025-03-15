@@ -3,10 +3,13 @@
 #include "VCF_Constants.h"
 #include <QNEthernet.h>
 #include "ProtobufMsgInterface.h"
-#include "VCFEthernetInterface.h"
+#include "ht_task.hpp"
 #include "hytech_msgs.pb.h"
 #include "VCFCANInterfaceImpl.h"
 #include "CANInterface.h"
+#include "SystemTimeInterface.h"
+#include "Arduino.h"
+
 
 bool init_adc_task()
 {
@@ -106,7 +109,6 @@ bool init_buzzer_control_task()
 bool run_buzzer_control_task()
 {
     digitalWrite(BUZZER_CONTROL_PIN, vcr_data.system_data.buzzer_is_active);
-    
     return true;
 }
 
@@ -115,6 +117,7 @@ bool init_handle_send_vcf_ethernet_data() {
 
     return true;
 }
+
 bool run_handle_send_vcf_ethernet_data() {
     hytech_msgs_VCFData_s msg = VCFEthernetInterface::make_vcf_data_msg(vcf_data);
     if(handle_ethernet_socket_send_pb<hytech_msgs_VCFData_s_size, hytech_msgs_VCFData_s>
@@ -144,17 +147,56 @@ bool run_handle_receive_vcr_ethernet_data() {
     }
 }
 
-bool handle_CAN_send(unsigned long time_millis, HT_TASK::TaskInfo& info)
+bool send_dash_data(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
+{   
+    CANInterfaces can_interfaces = VCFCANInterfaceImpl::CANInterfacesInstance::instance(); 
+    DashInputState_s dash_outputs = can_interfaces.dash_interface.get_dashboard_outputs();
+
+    DASH_INPUT_t msg_out;
+
+    msg_out.start_button = dash_outputs.start_btn_is_pressed;
+    msg_out.preset_button = dash_outputs.preset_btn_is_pressed;
+    msg_out.motor_controller_cycle_button = dash_outputs.mc_reset_btn_is_pressed;
+    msg_out.mode_button = dash_outputs.mode_btn_is_pressed;
+    msg_out.start_button = dash_outputs.start_btn_is_pressed;
+    msg_out.data_button_is_pressed = dash_outputs.data_btn_is_pressed;
+    msg_out.left_shifter_button = dash_outputs.left_paddle_is_pressed;
+    msg_out.right_shifter_button = dash_outputs.right_paddle_is_pressed;    
+
+    CAN_util::enqueue_msg(&msg_out, &Pack_DASH_INPUT_hytech, VCFCANInterfaceImpl::VCFCANInterfaceObjectsInstance::instance().main_can_tx_buffer);
+    
+    return true;
+}
+
+bool handle_CAN_send(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
 {
     VCFCANInterfaceObjects& vcf_interface_objects = VCFCANInterfaceImpl::VCFCANInterfaceObjectsInstance::instance();
     VCFCANInterfaceImpl::send_all_CAN_msgs(vcf_interface_objects.main_can_tx_buffer, &vcf_interface_objects.MAIN_CAN);
     return true;
 }
 
-bool handle_CAN_receive(unsigned long time_millis, HT_TASK::TaskInfo& info)
+namespace async_tasks 
 {
-    VCFCANInterfaceObjects& vcf_interface_objects = VCFCANInterfaceImpl::VCFCANInterfaceObjectsInstance::instance();
-    CANInterfaces& vcf_can_interfaces = VCFCANInterfaceImpl::CANInterfacesInstance::instance(); 
-    process_ring_buffer(vcf_interface_objects.main_can_rx_buffer, vcf_can_interfaces, time_millis, vcf_interface_objects.can_recv_switch);
-    return true;
-}
+    // these are async tasks. we want these to run as fast as possible p much
+    
+
+    void handle_async_CAN_receive() //NOLINT caps for CAN
+    {
+        VCFCANInterfaceObjects& vcf_interface_objects = VCFCANInterfaceImpl::VCFCANInterfaceObjectsInstance::instance();
+        CANInterfaces& vcf_can_interfaces = VCFCANInterfaceImpl::CANInterfacesInstance::instance(); 
+        process_ring_buffer(vcf_interface_objects.main_can_rx_buffer, vcf_can_interfaces, sys_time::hal_millis(), vcf_interface_objects.can_recv_switch);
+    }
+
+    void handle_async_recvs()
+    {
+        // ethernet, etc...
+        handle_async_CAN_receive();
+    }
+    bool handle_async_main(const unsigned long& sys_micros, const HT_TASK::TaskInfo& task_info)
+    {
+        handle_async_recvs();
+        // TODO: make the vcf data a singleton instance and use the pedals sensor data here from it
+        // PedalsSystemInstance::instance().evaluate_pedals(pedal_sensor_data, sys_time::hal_millis());
+        return true;
+    }
+};
