@@ -197,7 +197,7 @@ bool handle_CAN_send(const unsigned long& sysMicros, const HT_TASK::TaskInfo& ta
 {
     // Serial.println("asdf");
     VCFCANInterfaceObjects& vcf_interface_objects = VCFCANInterfaceImpl::VCFCANInterfaceObjectsInstance::instance();
-    VCFCANInterfaceImpl::send_all_CAN_msgs(vcf_interface_objects.main_can_tx_buffer, &vcf_interface_objects.MAIN_CAN);
+    VCFCANInterfaceImpl::send_all_CAN_msgs(vcf_interface_objects.main_can_tx_buffer, vcf_interface_objects.MAIN_CAN);
     return true;
 }
 
