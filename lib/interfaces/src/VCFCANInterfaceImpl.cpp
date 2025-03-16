@@ -23,7 +23,6 @@ namespace VCFCANInterfaceImpl {
         CAN_message_t msg;
         while (buffer.available()) {
             CAN_message_t msg;
-            Serial.println("sending");
             uint8_t buf[sizeof(CAN_message_t)];
             buffer.pop_front(buf, sizeof(CAN_message_t));
             memmove(&msg, buf, sizeof(msg)); // NOLINT (memory operations are fine)

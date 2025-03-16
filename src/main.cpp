@@ -10,6 +10,8 @@
 #include "ht_sched.hpp"
 #include "ht_task.hpp"
 
+#include <Arduino.h>
+
 /* From Arduino Libraries */
 #include "hytech.h"
 #include "QNEthernet.h"
@@ -21,11 +23,16 @@
 #include "PedalsSystem.h"
 #include "DashboardInterface.h"
 #include "VCFEthernetInterface.h"
-#include "VCFCANInterfaceImpl.h"
+
 
 /* CAN Interface stuff */
 #include "VCFCANInterfaceImpl.h"
 #include "CANInterface.h"
+// #include "VCFEthernetInterface.h"
+#include "ht_sched.hpp"
+#include "ht_task.hpp"
+
+#include "hytech.h"
 
 /* Scheduler setup */
 HT_SCHED::Scheduler& scheduler = HT_SCHED::Scheduler::getInstance();
@@ -63,16 +70,31 @@ const PedalsParams brake_params = {
 };
 
 // Tasks
-HT_TASK::Task CAN_send(HT_TASK::DUMMY_FUNCTION, &handle_CAN_send, CAN_SEND_PRIORITY, CAN_SEND_PERIOD);
+// Send Periods
+constexpr unsigned long dash_send_period = 40000;             // 4 000 us = 250 Hz
+constexpr unsigned long dash_receive_period = 4000;
 HT_TASK::Task async_main(HT_TASK::DUMMY_FUNCTION, &async_tasks::handle_async_main, MAIN_TASK_PRIORITY);
+HT_TASK::Task CAN_send(HT_TASK::DUMMY_FUNCTION, &handle_CAN_send, CAN_SEND_PRIORITY, CAN_SEND_PERIOD);
 HT_TASK::Task dash_CAN_enqueue(HT_TASK::DUMMY_FUNCTION, &send_dash_data, DASH_SEND_PRIORITY, DASH_SEND_PERIOD);
 HT_TASK::Task pedals_message_enqueue(HT_TASK::DUMMY_FUNCTION, &send_pedals_data, PEDALS_PRIORITY, PEDALS_SAMPLE_PERIOD);
-
 HT_TASK::Task pedals_sample(HT_TASK::DUMMY_FUNCTION, &run_read_adc2_task, PEDALS_PRIORITY, PEDALS_SEND_PERIOD);
-etl::delegate<void(CANInterfaces &, const CAN_message_t &, unsigned long)> main_can_recv = etl::delegate<void(CANInterfaces &, const CAN_message_t &, unsigned long)>::create<VCFCANInterfaceImpl::vcf_recv_switch>();
+HT_TASK::Task dash_CAN_receive(HT_TASK::DUMMY_FUNCTION, &receive_dash_inputs, 5, dash_receive_period);
+
+    
+
+
 
 void setup() {
-SPI.begin();
+    Serial.begin(115200);
+
+
+    EthernetIPDefsInstance::create();
+    
+    VCRData_sInstance::create();
+    VCFData_sInstance::create();
+    PedalsSystemInstance::create(accel_params, brake_params); //pass in the two different params
+
+
     float adc_1_scales[channels_within_mcp_adc], adc_1_offsets[channels_within_mcp_adc], adc_2_scales[channels_within_mcp_adc], adc_2_offsets[channels_within_mcp_adc];
     adc_1_scales[STEERING_1_CHANNEL] = STEERING_1_SCALE;
     adc_1_offsets[STEERING_1_CHANNEL] = STEERING_1_OFFSET;
@@ -97,13 +119,10 @@ SPI.begin();
     adc_2_offsets[BRAKE_2_CHANNEL] = BRAKE_2_OFFSET;
 
     ADCsOnVCFInstance::create(adc_1_scales, adc_1_offsets, adc_2_scales, adc_2_offsets);
-    // singleton creations
-    // (void)init_adc_task();
-    EthernetIPDefsInstance::create();
+    // Setup scheduler
     
-    VCRData_sInstance::create();
-    VCFData_sInstance::create();
-    
+
+    // Create dashboard singleton
     DashboardGPIOs_s dashboard_gpios = {
         .DIM_BUTTON = BTN_DIM_READ,
         .PRESET_BUTTON = BTN_PRESET_READ,
@@ -117,13 +136,10 @@ SPI.begin();
         .DIAL_SCL = I2C_SCL
     };
 
-    DashboardInterfaceInstance::create(dashboard_gpios); // NOLINT (idk why it's saying this is uninitialized. It definitely is.)
-    PedalsSystemInstance::create(accel_params, brake_params); //pass in the two different params
-    auto main_can_recv = etl::delegate<void(CANInterfaces &, const CAN_message_t &, unsigned long)>::create<VCFCANInterfaceImpl::vcf_recv_switch>();
-    VCFCANInterfaceImpl::VCFCANInterfaceObjectsInstance::create(main_can_recv, &main_can); // NOLINT (Not sure why it's uninitialized. I think it is.)
-    
     // Create can singletons
     VCFCANInterfaceImpl::CANInterfacesInstance::create(DashboardInterfaceInstance::instance()); 
+    auto main_can_recv = etl::delegate<void(CANInterfaces &, const CAN_message_t &, unsigned long)>::create<VCFCANInterfaceImpl::vcf_recv_switch>();
+    VCFCANInterfaceImpl::VCFCANInterfaceObjectsInstance::create(main_can_recv, &main_can); // NOLINT (Not sure why it's uninitialized. I think it is.)
     
 
     // hardware setup
@@ -135,18 +151,34 @@ SPI.begin();
     const uint32_t CAN_baudrate = 500000;
     handle_CAN_setup(main_can, CAN_baudrate, &VCFCANInterfaceImpl::on_main_can_recv);
     
+    qindesign::network::Ethernet.begin(EthernetIPDefsInstance::instance().vcf_ip, EthernetIPDefsInstance::instance().default_dns, EthernetIPDefsInstance::instance().default_gateway, EthernetIPDefsInstance::instance().car_subnet);
     // Setup scheduler
     scheduler.setTimingFunction(micros);
 
     // Schedule Tasks
     scheduler.schedule(async_main); 
     scheduler.schedule(CAN_send);
+    
     scheduler.schedule(dash_CAN_enqueue);
+    scheduler.schedule(dash_CAN_receive);
+    
     scheduler.schedule(pedals_message_enqueue);
     scheduler.schedule(pedals_sample);
+    
+
     
 }
 
 void loop() {
     scheduler.run();
+    // DashboardInterface inst = DashboardInterfaceInstance::instance(); 
+    // DashInputState_s dash_outputs = iSerial.println("sending");nst.get_dashboard_outputs(); 
+    // Serial.println(dash_outputs.start_btn_is_pressed);
+    // handle_CAN_receive(); 
+    // handle_CAN_send();
+    // send_dash_data(); 
+    // // CAN_message_t msg;
+    // // msg.id = 3;
+    // // VCFCANInterfaceImpl::VCFCANInterfaceObjectsInstance::instance().MAIN_CAN.write(msg);
+    // // Serial.println("pluh");
 }
