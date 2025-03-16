@@ -164,7 +164,7 @@ bool handle_CAN_receive(const unsigned long& sysMicros, const HT_TASK::TaskInfo&
 bool send_dash_data(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
 {   
     CANInterfaces can_interfaces = VCFCANInterfaceImpl::CANInterfacesInstance::instance(); 
-    DashInputState_s dash_outputs = can_interfaces.dash_interface.get_dashboard_outputs();
+    DashOutputState_s dash_outputs = can_interfaces.dash_interface.get_dashboard_outputs();
 
     DASH_INPUT_t msg_out;
 
@@ -180,4 +180,9 @@ bool send_dash_data(const unsigned long& sysMicros, const HT_TASK::TaskInfo& tas
     CAN_util::enqueue_msg(&msg_out, &Pack_DASH_INPUT_hytech, VCFCANInterfaceImpl::VCFCANInterfaceObjectsInstance::instance().main_can_tx_buffer);
     
     return true;
+}
+
+bool receive_dash_inputs(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
+{
+    // In this method construct the DashInputState_s struct and pass it into the "receive" method of the dash interface
 }

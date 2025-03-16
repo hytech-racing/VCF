@@ -40,12 +40,13 @@ etl::delegate<void(CANInterfaces &, const CAN_message_t &, unsigned long)> main_
 
 // Send Periods
 constexpr unsigned long dash_send_period = 4000;             // 4 000 us = 250 Hz
+constexpr unsigned long dash_receive_period = 4000;
 
 // Tasks
 HT_TASK::Task CAN_receive(HT_TASK::DUMMY_FUNCTION, handle_CAN_receive, 0);
 HT_TASK::Task CAN_send(HT_TASK::DUMMY_FUNCTION, handle_CAN_send, 5);
 HT_TASK::Task dash_CAN_enqueue(HT_TASK::DUMMY_FUNCTION, send_dash_data, 5, dash_send_period);
-
+HT_TASK::Task dash_CAN_receive(HT_TASK::DUMMY_FUNCTION, receive_dash_inputs, 5, dash_receive_period);
 
 void setup() {
     Serial.begin(115200);
@@ -71,6 +72,7 @@ void setup() {
     scheduler.schedule(CAN_receive); 
     scheduler.schedule(CAN_send); 
     scheduler.schedule(dash_CAN_enqueue);
+    scheduler.schedMon(dash_CAN_receive);
 
     Ethernet.begin(EthernetIPDefsInstance::instance().vcf_ip, EthernetIPDefsInstance::instance().default_dns, EthernetIPDefsInstance::instance().default_gateway, EthernetIPDefsInstance::instance().car_subnet);
     DashboardInterfaceInstance::create(dashboard_gpios); 

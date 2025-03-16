@@ -95,5 +95,7 @@
 
  bool send_dash_data(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
 
+ bool receive_dash_inputs(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
+
  
  #endif /* VCF_TASKS */
