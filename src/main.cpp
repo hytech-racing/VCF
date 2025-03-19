@@ -40,10 +40,10 @@ HT_SCHED::Scheduler& scheduler = HT_SCHED::Scheduler::getInstance();
 FlexCAN_T4<CAN3, RX_SIZE_256, TX_SIZE_16> main_can;
 
 const PedalsParams accel_params = {
-    .min_pedal_1 = 1790,
-    .min_pedal_2 = 1690,
-    .max_pedal_1 = 2830,
-    .max_pedal_2 = 670,
+    .min_pedal_1 = 1831,
+    .min_pedal_2 = 1735,
+    .max_pedal_1 = 2926,
+    .max_pedal_2 = 650,
     .activation_percentage = 0.05,
     .min_sensor_pedal_1 = 90,
     .min_sensor_pedal_2 = 90,
@@ -55,10 +55,10 @@ const PedalsParams accel_params = {
 };
 
 const PedalsParams brake_params = {
-    .min_pedal_1 = 1180,
-    .min_pedal_2 = 2500,
-    .max_pedal_1 = 1660,
-    .max_pedal_2 = 1770,
+    .min_pedal_1 = 1203,
+    .min_pedal_2 = 2324,
+    .max_pedal_1 = 1642,
+    .max_pedal_2 = 1855,
     .activation_percentage = 0.05,
     .min_sensor_pedal_1 = 90,
     .min_sensor_pedal_2 = 90,
@@ -80,13 +80,26 @@ HT_TASK::Task pedals_message_enqueue(HT_TASK::DUMMY_FUNCTION, &send_pedals_data,
 HT_TASK::Task pedals_sample(HT_TASK::DUMMY_FUNCTION, &run_read_adc2_task, PEDALS_PRIORITY, PEDALS_SEND_PERIOD);
 HT_TASK::Task dash_CAN_receive(HT_TASK::DUMMY_FUNCTION, &receive_dash_inputs, 5, dash_receive_period);
 
-    
+bool debug_print(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
+{
+    Serial.println("accel1 raw accel2 raw");
+    Serial.print(VCFData_sInstance::instance().interface_data.pedal_sensor_data.accel_1);
+    Serial.print("   ");
+    Serial.print(VCFData_sInstance::instance().interface_data.pedal_sensor_data.accel_2);
+    Serial.println();
+    Serial.println("brake1 raw brake2 raw");
+    Serial.print(VCFData_sInstance::instance().interface_data.pedal_sensor_data.brake_1);
+    Serial.print("   ");
+    Serial.print(VCFData_sInstance::instance().interface_data.pedal_sensor_data.brake_2);
+    Serial.println();
+    return true;
+}
 
-
+HT_TASK::Task debug_state_print_task(HT_TASK::DUMMY_FUNCTION, debug_print, 100, 500000);
 
 void setup() {
-    Serial.begin(115200);
-
+    SPI.begin();
+    Serial.begin();
 
     EthernetIPDefsInstance::create();
     
@@ -121,7 +134,6 @@ void setup() {
     ADCsOnVCFInstance::create(adc_1_scales, adc_1_offsets, adc_2_scales, adc_2_offsets);
     // Setup scheduler
     
-
     // Create dashboard singleton
     DashboardGPIOs_s dashboard_gpios = {
         .DIM_BUTTON = BTN_DIM_READ,
@@ -146,12 +158,12 @@ void setup() {
     
     Serial.begin(115200); // NOLINT (common baud rate)
 
-    qindesign::network::Ethernet.begin(EthernetIPDefsInstance::instance().vcf_ip, EthernetIPDefsInstance::instance().default_dns, EthernetIPDefsInstance::instance().default_gateway, EthernetIPDefsInstance::instance().car_subnet);
+    // qindesign::network::Ethernet.begin(EthernetIPDefsInstance::instance().vcf_ip, EthernetIPDefsInstance::instance().default_dns, EthernetIPDefsInstance::instance().default_gateway, EthernetIPDefsInstance::instance().car_subnet);
     VCFCANInterfaceObjects can_interface_objects = VCFCANInterfaceImpl::VCFCANInterfaceObjectsInstance::instance();
     const uint32_t CAN_baudrate = 500000;
     handle_CAN_setup(main_can, CAN_baudrate, &VCFCANInterfaceImpl::on_main_can_recv);
     
-    qindesign::network::Ethernet.begin(EthernetIPDefsInstance::instance().vcf_ip, EthernetIPDefsInstance::instance().default_dns, EthernetIPDefsInstance::instance().default_gateway, EthernetIPDefsInstance::instance().car_subnet);
+    // qindesign::network::Ethernet.begin(EthernetIPDefsInstance::instance().vcf_ip, EthernetIPDefsInstance::instance().default_dns, EthernetIPDefsInstance::instance().default_gateway, EthernetIPDefsInstance::instance().car_subnet);
     // Setup scheduler
     scheduler.setTimingFunction(micros);
 
@@ -159,26 +171,15 @@ void setup() {
     scheduler.schedule(async_main); 
     scheduler.schedule(CAN_send);
     
-    scheduler.schedule(dash_CAN_enqueue);
-    scheduler.schedule(dash_CAN_receive);
+    // scheduler.schedule(dash_CAN_enqueue);
+    // scheduler.schedule(dash_CAN_receive);
     
     scheduler.schedule(pedals_message_enqueue);
     scheduler.schedule(pedals_sample);
-    
+    scheduler.schedule(debug_state_print_task);
 
-    
 }
 
 void loop() {
     scheduler.run();
-    // DashboardInterface inst = DashboardInterfaceInstance::instance(); 
-    // DashInputState_s dash_outputs = iSerial.println("sending");nst.get_dashboard_outputs(); 
-    // Serial.println(dash_outputs.start_btn_is_pressed);
-    // handle_CAN_receive(); 
-    // handle_CAN_send();
-    // send_dash_data(); 
-    // // CAN_message_t msg;
-    // // msg.id = 3;
-    // // VCFCANInterfaceImpl::VCFCANInterfaceObjectsInstance::instance().MAIN_CAN.write(msg);
-    // // Serial.println("pluh");
 }

@@ -12,7 +12,7 @@ DashInputState_s DashboardInterface::get_dashboard_outputs()
     _dashboard_outputs.data_btn_is_pressed = !digitalRead(_dashboard_gpios.DATA_BUTTON);
     _dashboard_outputs.left_paddle_is_pressed = !digitalRead(_dashboard_gpios.LEFT_SHIFTER_BUTTON);
     _dashboard_outputs.right_paddle_is_pressed = !digitalRead(_dashboard_gpios.RIGHT_SHIFTER_BUTTON); 
-    _dashboard_outputs.buzzer_complete = check_buzzer_complete(); 
+    // _dashboard_outputs.buzzer_complete = check_buzzer_complete(); 
 
     return _dashboard_outputs;
 }
@@ -39,13 +39,13 @@ void DashboardInterface::end_buzzer()
 
 void DashboardInterface::update_dash_state(DashInputState_s input) 
 {
-    if (input.start_buzzer)
-    {
-        start_buzzer(); 
-    }
+    // if (input.start_buzzer)
+    // {
+    //     start_buzzer(); 
+    // }
     
-    if (input.stop_buzzer)
-    {
-        end_buzzer(); 
-    }
+    // if (input.stop_buzzer)
+    // {
+    //     end_buzzer(); 
+    // }
 }
