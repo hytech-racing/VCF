@@ -21,15 +21,15 @@ const float ACCELERATION_PERCENT_LIMIT = static_cast<float>(0.05); // accelerati
  */
 struct PedalsParams
 {
-    int min_pedal_1; // Sensor 1 value at min pedal travel (analog 0-4095)
-    int min_pedal_2; // Sensor 2 value at min pedal travel (analog 0-4095)
-    int max_pedal_1; // Sensor 1 value at max pedal travel (analog 0-4095)
-    int max_pedal_2; // Sensor 2 value at max pedal travel (analog 0-4095)
+    uint32_t min_pedal_1; // Sensor 1 value at min pedal travel (analog 0-4095)
+    uint32_t min_pedal_2; // Sensor 2 value at min pedal travel (analog 0-4095)
+    uint32_t max_pedal_1; // Sensor 1 value at max pedal travel (analog 0-4095)
+    uint32_t max_pedal_2; // Sensor 2 value at max pedal travel (analog 0-4095)
     float activation_percentage; // Percent value (range from 0.0 to 1.0)
-    int min_sensor_pedal_1; // Min value that the sensor can output (if ADC reads less than this, sensor is likely unplugged)
-    int min_sensor_pedal_2; // Min value that the sensor can output (if ADC reads less than this, sensor is likely unplugged)
-    int max_sensor_pedal_1; // Max value that the sensor can output (if ADC reads more than this, sensor is likely unplugged)
-    int max_sensor_pedal_2; // Max value that the sensor can output (if ADC reads more than this, sensor is likely unplugged)
+    uint32_t min_sensor_pedal_1; // Min value that the sensor can output (if ADC reads less than this, sensor is likely unplugged)
+    uint32_t min_sensor_pedal_2; // Min value that the sensor can output (if ADC reads less than this, sensor is likely unplugged)
+    uint32_t max_sensor_pedal_1; // Max value that the sensor can output (if ADC reads more than this, sensor is likely unplugged)
+    uint32_t max_sensor_pedal_2; // Max value that the sensor can output (if ADC reads more than this, sensor is likely unplugged)
     float deadzone_margin; // "Deadzone" margin on each side, in percent. (i.e. if deadzone_margin = 0.05, then the range 0.05-0.95 will be scaled up to 0.0-1.0)
     float implausibility_margin; // Out-of-range implausibility margin (0.0 to 1.0). If margin is 0.10, then the pedal can travel 10% beyond the measured min/max
                                  // before triggering an OOR implausibility.
@@ -56,6 +56,7 @@ public:
     {
         _accelParams = accelParams;
         _brakeParams = brakeParams;
+        
     }
 
     const PedalsSystemData_s &get_pedals_system_data()
@@ -77,26 +78,19 @@ private:
     /// @param pedal1val the value of the first pedal without deadzone removed (analog 0-4095)
     /// @param pedal2val the value of the second pedal without deadzone removed (analog 0-4095)
     /// @param params the pedal parameters for this specific pedal
-    float _pedal_percentage(float pedal1val, float pedal2val, const PedalsParams &params);
+    float _pedal_percentage(float scaled_pedal_1, float scaled_pedal_2, const PedalsParams& params);
 
     /// @brief function to scale the pedal value to a 0-1 value without deadzone for the first pedal
     /// @param pedalval the value of the pedal without deadzone removed (analog 0-4095)
-    /// @param params the pedal parameters for this specific pedal
+    /// @param max_pedal pedal maximum
+    /// @param min_pedal pedal minimum
     /// @return the scaled value of the pedal without deadzone removed (0-1)
-    float _pedals_scaler1(int pedalval, const PedalsParams &params);
-
-    /// @brief function to scale the pedal value to a 0-1 value without deadzone for the second pedal
-    /// @param pedalval the value of the pedal without deadzone removed (analog 0-4095)
-    /// @param params the pedal parameters for this specific pedal
-    /// @return the scaled value of the pedal without deadzone removed (0-1)
-    float _pedals_scaler2(int pedalval, const PedalsParams &params);
-
+    float _pedals_scaler(int pedal_val, int max_pedal, int min_pedal);
 
     /// @brief function to remove deadzone from pedal data
     /// @param conversion_input the value of the pedal without deadzone removed
     /// @param deadzone the deadzone value for this specific pedal
     float _remove_deadzone(float conversion_input, float deadzone);
-
 
 
     /// @brief function to determine if the implausibility duration has been exceeded
@@ -119,7 +113,9 @@ private:
     /// @param params
     /// @param max_percent_diff
     /// @return
-    bool _evaluate_pedal_implausibilities(int pedal_1_analog,
+    bool _evaluate_pedal_implausibilities(float pedal_1_scaled,
+                                          float pedal_2_scaled,
+                                          int pedal_1_analog,
                                           int pedal_2_analog,
                                           const PedalsParams &params,
                                           float max_percent_diff);

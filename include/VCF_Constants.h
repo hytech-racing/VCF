@@ -81,16 +81,22 @@ const float BRAKE_2_OFFSET = 0;
 
 
 /* -------------------------------------------------- */
-/*                    Task Periods                    */
+/*                    Task Periods and Priorities                    */
 /* -------------------------------------------------- */
 constexpr int MAIN_TASK_PRIORITY = 5;
 constexpr int PEDALS_PRIORITY = 5;
-constexpr unsigned long DASH_SEND_PRIORITY = 7;
-constexpr unsigned long DASH_SEND_PERIOD = 100000;             // 100,000 us = 10 Hz
+constexpr int DASH_SEND_PRIORITY = 7;
+
+constexpr int DEBUG_PRIORITY = 100;
+
+constexpr unsigned long DASH_SEND_PERIOD = 100000; 
+constexpr unsigned long DEBUG_PERIOD = 50000;             // 100,000 us = 10 Hz
 
 constexpr unsigned long CAN_SEND_PRIORITY = 10;
 constexpr unsigned long CAN_SEND_PERIOD = 2000;
 
 constexpr unsigned long PEDALS_SEND_PERIOD = 3000;
 constexpr unsigned long PEDALS_SAMPLE_PERIOD = 500;
+
+
 #endif /* VCF_CONSTANTS */

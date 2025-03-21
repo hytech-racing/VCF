@@ -29,7 +29,8 @@ void DashboardInterface::start_buzzer()
 
 bool DashboardInterface::check_buzzer_complete() 
 {
-    return sys_time::hal_millis() - _buzzer_last_activated > 2000; 
+    constexpr unsigned long buzzer_duration = 2000;
+    return sys_time::hal_millis() - _buzzer_last_activated > buzzer_duration; 
 }
    
 void DashboardInterface::end_buzzer()

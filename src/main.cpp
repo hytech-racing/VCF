@@ -59,12 +59,12 @@ const PedalsParams brake_params = {
     .min_pedal_2 = 2324,
     .max_pedal_1 = 1642,
     .max_pedal_2 = 1855,
-    .activation_percentage = 0.05,
+    .activation_percentage = 0.06,
     .min_sensor_pedal_1 = 90,
     .min_sensor_pedal_2 = 90,
     .max_sensor_pedal_1 = 4000,
     .max_sensor_pedal_2 = 4000,
-    .deadzone_margin = .03,
+    .deadzone_margin = .04,
     .implausibility_margin = IMPLAUSIBILITY_PERCENT,
     .mechanical_activation_percentage = 0.65
 };
@@ -78,7 +78,7 @@ HT_TASK::Task CAN_send(HT_TASK::DUMMY_FUNCTION, &handle_CAN_send, CAN_SEND_PRIOR
 HT_TASK::Task dash_CAN_enqueue(HT_TASK::DUMMY_FUNCTION, &send_dash_data, DASH_SEND_PRIORITY, DASH_SEND_PERIOD);
 HT_TASK::Task pedals_message_enqueue(HT_TASK::DUMMY_FUNCTION, &send_pedals_data, PEDALS_PRIORITY, PEDALS_SAMPLE_PERIOD);
 HT_TASK::Task pedals_sample(HT_TASK::DUMMY_FUNCTION, &run_read_adc2_task, PEDALS_PRIORITY, PEDALS_SEND_PERIOD);
-HT_TASK::Task dash_CAN_receive(HT_TASK::DUMMY_FUNCTION, &receive_dash_inputs, 5, dash_receive_period);
+HT_TASK::Task dash_CAN_receive(HT_TASK::DUMMY_FUNCTION, &receive_dash_inputs, PEDALS_PRIORITY, dash_receive_period);
 
 bool debug_print(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
 {
@@ -92,14 +92,22 @@ bool debug_print(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskIn
     Serial.print("   ");
     Serial.print(VCFData_sInstance::instance().interface_data.pedal_sensor_data.brake_2);
     Serial.println();
+    Serial.println("accel brake percents");
+    Serial.print(VCFData_sInstance::instance().system_data.pedals_system_data.accel_percent);
+    Serial.print("   ");
+    Serial.print(VCFData_sInstance::instance().system_data.pedals_system_data.brake_percent);
+    Serial.println();
+    Serial.println("implaus");
+    Serial.print(VCFData_sInstance::instance().system_data.pedals_system_data.implausibility_has_exceeded_max_duration);
     return true;
 }
 
-HT_TASK::Task debug_state_print_task(HT_TASK::DUMMY_FUNCTION, debug_print, 100, 500000);
+
+HT_TASK::Task debug_state_print_task(HT_TASK::DUMMY_FUNCTION, debug_print, DEBUG_PRIORITY, DEBUG_PERIOD);
 
 void setup() {
     SPI.begin();
-    Serial.begin();
+    Serial.begin(115200); // NOLINT
 
     EthernetIPDefsInstance::create();
     
