@@ -179,7 +179,7 @@ void setup() {
     scheduler.schedule(async_main); 
     scheduler.schedule(CAN_send);
     
-    // scheduler.schedule(dash_CAN_enqueue);
+    scheduler.schedule(dash_CAN_enqueue);
     // scheduler.schedule(dash_CAN_receive);
     
     scheduler.schedule(pedals_message_enqueue);

@@ -175,7 +175,8 @@ bool send_dash_data(const unsigned long& sysMicros, const HT_TASK::TaskInfo& tas
     msg_out.preset_button = dash_outputs.preset_btn_is_pressed;
     msg_out.motor_controller_cycle_button = dash_outputs.mc_reset_btn_is_pressed;
     msg_out.mode_button = dash_outputs.mode_btn_is_pressed;
-    msg_out.start_button = dash_outputs.start_btn_is_pressed;
+    // msg_out.start_button = dash_outputs.start_btn_is_pressed;
+    msg_out.start_button = true;
     msg_out.data_button_is_pressed = dash_outputs.data_btn_is_pressed;
     msg_out.left_shifter_button = dash_outputs.left_paddle_is_pressed;
     msg_out.right_shifter_button = dash_outputs.right_paddle_is_pressed;    

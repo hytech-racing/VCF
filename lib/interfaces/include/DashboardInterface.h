@@ -63,10 +63,10 @@ class DashboardInterface
         // Method to tick dash state (DashInput is just a reflection of the CAN message to dash
         // that gets sent over CAN)
         void update_dash_state(DashInputState_s state);
-
     
     private: 
-        DashboardGPIOs_s _dashboard_gpios; 
+
+        DashboardGPIOs_s _dashboard_gpios;
         DashInputState_s _dashboard_outputs;
 
         unsigned long _buzzer_last_activated = 0; 

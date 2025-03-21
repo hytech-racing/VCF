@@ -1,5 +1,7 @@
 #include "DashboardInterface.h"
 #include "SharedFirmwareTypes.h"
+#include "CANInterface.h"
+#include "VCFCANInterfaceImpl.h"
 
 /* Button reads */
 DashInputState_s DashboardInterface::get_dashboard_outputs() 
