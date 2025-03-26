@@ -61,6 +61,15 @@ PedalsSystemData_s PedalsSystem::evaluate_pedals(PedalSensorData_s pedals_data, 
     if (implausibility && (_implausibilityStartTime == 0))
     {
         _implausibilityStartTime = curr_millis;
+        while (implausibility)
+        {
+            out.accel_percent = 0;
+            out.brake_percent = 0;
+            out.mech_brake_is_active = false;
+            out.implausibility_has_exceeded_max_duration = _max_duration_of_implausibility_exceeded(curr_millis);
+            return out;
+        }
+        
     }
     else if ((!implausibility) && ((out.accel_percent <= ACCELERATION_PERCENT_LIMIT)))
     {
