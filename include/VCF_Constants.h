@@ -95,8 +95,11 @@ constexpr unsigned long DEBUG_PERIOD = 50000;             // 50,000 us = 20 Hz
 constexpr unsigned long CAN_SEND_PRIORITY = 10;
 constexpr unsigned long CAN_SEND_PERIOD = 2000;
 
-constexpr unsigned long PEDALS_SEND_PERIOD = 3000;
+constexpr unsigned long PEDALS_SEND_PERIOD = 3000;        // 3 000 us = 333 Hz
 constexpr unsigned long PEDALS_SAMPLE_PERIOD = 500;
+
+constexpr unsigned long BUZZER_WRITE_PERIOD = 100000;     // 100 000 us = 10 Hz
+constexpr unsigned long BUZZER_PRIORITY = 20;
 
 
 #endif /* VCF_CONSTANTS */

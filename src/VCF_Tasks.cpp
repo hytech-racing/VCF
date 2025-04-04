@@ -101,18 +101,21 @@ bool run_read_adc2_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo&
 //     return true;
 // }
 
-// bool init_buzzer_control_task()
-// {
-//     pinMode(BUZZER_CONTROL_PIN, OUTPUT);
+bool init_buzzer_control_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
+{
+    pinMode(BUZZER_CONTROL_PIN, OUTPUT);
 
-//     return true;
-// }
-// bool run_buzzer_control_task()
-// {
-//     digitalWrite(BUZZER_CONTROL_PIN, vcr_data.system_data.buzzer_is_active);
+    return true;
+}
+
+bool run_buzzer_control_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
+{
+    bool buzzer_is_active = BuzzerController::getInstance().buzzer_is_active(sys_time::hal_millis()); //NOLINT
+
+    digitalWrite(BUZZER_CONTROL_PIN, buzzer_is_active);
     
-//     return true;
-// }
+    return true;
+}
 
 // bool init_handle_send_vcf_ethernet_data() {
 //     VCF_socket.begin(EthernetIPDefsInstance::instance().VCFData_port);
@@ -175,6 +178,7 @@ bool send_dash_data(const unsigned long& sysMicros, const HT_TASK::TaskInfo& tas
     msg_out.preset_button = dash_outputs.preset_btn_is_pressed;
     msg_out.motor_controller_cycle_button = dash_outputs.mc_reset_btn_is_pressed;
     msg_out.mode_button = dash_outputs.mode_btn_is_pressed;
+    Serial.printf("mode_button = %d\n", msg_out.mode_button);
     // msg_out.start_button = dash_outputs.start_btn_is_pressed;
     msg_out.start_button = true;
     msg_out.data_button_is_pressed = dash_outputs.data_btn_is_pressed;

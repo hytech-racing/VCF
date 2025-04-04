@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 #include "pedals_system_test.h"
+#include "test_buzzer.h"
 
 int main(int argc, char **argv)
 {

@@ -79,6 +79,7 @@ HT_TASK::Task dash_CAN_enqueue(HT_TASK::DUMMY_FUNCTION, &send_dash_data, DASH_SE
 HT_TASK::Task pedals_message_enqueue(HT_TASK::DUMMY_FUNCTION, &send_pedals_data, PEDALS_PRIORITY, PEDALS_SAMPLE_PERIOD);
 HT_TASK::Task pedals_sample(HT_TASK::DUMMY_FUNCTION, &run_read_adc2_task, PEDALS_PRIORITY, PEDALS_SEND_PERIOD);
 HT_TASK::Task dash_CAN_receive(HT_TASK::DUMMY_FUNCTION, &receive_dash_inputs, PEDALS_PRIORITY, dash_receive_period);
+HT_TASK::Task buzzer_control_task(&init_buzzer_control_task, &run_buzzer_control_task, BUZZER_PRIORITY, BUZZER_WRITE_PERIOD);
 
 bool debug_print(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
 {
