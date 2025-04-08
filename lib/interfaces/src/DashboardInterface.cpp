@@ -18,37 +18,3 @@ DashInputState_s DashboardInterface::get_dashboard_outputs()
 
     return _dashboard_outputs;
 }
-
-void DashboardInterface::start_buzzer()
-{
-    if (!_buzzer_active)
-    {
-        _buzzer_last_activated = sys_time::hal_millis(); 
-        digitalWrite(_dashboard_gpios.BUZZER, HIGH);
-        _buzzer_active = true;
-    }
-}
-
-bool DashboardInterface::check_buzzer_complete() 
-{
-    constexpr unsigned long buzzer_duration = 2000;
-    return sys_time::hal_millis() - _buzzer_last_activated > buzzer_duration; 
-}
-   
-void DashboardInterface::end_buzzer()
-{
-    digitalWrite(_dashboard_gpios.BUZZER, LOW); 
-}
-
-void DashboardInterface::update_dash_state(DashInputState_s input) 
-{
-    // if (input.start_buzzer)
-    // {
-    //     start_buzzer(); 
-    // }
-    
-    // if (input.stop_buzzer)
-    // {
-    //     end_buzzer(); 
-    // }
-}

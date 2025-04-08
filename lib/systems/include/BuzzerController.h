@@ -38,7 +38,7 @@ public:
      */
     bool buzzer_is_active(unsigned long millis)
     {
-        return (millis - _last_activation_time_ms) < BUZZER_PERIOD_MS;
+        return _last_activation_time_ms != 0 && (millis - _last_activation_time_ms) < BUZZER_PERIOD_MS;
     }
 
 private:
