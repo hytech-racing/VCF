@@ -36,7 +36,6 @@
 #include "ht_sched.hpp"
 #include "ht_task.hpp"
 #include "BuzzerController.h"
-#include "IOExpander.h"
 #include "IOExpanderUtils.h"
 
 /**

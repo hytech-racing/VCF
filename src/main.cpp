@@ -116,9 +116,6 @@ bool debug_print(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskIn
     // Serial.print("data button: ");
     // Serial.println(VCFData_sInstance::instance().interface_data.dash_input_state.data_btn_is_pressed);
 
-    Serial.print("Mode: ");
-    Serial.println((uint16_t) VCFData_sInstance::instance().interface_data.dash_input_state.dial_state);
-
     return true;
 }
 
@@ -128,6 +125,12 @@ HT_TASK::Task debug_state_print_task(HT_TASK::DUMMY_FUNCTION, debug_print, DEBUG
 void setup() {
     SPI.begin();
     Serial.begin(115200); // NOLINT
+
+    while(!Serial) {
+        // do nothing
+    }
+
+    Serial.println("starting setup");
 
     EthernetIPDefsInstance::create();
     
@@ -188,7 +191,6 @@ void setup() {
     Serial.begin(115200); // NOLINT (common baud rate)
 
     // qindesign::network::Ethernet.begin(EthernetIPDefsInstance::instance().vcf_ip, EthernetIPDefsInstance::instance().default_dns, EthernetIPDefsInstance::instance().default_gateway, EthernetIPDefsInstance::instance().car_subnet);
-    VCFCANInterfaceObjects can_interface_objects = VCFCANInterfaceImpl::VCFCANInterfaceObjectsInstance::instance();
     const uint32_t CAN_baudrate = 500000;
     handle_CAN_setup(main_can, CAN_baudrate, &VCFCANInterfaceImpl::on_main_can_recv);
     

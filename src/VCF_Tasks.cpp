@@ -256,32 +256,47 @@ bool run_dash_GPIOs_task(const unsigned long& sys_micros, const HT_TASK::TaskInf
 
 bool create_ioexpander(const unsigned long& sys_micros, const HT_TASK::TaskInfo& task_info)
 {
-    // IOExpanderInstance::create(0x20);
-    // for (int i = 0; i < 16; ++i) {
-    //     IOExpanderInstance::instance().get_mcp().pinMode(i, INPUT_PULLUP);
-    // }
+    Wire2.begin();
+    IOExpanderInstance::create(0x20, Wire2);
+    IOExpanderInstance::instance().init();
+
+    IOExpanderInstance::instance().portMode(MCP23017Port::A, 0b01111111);
+    IOExpanderInstance::instance().portMode(MCP23017Port::B, 0b01111111);
+
+    // IOExpanderInstance::instance().writeRegister(MCP23017Register::GPIO_A, 0x00);  //Reset port A 
+    // IOExpanderInstance::instance().writeRegister(MCP23017Register::GPIO_B, 0x00);  //Reset port B
+
+    IOExpanderInstance::instance().writeRegister(MCP23017Register::GPPU_A, 0xFF);  //Internal pull-ups
+    IOExpanderInstance::instance().writeRegister(MCP23017Register::GPPU_B, 0xFF);  //Internal pull-ups
+
+    IOExpanderInstance::instance().writeRegister(MCP23017Register::IPOL_A, 0xFF);  //Internal pull-ups
+    IOExpanderInstance::instance().writeRegister(MCP23017Register::IPOL_B, 0xFF);  //Internal pull-ups
+
     return true;
 }
 
 bool read_ioexpander(const unsigned long& sys_micros, const HT_TASK::TaskInfo& task_info)
 {
-    // for (int i = 0; i < 16; ++i) {
-    //     Serial.printf("%d ", IOExpanderInstance::instance().get_mcp().digitalRead(i));
+    uint16_t in = IOExpanderInstance::instance().read();
+    // for (int i = 0; i < 8; ++i) {
+    //     Serial.printf("%d ", in & 0x01);
+    //     in = in >> 1;
     // }
     // Serial.println("");
-    // if (IOExpanderInstance::instance().get_mcp().digitalRead(8)) {
-    //     VCFData_sInstance::instance().interface_data.dash_input_state.dial_state = ControllerMode_e::MODE_0;
-    // } else if (IOExpanderInstance::instance().get_mcp().digitalRead(9)) {
-    //     VCFData_sInstance::instance().interface_data.dash_input_state.dial_state = ControllerMode_e::MODE_1;
-    // } else if (IOExpanderInstance::instance().get_mcp().digitalRead(10)) {
-    //     VCFData_sInstance::instance().interface_data.dash_input_state.dial_state = ControllerMode_e::MODE_2;
-    // } else if (IOExpanderInstance::instance().get_mcp().digitalRead(11)) {
-    //     VCFData_sInstance::instance().interface_data.dash_input_state.dial_state = ControllerMode_e::MODE_3;
-    // } else if (IOExpanderInstance::instance().get_mcp().digitalRead(12)) {
-    //     VCFData_sInstance::instance().interface_data.dash_input_state.dial_state = ControllerMode_e::MODE_4;
-    // } else if (IOExpanderInstance::instance().get_mcp().digitalRead(13)) {
-    //     VCFData_sInstance::instance().interface_data.dash_input_state.dial_state = ControllerMode_e::MODE_5;
-    // }
+
+    if (IOExpanderUtils::getBit(in, 1, 2)) {
+        VCFData_sInstance::instance().interface_data.dash_input_state.dial_state = ControllerMode_e::MODE_0;
+    } else if (IOExpanderUtils::getBit(in, 1, 1)) {
+        VCFData_sInstance::instance().interface_data.dash_input_state.dial_state = ControllerMode_e::MODE_1;
+    } else if (IOExpanderUtils::getBit(in, 1, 0)) {
+        VCFData_sInstance::instance().interface_data.dash_input_state.dial_state = ControllerMode_e::MODE_2;
+    } else if (IOExpanderUtils::getBit(in, 1, 5)) {
+        VCFData_sInstance::instance().interface_data.dash_input_state.dial_state = ControllerMode_e::MODE_3;
+    } else if (IOExpanderUtils::getBit(in, 1, 4)) {
+        VCFData_sInstance::instance().interface_data.dash_input_state.dial_state = ControllerMode_e::MODE_4;
+    } else if (IOExpanderUtils::getBit(in, 1, 3)) {
+        VCFData_sInstance::instance().interface_data.dash_input_state.dial_state = ControllerMode_e::MODE_5;
+    }
     return true;
 }
 
