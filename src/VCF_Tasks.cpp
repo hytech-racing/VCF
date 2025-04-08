@@ -269,8 +269,8 @@ bool create_ioexpander(const unsigned long& sys_micros, const HT_TASK::TaskInfo&
     IOExpanderInstance::instance().writeRegister(MCP23017Register::GPPU_A, 0xFF);  //Internal pull-ups
     IOExpanderInstance::instance().writeRegister(MCP23017Register::GPPU_B, 0xFF);  //Internal pull-ups
 
-    IOExpanderInstance::instance().writeRegister(MCP23017Register::IPOL_A, 0xFF);  //Internal pull-ups
-    IOExpanderInstance::instance().writeRegister(MCP23017Register::IPOL_B, 0xFF);  //Internal pull-ups
+    IOExpanderInstance::instance().writeRegister(MCP23017Register::IPOL_A, 0xFF);  //Polarity (inverted)
+    IOExpanderInstance::instance().writeRegister(MCP23017Register::IPOL_B, 0xFF);  //Polarity (inverted)
 
     return true;
 }
