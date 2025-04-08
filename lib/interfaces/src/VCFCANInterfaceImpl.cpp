@@ -11,7 +11,6 @@ namespace VCFCANInterfaceImpl {
 
     void vcf_recv_switch(CANInterfaces &interfaces, const CAN_message_t &msg, unsigned long millis)
     {
-        // TODO Implement this later
         switch (msg.id) 
         {
             case DASHBOARD_BUZZER_CONTROL_CANID:

@@ -158,6 +158,7 @@ void setup() {
     };
 
     // Create can singletons
+    DashboardInterfaceInstance::create(dashboard_gpios);
     VCFCANInterfaceImpl::CANInterfacesInstance::create(DashboardInterfaceInstance::instance()); 
     auto main_can_recv = etl::delegate<void(CANInterfaces &, const CAN_message_t &, unsigned long)>::create<VCFCANInterfaceImpl::vcf_recv_switch>();
     VCFCANInterfaceImpl::VCFCANInterfaceObjectsInstance::create(main_can_recv, &main_can); // NOLINT (Not sure why it's uninitialized. I think it is.)
@@ -185,7 +186,7 @@ void setup() {
     
     scheduler.schedule(pedals_message_enqueue);
     scheduler.schedule(pedals_sample);
-    scheduler.schedule(debug_state_print_task);
+    // scheduler.schedule(debug_state_print_task);
 
 }
 
