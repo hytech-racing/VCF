@@ -90,7 +90,7 @@ constexpr int DASH_SEND_PRIORITY = 7;
 constexpr int DEBUG_PRIORITY = 100;
 
 constexpr unsigned long DASH_SEND_PERIOD = 100000;        // 100,000 us = 10 Hz
-constexpr unsigned long DEBUG_PERIOD = 50000;             // 50,000 us = 20 Hz
+constexpr unsigned long DEBUG_PERIOD = 500000;             // 500,000 us = 2 Hz
 
 constexpr unsigned long CAN_SEND_PRIORITY = 10;
 constexpr unsigned long CAN_SEND_PERIOD = 2000;
