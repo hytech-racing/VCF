@@ -43,7 +43,7 @@ class DashboardInterface
             pinMode(_dashboard_gpios.PRESET_BUTTON, INPUT_PULLUP); 
             pinMode(_dashboard_gpios.MC_CYCLE_BUTTON, INPUT_PULLUP); 
             pinMode(_dashboard_gpios.MODE_BUTTON, INPUT_PULLUP); 
-            pinMode(_dashboard_gpios.START_BUTTON, INPUT_PULLUP); 
+            pinMode(_dashboard_gpios.DIM_BUTTON, INPUT_PULLUP); 
             pinMode(_dashboard_gpios.DATA_BUTTON, INPUT_PULLUP); 
             pinMode(_dashboard_gpios.LEFT_SHIFTER_BUTTON, INPUT_PULLUP); 
             pinMode(_dashboard_gpios.RIGHT_SHIFTER_BUTTON, INPUT_PULLUP); 

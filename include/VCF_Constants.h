@@ -14,12 +14,12 @@
 constexpr int ADC1_CS = 17; // MCP3208. ADC1 in VCF schematic. Used for steering, sus pots, and load cells.
 constexpr int ADC2_CS = 16; // MCP3208. ADC2 in VCF schematic. Used for pedal position sensors.
 
-constexpr int BTN_DIM_READ = 30;
-constexpr int BTN_PRESET_READ = 31;
-constexpr int BTN_MC_CYCLE_READ = 28;
-constexpr int BTN_MODE_READ = 29;
-constexpr int BTN_START_READ = 26;
-constexpr int BTN_DATA_READ = 27;
+constexpr int BTN_DIM_READ = 29;
+constexpr int BTN_PRESET_READ = 26;
+constexpr int BTN_MC_CYCLE_READ = 27;
+constexpr int BTN_MODE_READ = 31;
+constexpr int BTN_START_READ = 28;
+constexpr int BTN_DATA_READ = 30;
 constexpr int BUZZER_CONTROL_PIN = 1;
 constexpr int RIGHT_SHIFTER = 9;
 constexpr int LEFT_SHIFTER = 10;
@@ -100,6 +100,9 @@ constexpr unsigned long PEDALS_SAMPLE_PERIOD = 500;
 
 constexpr unsigned long BUZZER_WRITE_PERIOD = 100000;     // 100 000 us = 10 Hz
 constexpr unsigned long BUZZER_PRIORITY = 20;
+
+constexpr unsigned long DASH_SAMPLE_PERIOD = 100000;     // 100 000 us = 10 Hz
+constexpr unsigned long DASH_SAMPLE_PRIORITY = 21;
 
 
 #endif /* VCF_CONSTANTS */

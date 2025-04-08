@@ -100,6 +100,9 @@ namespace async_tasks {
 bool handle_async_main(const unsigned long& sys_micros, const HT_TASK::TaskInfo& task_info);
 
 }
+
+bool run_dash_GPIOs_task(const unsigned long& sys_micros, const HT_TASK::TaskInfo& task_info); // NOLINT (capitalization of GPIOs)
+
 namespace setup_handlers {
 void setup_hardware();
 }

@@ -245,6 +245,12 @@ bool send_pedals_data(const unsigned long &sys_micros, const HT_TASK::TaskInfo& 
     return true;
 }
 
+bool run_dash_GPIOs_task(const unsigned long& sys_micros, const HT_TASK::TaskInfo& task_info)
+{
+    VCFData_sInstance::instance().interface_data.dash_input_state = DashboardInterfaceInstance::instance().get_dashboard_outputs();
+    return true;
+}
+
 namespace async_tasks 
 {
     // these are async tasks. we want these to run as fast as possible p much
