@@ -201,6 +201,7 @@ void setup() {
     scheduler.schedule(CAN_send);
     
     scheduler.schedule(dash_CAN_enqueue);
+    scheduler.schedule(buzzer_control_task);
     // scheduler.schedule(dash_CAN_receive);
     
     scheduler.schedule(pedals_message_enqueue);

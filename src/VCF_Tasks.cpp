@@ -253,32 +253,32 @@ bool run_dash_GPIOs_task(const unsigned long& sys_micros, const HT_TASK::TaskInf
 
 bool create_ioexpander(const unsigned long& sys_micros, const HT_TASK::TaskInfo& task_info)
 {
-    IOExpanderInstance::create(0x20);
-    for (int i = 0; i < 16; ++i) {
-        IOExpanderInstance::instance().get_mcp().pinMode(i, INPUT_PULLUP);
-    }
+    // IOExpanderInstance::create(0x20);
+    // for (int i = 0; i < 16; ++i) {
+    //     IOExpanderInstance::instance().get_mcp().pinMode(i, INPUT_PULLUP);
+    // }
     return true;
 }
 
 bool read_ioexpander(const unsigned long& sys_micros, const HT_TASK::TaskInfo& task_info)
 {
-    for (int i = 0; i < 16; ++i) {
-        Serial.printf("%d ", IOExpanderInstance::instance().get_mcp().digitalRead(i));
-    }
-    Serial.println("");
-    if (IOExpanderInstance::instance().get_mcp().digitalRead(8)) {
-        VCFData_sInstance::instance().interface_data.dash_input_state.dial_state = ControllerMode_e::MODE_0;
-    } else if (IOExpanderInstance::instance().get_mcp().digitalRead(9)) {
-        VCFData_sInstance::instance().interface_data.dash_input_state.dial_state = ControllerMode_e::MODE_1;
-    } else if (IOExpanderInstance::instance().get_mcp().digitalRead(10)) {
-        VCFData_sInstance::instance().interface_data.dash_input_state.dial_state = ControllerMode_e::MODE_2;
-    } else if (IOExpanderInstance::instance().get_mcp().digitalRead(11)) {
-        VCFData_sInstance::instance().interface_data.dash_input_state.dial_state = ControllerMode_e::MODE_3;
-    } else if (IOExpanderInstance::instance().get_mcp().digitalRead(12)) {
-        VCFData_sInstance::instance().interface_data.dash_input_state.dial_state = ControllerMode_e::MODE_4;
-    } else if (IOExpanderInstance::instance().get_mcp().digitalRead(13)) {
-        VCFData_sInstance::instance().interface_data.dash_input_state.dial_state = ControllerMode_e::MODE_5;
-    }
+    // for (int i = 0; i < 16; ++i) {
+    //     Serial.printf("%d ", IOExpanderInstance::instance().get_mcp().digitalRead(i));
+    // }
+    // Serial.println("");
+    // if (IOExpanderInstance::instance().get_mcp().digitalRead(8)) {
+    //     VCFData_sInstance::instance().interface_data.dash_input_state.dial_state = ControllerMode_e::MODE_0;
+    // } else if (IOExpanderInstance::instance().get_mcp().digitalRead(9)) {
+    //     VCFData_sInstance::instance().interface_data.dash_input_state.dial_state = ControllerMode_e::MODE_1;
+    // } else if (IOExpanderInstance::instance().get_mcp().digitalRead(10)) {
+    //     VCFData_sInstance::instance().interface_data.dash_input_state.dial_state = ControllerMode_e::MODE_2;
+    // } else if (IOExpanderInstance::instance().get_mcp().digitalRead(11)) {
+    //     VCFData_sInstance::instance().interface_data.dash_input_state.dial_state = ControllerMode_e::MODE_3;
+    // } else if (IOExpanderInstance::instance().get_mcp().digitalRead(12)) {
+    //     VCFData_sInstance::instance().interface_data.dash_input_state.dial_state = ControllerMode_e::MODE_4;
+    // } else if (IOExpanderInstance::instance().get_mcp().digitalRead(13)) {
+    //     VCFData_sInstance::instance().interface_data.dash_input_state.dial_state = ControllerMode_e::MODE_5;
+    // }
     return true;
 }
 
