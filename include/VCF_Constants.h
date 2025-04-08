@@ -11,21 +11,21 @@
 
 
 // Digital Pins on Teensy
-constexpr int ADC1_CS = 33; // MCP3208. ADC1 in VCF schematic. Used for steering, sus pots, and load cells.
-constexpr int ADC2_CS = 34; // MCP3208. ADC2 in VCF schematic. Used for pedal position sensors.
+constexpr int ADC1_CS = 17; // MCP3208. ADC1 in VCF schematic. Used for steering, sus pots, and load cells.
+constexpr int ADC2_CS = 16; // MCP3208. ADC2 in VCF schematic. Used for pedal position sensors.
 
-constexpr int BTN_DIM_READ = 10;
-constexpr int BTN_PRESET_READ = 9;
-constexpr int BTN_MC_CYCLE_READ = 8;
-constexpr int BTN_MODE_READ = 7;
-constexpr int BTN_START_READ = 6;
-constexpr int BTN_DATA_READ = 22;
-constexpr int BUZZER_CONTROL_PIN = 3;
-constexpr int RIGHT_SHIFTER = 26;
-constexpr int LEFT_SHIFTER = 27;
+constexpr int BTN_DIM_READ = 30;
+constexpr int BTN_PRESET_READ = 31;
+constexpr int BTN_MC_CYCLE_READ = 28;
+constexpr int BTN_MODE_READ = 29;
+constexpr int BTN_START_READ = 26;
+constexpr int BTN_DATA_READ = 27;
+constexpr int BUZZER_CONTROL_PIN = 1;
+constexpr int RIGHT_SHIFTER = 9;
+constexpr int LEFT_SHIFTER = 10;
 
-constexpr int I2C_SCL = 4;
-constexpr int I2C_SDA = 5;
+constexpr int I2C_SCL = 24;
+constexpr int I2C_SDA = 25;
 
 
 
@@ -34,12 +34,12 @@ constexpr int I2C_SDA = 5;
 /* -------------------------------------------------- */
 
 /* Channels on ADC_1 */
-const int STEERING_1_CHANNEL      = 0;
-const int STEERING_2_CHANNEL      = 1;
-const int FR_SUS_POT_CHANNEL      = 2;
-const int FR_LOADCELL_CHANNEL     = 3;
-const int FL_SUS_POT_CHANNEL      = 4;
-const int FL_LOADCELL_CHANNEL     = 5;
+const int FR_LOADCELL_CHANNEL     = 0;
+const int FL_LOADCELL_CHANNEL     = 1;
+const int FL_SUS_POT_CHANNEL      = 2;
+const int FR_SUS_POT_CHANNEL      = 3;
+const int STEERING_2_CHANNEL      = 4;
+const int STEERING_1_CHANNEL      = 5;
 // const int UNUSED_CHANNEL       = 6;
 // const int UNUSED_CHANNEL       = 7;
 
