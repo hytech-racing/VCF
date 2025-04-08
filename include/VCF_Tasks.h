@@ -36,6 +36,8 @@
 #include "ht_sched.hpp"
 #include "ht_task.hpp"
 #include "BuzzerController.h"
+#include "IOExpander.h"
+#include "IOExpanderUtils.h"
 
 /**
  * The read_adc1 task will command adc1 to sample all eight channels, convert
@@ -103,6 +105,8 @@ bool handle_async_main(const unsigned long& sys_micros, const HT_TASK::TaskInfo&
 
 bool run_dash_GPIOs_task(const unsigned long& sys_micros, const HT_TASK::TaskInfo& task_info); // NOLINT (capitalization of GPIOs)
 
+bool create_ioexpander(const unsigned long& sys_micros, const HT_TASK::TaskInfo& task_info);
+bool read_ioexpander(const unsigned long& sys_micros, const HT_TASK::TaskInfo& task_info);
 namespace setup_handlers {
 void setup_hardware();
 }

@@ -81,6 +81,7 @@ HT_TASK::Task pedals_sample(HT_TASK::DUMMY_FUNCTION, &run_read_adc2_task, PEDALS
 HT_TASK::Task dash_CAN_receive(HT_TASK::DUMMY_FUNCTION, &receive_dash_inputs, PEDALS_PRIORITY, dash_receive_period);
 HT_TASK::Task buzzer_control_task(&init_buzzer_control_task, &run_buzzer_control_task, BUZZER_PRIORITY, BUZZER_WRITE_PERIOD);
 HT_TASK::Task read_dash_GPIOs_task(HT_TASK::DUMMY_FUNCTION, &run_dash_GPIOs_task, DASH_SAMPLE_PRIORITY, DASH_SAMPLE_PERIOD);
+HT_TASK::Task read_ioexpander_task(&create_ioexpander, &read_ioexpander, DASH_SAMPLE_PRIORITY, DASH_SAMPLE_PERIOD);
 
 bool debug_print(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
 {
@@ -102,18 +103,21 @@ bool debug_print(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskIn
     // Serial.println("implaus");
     // Serial.print(VCFData_sInstance::instance().system_data.pedals_system_data.implausibility_has_exceeded_max_duration);
     
-    Serial.print("Dim button: ");
-    Serial.println(VCFData_sInstance::instance().interface_data.dash_input_state.dim_btn_is_pressed);
-    Serial.print("preset button: ");
-    Serial.println(VCFData_sInstance::instance().interface_data.dash_input_state.preset_btn_is_pressed);
-    Serial.print("mc reset button: ");
-    Serial.println(VCFData_sInstance::instance().interface_data.dash_input_state.mc_reset_btn_is_pressed);
-    Serial.print("mode button: ");
-    Serial.println(VCFData_sInstance::instance().interface_data.dash_input_state.mode_btn_is_pressed);
-    Serial.print("start button: ");
-    Serial.println(VCFData_sInstance::instance().interface_data.dash_input_state.start_btn_is_pressed);
-    Serial.print("data button: ");
-    Serial.println(VCFData_sInstance::instance().interface_data.dash_input_state.data_btn_is_pressed);
+    // Serial.print("Dim button: ");
+    // Serial.println(VCFData_sInstance::instance().interface_data.dash_input_state.dim_btn_is_pressed);
+    // Serial.print("preset button: ");
+    // Serial.println(VCFData_sInstance::instance().interface_data.dash_input_state.preset_btn_is_pressed);
+    // Serial.print("mc reset button: ");
+    // Serial.println(VCFData_sInstance::instance().interface_data.dash_input_state.mc_reset_btn_is_pressed);
+    // Serial.print("mode button: ");
+    // Serial.println(VCFData_sInstance::instance().interface_data.dash_input_state.mode_btn_is_pressed);
+    // Serial.print("start button: ");
+    // Serial.println(VCFData_sInstance::instance().interface_data.dash_input_state.start_btn_is_pressed);
+    // Serial.print("data button: ");
+    // Serial.println(VCFData_sInstance::instance().interface_data.dash_input_state.data_btn_is_pressed);
+
+    Serial.print("Mode: ");
+    Serial.println((uint16_t) VCFData_sInstance::instance().interface_data.dash_input_state.dial_state);
 
     return true;
 }
@@ -202,6 +206,7 @@ void setup() {
     scheduler.schedule(pedals_message_enqueue);
     scheduler.schedule(pedals_sample);
     scheduler.schedule(read_dash_GPIOs_task);
+    scheduler.schedule(read_ioexpander_task);
     scheduler.schedule(debug_state_print_task);
 
 }
