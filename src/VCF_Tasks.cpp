@@ -253,16 +253,14 @@ bool create_ioexpander(const unsigned long& sys_micros, const HT_TASK::TaskInfo&
     IOExpanderInstance::create(0x20, Wire2);
     IOExpanderInstance::instance().init();
 
-    IOExpanderInstance::instance().portMode(MCP23017Port::A, 0b01111111);
+    IOExpanderInstance::instance().portMode(MCP23017Port::A, 0b00000000);
     IOExpanderInstance::instance().portMode(MCP23017Port::B, 0b01111111);
 
     // IOExpanderInstance::instance().writeRegister(MCP23017Register::GPIO_A, 0x00);  //Reset port A 
     // IOExpanderInstance::instance().writeRegister(MCP23017Register::GPIO_B, 0x00);  //Reset port B
 
-    IOExpanderInstance::instance().writeRegister(MCP23017Register::GPPU_A, 0xFF);  //Internal pull-ups
     IOExpanderInstance::instance().writeRegister(MCP23017Register::GPPU_B, 0xFF);  //Internal pull-ups
 
-    IOExpanderInstance::instance().writeRegister(MCP23017Register::IPOL_A, 0xFF);  //Polarity (inverted)
     IOExpanderInstance::instance().writeRegister(MCP23017Register::IPOL_B, 0xFF);  //Polarity (inverted)
 
     return true;
@@ -291,6 +289,46 @@ bool read_ioexpander(const unsigned long& sys_micros, const HT_TASK::TaskInfo& t
     } else if (IOExpanderUtils::getBit(in, 1, 3)) {
         VCFData_sInstance::instance().interface_data.dash_input_state.dial_state = ControllerMode_e::MODE_5;
     }
+
+    ControllerMode_e state = VCFData_sInstance::instance().interface_data.dash_input_state.dial_state;
+    switch (state) {
+        case ControllerMode_e::MODE_0:
+        {
+            IOExpanderInstance::instance().writePort(MCP23017Port::A, 0b00000010);
+            break;
+        }
+        case ControllerMode_e::MODE_1:
+        {
+            IOExpanderInstance::instance().writePort(MCP23017Port::A, 0b01010111);
+            break;
+        }
+        case ControllerMode_e::MODE_2:
+        {
+            IOExpanderInstance::instance().writePort(MCP23017Port::A, 0b00011000);
+            break;
+        }
+        case ControllerMode_e::MODE_3:
+        {
+            IOExpanderInstance::instance().writePort(MCP23017Port::A, 0b00010100);
+            break;
+        }
+        case ControllerMode_e::MODE_4:
+        {
+            IOExpanderInstance::instance().writePort(MCP23017Port::A, 0b01000101);
+            break;
+        }
+        case ControllerMode_e::MODE_5:
+        {
+            IOExpanderInstance::instance().writePort(MCP23017Port::A, 0b00100100);
+            break;
+        }
+        default:
+        {
+            IOExpanderInstance::instance().writePort(MCP23017Port::A, 0b11110000);
+            break;
+        }
+    }
+
     return true;
 }
 
