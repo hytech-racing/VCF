@@ -48,7 +48,7 @@ class NeopixelController
     public:
     NeopixelController(uint32_t neopixel_count, uint32_t neopixel_pin) :
         _neopixels(neopixel_count, neopixel_pin, NEO_GRBW + NEO_KHZ800),
-        _current_brightness(MIN_BRIGHTNESS),
+        _current_brightness(64),
         _neopixel_count(neopixel_count)
     {};
 

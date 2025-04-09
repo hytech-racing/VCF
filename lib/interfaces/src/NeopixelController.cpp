@@ -28,45 +28,19 @@ void NeopixelController::set_neopixel(uint16_t id, uint32_t c) {
 
 void NeopixelController::refresh_neopixels(VCFData_s &vcf_data, VCRData_s &vcr_data) {
 
-    if (vcf_data.interface_data.current_sensor_data.current_sensor_unfiltered < 0) {
-        vcf_data.interface_data.current_sensor_data.current_sensor_unfiltered = 20;
-    } else {
-        vcf_data.interface_data.current_sensor_data.current_sensor_unfiltered -= 1;
-    }
-
-    // Debug code makes the BRAKE light blink at 0.5Hz
-    set_neopixel_color(LED_ID_e::BRAKE, vcf_data.interface_data.current_sensor_data > 10 ? LED_color_e::RED : LED_color_e::OFF);
-
-    // // only refresh if updates were found in the CAN message
-    // // This does not work for some reason on initial message
-    // // replace Metro timer if it is figured out
-    // if (CAN->mcu_state_update || pixel_refresh.check()) {
-
-    //     set_neopixel_color(LED_ID_e::BOTS, CAN->dash_mcu_state.bots_led);
-    //     set_neopixel_color(LED_ID_e::LAUNCH_CTRL, CAN->dash_mcu_state.launch_control_led);
-    //     set_neopixel_color(LED_ID_e::TORQUE_MODE, CAN->dash_mcu_state.mode_led);
-    //     set_neopixel_color(LED_ID_e::COCKPIT_BRB, CAN->brb_read ? 1 : 3);
-    //     set_neopixel_color(LED_ID_e::INERTIA, CAN->inertia_read ? 1 : 3);
-    //     set_neopixel_color(LED_ID_e::RDY_DRIVE, CAN->dash_mcu_state.start_status_led);
-    //     set_neopixel_color(LED_ID_e::MC_ERR, CAN->dash_mcu_state.motor_controller_error_led);
-    //     set_neopixel_color(LED_ID_e::IMD, CAN->dash_mcu_state.imd_led);
-    //     set_neopixel_color(LED_ID_e::AMS, CAN->dash_mcu_state.ams_led);
-    //     set_neopixel_color(LED_ID_e::GLV, 0);
-    //     // set_neopixel_color_gradient(LED_ID_e::GLV, CAN->dash_mcu_state.glv_led);
-    //     set_neopixel_color_gradient(LED_ID_e::CRIT_CHARGE, CAN->dash_mcu_state.pack_charge_led);
-    //     SerialUSB.println(CAN->mcu_status.no_brake_implausibility);
-    //     if (!CAN->mcu_status.no_brake_implausibility) {
-    //         set_neopixel_color(LED_ID_e::BRAKE_ENGAGE, 3);
-    //         if (blink()) { set_neopixel_color(LED_ID_e::BRAKE_ENGAGE, 0); }
-    //     } else {
-    //         set_neopixel_color(LED_ID_e::BRAKE_ENGAGE, CAN->dash_mcu_state.mechanical_brake_led);
-    //     }
-    //     _neopixels.show();
-    //     CAN->mcu_state_update = false;
-
-    //     pixel_refresh.reset();
-    // }
-
+    set_neopixel_color(LED_ID_e::BRAKE, vcf_data.system_data.pedals_system_data.brake_is_pressed ? LED_color_e::RED : LED_color_e::OFF);
+    set_neopixel_color(LED_ID_e::TORQUE_MODE, LED_color_e::OFF); // Unused for now
+    set_neopixel_color(LED_ID_e::LAUNCH_CTRL, LED_color_e::OFF); // Unused for now
+    set_neopixel_color(LED_ID_e::CRIT_CHARGE, LED_color_e::OFF); // Unused for now
+    set_neopixel_color(LED_ID_e::INERTIA, LED_color_e::OFF); // Unused for now
+    set_neopixel_color(LED_ID_e::COCKPIT_BRB, LED_color_e::OFF); // Unused for now
+    set_neopixel_color(LED_ID_e::BOTS, LED_color_e::OFF); // Unused for now
+    set_neopixel_color(LED_ID_e::IMD, vcr_data.interface_data.shutdown_sensing_data.imd_is_ok ? LED_color_e::GREEN : LED_color_e::RED);
+    set_neopixel_color(LED_ID_e::BMS, vcr_data.interface_data.shutdown_sensing_data.bms_is_ok ? LED_color_e::GREEN : LED_color_e::RED);
+    set_neopixel_color(LED_ID_e::MC_ERR, (vcr_data.interface_data.inverter_data.FL.error || vcr_data.interface_data.inverter_data.FR.error || vcr_data.interface_data.inverter_data.RL.error || vcr_data.interface_data.inverter_data.RR.error) ? LED_color_e::RED : LED_color_e::OFF);
+    set_neopixel_color(LED_ID_e::RDY_DRIVE, LED_color_e::RED);
+    set_neopixel_color(LED_ID_e::GLV, vcr_data.interface_data.current_sensor_data.twentyfour_volt_sensor > 22.0f ? LED_color_e::GREEN : LED_color_e::OFF); // No sensor there yet
+    
     _neopixels.show();
 
 }
