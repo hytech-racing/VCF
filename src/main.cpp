@@ -34,9 +34,6 @@
 
 #include "hytech.h"
 
-/* Scheduler setup */
-HT_SCHED::Scheduler& scheduler = HT_SCHED::Scheduler::getInstance();
-
 FlexCAN_T4<CAN1, RX_SIZE_256, TX_SIZE_16> main_can;
 
 const PedalsParams accel_params = {
@@ -71,14 +68,11 @@ const PedalsParams brake_params = {
 
 // Tasks
 // Send Periods
-constexpr unsigned long dash_send_period = 40000;             // 4 000 us = 250 Hz
-constexpr unsigned long dash_receive_period = 4000;
 HT_TASK::Task async_main(HT_TASK::DUMMY_FUNCTION, &async_tasks::handle_async_main, MAIN_TASK_PRIORITY);
 HT_TASK::Task CAN_send(HT_TASK::DUMMY_FUNCTION, &handle_CAN_send, CAN_SEND_PRIORITY, CAN_SEND_PERIOD);
 HT_TASK::Task dash_CAN_enqueue(HT_TASK::DUMMY_FUNCTION, &send_dash_data, DASH_SEND_PRIORITY, DASH_SEND_PERIOD);
 HT_TASK::Task pedals_message_enqueue(HT_TASK::DUMMY_FUNCTION, &send_pedals_data, PEDALS_PRIORITY, PEDALS_SAMPLE_PERIOD);
 HT_TASK::Task pedals_sample(HT_TASK::DUMMY_FUNCTION, &run_read_adc2_task, PEDALS_PRIORITY, PEDALS_SEND_PERIOD);
-HT_TASK::Task dash_CAN_receive(HT_TASK::DUMMY_FUNCTION, &receive_dash_inputs, PEDALS_PRIORITY, dash_receive_period);
 HT_TASK::Task buzzer_control_task(&init_buzzer_control_task, &run_buzzer_control_task, BUZZER_PRIORITY, BUZZER_WRITE_PERIOD);
 HT_TASK::Task read_dash_GPIOs_task(HT_TASK::DUMMY_FUNCTION, &run_dash_GPIOs_task, DASH_SAMPLE_PRIORITY, DASH_SAMPLE_PERIOD);
 HT_TASK::Task read_ioexpander_task(&create_ioexpander, &read_ioexpander, DASH_SAMPLE_PRIORITY, DASH_SAMPLE_PERIOD);
@@ -103,18 +97,18 @@ bool debug_print(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskIn
     // Serial.println("implaus");
     // Serial.print(VCFData_sInstance::instance().system_data.pedals_system_data.implausibility_has_exceeded_max_duration);
     
-    // Serial.print("Dim button: ");
-    // Serial.println(VCFData_sInstance::instance().interface_data.dash_input_state.dim_btn_is_pressed);
-    // Serial.print("preset button: ");
-    // Serial.println(VCFData_sInstance::instance().interface_data.dash_input_state.preset_btn_is_pressed);
-    // Serial.print("mc reset button: ");
-    // Serial.println(VCFData_sInstance::instance().interface_data.dash_input_state.mc_reset_btn_is_pressed);
-    // Serial.print("mode button: ");
-    // Serial.println(VCFData_sInstance::instance().interface_data.dash_input_state.mode_btn_is_pressed);
-    // Serial.print("start button: ");
-    // Serial.println(VCFData_sInstance::instance().interface_data.dash_input_state.start_btn_is_pressed);
-    // Serial.print("data button: ");
-    // Serial.println(VCFData_sInstance::instance().interface_data.dash_input_state.data_btn_is_pressed);
+    Serial.print("Dim button: ");
+    Serial.println(VCFData_sInstance::instance().interface_data.dash_input_state.dim_btn_is_pressed);
+    Serial.print("preset button: ");
+    Serial.println(VCFData_sInstance::instance().interface_data.dash_input_state.preset_btn_is_pressed);
+    Serial.print("mc reset button: ");
+    Serial.println(VCFData_sInstance::instance().interface_data.dash_input_state.mc_reset_btn_is_pressed);
+    Serial.print("mode button: ");
+    Serial.println(VCFData_sInstance::instance().interface_data.dash_input_state.mode_btn_is_pressed);
+    Serial.print("start button: ");
+    Serial.println(VCFData_sInstance::instance().interface_data.dash_input_state.start_btn_is_pressed);
+    Serial.print("data button: ");
+    Serial.println(VCFData_sInstance::instance().interface_data.dash_input_state.data_btn_is_pressed);
 
     return true;
 }
@@ -125,19 +119,6 @@ HT_TASK::Task debug_state_print_task(HT_TASK::DUMMY_FUNCTION, debug_print, DEBUG
 void setup() {
     SPI.begin();
     Serial.begin(115200); // NOLINT
-
-    while(!Serial) {
-        // do nothing
-    }
-
-    Serial.println("starting setup");
-
-    EthernetIPDefsInstance::create();
-    
-    VCRData_sInstance::create();
-    VCFData_sInstance::create();
-    PedalsSystemInstance::create(accel_params, brake_params); //pass in the two different params
-
 
     float adc_1_scales[channels_within_mcp_adc], adc_1_offsets[channels_within_mcp_adc], adc_2_scales[channels_within_mcp_adc], adc_2_offsets[channels_within_mcp_adc];
     adc_1_scales[STEERING_1_CHANNEL] = STEERING_1_SCALE;
@@ -162,8 +143,11 @@ void setup() {
     adc_2_scales[BRAKE_2_CHANNEL] = BRAKE_2_SCALE;
     adc_2_offsets[BRAKE_2_CHANNEL] = BRAKE_2_OFFSET;
 
+    EthernetIPDefsInstance::create();
+    VCRData_sInstance::create();
+    VCFData_sInstance::create();
+    PedalsSystemInstance::create(accel_params, brake_params); //pass in the two different params
     ADCsOnVCFInstance::create(adc_1_scales, adc_1_offsets, adc_2_scales, adc_2_offsets);
-    // Setup scheduler
     
     // Create dashboard singleton
     DashboardGPIOs_s dashboard_gpios = {
@@ -175,45 +159,36 @@ void setup() {
         .DATA_BUTTON = BTN_DATA_READ,
         .LEFT_SHIFTER_BUTTON = LEFT_SHIFTER,
         .RIGHT_SHIFTER_BUTTON = RIGHT_SHIFTER,
-        .DIAL_SDA = I2C_SDA,
-        .DIAL_SCL = I2C_SCL
     };
 
-    // Create can singletons
     DashboardInterfaceInstance::create(dashboard_gpios);
+
+    // Create can singletons
     VCFCANInterfaceImpl::CANInterfacesInstance::create(DashboardInterfaceInstance::instance()); 
     auto main_can_recv = etl::delegate<void(CANInterfaces &, const CAN_message_t &, unsigned long)>::create<VCFCANInterfaceImpl::vcf_recv_switch>();
     VCFCANInterfaceImpl::VCFCANInterfaceObjectsInstance::create(main_can_recv, &main_can); // NOLINT (Not sure why it's uninitialized. I think it is.)
-    
-
-    // hardware setup
-    
-    Serial.begin(115200); // NOLINT (common baud rate)
 
     // qindesign::network::Ethernet.begin(EthernetIPDefsInstance::instance().vcf_ip, EthernetIPDefsInstance::instance().default_dns, EthernetIPDefsInstance::instance().default_gateway, EthernetIPDefsInstance::instance().car_subnet);
+
     const uint32_t CAN_baudrate = 500000;
     handle_CAN_setup(main_can, CAN_baudrate, &VCFCANInterfaceImpl::on_main_can_recv);
-    
-    // qindesign::network::Ethernet.begin(EthernetIPDefsInstance::instance().vcf_ip, EthernetIPDefsInstance::instance().default_dns, EthernetIPDefsInstance::instance().default_gateway, EthernetIPDefsInstance::instance().car_subnet);
+
     // Setup scheduler
-    scheduler.setTimingFunction(micros);
+    HT_SCHED::Scheduler::getInstance().setTimingFunction(micros);
 
     // Schedule Tasks
-    scheduler.schedule(async_main); 
-    scheduler.schedule(CAN_send);
-    
-    scheduler.schedule(dash_CAN_enqueue);
-    scheduler.schedule(buzzer_control_task);
-    // scheduler.schedule(dash_CAN_receive);
-    
-    scheduler.schedule(pedals_message_enqueue);
-    scheduler.schedule(pedals_sample);
-    scheduler.schedule(read_dash_GPIOs_task);
-    scheduler.schedule(read_ioexpander_task);
-    scheduler.schedule(debug_state_print_task);
+    HT_SCHED::Scheduler::getInstance().schedule(async_main); 
+    HT_SCHED::Scheduler::getInstance().schedule(CAN_send);
+    HT_SCHED::Scheduler::getInstance().schedule(dash_CAN_enqueue);
+    HT_SCHED::Scheduler::getInstance().schedule(buzzer_control_task);
+    HT_SCHED::Scheduler::getInstance().schedule(pedals_message_enqueue);
+    HT_SCHED::Scheduler::getInstance().schedule(pedals_sample);
+    HT_SCHED::Scheduler::getInstance().schedule(read_dash_GPIOs_task);
+    HT_SCHED::Scheduler::getInstance().schedule(read_ioexpander_task);
+    // HT_SCHED::Scheduler::getInstance().schedule(debug_state_print_task);
 
 }
 
 void loop() {
-    scheduler.run();
+    HT_SCHED::Scheduler::getInstance().run();
 }

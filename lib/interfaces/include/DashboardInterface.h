@@ -23,13 +23,6 @@ struct DashboardGPIOs_s {
     uint8_t LEFT_SHIFTER_BUTTON; 
     uint8_t RIGHT_SHIFTER_BUTTON; 
 
-    // I2C
-    uint8_t DIAL_SDA; 
-    uint8_t DIAL_SCL; 
-
-    // Buzzer gpio
-    uint8_t BUZZER; 
-
 };
 
 class DashboardInterface 
@@ -47,7 +40,6 @@ class DashboardInterface
             pinMode(_dashboard_gpios.DATA_BUTTON, INPUT_PULLUP); 
             pinMode(_dashboard_gpios.LEFT_SHIFTER_BUTTON, INPUT_PULLUP); 
             pinMode(_dashboard_gpios.RIGHT_SHIFTER_BUTTON, INPUT_PULLUP); 
-            pinMode(_dashboard_gpios.BUZZER, OUTPUT);
         }
 
         // Reading gpios 

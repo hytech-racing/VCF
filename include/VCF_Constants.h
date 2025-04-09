@@ -6,10 +6,6 @@
 /*                 Teensy 4.1 GPIO pins               */
 /* -------------------------------------------------- */
 
-
-
-
-
 // Digital Pins on Teensy
 constexpr int ADC1_CS = 17; // MCP3208. ADC1 in VCF schematic. Used for steering, sus pots, and load cells.
 constexpr int ADC2_CS = 16; // MCP3208. ADC2 in VCF schematic. Used for pedal position sensors.
@@ -17,15 +13,12 @@ constexpr int ADC2_CS = 16; // MCP3208. ADC2 in VCF schematic. Used for pedal po
 constexpr int BTN_DIM_READ = 29;
 constexpr int BTN_PRESET_READ = 26;
 constexpr int BTN_MC_CYCLE_READ = 27;
-constexpr int BTN_MODE_READ = 31;
-constexpr int BTN_START_READ = 28;
-constexpr int BTN_DATA_READ = 30;
+constexpr int BTN_MODE_READ = 28;
+constexpr int BTN_START_READ = 30;
+constexpr int BTN_DATA_READ = 31;
 constexpr int BUZZER_CONTROL_PIN = 1;
 constexpr int RIGHT_SHIFTER = 9;
 constexpr int LEFT_SHIFTER = 10;
-
-constexpr int I2C_SCL = 24;
-constexpr int I2C_SDA = 25;
 
 
 
@@ -34,75 +27,75 @@ constexpr int I2C_SDA = 25;
 /* -------------------------------------------------- */
 
 /* Channels on ADC_1 */
-const int FR_LOADCELL_CHANNEL     = 0;
-const int FL_LOADCELL_CHANNEL     = 1;
-const int FL_SUS_POT_CHANNEL      = 2;
-const int FR_SUS_POT_CHANNEL      = 3;
-const int STEERING_2_CHANNEL      = 4;
-const int STEERING_1_CHANNEL      = 5;
-// const int UNUSED_CHANNEL       = 6;
-// const int UNUSED_CHANNEL       = 7;
+constexpr int FR_LOADCELL_CHANNEL     = 0;
+constexpr int FL_LOADCELL_CHANNEL     = 1;
+constexpr int FL_SUS_POT_CHANNEL      = 2;
+constexpr int FR_SUS_POT_CHANNEL      = 3;
+constexpr int STEERING_2_CHANNEL      = 4;
+constexpr int STEERING_1_CHANNEL      = 5;
+// constexpr int UNUSED_CHANNEL       = 6;
+// constexpr int UNUSED_CHANNEL       = 7;
 
 /* Channels on ADC_2 */
-// const int UNUSED_CHANNEL       = 0;
-// const int UNUSED_CHANNEL       = 1;
-const int ACCEL_1_CHANNEL         = 2;
-const int ACCEL_2_CHANNEL         = 3;
-const int BRAKE_1_CHANNEL         = 4;
-const int BRAKE_2_CHANNEL         = 5;
-// const int UNUSED_CHANNEL       = 6;
-// const int UNUSED_CHANNEL       = 7;
+// constexpr int UNUSED_CHANNEL       = 0;
+// constexpr int UNUSED_CHANNEL       = 1;
+constexpr int ACCEL_1_CHANNEL         = 2;
+constexpr int ACCEL_2_CHANNEL         = 3;
+constexpr int BRAKE_1_CHANNEL         = 4;
+constexpr int BRAKE_2_CHANNEL         = 5;
+// constexpr int UNUSED_CHANNEL       = 6;
+// constexpr int UNUSED_CHANNEL       = 7;
 
 /* Scaling and offset */
-const float STEERING_1_SCALE = 0.02197265f; // TODO: Figure out what these mean
-const float STEERING_1_OFFSET = 0;
-const float STEERING_2_SCALE = 0.02197265f; // TODO: Figure out if steering 2 = steering 1
-const float STEERING_2_OFFSET = 0;
+constexpr float STEERING_1_SCALE = 0.02197265f; // TODO: Figure out what these mean
+constexpr float STEERING_1_OFFSET = 0;
+constexpr float STEERING_2_SCALE = 0.02197265f; // TODO: Figure out if steering 2 = steering 1
+constexpr float STEERING_2_OFFSET = 0;
 // Scale for steering sensor = 0.02197265 . Offset has to be mechanically determined
 
-const float FR_LOADCELL_SCALE = 0.1149f; //Values are from the old MCU rev15 // TODO: Calibrate load cells
-const float FR_LOADCELL_OFFSET = 13.526f / FR_LOADCELL_SCALE;
-const float FL_LOADCELL_SCALE = 0.118f;
-const float FL_LOADCELL_OFFSET = 25.721f / FL_LOADCELL_SCALE;
-const float FR_SUS_POT_SCALE = 1;
-const float FR_SUS_POT_OFFSET = 0;
-const float FL_SUS_POT_SCALE = 1;
-const float FL_SUS_POT_OFFSET = 0;
+constexpr float FR_LOADCELL_SCALE = 0.1149f; //Values are from the old MCU rev15 // TODO: Calibrate load cells
+constexpr float FR_LOADCELL_OFFSET = 13.526f / FR_LOADCELL_SCALE;
+constexpr float FL_LOADCELL_SCALE = 0.118f;
+constexpr float FL_LOADCELL_OFFSET = 25.721f / FL_LOADCELL_SCALE;
+constexpr float FR_SUS_POT_SCALE = 1;
+constexpr float FR_SUS_POT_OFFSET = 0;
+constexpr float FL_SUS_POT_SCALE = 1;
+constexpr float FL_SUS_POT_OFFSET = 0;
 
-const float ACCEL_1_SCALE = 1; // TODO: Figure out what these should be
-const float ACCEL_1_OFFSET = 0;
-const float ACCEL_2_SCALE = 1;
-const float ACCEL_2_OFFSET = 0;
-const float BRAKE_1_SCALE = 1;
-const float BRAKE_1_OFFSET = 0;
-const float BRAKE_2_SCALE = 1;
-const float BRAKE_2_OFFSET = 0;
+constexpr float ACCEL_1_SCALE = 1; // TODO: Figure out what these should be
+constexpr float ACCEL_1_OFFSET = 0;
+constexpr float ACCEL_2_SCALE = 1;
+constexpr float ACCEL_2_OFFSET = 0;
+constexpr float BRAKE_1_SCALE = 1;
+constexpr float BRAKE_1_OFFSET = 0;
+constexpr float BRAKE_2_SCALE = 1;
+constexpr float BRAKE_2_OFFSET = 0;
 
 
 
 /* -------------------------------------------------- */
 /*           Task Periods and Priorities              */
 /* -------------------------------------------------- */
-constexpr int MAIN_TASK_PRIORITY = 5;
-constexpr int PEDALS_PRIORITY = 5;
-constexpr int DASH_SEND_PRIORITY = 7;
-
-constexpr int DEBUG_PRIORITY = 100;
-
-constexpr unsigned long DASH_SEND_PERIOD = 100000;        // 100,000 us = 10 Hz
-constexpr unsigned long DEBUG_PERIOD = 500000;             // 500,000 us = 2 Hz
+constexpr unsigned long MAIN_TASK_PRIORITY = 5;
 
 constexpr unsigned long CAN_SEND_PRIORITY = 10;
 constexpr unsigned long CAN_SEND_PERIOD = 2000;
 
 constexpr unsigned long PEDALS_SEND_PERIOD = 3000;        // 3 000 us = 333 Hz
-constexpr unsigned long PEDALS_SAMPLE_PERIOD = 500;
+constexpr unsigned long PEDALS_SAMPLE_PERIOD = 500;       // 500 us = 2 kHz
+constexpr unsigned long PEDALS_PRIORITY = 5;
 
 constexpr unsigned long BUZZER_WRITE_PERIOD = 100000;     // 100 000 us = 10 Hz
 constexpr unsigned long BUZZER_PRIORITY = 20;
 
 constexpr unsigned long DASH_SAMPLE_PERIOD = 100000;     // 100 000 us = 10 Hz
 constexpr unsigned long DASH_SAMPLE_PRIORITY = 21;
+
+constexpr unsigned long DASH_SEND_PERIOD = 100000;        // 100,000 us = 10 Hz
+constexpr unsigned long DASH_SEND_PRIORITY = 7;
+
+constexpr unsigned long DEBUG_PRIORITY = 100;
+constexpr unsigned long DEBUG_PERIOD = 500000;             // 500,000 us = 2 Hz
 
 
 #endif /* VCF_CONSTANTS */

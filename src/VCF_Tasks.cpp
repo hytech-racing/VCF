@@ -178,9 +178,7 @@ bool send_dash_data(const unsigned long& sysMicros, const HT_TASK::TaskInfo& tas
     msg_out.preset_button = dash_outputs.preset_btn_is_pressed;
     msg_out.motor_controller_cycle_button = dash_outputs.mc_reset_btn_is_pressed;
     msg_out.mode_button = dash_outputs.mode_btn_is_pressed;
-    // Serial.printf("mode_button = %d\n", msg_out.mode_button); // Debug print
-    msg_out.start_button = true; // Always press start button (when no dashboard attached)
-    // msg_out.start_button = dash_outputs.start_btn_is_pressed;
+    msg_out.start_button = dash_outputs.start_btn_is_pressed;
     msg_out.data_button_is_pressed = dash_outputs.data_btn_is_pressed;
     msg_out.left_shifter_button = dash_outputs.left_paddle_is_pressed;
     msg_out.right_shifter_button = dash_outputs.right_paddle_is_pressed;    
@@ -188,11 +186,6 @@ bool send_dash_data(const unsigned long& sysMicros, const HT_TASK::TaskInfo& tas
     CAN_util::enqueue_msg(&msg_out, &Pack_DASH_INPUT_hytech, VCFCANInterfaceImpl::VCFCANInterfaceObjectsInstance::instance().main_can_tx_buffer);
     
     return true;
-}
-
-bool receive_dash_inputs(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
-{
-    // In this method construct the DashInputState_s struct and pass it into the "receive" method of the dash interface
 }
 
 bool run_handle_send_vcf_ethernet_data() {
