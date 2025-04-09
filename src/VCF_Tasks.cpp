@@ -302,6 +302,7 @@ bool init_neopixels_task(const unsigned long& sys_micros, const HT_TASK::TaskInf
 
 bool run_update_neopixels_task(const unsigned long& sys_micros, const HT_TASK::TaskInfo& task_info)
 {
+    NeopixelControllerInstance::instance().refresh_neopixels(VCFData_sInstance::instance(), VCRData_sInstance::instance());
     return true;
 }
 

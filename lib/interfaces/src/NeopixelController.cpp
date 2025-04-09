@@ -59,7 +59,7 @@ void NeopixelController::refresh_neopixels(VCFData_s vcf_data, VCRData_s vcr_dat
     // }
 
     // DEBUG CODE ONLY
-    for  (int i = 0; i < 12; ++i) {
+    for  (int i = 0; i < _neopixel_count; ++i) {
         set_neopixel_color((LED_ID_e) i, LED_color_e::GREEN);
     }
     _neopixels.show();

@@ -46,7 +46,7 @@ class NeopixelController
 {
     public:
     NeopixelController(uint32_t neopixel_count, uint32_t neopixel_pin) :
-        _neopixels(neopixel_count, neopixel_pin),
+        _neopixels(neopixel_count, neopixel_pin, NEO_RGBW + NEO_KHZ800),
         _current_brightness(MAX_BRIGHTNESS),
         _neopixel_count(neopixel_count)
     {};
@@ -56,8 +56,8 @@ class NeopixelController
     void init_neopixels();
     void dim_neopixels();
     void set_neopixel(uint16_t id, uint32_t c);
-    void NeopixelController::refresh_neopixels(VCFData_s vcf_data, VCRData_s vcr_data);
-    void NeopixelController::set_neopixel_color(LED_ID_e led, LED_color_e color);
+    void refresh_neopixels(VCFData_s vcf_data, VCRData_s vcr_data);
+    void set_neopixel_color(LED_ID_e led, LED_color_e color);
 
     private:
     
