@@ -40,8 +40,8 @@ HT_SCHED::Scheduler& scheduler = HT_SCHED::Scheduler::getInstance();
 FlexCAN_T4<CAN3, RX_SIZE_256, TX_SIZE_16> main_can;
 
 const PedalsParams accel_params = {
-    .min_pedal_1 = 1831,
-    .min_pedal_2 = 1766,
+    .min_pedal_1 = 1830,
+    .min_pedal_2 = 1783,
     .max_pedal_1 = 2940,
     .max_pedal_2 = 690,
     .activation_percentage = 0.05,
@@ -56,9 +56,9 @@ const PedalsParams accel_params = {
 
 const PedalsParams brake_params = {
     .min_pedal_1 = 1190,
-    .min_pedal_2 = 2370,
-    .max_pedal_1 = 1590,
-    .max_pedal_2 = 1971,
+    .min_pedal_2 = 2385,
+    .max_pedal_1 = 1970,
+    .max_pedal_2 = 1600,
     .activation_percentage = 0.06,
     .min_sensor_pedal_1 = 90,
     .min_sensor_pedal_2 = 90,
