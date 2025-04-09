@@ -145,22 +145,23 @@ void setup() {
     // Setup scheduler
     
     // Create dashboard singleton
-    DashboardGPIOs_s dashboard_gpios;
+    // DashboardGPIOs_s dashboard_gpios = ;
 
-    dashboard_gpios.DIM_BUTTON = BTN_DIM_READ;
-    dashboard_gpios.PRESET_BUTTON = BTN_PRESET_READ;
-    dashboard_gpios.MC_CYCLE_BUTTON = BTN_MC_CYCLE_READ;
-    dashboard_gpios.MODE_BUTTON = BTN_MODE_READ;
-    dashboard_gpios.START_BUTTON = BTN_START_READ;
-    dashboard_gpios.DATA_BUTTON = BTN_DATA_READ;
-    dashboard_gpios.LEFT_SHIFTER_BUTTON = LEFT_SHIFTER;
-    dashboard_gpios.RIGHT_SHIFTER_BUTTON = RIGHT_SHIFTER;
-    dashboard_gpios.DIAL_SDA = I2C_SDA;
-    dashboard_gpios.DIAL_SCL = I2C_SCL;
-    dashboard_gpios.BUZZER = 3;
 
     // Create can singletons
-    DashboardInterfaceInstance::create(dashboard_gpios);
+    DashboardInterfaceInstance::create({
+        .DIM_BUTTON = BTN_DIM_READ,
+        .PRESET_BUTTON = BTN_PRESET_READ,
+        .MC_CYCLE_BUTTON = BTN_MC_CYCLE_READ,
+        .MODE_BUTTON = BTN_MODE_READ,
+        .START_BUTTON = BTN_START_READ,
+        .DATA_BUTTON = BTN_DATA_READ,
+        .LEFT_SHIFTER_BUTTON = LEFT_SHIFTER,
+        .RIGHT_SHIFTER_BUTTON = RIGHT_SHIFTER,
+        .DIAL_SDA = I2C_SDA,
+        .DIAL_SCL = I2C_SCL,
+        .BUZZER = BUZZER_CONTROL_PIN
+    }); 
     VCFCANInterfaceImpl::CANInterfacesInstance::create(DashboardInterfaceInstance::instance()); 
     auto main_can_recv = etl::delegate<void(CANInterfaces &, const CAN_message_t &, unsigned long)>::create<VCFCANInterfaceImpl::vcf_recv_switch>();
     VCFCANInterfaceImpl::VCFCANInterfaceObjectsInstance::create(main_can_recv, &main_can); // NOLINT (Not sure why it's uninitialized. I think it is.)

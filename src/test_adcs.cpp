@@ -19,12 +19,12 @@ void setup()
 void loop()
 {
     ADC1Instance::instance().tick();
-    hal_printf("ADC1 reading 0 %d\n", ADC1Instance::instance().data.conversions[0].raw);
-    hal_printf("ADC1 reading 1 %d\n", ADC1Instance::instance().data.conversions[1].raw);
-    hal_printf("ADC1 reading 2 %d\n", ADC1Instance::instance().data.conversions[2].raw);
-    hal_printf("ADC1 reading 3 %d\n", ADC1Instance::instance().data.conversions[3].raw);
-    hal_printf("ADC1 reading 4 %d\n", ADC1Instance::instance().data.conversions[4].raw);
-    hal_printf("ADC1 reading 5 %d\n", ADC1Instance::instance().data.conversions[5].raw);
+    hal_printf("ADC1 reading 0 %d\n", ADC1Instance::instance().data.conversions[0].raw); // NOLINT
+    hal_printf("ADC1 reading 1 %d\n", ADC1Instance::instance().data.conversions[1].raw); // NOLINT
+    hal_printf("ADC1 reading 2 %d\n", ADC1Instance::instance().data.conversions[2].raw); // NOLINT
+    hal_printf("ADC1 reading 3 %d\n", ADC1Instance::instance().data.conversions[3].raw); // NOLINT
+    hal_printf("ADC1 reading 4 %d\n", ADC1Instance::instance().data.conversions[4].raw); // NOLINT
+    hal_printf("ADC1 reading 5 %d\n", ADC1Instance::instance().data.conversions[5].raw); // NOLINT
 
     hal_printf("\n\n");
     // ADC2Instance::instance().tick();
