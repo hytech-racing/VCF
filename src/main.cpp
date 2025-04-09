@@ -145,11 +145,7 @@ void setup() {
     // Setup scheduler
     
     // Create dashboard singleton
-    // DashboardGPIOs_s dashboard_gpios = ;
-
-
-    // Create can singletons
-    DashboardInterfaceInstance::create({
+    DashboardGPIOs_s dashboard_gpios = {
         .DIM_BUTTON = BTN_DIM_READ,
         .PRESET_BUTTON = BTN_PRESET_READ,
         .MC_CYCLE_BUTTON = BTN_MC_CYCLE_READ,
@@ -161,7 +157,11 @@ void setup() {
         .DIAL_SDA = I2C_SDA,
         .DIAL_SCL = I2C_SCL,
         .BUZZER = BUZZER_CONTROL_PIN
-    }); 
+    }; // NOLINT i give up idgaf anymore pls just stfu linter
+
+
+    // Create can singletons
+    DashboardInterfaceInstance::create(dashboard_gpios); // NOLINT no idea why 
     VCFCANInterfaceImpl::CANInterfacesInstance::create(DashboardInterfaceInstance::instance()); 
     auto main_can_recv = etl::delegate<void(CANInterfaces &, const CAN_message_t &, unsigned long)>::create<VCFCANInterfaceImpl::vcf_recv_switch>();
     VCFCANInterfaceImpl::VCFCANInterfaceObjectsInstance::create(main_can_recv, &main_can); // NOLINT (Not sure why it's uninitialized. I think it is.)
