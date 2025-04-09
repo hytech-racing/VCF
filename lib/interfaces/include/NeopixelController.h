@@ -15,6 +15,7 @@
 
 #include "Adafruit_NeoPixel.h"
 #include "SharedFirmwareTypes.h"
+#include "etl/singleton.h"
 
 enum LED_ID_e
 {
@@ -38,6 +39,7 @@ enum class LED_color_e
     GREEN = 0x0000FF00,
     YELLOW = 0x00FFFF00,
     RED = 0x00FF0000,
+    INIT_COLOR = 0xFF007F,
 };
 
 class NeopixelController
@@ -45,11 +47,13 @@ class NeopixelController
     public:
     NeopixelController(uint32_t neopixel_count, uint32_t neopixel_pin) :
         _neopixels(neopixel_count, neopixel_pin),
-        _current_brightness(UINT8_MAX)
+        _current_brightness(MAX_BRIGHTNESS),
+        _neopixel_count(neopixel_count)
     {};
 
     NeopixelController() = delete;
     
+    void init_neopixels();
     void dim_neopixels();
     void set_neopixel(uint16_t id, uint32_t c);
     void NeopixelController::refresh_neopixels(VCFData_s vcf_data, VCRData_s vcr_data);
@@ -59,7 +63,10 @@ class NeopixelController
     
     Adafruit_NeoPixel _neopixels;
     uint8_t _current_brightness;
+    uint8_t _neopixel_count;
 
 };
+
+using NeopixelControllerInstance = etl::singleton<NeopixelController>;
 
 #endif /* NEOPIXEL_CONTROLLER_H */

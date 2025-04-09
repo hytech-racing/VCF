@@ -37,6 +37,7 @@
 #include "ht_task.hpp"
 #include "BuzzerController.h"
 #include "IOExpanderUtils.h"
+#include "NeopixelController.h"
 
 /**
  * The read_adc1 task will command adc1 to sample all eight channels, convert
@@ -86,9 +87,7 @@ bool run_handle_receive_vcr_ethernet_data(const unsigned long& sysMicros, const 
 bool send_dash_data(const unsigned long &sysMicros,
                     const HT_TASK::TaskInfo &taskInfo);
 
-bool receive_dash_inputs(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
-
-bool send_pedals_data(const unsigned long &sys_micros, const HT_TASK::TaskInfo& task_info);
+bool enqueue_pedals_data(const unsigned long &sys_micros, const HT_TASK::TaskInfo& task_info);
 
 // this task attempts to send any data that is enqueued at 250hz. this will be the max rate that you can send over the CAN bus.
 // you dont have to enqeue at this rate, but this allows us to have 2 layers of rate limiting on CAN sending
@@ -96,18 +95,20 @@ bool handle_CAN_send(const unsigned long &sysMicros, const HT_TASK::TaskInfo &ta
 
 bool handle_CAN_receive(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo); // NOLINT (capitalization of CAN)
 
-namespace async_tasks {
-// the others in the VCF Tasks can just stay there, they dont need forward declarations.
-bool handle_async_main(const unsigned long& sys_micros, const HT_TASK::TaskInfo& task_info);
-
-}
-
 bool run_dash_GPIOs_task(const unsigned long& sys_micros, const HT_TASK::TaskInfo& task_info); // NOLINT (capitalization of GPIOs)
 
 bool create_ioexpander(const unsigned long& sys_micros, const HT_TASK::TaskInfo& task_info);
 bool read_ioexpander(const unsigned long& sys_micros, const HT_TASK::TaskInfo& task_info);
+
+bool init_neopixels_task(const unsigned long& sys_micros, const HT_TASK::TaskInfo& task_info);
+bool run_update_neopixels_task(const unsigned long& sys_micros, const HT_TASK::TaskInfo& task_info);
+
+namespace async_tasks {
+    // the others in the VCF Tasks can just stay there, they dont need forward declarations.
+    bool handle_async_main(const unsigned long& sys_micros, const HT_TASK::TaskInfo& task_info);
+}
 namespace setup_handlers {
-void setup_hardware();
+    void setup_hardware();
 }
 
 #endif /* VCF_TASKS */

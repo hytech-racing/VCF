@@ -20,7 +20,8 @@ constexpr int BUZZER_CONTROL_PIN = 1;
 constexpr int RIGHT_SHIFTER = 9;
 constexpr int LEFT_SHIFTER = 10;
 
-
+constexpr int NEOPIXEL_CONTROL_PIN = 0;
+constexpr int NEOPIXEL_COUNT = 12; // 12 neopixeles on dashboard
 
 /* -------------------------------------------------- */
 /*                 ADC pins and configs               */
@@ -97,5 +98,7 @@ constexpr unsigned long DASH_SEND_PRIORITY = 7;
 constexpr unsigned long DEBUG_PRIORITY = 100;
 constexpr unsigned long DEBUG_PERIOD = 500000;             // 500,000 us = 2 Hz
 
+constexpr unsigned long NEOPIXEL_UPDATE_PRIORITY = 90;
+constexpr unsigned long NEOPIXEL_UPDATE_PERIOD = 100000;             // 100,000 us = 10 Hz
 
 #endif /* VCF_CONSTANTS */

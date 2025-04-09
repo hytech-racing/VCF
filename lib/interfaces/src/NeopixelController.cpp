@@ -1,5 +1,20 @@
 #include "NeopixelController.h"
 
+void NeopixelController::init_neopixels() {
+    _neopixels.begin();
+    _neopixels.setBrightness(_current_brightness);
+    //set init color for every led
+    for (int i = 0; i < _neopixel_count; i++) {
+        _neopixels.setPixelColor(i, (uint32_t) LED_color_e::INIT_COLOR);
+        // BMS and IMD are off according to rules
+        if (i == LED_ID_e::BMS || i == LED_ID_e::IMD){
+            _neopixels.setPixelColor(i, (uint32_t) LED_color_e::OFF);
+        }
+    }
+    // write data to neopixels
+    _neopixels.show();
+}
+
 void NeopixelController::dim_neopixels() {
     _current_brightness -= STEP_BRIGHTNESS;
     // set current brightness to 0xFF (255) if less than min brightness - sid :) DO NOT CHANGE

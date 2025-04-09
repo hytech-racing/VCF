@@ -217,7 +217,7 @@ bool run_handle_receive_vcr_ethernet_data() {
     }
 }
 
-bool send_pedals_data(const unsigned long &sys_micros, const HT_TASK::TaskInfo& task_info)
+bool enqueue_pedals_data(const unsigned long &sys_micros, const HT_TASK::TaskInfo& task_info)
 {
     PEDALS_SYSTEM_DATA_t pedals_data = {};
     pedals_data.accel_implausible = VCFData_sInstance::instance().system_data.pedals_system_data.accel_is_implausible;
@@ -277,6 +277,7 @@ bool read_ioexpander(const unsigned long& sys_micros, const HT_TASK::TaskInfo& t
     // }
     // Serial.println("");
 
+    // Yes, I know there are magic numbers here. I just trial-and-errored it from the dash connector pinning.
     if (IOExpanderUtils::getBit(in, 1, 2)) {
         VCFData_sInstance::instance().interface_data.dash_input_state.dial_state = ControllerMode_e::MODE_0;
     } else if (IOExpanderUtils::getBit(in, 1, 1)) {
@@ -290,6 +291,17 @@ bool read_ioexpander(const unsigned long& sys_micros, const HT_TASK::TaskInfo& t
     } else if (IOExpanderUtils::getBit(in, 1, 3)) {
         VCFData_sInstance::instance().interface_data.dash_input_state.dial_state = ControllerMode_e::MODE_5;
     }
+    return true;
+}
+
+bool init_neopixels_task(const unsigned long& sys_micros, const HT_TASK::TaskInfo& task_info)
+{
+    NeopixelControllerInstance::create(NEOPIXEL_COUNT, NEOPIXEL_CONTROL_PIN);
+    return true;
+}
+
+bool run_update_neopixels_task(const unsigned long& sys_micros, const HT_TASK::TaskInfo& task_info)
+{
     return true;
 }
 
