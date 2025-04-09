@@ -193,6 +193,7 @@ bool send_dash_data(const unsigned long& sysMicros, const HT_TASK::TaskInfo& tas
 bool receive_dash_inputs(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
 {
     // In this method construct the DashInputState_s struct and pass it into the "receive" method of the dash interface
+    return true;
 }
 
 bool run_handle_send_vcf_ethernet_data() {

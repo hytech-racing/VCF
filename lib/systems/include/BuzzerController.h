@@ -1,5 +1,5 @@
-#ifndef BUZZER
-#define BUZZER
+#ifndef BUZZERCONTROLLER
+#define BUZZERCONTROLLER
 
 /**
  * This class controls the car's buzzer. It is a singleton class (since we only have one buzzer).
@@ -54,4 +54,4 @@ private:
 
 };
 
-#endif /* BUZZER */
+#endif /* BUZZERCONTROLLER */

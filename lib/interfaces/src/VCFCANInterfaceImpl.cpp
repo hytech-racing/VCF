@@ -1,5 +1,5 @@
 #include "VCFCANInterfaceImpl.h"
-#include "BuzzerController.h";
+#include "BuzzerController.h"
 
 namespace VCFCANInterfaceImpl {
     void on_main_can_recv(const CAN_message_t &msg)
