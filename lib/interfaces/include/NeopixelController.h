@@ -35,19 +35,20 @@ enum LED_ID_e
 
 enum class LED_color_e
 {
-    OFF = 0x00000000,
-    GREEN = 0x0000FF00,
-    YELLOW = 0x00FFFF00,
-    RED = 0x00FF0000,
+    OFF = 0x00,
+    GREEN = 0xFF00,
+    YELLOW = 0xFFFF00,
+    RED = 0xFF0000,
     INIT_COLOR = 0xFF007F,
+    BLUE = 0xFF,
 };
 
 class NeopixelController
 {
     public:
     NeopixelController(uint32_t neopixel_count, uint32_t neopixel_pin) :
-        _neopixels(neopixel_count, neopixel_pin, NEO_RGBW + NEO_KHZ800),
-        _current_brightness(MAX_BRIGHTNESS),
+        _neopixels(neopixel_count, neopixel_pin, NEO_GRBW + NEO_KHZ800),
+        _current_brightness(MIN_BRIGHTNESS),
         _neopixel_count(neopixel_count)
     {};
 
@@ -56,7 +57,7 @@ class NeopixelController
     void init_neopixels();
     void dim_neopixels();
     void set_neopixel(uint16_t id, uint32_t c);
-    void refresh_neopixels(VCFData_s vcf_data, VCRData_s vcr_data);
+    void refresh_neopixels(VCFData_s &vcf_data, VCRData_s &vcr_data);
     void set_neopixel_color(LED_ID_e led, LED_color_e color);
 
     private:

@@ -26,7 +26,16 @@ void NeopixelController::set_neopixel(uint16_t id, uint32_t c) {
     _neopixels.setPixelColor(id, c);
 }
 
-void NeopixelController::refresh_neopixels(VCFData_s vcf_data, VCRData_s vcr_data) {
+void NeopixelController::refresh_neopixels(VCFData_s &vcf_data, VCRData_s &vcr_data) {
+
+    if (vcf_data.interface_data.current_sensor_data.current_sensor_unfiltered < 0) {
+        vcf_data.interface_data.current_sensor_data.current_sensor_unfiltered = 20;
+    } else {
+        vcf_data.interface_data.current_sensor_data.current_sensor_unfiltered -= 1;
+    }
+
+    // Debug code makes the BRAKE light blink at 0.5Hz
+    set_neopixel_color(LED_ID_e::BRAKE, vcf_data.interface_data.current_sensor_data > 10 ? LED_color_e::RED : LED_color_e::OFF);
 
     // // only refresh if updates were found in the CAN message
     // // This does not work for some reason on initial message
@@ -58,10 +67,6 @@ void NeopixelController::refresh_neopixels(VCFData_s vcf_data, VCRData_s vcr_dat
     //     pixel_refresh.reset();
     // }
 
-    // DEBUG CODE ONLY
-    for  (int i = 0; i < _neopixel_count; ++i) {
-        set_neopixel_color((LED_ID_e) i, LED_color_e::GREEN);
-    }
     _neopixels.show();
 
 }

@@ -335,6 +335,7 @@ bool read_ioexpander(const unsigned long& sys_micros, const HT_TASK::TaskInfo& t
 bool init_neopixels_task(const unsigned long& sys_micros, const HT_TASK::TaskInfo& task_info)
 {
     NeopixelControllerInstance::create(NEOPIXEL_COUNT, NEOPIXEL_CONTROL_PIN);
+    NeopixelControllerInstance::instance().init_neopixels();
     return true;
 }
 
