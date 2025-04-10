@@ -37,10 +37,10 @@
 FlexCAN_T4<CAN1, RX_SIZE_256, TX_SIZE_16> main_can;
 
 const PedalsParams accel_params = {
-    .min_pedal_1 = 1831,
-    .min_pedal_2 = 1766,
-    .max_pedal_1 = 2940,
-    .max_pedal_2 = 690,
+    .min_pedal_1 = 1940,
+    .min_pedal_2 = 1810,
+    .max_pedal_1 = 2505,
+    .max_pedal_2 = 1248,
     .activation_percentage = 0.05,
     .min_sensor_pedal_1 = 90,
     .min_sensor_pedal_2 = 90,
@@ -52,10 +52,10 @@ const PedalsParams accel_params = {
 };
 
 const PedalsParams brake_params = {
-    .min_pedal_1 = 1190,
-    .min_pedal_2 = 2370,
-    .max_pedal_1 = 1590,
-    .max_pedal_2 = 1971,
+    .min_pedal_1 = 926,
+    .min_pedal_2 = 2834,
+    .max_pedal_1 = 2050,
+    .max_pedal_2 = 1650,
     .activation_percentage = 0.06,
     .min_sensor_pedal_1 = 90,
     .min_sensor_pedal_2 = 90,
@@ -80,36 +80,36 @@ HT_TASK::Task neopixels_task(&init_neopixels_task, &run_update_neopixels_task, N
 
 bool debug_print(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
 {
-    // Serial.println("accel1 raw accel2 raw");
-    // Serial.print(VCFData_sInstance::instance().interface_data.pedal_sensor_data.accel_1);
-    // Serial.print("   ");
-    // Serial.print(VCFData_sInstance::instance().interface_data.pedal_sensor_data.accel_2);
-    // Serial.println();
-    // Serial.println("brake1 raw brake2 raw");
-    // Serial.print(VCFData_sInstance::instance().interface_data.pedal_sensor_data.brake_1);
-    // Serial.print("   ");
-    // Serial.print(VCFData_sInstance::instance().interface_data.pedal_sensor_data.brake_2);
-    // Serial.println();
-    // Serial.println("accel brake percents");
-    // Serial.print(VCFData_sInstance::instance().system_data.pedals_system_data.accel_percent);
-    // Serial.print("   ");
-    // Serial.print(VCFData_sInstance::instance().system_data.pedals_system_data.brake_percent);
-    // Serial.println();
-    // Serial.println("implaus");
-    // Serial.print(VCFData_sInstance::instance().system_data.pedals_system_data.implausibility_has_exceeded_max_duration);
+    Serial.println("accel1 raw accel2 raw");
+    Serial.print(VCFData_sInstance::instance().interface_data.pedal_sensor_data.accel_1);
+    Serial.print("   ");
+    Serial.print(VCFData_sInstance::instance().interface_data.pedal_sensor_data.accel_2);
+    Serial.println();
+    Serial.println("brake1 raw brake2 raw");
+    Serial.print(VCFData_sInstance::instance().interface_data.pedal_sensor_data.brake_1);
+    Serial.print("   ");
+    Serial.print(VCFData_sInstance::instance().interface_data.pedal_sensor_data.brake_2);
+    Serial.println();
+    Serial.println("accel brake percents");
+    Serial.print(VCFData_sInstance::instance().system_data.pedals_system_data.accel_percent);
+    Serial.print("   ");
+    Serial.print(VCFData_sInstance::instance().system_data.pedals_system_data.brake_percent);
+    Serial.println();
+    Serial.println("implaus");
+    Serial.print(VCFData_sInstance::instance().system_data.pedals_system_data.implausibility_has_exceeded_max_duration);
     
-    Serial.print("Dim button: ");
-    Serial.println(VCFData_sInstance::instance().interface_data.dash_input_state.dim_btn_is_pressed);
-    Serial.print("preset button: ");
-    Serial.println(VCFData_sInstance::instance().interface_data.dash_input_state.preset_btn_is_pressed);
-    Serial.print("mc reset button: ");
-    Serial.println(VCFData_sInstance::instance().interface_data.dash_input_state.mc_reset_btn_is_pressed);
-    Serial.print("mode button: ");
-    Serial.println(VCFData_sInstance::instance().interface_data.dash_input_state.mode_btn_is_pressed);
-    Serial.print("start button: ");
-    Serial.println(VCFData_sInstance::instance().interface_data.dash_input_state.start_btn_is_pressed);
-    Serial.print("data button: ");
-    Serial.println(VCFData_sInstance::instance().interface_data.dash_input_state.data_btn_is_pressed);
+    // Serial.print("Dim button: ");
+    // Serial.println(VCFData_sInstance::instance().interface_data.dash_input_state.dim_btn_is_pressed);
+    // Serial.print("preset button: ");
+    // Serial.println(VCFData_sInstance::instance().interface_data.dash_input_state.preset_btn_is_pressed);
+    // Serial.print("mc reset button: ");
+    // Serial.println(VCFData_sInstance::instance().interface_data.dash_input_state.mc_reset_btn_is_pressed);
+    // Serial.print("mode button: ");
+    // Serial.println(VCFData_sInstance::instance().interface_data.dash_input_state.mode_btn_is_pressed);
+    // Serial.print("start button: ");
+    // Serial.println(VCFData_sInstance::instance().interface_data.dash_input_state.start_btn_is_pressed);
+    // Serial.print("data button: ");
+    // Serial.println(VCFData_sInstance::instance().interface_data.dash_input_state.data_btn_is_pressed);
 
     return true;
 }
@@ -187,7 +187,7 @@ void setup() {
     HT_SCHED::Scheduler::getInstance().schedule(read_dash_GPIOs_task);
     HT_SCHED::Scheduler::getInstance().schedule(read_ioexpander_task);
     HT_SCHED::Scheduler::getInstance().schedule(neopixels_task);
-    // HT_SCHED::Scheduler::getInstance().schedule(debug_state_print_task);
+    HT_SCHED::Scheduler::getInstance().schedule(debug_state_print_task);
 
 }
 
