@@ -34,4 +34,5 @@ namespace VCFCANInterfaceImpl {
             can_interface->write(msg);
         }
     }
+
 }

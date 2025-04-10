@@ -77,6 +77,9 @@ HT_TASK::Task buzzer_control_task(&init_buzzer_control_task, &run_buzzer_control
 HT_TASK::Task read_dash_GPIOs_task(HT_TASK::DUMMY_FUNCTION, &run_dash_GPIOs_task, DASH_SAMPLE_PRIORITY, DASH_SAMPLE_PERIOD);
 HT_TASK::Task read_ioexpander_task(&create_ioexpander, &read_ioexpander, DASH_SAMPLE_PRIORITY, DASH_SAMPLE_PERIOD);
 HT_TASK::Task neopixels_task(&init_neopixels_task, &run_update_neopixels_task, NEOPIXEL_UPDATE_PRIORITY, NEOPIXEL_UPDATE_PERIOD);
+HT_TASK::Task steering_message_enqueue(HT_TASK::DUMMY_FUNCTION, &enqueue_steering_data, STEERING_SEND_PRIORITY, STEERING_SEND_PERIOD);
+HT_TASK::Task loadcell_message_enqueue(HT_TASK::DUMMY_FUNCTION, &enqueue_front_suspension_data, LOADCELL_SEND_PRIORITY, LOADCELL_SEND_PERIOD);
+
 
 bool debug_print(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
 {
@@ -187,6 +190,8 @@ void setup() {
     HT_SCHED::Scheduler::getInstance().schedule(read_dash_GPIOs_task);
     HT_SCHED::Scheduler::getInstance().schedule(read_ioexpander_task);
     HT_SCHED::Scheduler::getInstance().schedule(neopixels_task);
+    HT_SCHED::Scheduler::getInstance().schedule(steering_message_enqueue);
+    HT_SCHED::Scheduler::getInstance().schedule(loadcell_message_enqueue);
     // HT_SCHED::Scheduler::getInstance().schedule(debug_state_print_task);
 
 }

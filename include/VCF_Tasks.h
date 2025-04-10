@@ -103,6 +103,10 @@ bool read_ioexpander(const unsigned long& sys_micros, const HT_TASK::TaskInfo& t
 bool init_neopixels_task(const unsigned long& sys_micros, const HT_TASK::TaskInfo& task_info);
 bool run_update_neopixels_task(const unsigned long& sys_micros, const HT_TASK::TaskInfo& task_info);
 
+bool enqueue_front_suspension_data(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
+
+bool enqueue_steering_data(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
+
 namespace async_tasks {
     // the others in the VCF Tasks can just stay there, they dont need forward declarations.
     bool handle_async_main(const unsigned long& sys_micros, const HT_TASK::TaskInfo& task_info);
