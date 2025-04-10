@@ -37,10 +37,10 @@
 FlexCAN_T4<CAN1, RX_SIZE_256, TX_SIZE_16> main_can;
 
 const PedalsParams accel_params = {
-    .min_pedal_1 = 1940,
-    .min_pedal_2 = 1810,
-    .max_pedal_1 = 2505,
-    .max_pedal_2 = 1248,
+    .min_pedal_1 = 1916,
+    .min_pedal_2 = 1793,
+    .max_pedal_1 = 2264,
+    .max_pedal_2 = 1432,
     .activation_percentage = 0.05,
     .min_sensor_pedal_1 = 90,
     .min_sensor_pedal_2 = 90,
@@ -52,8 +52,8 @@ const PedalsParams accel_params = {
 };
 
 const PedalsParams brake_params = {
-    .min_pedal_1 = 926,
-    .min_pedal_2 = 2834,
+    .min_pedal_1 = 897,
+    .min_pedal_2 = 2803,
     .max_pedal_1 = 2050,
     .max_pedal_2 = 1650,
     .activation_percentage = 0.06,
@@ -77,6 +77,7 @@ HT_TASK::Task buzzer_control_task(&init_buzzer_control_task, &run_buzzer_control
 HT_TASK::Task read_dash_GPIOs_task(HT_TASK::DUMMY_FUNCTION, &run_dash_GPIOs_task, DASH_SAMPLE_PRIORITY, DASH_SAMPLE_PERIOD);
 HT_TASK::Task read_ioexpander_task(&create_ioexpander, &read_ioexpander, DASH_SAMPLE_PRIORITY, DASH_SAMPLE_PERIOD);
 HT_TASK::Task neopixels_task(&init_neopixels_task, &run_update_neopixels_task, NEOPIXEL_UPDATE_PRIORITY, NEOPIXEL_UPDATE_PERIOD);
+HT_TASK::Task kick_watchdog_task(&init_kick_watchdog, &run_kick_watchdog, 10, 10000); 
 
 bool debug_print(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
 {
@@ -178,6 +179,7 @@ void setup() {
     HT_SCHED::Scheduler::getInstance().setTimingFunction(micros);
 
     // Schedule Tasks
+    HT_SCHED::Scheduler::getInstance().schedule(kick_watchdog_task);
     HT_SCHED::Scheduler::getInstance().schedule(async_main); 
     HT_SCHED::Scheduler::getInstance().schedule(CAN_send);
     HT_SCHED::Scheduler::getInstance().schedule(dash_CAN_enqueue);

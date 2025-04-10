@@ -96,9 +96,13 @@ constexpr unsigned long DASH_SEND_PERIOD = 100000;        // 100,000 us = 10 Hz
 constexpr unsigned long DASH_SEND_PRIORITY = 7;
 
 constexpr unsigned long DEBUG_PRIORITY = 100;
-constexpr unsigned long DEBUG_PERIOD = 500000;             // 500,000 us = 2 Hz
+constexpr unsigned long DEBUG_PERIOD = 10000;             // 500,000 us = 2 Hz
 
 constexpr unsigned long NEOPIXEL_UPDATE_PRIORITY = 90;
 constexpr unsigned long NEOPIXEL_UPDATE_PERIOD = 100000;             // 100,000 us = 10 Hz
 
+
+constexpr int WATCHDOG_PIN = 33;
+constexpr int SOFTWARE_OK_PIN = 39; // Watchdog's !RESET pin
+constexpr unsigned long WATCHDOG_KICK_INTERVAL_MS = 10UL;
 #endif /* VCF_CONSTANTS */
