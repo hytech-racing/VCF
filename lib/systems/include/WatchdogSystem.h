@@ -36,4 +36,8 @@ public:
 
 using WatchdogInstance = etl::singleton<WatchdogSystem>;
 
+<<<<<<< HEAD
 #endif /* WATCHDOG_SYSTEM_H */
+=======
+#endif /* WATCHDOG_SYSTEM_H */
+>>>>>>> 086d7668c847f3e6d105244558db89221fb5fa27

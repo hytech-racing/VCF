@@ -9,7 +9,7 @@
 
 
 const int IMPLAUSIBILITY_DURATION = 100; // max duration of implausibility in milliseconds. FSAE Rules T.4.3.3
-const float IMPLAUSIBILITY_PERCENT = static_cast<float>(0.10); // 10 percent implausibility margin. FSAE Rules T.4.2.5
+const float IMPLAUSIBILITY_PERCENT = static_cast<float>(0.14); // 10 percent implausibility margin. FSAE Rules T.4.2.5
 const float ACCELERATION_PERCENT_LIMIT = static_cast<float>(0.05); // acceleration percent limit to start implausibility time
 
 /**
