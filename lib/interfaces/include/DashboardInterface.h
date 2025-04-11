@@ -8,6 +8,7 @@
 #include "hytech.h"
 #include <Wire.h>
 #include "SystemTimeInterface.h"
+#include "FlexCAN_T4.h"
 
 
 // Struct representing dashboard gpios
@@ -44,6 +45,12 @@ class DashboardInterface
 
         // Reading gpios 
         DashInputState_s get_dashboard_outputs();
+
+        // Receiving
+        void receive_ACU_OK(const CAN_message_t &can_msg);
+
+        bool bms_ok = true;
+        bool imd_ok = true;
     
     private: 
 
@@ -51,6 +58,8 @@ class DashboardInterface
         DashInputState_s _dashboard_outputs;
 
 };
+
+
 
 using DashboardInterfaceInstance = etl::singleton<DashboardInterface>;
 

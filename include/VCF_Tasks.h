@@ -109,8 +109,8 @@ bool run_update_neopixels_task(const unsigned long& sys_micros, const HT_TASK::T
 bool enqueue_front_suspension_data(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
 
 bool enqueue_steering_data(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
+
 bool init_kick_watchdog(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
-bool run_kick_watchdog(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
 
 namespace async_tasks {
     // the others in the VCF Tasks can just stay there, they dont need forward declarations.

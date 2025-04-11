@@ -16,6 +16,8 @@
 #include "Adafruit_NeoPixel.h"
 #include "SharedFirmwareTypes.h"
 #include "etl/singleton.h"
+#include "VCFCANInterfaceImpl.h"
+
 
 enum LED_ID_e
 {
@@ -57,7 +59,7 @@ class NeopixelController
     void init_neopixels();
     void dim_neopixels();
     void set_neopixel(uint16_t id, uint32_t c);
-    void refresh_neopixels(VCFData_s &vcf_data, VCRData_s &vcr_data);
+    void refresh_neopixels(VCFData_s &vcf_data, VCRData_s &vcr_data, CANInterfaces &interfaces);
     void set_neopixel_color(LED_ID_e led, LED_color_e color);
 
     private:

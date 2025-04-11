@@ -6,16 +6,17 @@
 /*                 Teensy 4.1 GPIO pins               */
 /* -------------------------------------------------- */
 
+
 // Digital Pins on Teensy
 constexpr int ADC1_CS = 17; // MCP3208. ADC1 in VCF schematic. Used for steering, sus pots, and load cells.
 constexpr int ADC2_CS = 16; // MCP3208. ADC2 in VCF schematic. Used for pedal position sensors.
 
 constexpr int BTN_DIM_READ = 29;
-constexpr int BTN_PRESET_READ = 26;
+constexpr int BTN_PRESET_READ = 31;
 constexpr int BTN_MC_CYCLE_READ = 27;
-constexpr int BTN_MODE_READ = 28;
+constexpr int BTN_MODE_READ = 26;
 constexpr int BTN_START_READ = 30;
-constexpr int BTN_DATA_READ = 31;
+constexpr int BTN_DATA_READ = 28;
 constexpr int BUZZER_CONTROL_PIN = 1;
 constexpr int RIGHT_SHIFTER = 9;
 constexpr int LEFT_SHIFTER = 10;

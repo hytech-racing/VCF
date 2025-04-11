@@ -17,7 +17,10 @@ namespace VCFCANInterfaceImpl {
             {
                 BuzzerController::getInstance().activate(millis);
                 break;
-            }
+            } 
+            case ACU_OK_CANID: 
+                interfaces.dash_interface.receive_ACU_OK(msg);
+                break;
             default:
                 break;
         }

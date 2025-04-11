@@ -81,11 +81,11 @@ bool init_kick_watchdog(const unsigned long& sysMicros, const HT_TASK::TaskInfo&
     return true;
 }
 
-bool run_kick_watchdog(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
-{
-    digitalWrite(WATCHDOG_PIN, WatchdogInstance::instance().get_watchdog_state(sys_time::hal_millis()));
-    return true;
-}
+// bool run_kick_watchdog(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
+// {
+//     digitalWrite(WATCHDOG_PIN, WatchdogInstance::instance().get_watchdog_state(sys_time::hal_millis()));
+//     return true;
+// }
 
 // bool init_read_gpio_task()
 // {
@@ -129,7 +129,7 @@ bool init_buzzer_control_task(const unsigned long& sysMicros, const HT_TASK::Tas
 bool run_kick_watchdog(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo) {
     digitalWrite(34 , HIGH);
     digitalWrite(33, WatchdogInstance::instance().get_watchdog_state(sys_time::hal_millis()));
-    Serial.println("Watchdog kicked!");
+    // Serial.println("Watchdog kicked!");
     return true;
 }
 
@@ -203,11 +203,14 @@ bool send_dash_data(const unsigned long& sysMicros, const HT_TASK::TaskInfo& tas
     msg_out.preset_button = dash_outputs.preset_btn_is_pressed;
     msg_out.motor_controller_cycle_button = dash_outputs.mc_reset_btn_is_pressed;
     msg_out.mode_button = dash_outputs.mode_btn_is_pressed;
-    msg_out.start_button = true;
+    msg_out.start_button = dash_outputs.start_btn_is_pressed;
     msg_out.data_button_is_pressed = dash_outputs.data_btn_is_pressed;
     msg_out.left_shifter_button = dash_outputs.left_paddle_is_pressed;
-    msg_out.right_shifter_button = dash_outputs.right_paddle_is_pressed;    
+    msg_out.right_shifter_button = dash_outputs.right_paddle_is_pressed;   
+    msg_out.led_dimmer_button = dash_outputs.dim_btn_is_pressed; 
 
+    Serial.printf("%d %d %d %d %d %d %d %d\n", msg_out.preset_button, msg_out.motor_controller_cycle_button, msg_out.mode_button, msg_out.start_button, msg_out.data_button_is_pressed, msg_out.left_shifter_button, msg_out.right_shifter_button, msg_out.led_dimmer_button);
+    
     CAN_util::enqueue_msg(&msg_out, &Pack_DASH_INPUT_hytech, VCFCANInterfaceImpl::VCFCANInterfaceObjectsInstance::instance().main_can_tx_buffer);
     
     return true;
@@ -391,7 +394,7 @@ bool init_neopixels_task(const unsigned long& sys_micros, const HT_TASK::TaskInf
 
 bool run_update_neopixels_task(const unsigned long& sys_micros, const HT_TASK::TaskInfo& task_info)
 {
-    NeopixelControllerInstance::instance().refresh_neopixels(VCFData_sInstance::instance(), VCRData_sInstance::instance());
+    NeopixelControllerInstance::instance().refresh_neopixels(VCFData_sInstance::instance(), VCRData_sInstance::instance(), VCFCANInterfaceImpl::CANInterfacesInstance::instance());
     return true;
 }
 

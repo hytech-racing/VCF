@@ -17,3 +17,12 @@ DashInputState_s DashboardInterface::get_dashboard_outputs()
     
     return _dashboard_outputs;
 }
+
+void DashboardInterface::receive_ACU_OK(const CAN_message_t &can_msg) 
+{
+    ACU_OK_t unpacked_msg;
+    Unpack_ACU_OK_hytech(&unpacked_msg, can_msg.buf, can_msg.len);
+    
+    bms_ok = unpacked_msg.bms_ok;
+    imd_ok = unpacked_msg.imd_ok;
+}

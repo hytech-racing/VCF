@@ -202,11 +202,10 @@ void setup() {
     HT_SCHED::Scheduler::getInstance().schedule(read_dash_GPIOs_task);
     HT_SCHED::Scheduler::getInstance().schedule(read_ioexpander_task);
     HT_SCHED::Scheduler::getInstance().schedule(neopixels_task);
-    HT_SCHED::Scheduler::getInstance().schedule(steering_message_enqueue);
-    HT_SCHED::Scheduler::getInstance().schedule(loadcell_message_enqueue);
-    HT_SCHED::Scheduler::getInstance().schedule(debug_state_print_task);
+    // HT_SCHED::Scheduler::getInstance().schedule(steering_message_enqueue);
+    // HT_SCHED::Scheduler::getInstance().schedule(loadcell_message_enqueue);
+    // HT_SCHED::Scheduler::getInstance().schedule(debug_state_print_task);
     HT_SCHED::Scheduler::getInstance().schedule(kick_watchdog);
-
 
 }
 
