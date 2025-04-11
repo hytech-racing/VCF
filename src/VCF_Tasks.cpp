@@ -11,7 +11,9 @@
 #include "CANInterface.h"
 #include "SystemTimeInterface.h"
 #include "PedalsSystem.h"
+#include "WatchdogSystem.h"
 
+#include "WatchdogSystem.h"
 #include "Arduino.h"
 
 
@@ -72,6 +74,19 @@ bool run_read_adc2_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo&
     return true;
 }
 
+bool init_kick_watchdog(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
+{
+    WatchdogInstance::create(WATCHDOG_KICK_INTERVAL_MS); // NOLINT
+    pinMode(WATCHDOG_PIN, OUTPUT);
+    return true;
+}
+
+bool run_kick_watchdog(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
+{
+    digitalWrite(WATCHDOG_PIN, WatchdogInstance::instance().get_watchdog_state(sys_time::hal_millis()));
+    return true;
+}
+
 // bool init_read_gpio_task()
 // {
 //     // Setting digital/analog buttons D10-D6, A8 as inputs
@@ -108,6 +123,13 @@ bool init_buzzer_control_task(const unsigned long& sysMicros, const HT_TASK::Tas
 {
     pinMode(BUZZER_CONTROL_PIN, OUTPUT);
 
+    return true;
+}
+
+bool run_kick_watchdog(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo) {
+    digitalWrite(34 , HIGH);
+    digitalWrite(33, WatchdogInstance::instance().get_watchdog_state(sys_time::hal_millis()));
+    Serial.println("Watchdog kicked!");
     return true;
 }
 
@@ -177,11 +199,11 @@ bool send_dash_data(const unsigned long& sysMicros, const HT_TASK::TaskInfo& tas
 
     DASH_INPUT_t msg_out;
 
-    msg_out.start_button = dash_outputs.start_btn_is_pressed;
+    // msg_out.start_button = dash_outputs.start_btn_is_pressed;
     msg_out.preset_button = dash_outputs.preset_btn_is_pressed;
     msg_out.motor_controller_cycle_button = dash_outputs.mc_reset_btn_is_pressed;
     msg_out.mode_button = dash_outputs.mode_btn_is_pressed;
-    msg_out.start_button = dash_outputs.start_btn_is_pressed;
+    msg_out.start_button = true;
     msg_out.data_button_is_pressed = dash_outputs.data_btn_is_pressed;
     msg_out.left_shifter_button = dash_outputs.left_paddle_is_pressed;
     msg_out.right_shifter_button = dash_outputs.right_paddle_is_pressed;    
