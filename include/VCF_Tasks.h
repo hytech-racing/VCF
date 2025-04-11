@@ -38,6 +38,7 @@
 #include "BuzzerController.h"
 #include "IOExpanderUtils.h"
 #include "NeopixelController.h"
+#include "WatchdogSystem.h"
 
 /**
  * The read_adc1 task will command adc1 to sample all eight channels, convert
@@ -46,6 +47,8 @@
  */
 bool init_adc_task();
 bool run_read_adc1_task();
+
+bool run_kick_watchdog(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
 
 /**
  * NOTE: These channels are UNUSED BY DEFAULT and exist ONLY FOR TESTING. You

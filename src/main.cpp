@@ -23,6 +23,7 @@
 #include "PedalsSystem.h"
 #include "DashboardInterface.h"
 #include "VCFEthernetInterface.h"
+#include "WatchdogSystem.h"
 
 
 /* CAN Interface stuff */
@@ -77,6 +78,7 @@ HT_TASK::Task buzzer_control_task(&init_buzzer_control_task, &run_buzzer_control
 HT_TASK::Task read_dash_GPIOs_task(HT_TASK::DUMMY_FUNCTION, &run_dash_GPIOs_task, DASH_SAMPLE_PRIORITY, DASH_SAMPLE_PERIOD);
 HT_TASK::Task read_ioexpander_task(&create_ioexpander, &read_ioexpander, DASH_SAMPLE_PRIORITY, DASH_SAMPLE_PERIOD);
 HT_TASK::Task neopixels_task(&init_neopixels_task, &run_update_neopixels_task, NEOPIXEL_UPDATE_PRIORITY, NEOPIXEL_UPDATE_PERIOD);
+HT_TASK::Task kick_watchdog(HT_TASK::DUMMY_FUNCTION, &run_kick_watchdog, WATCHDOG_PRIORITY, WATCHDOG_KICK_PERIOD);
 
 bool debug_print(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
 {
@@ -118,6 +120,12 @@ bool debug_print(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskIn
 HT_TASK::Task debug_state_print_task(HT_TASK::DUMMY_FUNCTION, debug_print, DEBUG_PRIORITY, DEBUG_PERIOD);
 
 void setup() {
+    pinMode(33, OUTPUT);
+    pinMode(34, OUTPUT);
+    digitalWrite(33, WatchdogInstance::instance().get_watchdog_state(sys_time::hal_millis()));
+    digitalWrite(34 , HIGH);
+
+
     SPI.begin();
     Serial.begin(115200); // NOLINT
 
@@ -187,7 +195,11 @@ void setup() {
     HT_SCHED::Scheduler::getInstance().schedule(read_dash_GPIOs_task);
     HT_SCHED::Scheduler::getInstance().schedule(read_ioexpander_task);
     HT_SCHED::Scheduler::getInstance().schedule(neopixels_task);
+
     HT_SCHED::Scheduler::getInstance().schedule(debug_state_print_task);
+
+    HT_SCHED::Scheduler::getInstance().schedule(kick_watchdog);
+
 
 }
 

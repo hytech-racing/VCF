@@ -101,4 +101,7 @@ constexpr unsigned long DEBUG_PERIOD = 500000;             // 500,000 us = 2 Hz
 constexpr unsigned long NEOPIXEL_UPDATE_PRIORITY = 90;
 constexpr unsigned long NEOPIXEL_UPDATE_PERIOD = 100000;             // 100,000 us = 10 Hz
 
+constexpr unsigned long WATCHDOG_PRIORITY = 1;
+constexpr unsigned long WATCHDOG_KICK_PERIOD = 100; // 100 us = 10000 Hz
+
 #endif /* VCF_CONSTANTS */

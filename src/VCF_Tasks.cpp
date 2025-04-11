@@ -11,6 +11,7 @@
 #include "CANInterface.h"
 #include "SystemTimeInterface.h"
 #include "PedalsSystem.h"
+#include "WatchdogSystem.h"
 
 #include "Arduino.h"
 
@@ -105,6 +106,13 @@ bool init_buzzer_control_task(const unsigned long& sysMicros, const HT_TASK::Tas
 {
     pinMode(BUZZER_CONTROL_PIN, OUTPUT);
 
+    return true;
+}
+
+bool run_kick_watchdog(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo) {
+    digitalWrite(34 , HIGH);
+    digitalWrite(33, WatchdogInstance::instance().get_watchdog_state(sys_time::hal_millis()));
+    Serial.println("Watchdog kicked!");
     return true;
 }
 
