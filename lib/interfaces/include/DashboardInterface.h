@@ -41,6 +41,8 @@ class DashboardInterface
             pinMode(_dashboard_gpios.DATA_BUTTON, INPUT_PULLUP); 
             pinMode(_dashboard_gpios.LEFT_SHIFTER_BUTTON, INPUT_PULLUP); 
             pinMode(_dashboard_gpios.RIGHT_SHIFTER_BUTTON, INPUT_PULLUP); 
+
+            _dash_created_millis = sys_time::hal_millis();
         }
 
         // Reading gpios 
@@ -56,6 +58,8 @@ class DashboardInterface
 
         DashboardGPIOs_s _dashboard_gpios;
         DashInputState_s _dashboard_outputs;
+
+        unsigned long _dash_created_millis;
 
 };
 

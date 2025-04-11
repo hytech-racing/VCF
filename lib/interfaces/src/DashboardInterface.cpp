@@ -23,11 +23,11 @@ void DashboardInterface::receive_ACU_OK(const CAN_message_t &can_msg)
     ACU_OK_t unpacked_msg;
     Unpack_ACU_OK_hytech(&unpacked_msg, can_msg.buf, can_msg.len);
     
-    if (!unpacked_msg.bms_ok) {
+    if (!unpacked_msg.bms_ok && (sys_time::hal_millis() - _dash_created_millis) > 2000) {
         bms_ok = false;
     }
 
-    if (!unpacked_msg.imd_ok) {
+    if (!unpacked_msg.imd_ok && (sys_time::hal_millis() - _dash_created_millis) > 2000) {
         imd_ok = false;
     }
 }
