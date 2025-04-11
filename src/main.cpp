@@ -38,10 +38,10 @@
 FlexCAN_T4<CAN1, RX_SIZE_256, TX_SIZE_16> main_can;
 
 const PedalsParams accel_params = {
-    .min_pedal_1 = 1916,
-    .min_pedal_2 = 1793,
-    .max_pedal_1 = 2264,
-    .max_pedal_2 = 1432,
+    .min_pedal_1 = 1904,
+    .min_pedal_2 = 1786,
+    .max_pedal_1 = 2480,
+    .max_pedal_2 = 1198,
     .activation_percentage = 0.05,
     .min_sensor_pedal_1 = 90,
     .min_sensor_pedal_2 = 90,
@@ -53,10 +53,10 @@ const PedalsParams accel_params = {
 };
 
 const PedalsParams brake_params = {
-    .min_pedal_1 = 897,
-    .min_pedal_2 = 2803,
-    .max_pedal_1 = 2050,
-    .max_pedal_2 = 1650,
+    .min_pedal_1 = 762,
+    .min_pedal_2 = 2944,
+    .max_pedal_1 = 2001,
+    .max_pedal_2 = 1700,
     .activation_percentage = 0.06,
     .min_sensor_pedal_1 = 90,
     .min_sensor_pedal_2 = 90,
@@ -104,7 +104,7 @@ bool debug_print(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskIn
     Serial.print(VCFData_sInstance::instance().system_data.pedals_system_data.brake_percent);
     Serial.println();
     Serial.println("implaus");
-    Serial.print(VCFData_sInstance::instance().system_data.pedals_system_data.implausibility_has_exceeded_max_duration);
+    Serial.println(VCFData_sInstance::instance().system_data.pedals_system_data.implausibility_has_exceeded_max_duration);
     
     // Serial.print("Dim button: ");
     // Serial.println(VCFData_sInstance::instance().interface_data.dash_input_state.dim_btn_is_pressed);
@@ -204,7 +204,7 @@ void setup() {
     HT_SCHED::Scheduler::getInstance().schedule(neopixels_task);
     // HT_SCHED::Scheduler::getInstance().schedule(steering_message_enqueue);
     // HT_SCHED::Scheduler::getInstance().schedule(loadcell_message_enqueue);
-    // HT_SCHED::Scheduler::getInstance().schedule(debug_state_print_task);
+    HT_SCHED::Scheduler::getInstance().schedule(debug_state_print_task);
     HT_SCHED::Scheduler::getInstance().schedule(kick_watchdog);
 
 }
