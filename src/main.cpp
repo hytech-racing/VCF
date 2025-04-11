@@ -54,7 +54,7 @@ const PedalsParams accel_params = {
 
 const PedalsParams brake_params = {
     .min_pedal_1 = 762,
-    .min_pedal_2 = 2944,
+    .min_pedal_2 = 3000,
     .max_pedal_1 = 2001,
     .max_pedal_2 = 1700,
     .activation_percentage = 0.06,
