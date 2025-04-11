@@ -28,7 +28,13 @@ void NeopixelController::set_neopixel(uint16_t id, uint32_t c) {
 
 void NeopixelController::refresh_neopixels(VCFData_s &vcf_data, VCRData_s &vcr_data, CANInterfaces &interfaces) {
 
-    set_neopixel_color(LED_ID_e::BRAKE, vcf_data.system_data.pedals_system_data.brake_is_pressed ? LED_color_e::RED : LED_color_e::OFF);
+    LED_color_e brake_light_color = LED_color_e::OFF;
+    if(vcf_data.system_data.pedals_system_data.brake_is_pressed && !vcf_data.system_data.pedals_system_data.implausibility_has_exceeded_max_duration) {
+        brake_light_color = LED_color_e::GREEN;
+    } else if(vcf_data.system_data.pedals_system_data.implausibility_has_exceeded_max_duration) {
+        brake_light_color = LED_color_e::RED;
+    }
+    set_neopixel_color(LED_ID_e::BRAKE, brake_light_color);
     set_neopixel_color(LED_ID_e::TORQUE_MODE, LED_color_e::OFF); // Unused for now
     set_neopixel_color(LED_ID_e::LAUNCH_CTRL, LED_color_e::OFF); // Unused for now
     set_neopixel_color(LED_ID_e::CRIT_CHARGE, LED_color_e::OFF); // Unused for now

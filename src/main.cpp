@@ -37,41 +37,11 @@
 
 FlexCAN_T4<CAN1, RX_SIZE_256, TX_SIZE_16> main_can;
 
-// const PedalsParams accel_params = {
-//     .min_pedal_1 = 1904,
-//     .min_pedal_2 = 1786,
-//     .max_pedal_1 = 2480,
-//     .max_pedal_2 = 1198,
-//     .activation_percentage = 0.05,
-//     .min_sensor_pedal_1 = 90,
-//     .min_sensor_pedal_2 = 90,
-//     .max_sensor_pedal_1 = 4000,
-//     .max_sensor_pedal_2 = 4000,
-//     .deadzone_margin = .03,
-//     .implausibility_margin = IMPLAUSIBILITY_PERCENT,
-//     .mechanical_activation_percentage = 0.05
-// };
-
-// const PedalsParams brake_params = {
-//     .min_pedal_1 = 762,
-//     .min_pedal_2 = 3000,
-//     .max_pedal_1 = 2001,
-//     .max_pedal_2 = 1700,
-//     .activation_percentage = 0.06,
-//     .min_sensor_pedal_1 = 90,
-//     .min_sensor_pedal_2 = 90,
-//     .max_sensor_pedal_1 = 4000,
-//     .max_sensor_pedal_2 = 4000,
-//     .deadzone_margin = .04,
-//     .implausibility_margin = IMPLAUSIBILITY_PERCENT,
-//     .mechanical_activation_percentage = 0.65
-// };
-
 const PedalsParams accel_params = {
-    .min_pedal_1 = 1901,
-    .min_pedal_2 = 1901,
-    .max_pedal_1 = 2480,
-    .max_pedal_2 = 2480,
+    .min_pedal_1 = 1896,
+    .min_pedal_2 = 1777,
+    .max_pedal_1 = 2472,
+    .max_pedal_2 = 1205,
     .activation_percentage = 0.05,
     .min_sensor_pedal_1 = 90,
     .min_sensor_pedal_2 = 90,
@@ -83,10 +53,10 @@ const PedalsParams accel_params = {
 };
 
 const PedalsParams brake_params = {
-    .min_pedal_1 = 756,
-    .min_pedal_2 = 756,
-    .max_pedal_1 = 1980,
-    .max_pedal_2 = 1980,
+    .min_pedal_1 = 787,
+    .min_pedal_2 = 2904,
+    .max_pedal_1 = 2164,
+    .max_pedal_2 = 1520,
     .activation_percentage = 0.06,
     .min_sensor_pedal_1 = 90,
     .min_sensor_pedal_2 = 90,
@@ -94,8 +64,38 @@ const PedalsParams brake_params = {
     .max_sensor_pedal_2 = 4000,
     .deadzone_margin = .04,
     .implausibility_margin = IMPLAUSIBILITY_PERCENT,
-    .mechanical_activation_percentage = 0.65
+    .mechanical_activation_percentage = 0.5
 };
+
+// const PedalsParams accel_params = {
+//     .min_pedal_1 = 1901,
+//     .min_pedal_2 = 1901,
+//     .max_pedal_1 = 2480,
+//     .max_pedal_2 = 2480,
+//     .activation_percentage = 0.05,
+//     .min_sensor_pedal_1 = 90,
+//     .min_sensor_pedal_2 = 90,
+//     .max_sensor_pedal_1 = 4000,
+//     .max_sensor_pedal_2 = 4000,
+//     .deadzone_margin = .03,
+//     .implausibility_margin = IMPLAUSIBILITY_PERCENT,
+//     .mechanical_activation_percentage = 0.05
+// };
+
+// const PedalsParams brake_params = {
+//     .min_pedal_1 = 756,
+//     .min_pedal_2 = 756,
+//     .max_pedal_1 = 1980,
+//     .max_pedal_2 = 1980,
+//     .activation_percentage = 0.06,
+//     .min_sensor_pedal_1 = 90,
+//     .min_sensor_pedal_2 = 90,
+//     .max_sensor_pedal_1 = 4000,
+//     .max_sensor_pedal_2 = 4000,
+//     .deadzone_margin = .04,
+//     .implausibility_margin = IMPLAUSIBILITY_PERCENT,
+//     .mechanical_activation_percentage = 0.65
+// };
 
 // Tasks
 // Send Periods
