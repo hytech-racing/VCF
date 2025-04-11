@@ -83,10 +83,10 @@ const PedalsParams accel_params = {
 };
 
 const PedalsParams brake_params = {
-    .min_pedal_1 = 762,
-    .min_pedal_2 = 762,
-    .max_pedal_1 = 2001,
-    .max_pedal_2 = 2001,
+    .min_pedal_1 = 756,
+    .min_pedal_2 = 756,
+    .max_pedal_1 = 1980,
+    .max_pedal_2 = 1980,
     .activation_percentage = 0.06,
     .min_sensor_pedal_1 = 90,
     .min_sensor_pedal_2 = 90,
@@ -99,7 +99,7 @@ const PedalsParams brake_params = {
 
 // Tasks
 // Send Periods
-HT_TASK::Task async_main(HT_TASK::DUMMY_FUNCTION, &async_tasks::handle_async_main, MAIN_TASK_PRIORITY);
+HT_TASK::Task async_main(HT_TASK::DUMMY_FUNCTION, &async_tasks::handle_async_main, MAIN_TASK_PRIORITY, 100);
 HT_TASK::Task CAN_send(HT_TASK::DUMMY_FUNCTION, &handle_CAN_send, CAN_SEND_PRIORITY, CAN_SEND_PERIOD);
 HT_TASK::Task dash_CAN_enqueue(HT_TASK::DUMMY_FUNCTION, &send_dash_data, DASH_SEND_PRIORITY, DASH_SEND_PERIOD);
 HT_TASK::Task pedals_message_enqueue(HT_TASK::DUMMY_FUNCTION, &enqueue_pedals_data, PEDALS_PRIORITY, PEDALS_SAMPLE_PERIOD);

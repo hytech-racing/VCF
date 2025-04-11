@@ -42,11 +42,11 @@ PedalsSystemData_s PedalsSystem::evaluate_pedals(PedalSensorData_s pedals_data, 
     // std::cout << "brake2_scaled " << brake2_scaled << std::endl;
     
     // FSAE Rules T.4.2.4
-    out.brake_is_implausible = _evaluate_pedal_implausibilities(accel1_scaled, accel2_scaled, brake_1, brake_2, _brakeParams, IMPLAUSIBILITY_PERCENT);
-    out.accel_is_implausible = _evaluate_pedal_implausibilities(brake1_scaled, brake2_scaled, accel_1, accel_2, _accelParams, IMPLAUSIBILITY_PERCENT);
-    float accel_percent = (out.accel_is_implausible) ? 0.0f : _pedal_percentage(accel1_scaled, accel2_scaled, _accelParams); 
+    out.brake_is_implausible = _evaluate_pedal_implausibilities(brake1_scaled, brake2_scaled, brake_1, brake_2, _brakeParams, IMPLAUSIBILITY_PERCENT);
+    out.accel_is_implausible = _evaluate_pedal_implausibilities(accel1_scaled, accel2_scaled, accel_1, accel_2, _accelParams, IMPLAUSIBILITY_PERCENT);
+    float accel_percent = _pedal_percentage(accel1_scaled, accel2_scaled, _accelParams); 
     out.accel_percent = std::max(accel_percent, 0.0f);
-    float brake_percent = (out.brake_is_implausible) ? 0.0f : _pedal_percentage(brake1_scaled, brake2_scaled, _brakeParams);
+    float brake_percent = _pedal_percentage(brake1_scaled, brake2_scaled, _brakeParams);
     out.brake_percent = std::max(brake_percent, 0.0f);
 
     //Reimplemtning the accel_is_pressed and brake/accel implaus high directly _pedal_percentagewithout a helper method. 
