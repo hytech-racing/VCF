@@ -15,6 +15,7 @@ namespace VCFCANInterfaceImpl {
         {
             case DASHBOARD_BUZZER_CONTROL_CANID:
             {
+                Serial.println("pluh");
                 BuzzerController::getInstance().activate(millis);
                 break;
             } 

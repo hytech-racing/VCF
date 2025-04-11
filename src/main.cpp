@@ -37,11 +37,41 @@
 
 FlexCAN_T4<CAN1, RX_SIZE_256, TX_SIZE_16> main_can;
 
+// const PedalsParams accel_params = {
+//     .min_pedal_1 = 1904,
+//     .min_pedal_2 = 1786,
+//     .max_pedal_1 = 2480,
+//     .max_pedal_2 = 1198,
+//     .activation_percentage = 0.05,
+//     .min_sensor_pedal_1 = 90,
+//     .min_sensor_pedal_2 = 90,
+//     .max_sensor_pedal_1 = 4000,
+//     .max_sensor_pedal_2 = 4000,
+//     .deadzone_margin = .03,
+//     .implausibility_margin = IMPLAUSIBILITY_PERCENT,
+//     .mechanical_activation_percentage = 0.05
+// };
+
+// const PedalsParams brake_params = {
+//     .min_pedal_1 = 762,
+//     .min_pedal_2 = 3000,
+//     .max_pedal_1 = 2001,
+//     .max_pedal_2 = 1700,
+//     .activation_percentage = 0.06,
+//     .min_sensor_pedal_1 = 90,
+//     .min_sensor_pedal_2 = 90,
+//     .max_sensor_pedal_1 = 4000,
+//     .max_sensor_pedal_2 = 4000,
+//     .deadzone_margin = .04,
+//     .implausibility_margin = IMPLAUSIBILITY_PERCENT,
+//     .mechanical_activation_percentage = 0.65
+// };
+
 const PedalsParams accel_params = {
-    .min_pedal_1 = 1904,
-    .min_pedal_2 = 1786,
+    .min_pedal_1 = 1901,
+    .min_pedal_2 = 1901,
     .max_pedal_1 = 2480,
-    .max_pedal_2 = 1198,
+    .max_pedal_2 = 2480,
     .activation_percentage = 0.05,
     .min_sensor_pedal_1 = 90,
     .min_sensor_pedal_2 = 90,
@@ -54,9 +84,9 @@ const PedalsParams accel_params = {
 
 const PedalsParams brake_params = {
     .min_pedal_1 = 762,
-    .min_pedal_2 = 3000,
+    .min_pedal_2 = 762,
     .max_pedal_1 = 2001,
-    .max_pedal_2 = 1700,
+    .max_pedal_2 = 2001,
     .activation_percentage = 0.06,
     .min_sensor_pedal_1 = 90,
     .min_sensor_pedal_2 = 90,
@@ -118,6 +148,8 @@ bool debug_print(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskIn
     // Serial.println(VCFData_sInstance::instance().interface_data.dash_input_state.start_btn_is_pressed);
     // Serial.print("data button: ");
     // Serial.println(VCFData_sInstance::instance().interface_data.dash_input_state.data_btn_is_pressed);
+
+    // Serial.println("jkkjhhkjkjh");
 
     return true;
 }
@@ -206,7 +238,6 @@ void setup() {
     // HT_SCHED::Scheduler::getInstance().schedule(loadcell_message_enqueue);
     HT_SCHED::Scheduler::getInstance().schedule(debug_state_print_task);
     HT_SCHED::Scheduler::getInstance().schedule(kick_watchdog);
-
 }
 
 void loop() {
