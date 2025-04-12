@@ -38,11 +38,11 @@
 FlexCAN_T4<CAN1, RX_SIZE_256, TX_SIZE_16> main_can;
 
 const PedalsParams accel_params = {
-    .min_pedal_1 = 1896,
+    .min_pedal_1 = 1900,
     .min_pedal_2 = 1777,
-    .max_pedal_1 = 2472,
-    .max_pedal_2 = 1205,
-    .activation_percentage = 0.05,
+    .max_pedal_1 = 2478,
+    .max_pedal_2 = 1198,
+    .activation_percentage = 0.10,
     .min_sensor_pedal_1 = 90,
     .min_sensor_pedal_2 = 90,
     .max_sensor_pedal_1 = 4000,
@@ -55,9 +55,9 @@ const PedalsParams accel_params = {
 const PedalsParams brake_params = {
     .min_pedal_1 = 787,
     .min_pedal_2 = 2904,
-    .max_pedal_1 = 2164,
-    .max_pedal_2 = 1520,
-    .activation_percentage = 0.06,
+    .max_pedal_1 = 2176,
+    .max_pedal_2 = 1545,
+    .activation_percentage = 0.075,
     .min_sensor_pedal_1 = 90,
     .min_sensor_pedal_2 = 90,
     .max_sensor_pedal_1 = 4000,
