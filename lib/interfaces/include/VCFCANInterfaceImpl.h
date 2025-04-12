@@ -10,6 +10,7 @@
 #include "CANInterface.h"
 
 #include "DashboardInterface.h"
+#include "ACUInterface.h"
 
 #include "SharedFirmwareTypes.h"
 
@@ -22,10 +23,12 @@ template <CAN_DEV_TABLE CAN_DEV> using FlexCAN_Type = FlexCAN_T4<CAN_DEV, RX_SIZ
 
 /* Interfaces accessible to this one */
 struct CANInterfaces {
-    explicit CANInterfaces(DashboardInterface &dash_int) 
-        : dash_interface(dash_int) {}
+    explicit CANInterfaces(DashboardInterface &dash_int, ACUInterface &acu_int)
+        : dash_interface(dash_int),
+          acu_interface(acu_int) {}
 
     DashboardInterface &dash_interface;
+    ACUInterface &acu_interface;
 };
 
 struct VCFCANInterfaceObjects {

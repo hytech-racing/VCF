@@ -15,10 +15,14 @@ namespace VCFCANInterfaceImpl {
         {
             case DASHBOARD_BUZZER_CONTROL_CANID:
             {
-                Serial.println("pluh");
                 BuzzerController::getInstance().activate(millis);
                 break;
             } 
+            case BMS_VOLTAGES_CANID:
+            {
+                interfaces.acu_interface.receive_ACU_voltages(msg);
+                break;
+            }
             case ACU_OK_CANID: 
                 interfaces.dash_interface.receive_ACU_OK(msg);
                 break;

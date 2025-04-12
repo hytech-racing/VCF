@@ -37,7 +37,7 @@ void NeopixelController::refresh_neopixels(VCFData_s &vcf_data, VCRData_s &vcr_d
     set_neopixel_color(LED_ID_e::BRAKE, brake_light_color);
     set_neopixel_color(LED_ID_e::TORQUE_MODE, LED_color_e::OFF); // Unused for now
     set_neopixel_color(LED_ID_e::LAUNCH_CTRL, LED_color_e::OFF); // Unused for now
-    set_neopixel_color(LED_ID_e::CRIT_CHARGE, LED_color_e::OFF); // Unused for now
+    set_neopixel_color(LED_ID_e::CRIT_CHARGE, interfaces.acu_interface.get_voltages_not_critical() ? LED_color_e::GREEN : LED_color_e::RED); // Unused for now
     set_neopixel_color(LED_ID_e::INERTIA, LED_color_e::OFF); // Unused for now
     set_neopixel_color(LED_ID_e::COCKPIT_BRB, LED_color_e::OFF); // Unused for now
     set_neopixel_color(LED_ID_e::BOTS, LED_color_e::OFF); // Unused for now
