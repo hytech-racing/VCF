@@ -91,7 +91,6 @@ bool run_kick_watchdog(const unsigned long& sysMicros, const HT_TASK::TaskInfo& 
 }
 
 bool update_pedals_calibration_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo) {
-
     // Observed pedal values (ONLY USED FOR RECALIBRATION)
     // WARNING: These are the true min/max observed values, NOT the "value at min travel" and "value at max travel"
     //          that are defined in the PedalsParam struct.
@@ -99,6 +98,7 @@ bool update_pedals_calibration_task(const unsigned long& sysMicros, const HT_TAS
 
     if (VCRInterfaceInstance::instance().is_in_pedals_calibration_state())
     {
+        Serial.printf("in calibration state\n");
         PedalsSystemInstance::instance().recalibrate_min_max(VCFData_sInstance::instance().interface_data.pedal_sensor_data);
         EEPROMUtilities::write_eeprom_32bit(ACCEL_1_MIN_ADDR, PedalsSystemInstance::instance().get_accel_params().min_pedal_1);
         EEPROMUtilities::write_eeprom_32bit(ACCEL_1_MAX_ADDR, PedalsSystemInstance::instance().get_accel_params().max_pedal_1);
@@ -314,6 +314,10 @@ bool enqueue_pedals_data(const unsigned long &sys_micros, const HT_TASK::TaskInf
 bool run_dash_GPIOs_task(const unsigned long& sys_micros, const HT_TASK::TaskInfo& task_info)
 {
     VCFData_sInstance::instance().interface_data.dash_input_state = DashboardInterfaceInstance::instance().get_dashboard_outputs();
+    if (!VCFData_sInstance::instance().interface_data.dash_input_state.preset_btn_is_pressed)
+    {
+        VCRInterfaceInstance::instance().disable_calibration_state();
+    }
     // if (VCFData_sInstance::instance().interface_data.dash_input_state.start_btn_is_pressed) { // Test code to ensure buzzer timing works (on benchtop)
     //     BuzzerController::getInstance().activate(sys_micros / 1000);
     // }

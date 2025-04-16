@@ -108,13 +108,13 @@ public:
     void update_observed_pedal_limits(PedalSensorData_s &curr_values)
     {
         min_observed_accel_1 = std::min(min_observed_accel_1, curr_values.accel_1);
-        max_observed_accel_1 = std::min(max_observed_accel_1, curr_values.accel_1);
+        max_observed_accel_1 = std::max(max_observed_accel_1, curr_values.accel_1);
         min_observed_accel_2 = std::min(min_observed_accel_2, curr_values.accel_2);
-        max_observed_accel_2 = std::min(max_observed_accel_2, curr_values.accel_2);
+        max_observed_accel_2 = std::max(max_observed_accel_2, curr_values.accel_2);
         min_observed_brake_1 = std::min(min_observed_brake_1, curr_values.brake_1);
-        max_observed_brake_1 = std::min(max_observed_brake_1, curr_values.brake_1);
+        max_observed_brake_1 = std::max(max_observed_brake_1, curr_values.brake_1);
         min_observed_brake_2 = std::min(min_observed_brake_2, curr_values.brake_2);
-        max_observed_brake_2 = std::min(max_observed_brake_2, curr_values.brake_2);
+        max_observed_brake_2 = std::max(max_observed_brake_2, curr_values.brake_2);
     }
     uint32_t min_observed_accel_1 = 4096;
     uint32_t max_observed_accel_1 = 0;

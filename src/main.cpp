@@ -59,23 +59,45 @@ HT_TASK::Task pedals_calibration_task(HT_TASK::DUMMY_FUNCTION, &update_pedals_ca
 
 bool debug_print(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
 {
-    Serial.println("accel1 raw accel2 raw");
-    Serial.print(VCFData_sInstance::instance().interface_data.pedal_sensor_data.accel_1);
+    // Serial.println("accel1 raw accel2 raw");
+    // Serial.print(VCFData_sInstance::instance().interface_data.pedal_sensor_data.accel_1);
+    // Serial.print("   ");
+    // Serial.print(VCFData_sInstance::instance().interface_data.pedal_sensor_data.accel_2);
+    // Serial.println();
+    // Serial.println("brake1 raw brake2 raw");
+    // Serial.print(VCFData_sInstance::instance().interface_data.pedal_sensor_data.brake_1);
+    // Serial.print("   ");
+    // Serial.print(VCFData_sInstance::instance().interface_data.pedal_sensor_data.brake_2);
+    // Serial.println();
+    // Serial.println("accel brake percents");
+    // Serial.print(VCFData_sInstance::instance().system_data.pedals_system_data.accel_percent);
+    // Serial.print("   ");
+    // Serial.print(VCFData_sInstance::instance().system_data.pedals_system_data.brake_percent);
+    // Serial.println();
+    // Serial.println("implaus");
+    // Serial.println(VCFData_sInstance::instance().system_data.pedals_system_data.implausibility_has_exceeded_max_duration);
+
+    Serial.println("accel 1 min/max");
+    Serial.print(PedalsSystemInstance::instance().get_accel_params().min_pedal_1);
     Serial.print("   ");
-    Serial.print(VCFData_sInstance::instance().interface_data.pedal_sensor_data.accel_2);
+    Serial.print(PedalsSystemInstance::instance().get_accel_params().max_pedal_1);
     Serial.println();
-    Serial.println("brake1 raw brake2 raw");
-    Serial.print(VCFData_sInstance::instance().interface_data.pedal_sensor_data.brake_1);
+    Serial.println("accel 2 min/max");
+    Serial.print(PedalsSystemInstance::instance().get_accel_params().min_pedal_2);
     Serial.print("   ");
-    Serial.print(VCFData_sInstance::instance().interface_data.pedal_sensor_data.brake_2);
+    Serial.print(PedalsSystemInstance::instance().get_accel_params().max_pedal_2);
     Serial.println();
-    Serial.println("accel brake percents");
-    Serial.print(VCFData_sInstance::instance().system_data.pedals_system_data.accel_percent);
+    Serial.println("brake 1 min/max");
+    Serial.print(PedalsSystemInstance::instance().get_brake_params().min_pedal_1);
     Serial.print("   ");
-    Serial.print(VCFData_sInstance::instance().system_data.pedals_system_data.brake_percent);
+    Serial.print(PedalsSystemInstance::instance().get_brake_params().max_pedal_1);
     Serial.println();
-    Serial.println("implaus");
-    Serial.println(VCFData_sInstance::instance().system_data.pedals_system_data.implausibility_has_exceeded_max_duration);
+    Serial.println("brake 2 min/max");
+    Serial.print(PedalsSystemInstance::instance().get_brake_params().min_pedal_2);
+    Serial.print("   ");
+    Serial.print(PedalsSystemInstance::instance().get_brake_params().max_pedal_2);
+    Serial.println();
+    Serial.println();
     
     // Serial.print("Dim button: ");
     // Serial.println(VCFData_sInstance::instance().interface_data.dash_input_state.dim_btn_is_pressed);
@@ -207,10 +229,11 @@ void setup() {
     HT_SCHED::Scheduler::getInstance().schedule(neopixels_task);
     // HT_SCHED::Scheduler::getInstance().schedule(steering_message_enqueue);
     // HT_SCHED::Scheduler::getInstance().schedule(loadcell_message_enqueue);
-    HT_SCHED::Scheduler::getInstance().schedule(debug_state_print_task);
+    // HT_SCHED::Scheduler::getInstance().schedule(debug_state_print_task);
     HT_SCHED::Scheduler::getInstance().schedule(pedals_calibration_task);
 }
 
 void loop() {
     HT_SCHED::Scheduler::getInstance().run();
+    EEPROM.write(0, 0);
 }

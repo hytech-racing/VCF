@@ -25,6 +25,8 @@ class VCRInterface
 
             _is_in_pedals_calibration_state = unpacked_msg.in_pedal_calibration_state;
         }
+
+        void disable_calibration_state() {_is_in_pedals_calibration_state = false;}
     
     private: 
 
