@@ -98,7 +98,6 @@ bool update_pedals_calibration_task(const unsigned long& sysMicros, const HT_TAS
 
     if (VCRInterfaceInstance::instance().is_in_pedals_calibration_state())
     {
-        Serial.printf("in calibration state\n");
         PedalsSystemInstance::instance().recalibrate_min_max(VCFData_sInstance::instance().interface_data.pedal_sensor_data);
         EEPROMUtilities::write_eeprom_32bit(ACCEL_1_MIN_ADDR, PedalsSystemInstance::instance().get_accel_params().min_pedal_1);
         EEPROMUtilities::write_eeprom_32bit(ACCEL_1_MAX_ADDR, PedalsSystemInstance::instance().get_accel_params().max_pedal_1);

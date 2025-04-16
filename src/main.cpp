@@ -235,5 +235,4 @@ void setup() {
 
 void loop() {
     HT_SCHED::Scheduler::getInstance().run();
-    EEPROM.write(0, 0);
 }

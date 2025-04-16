@@ -42,6 +42,7 @@ void NeopixelController::refresh_neopixels(VCFData_s &vcf_data, VCRData_s &vcr_d
         set_neopixel_color(LED_ID_e::MC_ERR, LED_color_e::RED);
         set_neopixel_color(LED_ID_e::RDY_DRIVE, LED_color_e::RED);
         set_neopixel_color(LED_ID_e::GLV, LED_color_e::RED);
+        _neopixels.show();
         return;
     }
 
