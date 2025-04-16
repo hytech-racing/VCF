@@ -1,6 +1,7 @@
 #ifndef VCF_CONSTANTS
 #define VCF_CONSTANTS
 
+#include <stdint.h>
 
 /* -------------------------------------------------- */
 /*                 Teensy 4.1 GPIO pins               */
@@ -115,5 +116,17 @@ constexpr unsigned long WATCHDOG_KICK_PERIOD = 1000; // 100 us = 10000 Hz
 constexpr int WATCHDOG_PIN = 33;
 constexpr int SOFTWARE_OK_PIN = 34; // Watchdog's !RESET pin
 constexpr unsigned long WATCHDOG_KICK_INTERVAL_MS = 10000UL;
+
+/* -------------------------------------------------- */
+/*                EEPROM value addresses              */
+/* -------------------------------------------------- */
+constexpr uint32_t ACCEL_1_MIN_ADDR = 0;
+constexpr uint32_t ACCEL_2_MIN_ADDR = 4;
+constexpr uint32_t ACCEL_1_MAX_ADDR = 8;
+constexpr uint32_t ACCEL_2_MAX_ADDR = 12;
+constexpr uint32_t BRAKE_1_MIN_ADDR = 16;
+constexpr uint32_t BRAKE_2_MIN_ADDR = 20;
+constexpr uint32_t BRAKE_1_MAX_ADDR = 24;
+constexpr uint32_t BRAKE_2_MAX_ADDR = 28;
 
 #endif /* VCF_CONSTANTS */

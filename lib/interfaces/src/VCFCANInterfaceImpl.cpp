@@ -15,7 +15,7 @@ namespace VCFCANInterfaceImpl {
         {
             case DASHBOARD_BUZZER_CONTROL_CANID:
             {
-                BuzzerController::getInstance().activate(millis);
+                interfaces.vcr_interface.receive_dash_control_data(msg);
                 break;
             } 
             case BMS_VOLTAGES_CANID:

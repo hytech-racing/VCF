@@ -11,6 +11,7 @@
 #include "ht_task.hpp"
 
 #include <Arduino.h>
+#include <EEPROM.h>
 
 /* From Arduino Libraries */
 #include "hytech.h"
@@ -24,6 +25,7 @@
 #include "DashboardInterface.h"
 #include "VCFEthernetInterface.h"
 #include "WatchdogSystem.h"
+#include "EEPROMUtilities.h"
 
 
 /* CAN Interface stuff */
@@ -37,68 +39,7 @@
 
 FlexCAN_T4<CAN1, RX_SIZE_256, TX_SIZE_16> main_can;
 
-const PedalsParams accel_params = {
-    .min_pedal_1 = 1900,
-    .min_pedal_2 = 1777,
-    .max_pedal_1 = 2478,
-    .max_pedal_2 = 1198,
-    .activation_percentage = 0.10,
-    .min_sensor_pedal_1 = 90,
-    .min_sensor_pedal_2 = 90,
-    .max_sensor_pedal_1 = 4000,
-    .max_sensor_pedal_2 = 4000,
-    .deadzone_margin = .03,
-    .implausibility_margin = IMPLAUSIBILITY_PERCENT,
-    .mechanical_activation_percentage = 0.05
-};
-
-const PedalsParams brake_params = {
-    .min_pedal_1 = 787,
-    .min_pedal_2 = 2904,
-    .max_pedal_1 = 2176,
-    .max_pedal_2 = 1545,
-    .activation_percentage = 0.075,
-    .min_sensor_pedal_1 = 90,
-    .min_sensor_pedal_2 = 90,
-    .max_sensor_pedal_1 = 4000,
-    .max_sensor_pedal_2 = 4000,
-    .deadzone_margin = .04,
-    .implausibility_margin = IMPLAUSIBILITY_PERCENT,
-    .mechanical_activation_percentage = 0.5
-};
-
-// const PedalsParams accel_params = {
-//     .min_pedal_1 = 1901,
-//     .min_pedal_2 = 1901,
-//     .max_pedal_1 = 2480,
-//     .max_pedal_2 = 2480,
-//     .activation_percentage = 0.05,
-//     .min_sensor_pedal_1 = 90,
-//     .min_sensor_pedal_2 = 90,
-//     .max_sensor_pedal_1 = 4000,
-//     .max_sensor_pedal_2 = 4000,
-//     .deadzone_margin = .03,
-//     .implausibility_margin = IMPLAUSIBILITY_PERCENT,
-//     .mechanical_activation_percentage = 0.05
-// };
-
-// const PedalsParams brake_params = {
-//     .min_pedal_1 = 756,
-//     .min_pedal_2 = 756,
-//     .max_pedal_1 = 1980,
-//     .max_pedal_2 = 1980,
-//     .activation_percentage = 0.06,
-//     .min_sensor_pedal_1 = 90,
-//     .min_sensor_pedal_2 = 90,
-//     .max_sensor_pedal_1 = 4000,
-//     .max_sensor_pedal_2 = 4000,
-//     .deadzone_margin = .04,
-//     .implausibility_margin = IMPLAUSIBILITY_PERCENT,
-//     .mechanical_activation_percentage = 0.65
-// };
-
 // Tasks
-// Send Periods
 HT_TASK::Task async_main(HT_TASK::DUMMY_FUNCTION, &async_tasks::handle_async_main, MAIN_TASK_PRIORITY, 100);
 HT_TASK::Task CAN_send(HT_TASK::DUMMY_FUNCTION, &handle_CAN_send, CAN_SEND_PRIORITY, CAN_SEND_PERIOD);
 HT_TASK::Task dash_CAN_enqueue(HT_TASK::DUMMY_FUNCTION, &send_dash_data, DASH_SEND_PRIORITY, DASH_SEND_PERIOD);
@@ -161,7 +102,9 @@ void setup() {
     SPI.begin();
     Serial.begin(115200); // NOLINT
 
+    // Initialize all singletons
     float adc_1_scales[channels_within_mcp_adc], adc_1_offsets[channels_within_mcp_adc], adc_2_scales[channels_within_mcp_adc], adc_2_offsets[channels_within_mcp_adc];
+    
     adc_1_scales[STEERING_1_CHANNEL] = STEERING_1_SCALE;
     adc_1_offsets[STEERING_1_CHANNEL] = STEERING_1_OFFSET;
     adc_1_scales[STEERING_2_CHANNEL] = STEERING_2_SCALE;
@@ -183,12 +126,44 @@ void setup() {
     adc_2_offsets[BRAKE_1_CHANNEL] = BRAKE_1_OFFSET;
     adc_2_scales[BRAKE_2_CHANNEL] = BRAKE_2_SCALE;
     adc_2_offsets[BRAKE_2_CHANNEL] = BRAKE_2_OFFSET;
+    ADCsOnVCFInstance::create(adc_1_scales, adc_1_offsets, adc_2_scales, adc_2_offsets);
 
     EthernetIPDefsInstance::create();
     VCRData_sInstance::create();
     VCFData_sInstance::create();
+
+    // Create pedals singleton
+    PedalsParams accel_params = {
+        .min_pedal_1 = EEPROMUtilities::read_eeprom_32bit(ACCEL_1_MIN_ADDR),
+        .min_pedal_2 = EEPROMUtilities::read_eeprom_32bit(ACCEL_2_MIN_ADDR),
+        .max_pedal_1 = EEPROMUtilities::read_eeprom_32bit(ACCEL_1_MAX_ADDR),
+        .max_pedal_2 = EEPROMUtilities::read_eeprom_32bit(ACCEL_2_MAX_ADDR),
+        .activation_percentage = 0.10,
+        .min_sensor_pedal_1 = 90,
+        .min_sensor_pedal_2 = 90,
+        .max_sensor_pedal_1 = 4000,
+        .max_sensor_pedal_2 = 4000,
+        .deadzone_margin = .03,
+        .implausibility_margin = IMPLAUSIBILITY_PERCENT,
+        .mechanical_activation_percentage = 0.05
+    };
+    
+    PedalsParams brake_params = {
+        .min_pedal_1 = EEPROMUtilities::read_eeprom_32bit(BRAKE_1_MIN_ADDR),
+        .min_pedal_2 = EEPROMUtilities::read_eeprom_32bit(BRAKE_2_MIN_ADDR),
+        .max_pedal_1 = EEPROMUtilities::read_eeprom_32bit(BRAKE_1_MAX_ADDR),
+        .max_pedal_2 = EEPROMUtilities::read_eeprom_32bit(BRAKE_2_MAX_ADDR),
+        .activation_percentage = 0.075,
+        .min_sensor_pedal_1 = 90,
+        .min_sensor_pedal_2 = 90,
+        .max_sensor_pedal_1 = 4000,
+        .max_sensor_pedal_2 = 4000,
+        .deadzone_margin = .04,
+        .implausibility_margin = IMPLAUSIBILITY_PERCENT,
+        .mechanical_activation_percentage = 0.5
+    };
+
     PedalsSystemInstance::create(accel_params, brake_params); //pass in the two different params
-    ADCsOnVCFInstance::create(adc_1_scales, adc_1_offsets, adc_2_scales, adc_2_offsets);
     
     // Create dashboard singleton
     DashboardGPIOs_s dashboard_gpios = {
@@ -204,9 +179,9 @@ void setup() {
 
     DashboardInterfaceInstance::create(dashboard_gpios);
     ACUInterfaceInstance::create();
-
+    VCRInterfaceInstance::create();
     // Create can singletons
-    VCFCANInterfaceImpl::CANInterfacesInstance::create(DashboardInterfaceInstance::instance(), ACUInterfaceInstance::instance()); 
+    VCFCANInterfaceImpl::CANInterfacesInstance::create(DashboardInterfaceInstance::instance(), ACUInterfaceInstance::instance(), VCRInterfaceInstance::instance()); 
     auto main_can_recv = etl::delegate<void(CANInterfaces &, const CAN_message_t &, unsigned long)>::create<VCFCANInterfaceImpl::vcf_recv_switch>();
     VCFCANInterfaceImpl::VCFCANInterfaceObjectsInstance::create(main_can_recv, &main_can); // NOLINT (Not sure why it's uninitialized. I think it is.)
 

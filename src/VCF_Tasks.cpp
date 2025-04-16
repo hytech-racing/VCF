@@ -129,6 +129,7 @@ bool init_buzzer_control_task(const unsigned long& sysMicros, const HT_TASK::Tas
 
 bool run_buzzer_control_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
 {
+
     bool buzzer_is_active = BuzzerController::getInstance().buzzer_is_active(sys_time::hal_millis()); //NOLINT
 
     digitalWrite(BUZZER_CONTROL_PIN, buzzer_is_active);
