@@ -57,7 +57,7 @@ HT_TASK::Task kick_watchdog_task(&init_kick_watchdog, &run_kick_watchdog, WATCHD
 HT_TASK::Task pedals_calibration_task(HT_TASK::DUMMY_FUNCTION, &update_pedals_calibration_task, PEDALS_RECALIBRATION_PRIORITY, PEDALS_RECALIBRATION_PERIOD); 
 
 
-bool debug_print(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
+HT_TASK::TaskResponse debug_print(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
 {
     // Serial.println("accel1 raw accel2 raw");
     // Serial.print(VCFData_sInstance::instance().interface_data.pedal_sensor_data.accel_1);
@@ -114,7 +114,7 @@ bool debug_print(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskIn
 
     // Serial.println("jkkjhhkjkjh");
 
-    return true;
+    return HT_TASK::TaskResponse::YIELD;
 }
 
 

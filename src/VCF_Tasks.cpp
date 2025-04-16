@@ -48,9 +48,9 @@
 
 //     ADCsOnVCFInstance::create(adc_1_scales, adc_1_offsets, adc_2_scales, adc_2_offsets);
 
-//     return true;
+//     return HT_TASK::TaskResponse::YIELD;
 // }
-bool run_read_adc1_task()
+HT_TASK::TaskResponse run_read_adc1_task()
 {
     // Samples all eight channels.
     ADCsOnVCFInstance::instance().adc_1.tick();
@@ -61,10 +61,10 @@ bool run_read_adc1_task()
     VCFData_sInstance::instance().interface_data.front_suspot_data.FL_sus_pot_analog = ADCsOnVCFInstance::instance().adc_1.data.conversions[FL_SUS_POT_CHANNEL].raw; // Just use raw for suspots
     VCFData_sInstance::instance().interface_data.front_suspot_data.FR_sus_pot_analog = ADCsOnVCFInstance::instance().adc_1.data.conversions[FR_SUS_POT_CHANNEL].raw; // Just use raw for suspots
 
-    return true;
+    return HT_TASK::TaskResponse::YIELD;
 }
 
-bool run_read_adc2_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
+HT_TASK::TaskResponse run_read_adc2_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
 {
     // Samples all eight channels.
     ADCsOnVCFInstance::instance().adc_2.tick();
@@ -73,24 +73,24 @@ bool run_read_adc2_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo&
     VCFData_sInstance::instance().interface_data.pedal_sensor_data.accel_2 = ADCsOnVCFInstance::instance().adc_2.data.conversions[ACCEL_2_CHANNEL].conversion;
     VCFData_sInstance::instance().interface_data.pedal_sensor_data.brake_1 = ADCsOnVCFInstance::instance().adc_2.data.conversions[BRAKE_1_CHANNEL].conversion;
     VCFData_sInstance::instance().interface_data.pedal_sensor_data.brake_2 = ADCsOnVCFInstance::instance().adc_2.data.conversions[BRAKE_2_CHANNEL].conversion;
-    return true;
+    return HT_TASK::TaskResponse::YIELD;
 }
 
-bool init_kick_watchdog(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
+HT_TASK::TaskResponse init_kick_watchdog(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
 {
     WatchdogInstance::create(WATCHDOG_KICK_INTERVAL_MS); // NOLINT
     pinMode(WATCHDOG_PIN, OUTPUT);
     pinMode(SOFTWARE_OK_PIN, OUTPUT);
-    return true;
+    return HT_TASK::TaskResponse::YIELD;
 }
 
-bool run_kick_watchdog(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo) {
+HT_TASK::TaskResponse run_kick_watchdog(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo) {
     digitalWrite(SOFTWARE_OK_PIN , HIGH);
     digitalWrite(WATCHDOG_PIN, WatchdogInstance::instance().get_watchdog_state(sys_time::hal_millis()));
-    return true;
+    return HT_TASK::TaskResponse::YIELD;
 }
 
-bool update_pedals_calibration_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo) {
+HT_TASK::TaskResponse update_pedals_calibration_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo) {
     // Observed pedal values (ONLY USED FOR RECALIBRATION)
     // WARNING: These are the true min/max observed values, NOT the "value at min travel" and "value at max travel"
     //          that are defined in the PedalsParam struct.
@@ -109,7 +109,7 @@ bool update_pedals_calibration_task(const unsigned long& sysMicros, const HT_TAS
         EEPROMUtilities::write_eeprom_32bit(BRAKE_2_MAX_ADDR, PedalsSystemInstance::instance().get_brake_params().max_pedal_2);
     }
 
-    return true;
+    return HT_TASK::TaskResponse::YIELD;
 }
 
 // bool init_read_gpio_task()
@@ -122,7 +122,7 @@ bool update_pedals_calibration_task(const unsigned long& sysMicros, const HT_TAS
 //     pinMode(BTN_START_READ, INPUT);
 //     pinMode(BTN_DATA_READ, INPUT);
     
-//     return true;
+//     return HT_TASK::TaskResponse::YIELD;
 // }
 // bool run_read_gpio_task()
 // {
@@ -141,30 +141,30 @@ bool update_pedals_calibration_task(const unsigned long& sysMicros, const HT_TAS
 //     vcf_data.interface_data.dash_input_state.start_btn_is_pressed = startButton;
 //     vcf_data.interface_data.dash_input_state.data_btn_is_pressed = dataButton;
 
-//     return true;
+//     return HT_TASK::TaskResponse::YIELD;
 // }
 
-bool init_buzzer_control_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
+HT_TASK::TaskResponse init_buzzer_control_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
 {
     pinMode(BUZZER_CONTROL_PIN, OUTPUT);
 
-    return true;
+    return HT_TASK::TaskResponse::YIELD;
 }
 
-bool run_buzzer_control_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
+HT_TASK::TaskResponse run_buzzer_control_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
 {
 
     bool buzzer_is_active = BuzzerController::getInstance().buzzer_is_active(sys_time::hal_millis()); //NOLINT
 
     digitalWrite(BUZZER_CONTROL_PIN, buzzer_is_active);
     
-    return true;
+    return HT_TASK::TaskResponse::YIELD;
 }
 
 // bool init_handle_send_vcf_ethernet_data() {
 //     VCF_socket.begin(EthernetIPDefsInstance::instance().VCFData_port);
 
-//     return true;
+//     return HT_TASK::TaskResponse::YIELD;
 // }
 // bool run_handle_send_vcf_ethernet_data() {
 //     hytech_msgs_VCFData_s msg = VCFEthernetInterface::make_vcf_data_msg(vcf_data);
@@ -174,7 +174,7 @@ bool run_buzzer_control_task(const unsigned long& sysMicros, const HT_TASK::Task
 //             &VCF_socket, 
 //             msg, 
 //             &hytech_msgs_VCFData_s_msg)) {
-//         return true;
+//         return HT_TASK::TaskResponse::YIELD;
 //     } else {
 //         return false;
 //     }
@@ -183,35 +183,35 @@ bool run_buzzer_control_task(const unsigned long& sysMicros, const HT_TASK::Task
 // bool init_handle_receive_vcr_ethernet_data() {
 //     VCF_socket.begin(EthernetIPDefsInstance::instance().VCFData_port);
 
-//     return true;
+//     return HT_TASK::TaskResponse::YIELD;
 // }
 
 // bool run_handle_receive_vcr_ethernet_data() {
 //     etl::optional<hytech_msgs_VCRData_s> protoc_struct = handle_ethernet_socket_receive<hytech_msgs_VCRData_s_size, hytech_msgs_VCRData_s>(&VCF_socket, &hytech_msgs_VCRData_s_msg);
 //     if (protoc_struct) {
-//         return true;
+//         return HT_TASK::TaskResponse::YIELD;
 //     } else {
 //         return false;
 //     }
 // }
 
 
-bool handle_CAN_send(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
+HT_TASK::TaskResponse handle_CAN_send(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
 {
     VCFCANInterfaceObjects& vcf_interface_objects = VCFCANInterfaceImpl::VCFCANInterfaceObjectsInstance::instance();
     VCFCANInterfaceImpl::send_all_CAN_msgs(vcf_interface_objects.main_can_tx_buffer, vcf_interface_objects.MAIN_CAN);
-    return true;
+    return HT_TASK::TaskResponse::YIELD;
 }
 
-bool handle_CAN_receive(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
+HT_TASK::TaskResponse handle_CAN_receive(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
 {
     VCFCANInterfaceObjects& vcf_interface_objects = VCFCANInterfaceImpl::VCFCANInterfaceObjectsInstance::instance();
     CANInterfaces& vcf_can_interfaces = VCFCANInterfaceImpl::CANInterfacesInstance::instance(); 
     process_ring_buffer(vcf_interface_objects.main_can_rx_buffer, vcf_can_interfaces, sys_time::hal_millis(), vcf_interface_objects.can_recv_switch);
-    return true;
+    return HT_TASK::TaskResponse::YIELD;
 }
 
-bool send_dash_data(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
+HT_TASK::TaskResponse send_dash_data(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
 {   
     CANInterfaces can_interfaces = VCFCANInterfaceImpl::CANInterfacesInstance::instance(); 
     DashInputState_s dash_outputs = can_interfaces.dash_interface.get_dashboard_outputs();
@@ -232,10 +232,10 @@ bool send_dash_data(const unsigned long& sysMicros, const HT_TASK::TaskInfo& tas
     
     CAN_util::enqueue_msg(&msg_out, &Pack_DASH_INPUT_hytech, VCFCANInterfaceImpl::VCFCANInterfaceObjectsInstance::instance().main_can_tx_buffer);
     
-    return true;
+    return HT_TASK::TaskResponse::YIELD;
 }
 
-bool enqueue_front_suspension_data(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo) 
+HT_TASK::TaskResponse enqueue_front_suspension_data(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo) 
 {
     CANInterfaces can_interface = VCFCANInterfaceImpl::CANInterfacesInstance::instance();
     FRONT_SUSPENSION_t msg_out;
@@ -246,9 +246,10 @@ bool enqueue_front_suspension_data(const unsigned long& sysMicros, const HT_TASK
     msg_out.fr_load_cell = VCFData_sInstance::instance().interface_data.front_suspot_data.FR_sus_pot_analog;
 
     CAN_util::enqueue_msg(&msg_out, &Pack_FRONT_SUSPENSION_hytech, VCFCANInterfaceImpl::VCFCANInterfaceObjectsInstance::instance().main_can_tx_buffer);
+    return HT_TASK::TaskResponse::YIELD;
 }
 
-bool enqueue_steering_data(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo) 
+HT_TASK::TaskResponse enqueue_steering_data(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo) 
 {
     CANInterfaces can_interface = VCFCANInterfaceImpl::CANInterfacesInstance::instance();
     STEERING_DATA_t msg_out;
@@ -257,10 +258,11 @@ bool enqueue_steering_data(const unsigned long& sysMicros, const HT_TASK::TaskIn
     msg_out.steering_digital_raw = VCFData_sInstance::instance().interface_data.steering_data.digital_steering_analog;
 
     CAN_util::enqueue_msg(&msg_out, &Pack_STEERING_DATA_hytech, VCFCANInterfaceImpl::VCFCANInterfaceObjectsInstance::instance().main_can_tx_buffer);
+    return HT_TASK::TaskResponse::YIELD;
 }
 
 
-bool run_handle_send_vcf_ethernet_data() {
+HT_TASK::TaskResponse run_handle_send_vcf_ethernet_data() {
     hytech_msgs_VCFData_s msg = VCFEthernetInterface::make_vcf_data_msg(VCFData_sInstance::instance());
     if(handle_ethernet_socket_send_pb<hytech_msgs_VCFData_s_size, hytech_msgs_VCFData_s>
             (EthernetIPDefsInstance::instance().vcr_ip, 
@@ -268,28 +270,23 @@ bool run_handle_send_vcf_ethernet_data() {
             &VCF_socket, 
             msg, 
             &hytech_msgs_VCFData_s_msg)) {
-        return true;
-    } else {
-        return false;
     }
+    return HT_TASK::TaskResponse::YIELD;
 }
 
-bool init_handle_receive_vcr_ethernet_data() {
+HT_TASK::TaskResponse init_handle_receive_vcr_ethernet_data() {
     VCF_socket.begin(EthernetIPDefsInstance::instance().VCFData_port);
 
-    return true;
+    return HT_TASK::TaskResponse::YIELD;
 }
 
-bool run_handle_receive_vcr_ethernet_data() {
+HT_TASK::TaskResponse run_handle_receive_vcr_ethernet_data() {
     etl::optional<hytech_msgs_VCRData_s> protoc_struct = handle_ethernet_socket_receive<hytech_msgs_VCRData_s_size, hytech_msgs_VCRData_s>(&VCF_socket, &hytech_msgs_VCRData_s_msg);
-    if (protoc_struct) {
-        return true;
-    } else {
-        return false;
-    }
+
+    return HT_TASK::TaskResponse::YIELD;
 }
 
-bool enqueue_pedals_data(const unsigned long &sys_micros, const HT_TASK::TaskInfo& task_info)
+HT_TASK::TaskResponse enqueue_pedals_data(const unsigned long &sys_micros, const HT_TASK::TaskInfo& task_info)
 {
     PEDALS_SYSTEM_DATA_t pedals_data = {};
     pedals_data.accel_implausible = VCFData_sInstance::instance().system_data.pedals_system_data.accel_is_implausible;
@@ -307,10 +304,10 @@ bool enqueue_pedals_data(const unsigned long &sys_micros, const HT_TASK::TaskInf
     // Serial.println(pedals_data.brake_pedal_ro);
     // Serial.println(pedals_data.accel_pedal_ro);
     CAN_util::enqueue_msg(&pedals_data, &Pack_PEDALS_SYSTEM_DATA_hytech, VCFCANInterfaceImpl::VCFCANInterfaceObjectsInstance::instance().main_can_tx_buffer);
-    return true;
+    return HT_TASK::TaskResponse::YIELD;
 }
 
-bool run_dash_GPIOs_task(const unsigned long& sys_micros, const HT_TASK::TaskInfo& task_info)
+HT_TASK::TaskResponse run_dash_GPIOs_task(const unsigned long& sys_micros, const HT_TASK::TaskInfo& task_info)
 {
     VCFData_sInstance::instance().interface_data.dash_input_state = DashboardInterfaceInstance::instance().get_dashboard_outputs();
     if (!VCFData_sInstance::instance().interface_data.dash_input_state.preset_btn_is_pressed)
@@ -320,10 +317,10 @@ bool run_dash_GPIOs_task(const unsigned long& sys_micros, const HT_TASK::TaskInf
     // if (VCFData_sInstance::instance().interface_data.dash_input_state.start_btn_is_pressed) { // Test code to ensure buzzer timing works (on benchtop)
     //     BuzzerController::getInstance().activate(sys_micros / 1000);
     // }
-    return true;
+    return HT_TASK::TaskResponse::YIELD;
 }
 
-bool create_ioexpander(const unsigned long& sys_micros, const HT_TASK::TaskInfo& task_info)
+HT_TASK::TaskResponse create_ioexpander(const unsigned long& sys_micros, const HT_TASK::TaskInfo& task_info)
 {
     Wire2.begin();
     IOExpanderInstance::create(0x20, Wire2);
@@ -339,10 +336,10 @@ bool create_ioexpander(const unsigned long& sys_micros, const HT_TASK::TaskInfo&
 
     IOExpanderInstance::instance().writeRegister(MCP23017Register::IPOL_B, 0xFF);  //Polarity (inverted)
 
-    return true;
+    return HT_TASK::TaskResponse::YIELD;
 }
 
-bool read_ioexpander(const unsigned long& sys_micros, const HT_TASK::TaskInfo& task_info)
+HT_TASK::TaskResponse read_ioexpander(const unsigned long& sys_micros, const HT_TASK::TaskInfo& task_info)
 {
     uint16_t in = IOExpanderInstance::instance().read();
     // for (int i = 0; i < 8; ++i) {
@@ -405,20 +402,20 @@ bool read_ioexpander(const unsigned long& sys_micros, const HT_TASK::TaskInfo& t
         }
     }
 
-    return true;
+    return HT_TASK::TaskResponse::YIELD;
 }
 
-bool init_neopixels_task(const unsigned long& sys_micros, const HT_TASK::TaskInfo& task_info)
+HT_TASK::TaskResponse init_neopixels_task(const unsigned long& sys_micros, const HT_TASK::TaskInfo& task_info)
 {
     NeopixelControllerInstance::create(NEOPIXEL_COUNT, NEOPIXEL_CONTROL_PIN);
     NeopixelControllerInstance::instance().init_neopixels();
-    return true;
+    return HT_TASK::TaskResponse::YIELD;
 }
 
-bool run_update_neopixels_task(const unsigned long& sys_micros, const HT_TASK::TaskInfo& task_info)
+HT_TASK::TaskResponse run_update_neopixels_task(const unsigned long& sys_micros, const HT_TASK::TaskInfo& task_info)
 {
     NeopixelControllerInstance::instance().refresh_neopixels(VCFData_sInstance::instance(), VCRData_sInstance::instance(), VCFCANInterfaceImpl::CANInterfacesInstance::instance());
-    return true;
+    return HT_TASK::TaskResponse::YIELD;
 }
 
 namespace async_tasks 
@@ -437,12 +434,12 @@ namespace async_tasks
         
         handle_async_CAN_receive();
     }
-    bool handle_async_main(const unsigned long& sys_micros, const HT_TASK::TaskInfo& task_info)
+    HT_TASK::TaskResponse handle_async_main(const unsigned long& sys_micros, const HT_TASK::TaskInfo& task_info)
     {
         handle_async_recvs();
         // Serial.println("test");
         VCFData_sInstance::instance().system_data.pedals_system_data = PedalsSystemInstance::instance().evaluate_pedals(VCFData_sInstance::instance().interface_data.pedal_sensor_data, sys_time::hal_millis());
         // Serial.println(VCFData_sInstance::instance().system_data.pedals_system_data.accel_percent);
-        return true;
+        return HT_TASK::TaskResponse::YIELD;
     }
 };
