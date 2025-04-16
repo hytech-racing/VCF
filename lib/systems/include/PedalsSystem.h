@@ -73,6 +73,58 @@ public:
     ///        returns all of the pedals system data.
     PedalsSystemData_s evaluate_pedals(PedalSensorData_s pedal_data, unsigned long curr_millis);
 
+    PedalsParams get_accel_params() {return _accelParams;}
+    PedalsParams get_brake_params() {return _brakeParams;}
+
+    /**
+     * This is a way to force-update the calibrated min/max values.
+     * WARNING: This should only be called when driver holds the button!
+     * WARNING: This requires both pedals to be near 0% travel!
+     */
+    void recalibrate_min_max(PedalSensorData_s &curr_values)
+    {
+        // If pedal is near 0% travel and is closer to the observed max, then this sensor is a negative coefficient.
+        bool accel_1_flipped = std::abs((int) curr_values.accel_1 - (int) max_observed_accel_1) < std::abs((int) curr_values.accel_1 - (int) min_observed_accel_1);
+        bool accel_2_flipped = std::abs((int) curr_values.accel_2 - (int) max_observed_accel_2) < std::abs((int) curr_values.accel_2 - (int) min_observed_accel_2);
+        bool brake_1_flipped = std::abs((int) curr_values.brake_1 - (int) max_observed_brake_1) < std::abs((int) curr_values.brake_1 - (int) min_observed_brake_1);
+        bool brake_2_flipped = std::abs((int) curr_values.brake_2 - (int) max_observed_brake_2) < std::abs((int) curr_values.brake_2 - (int) min_observed_brake_2);
+
+        _accelParams.min_pedal_1 = accel_1_flipped ? max_observed_accel_1 : min_observed_accel_1;
+        _accelParams.max_pedal_1 = accel_1_flipped ? min_observed_accel_1 : max_observed_accel_1;
+        _accelParams.min_pedal_2 = accel_2_flipped ? max_observed_accel_2 : min_observed_accel_2;
+        _accelParams.max_pedal_2 = accel_2_flipped ? min_observed_accel_2 : max_observed_accel_2;
+        _brakeParams.min_pedal_1 = brake_1_flipped ? max_observed_brake_1 : min_observed_brake_1;
+        _brakeParams.max_pedal_1 = brake_1_flipped ? min_observed_brake_1 : max_observed_brake_1;
+        _brakeParams.min_pedal_2 = brake_2_flipped ? max_observed_brake_2 : min_observed_brake_2;
+        _brakeParams.max_pedal_2 = brake_2_flipped ? min_observed_brake_2 : max_observed_brake_2;
+    }
+
+    /**
+     * From code startup, the PedalsSystem should constantly update what its observed max/min
+     * values are. When the driver triggers a pedal recalibration, these values will be written
+     * to non-volatile memory (EEPROM). This should be called constantly to update the
+     * observation.
+     */
+    void update_observed_pedal_limits(PedalSensorData_s &curr_values)
+    {
+        min_observed_accel_1 = std::min(min_observed_accel_1, curr_values.accel_1);
+        max_observed_accel_1 = std::min(max_observed_accel_1, curr_values.accel_1);
+        min_observed_accel_2 = std::min(min_observed_accel_2, curr_values.accel_2);
+        max_observed_accel_2 = std::min(max_observed_accel_2, curr_values.accel_2);
+        min_observed_brake_1 = std::min(min_observed_brake_1, curr_values.brake_1);
+        max_observed_brake_1 = std::min(max_observed_brake_1, curr_values.brake_1);
+        min_observed_brake_2 = std::min(min_observed_brake_2, curr_values.brake_2);
+        max_observed_brake_2 = std::min(max_observed_brake_2, curr_values.brake_2);
+    }
+    uint32_t min_observed_accel_1 = 4096;
+    uint32_t max_observed_accel_1 = 0;
+    uint32_t min_observed_accel_2 = 4095;
+    uint32_t max_observed_accel_2 = 0;
+    uint32_t min_observed_brake_1 = 4095;
+    uint32_t max_observed_brake_1 = 0;
+    uint32_t min_observed_brake_2 = 4095;
+    uint32_t max_observed_brake_2 = 0;
+
 private:
     /// @brief function to determine the percentage of pedal pressed
     /// @param pedal1val the value of the first pedal without deadzone removed (analog 0-4095)

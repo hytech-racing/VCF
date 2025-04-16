@@ -110,7 +110,10 @@ constexpr unsigned long LOADCELL_SEND_PERIOD = 100000;        // 100,000 us = 10
 constexpr unsigned long LOADCELL_SEND_PRIORITY = 25;
 
 constexpr unsigned long WATCHDOG_PRIORITY = 1;
-constexpr unsigned long WATCHDOG_KICK_PERIOD = 1000; // 100 us = 10000 Hz
+constexpr unsigned long WATCHDOG_KICK_PERIOD = 1000; // 1000 us = 1000 Hz
+
+constexpr unsigned long PEDALS_RECALIBRATION_PRIORITY = 150;
+constexpr unsigned long PEDALS_RECALIBRATION_PERIOD = 100000; // 100 000 us = 10 Hz
 
 
 constexpr int WATCHDOG_PIN = 33;

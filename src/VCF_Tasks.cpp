@@ -4,11 +4,13 @@
 #include "VCF_Constants.h"
 #include <QNEthernet.h>
 #include "ProtobufMsgInterface.h"
+#include "EEPROMUtilities.h"
 #include "ht_task.hpp"
 #include "hytech.h"
 #include "hytech_msgs.pb.h"
 #include "VCFCANInterfaceImpl.h"
 #include "CANInterface.h"
+#include "VCRInterface.h"
 #include "SystemTimeInterface.h"
 #include "PedalsSystem.h"
 #include "WatchdogSystem.h"
@@ -85,6 +87,29 @@ bool init_kick_watchdog(const unsigned long& sysMicros, const HT_TASK::TaskInfo&
 bool run_kick_watchdog(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo) {
     digitalWrite(SOFTWARE_OK_PIN , HIGH);
     digitalWrite(WATCHDOG_PIN, WatchdogInstance::instance().get_watchdog_state(sys_time::hal_millis()));
+    return true;
+}
+
+bool update_pedals_calibration_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo) {
+
+    // Observed pedal values (ONLY USED FOR RECALIBRATION)
+    // WARNING: These are the true min/max observed values, NOT the "value at min travel" and "value at max travel"
+    //          that are defined in the PedalsParam struct.
+    PedalsSystemInstance::instance().update_observed_pedal_limits(VCFData_sInstance::instance().interface_data.pedal_sensor_data);
+
+    if (VCRInterfaceInstance::instance().is_in_pedals_calibration_state())
+    {
+        PedalsSystemInstance::instance().recalibrate_min_max(VCFData_sInstance::instance().interface_data.pedal_sensor_data);
+        EEPROMUtilities::write_eeprom_32bit(ACCEL_1_MIN_ADDR, PedalsSystemInstance::instance().get_accel_params().min_pedal_1);
+        EEPROMUtilities::write_eeprom_32bit(ACCEL_1_MAX_ADDR, PedalsSystemInstance::instance().get_accel_params().max_pedal_1);
+        EEPROMUtilities::write_eeprom_32bit(ACCEL_2_MIN_ADDR, PedalsSystemInstance::instance().get_accel_params().min_pedal_2);
+        EEPROMUtilities::write_eeprom_32bit(ACCEL_2_MAX_ADDR, PedalsSystemInstance::instance().get_accel_params().max_pedal_2);
+        EEPROMUtilities::write_eeprom_32bit(BRAKE_1_MIN_ADDR, PedalsSystemInstance::instance().get_brake_params().min_pedal_1);
+        EEPROMUtilities::write_eeprom_32bit(BRAKE_1_MAX_ADDR, PedalsSystemInstance::instance().get_brake_params().max_pedal_1);
+        EEPROMUtilities::write_eeprom_32bit(BRAKE_2_MIN_ADDR, PedalsSystemInstance::instance().get_brake_params().min_pedal_2);
+        EEPROMUtilities::write_eeprom_32bit(BRAKE_2_MAX_ADDR, PedalsSystemInstance::instance().get_brake_params().max_pedal_2);
+    }
+
     return true;
 }
 
