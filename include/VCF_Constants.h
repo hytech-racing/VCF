@@ -109,11 +109,11 @@ constexpr unsigned long LOADCELL_SEND_PERIOD = 100000;        // 100,000 us = 10
 constexpr unsigned long LOADCELL_SEND_PRIORITY = 25;
 
 constexpr unsigned long WATCHDOG_PRIORITY = 1;
-constexpr unsigned long WATCHDOG_KICK_PERIOD = 100; // 100 us = 10000 Hz
+constexpr unsigned long WATCHDOG_KICK_PERIOD = 1000; // 100 us = 10000 Hz
 
 
 constexpr int WATCHDOG_PIN = 33;
-constexpr int SOFTWARE_OK_PIN = 39; // Watchdog's !RESET pin
-constexpr unsigned long WATCHDOG_KICK_INTERVAL_MS = 10UL;
+constexpr int SOFTWARE_OK_PIN = 34; // Watchdog's !RESET pin
+constexpr unsigned long WATCHDOG_KICK_INTERVAL_MS = 10000UL;
 
 #endif /* VCF_CONSTANTS */

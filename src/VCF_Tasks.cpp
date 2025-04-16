@@ -78,14 +78,15 @@ bool init_kick_watchdog(const unsigned long& sysMicros, const HT_TASK::TaskInfo&
 {
     WatchdogInstance::create(WATCHDOG_KICK_INTERVAL_MS); // NOLINT
     pinMode(WATCHDOG_PIN, OUTPUT);
+    pinMode(SOFTWARE_OK_PIN, OUTPUT);
     return true;
 }
 
-// bool run_kick_watchdog(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
-// {
-//     digitalWrite(WATCHDOG_PIN, WatchdogInstance::instance().get_watchdog_state(sys_time::hal_millis()));
-//     return true;
-// }
+bool run_kick_watchdog(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo) {
+    digitalWrite(SOFTWARE_OK_PIN , HIGH);
+    digitalWrite(WATCHDOG_PIN, WatchdogInstance::instance().get_watchdog_state(sys_time::hal_millis()));
+    return true;
+}
 
 // bool init_read_gpio_task()
 // {
@@ -123,13 +124,6 @@ bool init_buzzer_control_task(const unsigned long& sysMicros, const HT_TASK::Tas
 {
     pinMode(BUZZER_CONTROL_PIN, OUTPUT);
 
-    return true;
-}
-
-bool run_kick_watchdog(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo) {
-    digitalWrite(34 , HIGH);
-    digitalWrite(33, WatchdogInstance::instance().get_watchdog_state(sys_time::hal_millis()));
-    // Serial.println("Watchdog kicked!");
     return true;
 }
 
