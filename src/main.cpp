@@ -157,11 +157,6 @@ bool debug_print(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskIn
 HT_TASK::Task debug_state_print_task(HT_TASK::DUMMY_FUNCTION, debug_print, DEBUG_PRIORITY, DEBUG_PERIOD);
 
 void setup() {
-    pinMode(33, OUTPUT);
-    pinMode(34, OUTPUT);
-    digitalWrite(33, WatchdogInstance::instance().get_watchdog_state(sys_time::hal_millis()));
-    digitalWrite(34 , HIGH);
-
 
     SPI.begin();
     Serial.begin(115200); // NOLINT
