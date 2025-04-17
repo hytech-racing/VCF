@@ -227,6 +227,7 @@ HT_TASK::TaskResponse send_dash_data(const unsigned long& sysMicros, const HT_TA
     msg_out.left_shifter_button = dash_outputs.left_paddle_is_pressed;
     msg_out.right_shifter_button = dash_outputs.right_paddle_is_pressed;   
     msg_out.led_dimmer_button = dash_outputs.dim_btn_is_pressed; 
+    msg_out.dash_dial_mode = static_cast<int>(VCFData_sInstance::instance().interface_data.dash_input_state.dial_state);
 
 //    Serial.printf("%d %d %d %d %d %d %d %d\n", msg_out.preset_button, msg_out.motor_controller_cycle_button, msg_out.mode_button, msg_out.start_button, msg_out.data_button_is_pressed, msg_out.left_shifter_button, msg_out.right_shifter_button, msg_out.led_dimmer_button);
     
