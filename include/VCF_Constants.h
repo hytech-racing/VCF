@@ -118,7 +118,7 @@ constexpr unsigned long PEDALS_RECALIBRATION_PERIOD = 100000; // 100 000 us = 10
 
 constexpr int WATCHDOG_PIN = 33;
 constexpr int SOFTWARE_OK_PIN = 34; // Watchdog's !RESET pin
-constexpr unsigned long WATCHDOG_KICK_INTERVAL_MS = 10000UL;
+constexpr unsigned long WATCHDOG_KICK_INTERVAL_MS = 10UL;
 
 /* -------------------------------------------------- */
 /*                EEPROM value addresses              */
