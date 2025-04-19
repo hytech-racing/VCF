@@ -46,7 +46,7 @@
  * function relies on adc_1 being defined in VCFGlobals.h.
  */
 HT_TASK::TaskResponse init_adc_task();
-HT_TASK::TaskResponse run_read_adc1_task();
+HT_TASK::TaskResponse run_read_adc1_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
 
 HT_TASK::TaskResponse run_kick_watchdog(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
 

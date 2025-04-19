@@ -50,7 +50,7 @@
 
 //     return HT_TASK::TaskResponse::YIELD;
 // }
-HT_TASK::TaskResponse run_read_adc1_task()
+HT_TASK::TaskResponse run_read_adc1_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
 {
     // Samples all eight channels.
     ADCsOnVCFInstance::instance().adc_1.tick();
@@ -58,8 +58,8 @@ HT_TASK::TaskResponse run_read_adc1_task()
     VCFData_sInstance::instance().interface_data.steering_data.analog_steering_degrees = ADCsOnVCFInstance::instance().adc_1.data.conversions[STEERING_1_CHANNEL].conversion; // Only using steering 1 for now
     VCFData_sInstance::instance().interface_data.front_loadcell_data.FL_loadcell_analog = ADCsOnVCFInstance::instance().adc_1.data.conversions[FL_LOADCELL_CHANNEL].conversion;
     VCFData_sInstance::instance().interface_data.front_loadcell_data.FR_loadcell_analog = ADCsOnVCFInstance::instance().adc_1.data.conversions[FR_LOADCELL_CHANNEL].conversion;
-    VCFData_sInstance::instance().interface_data.front_suspot_data.FL_sus_pot_analog = ADCsOnVCFInstance::instance().adc_1.data.conversions[FL_SUS_POT_CHANNEL].raw; // Just use raw for suspots
-    VCFData_sInstance::instance().interface_data.front_suspot_data.FR_sus_pot_analog = ADCsOnVCFInstance::instance().adc_1.data.conversions[FR_SUS_POT_CHANNEL].raw; // Just use raw for suspots
+    VCFData_sInstance::instance().interface_data.front_suspot_data.FL_sus_pot_analog = ADCsOnVCFInstance::instance().adc_1.data.conversions[FL_SUS_POT_CHANNEL].conversion; // Just use raw for suspots
+    VCFData_sInstance::instance().interface_data.front_suspot_data.FR_sus_pot_analog = ADCsOnVCFInstance::instance().adc_1.data.conversions[FR_SUS_POT_CHANNEL].conversion; // Just use raw for suspots
 
     return HT_TASK::TaskResponse::YIELD;
 }
