@@ -252,7 +252,6 @@ HT_TASK::TaskResponse enqueue_front_suspension_data(const unsigned long& sysMicr
 
 HT_TASK::TaskResponse enqueue_steering_data(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo) 
 {
-    CANInterfaces can_interface = VCFCANInterfaceImpl::CANInterfacesInstance::instance();
     STEERING_DATA_t msg_out;
 
     msg_out.steering_analog_raw = VCFData_sInstance::instance().interface_data.steering_data.analog_steering_degrees;
