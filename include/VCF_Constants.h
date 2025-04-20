@@ -106,7 +106,7 @@ constexpr unsigned long NEOPIXEL_UPDATE_PERIOD = 100000;             // 100,000 
 constexpr unsigned long STEERING_SEND_PERIOD = 100000;        // 100,000 us = 10 Hz
 constexpr unsigned long STEERING_SEND_PRIORITY = 25;
 
-constexpr unsigned long LOADCELL_SEND_PERIOD = 100000;        // 100,000 us = 10 Hz
+constexpr unsigned long LOADCELL_SEND_PERIOD = 4000;        // 100,000 us = 10 Hz
 constexpr unsigned long LOADCELL_SEND_PRIORITY = 25;
 
 constexpr unsigned long WATCHDOG_PRIORITY = 1;
