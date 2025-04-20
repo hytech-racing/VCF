@@ -52,7 +52,7 @@ HT_TASK::Task read_ioexpander_task(&create_ioexpander, &read_ioexpander, DASH_SA
 HT_TASK::Task neopixels_task(&init_neopixels_task, &run_update_neopixels_task, NEOPIXEL_UPDATE_PRIORITY, NEOPIXEL_UPDATE_PERIOD);
 
 HT_TASK::Task steering_message_enqueue(HT_TASK::DUMMY_FUNCTION, &enqueue_steering_data, STEERING_SEND_PRIORITY, STEERING_SEND_PERIOD);
-HT_TASK::Task loadcell_message_enqueue(HT_TASK::DUMMY_FUNCTION, &enqueue_front_suspension_data, LOADCELL_SEND_PRIORITY, LOADCELL_SEND_PERIOD);
+HT_TASK::Task front_suspension_message_enqueue(HT_TASK::DUMMY_FUNCTION, &enqueue_front_suspension_data, LOADCELL_SEND_PRIORITY, LOADCELL_SEND_PERIOD);
 
 HT_TASK::Task kick_watchdog_task(&init_kick_watchdog, &run_kick_watchdog, WATCHDOG_PRIORITY, WATCHDOG_KICK_PERIOD); 
 HT_TASK::Task pedals_calibration_task(HT_TASK::DUMMY_FUNCTION, &update_pedals_calibration_task, PEDALS_RECALIBRATION_PRIORITY, PEDALS_RECALIBRATION_PERIOD); 
@@ -239,8 +239,8 @@ void setup() {
     HT_SCHED::Scheduler::getInstance().schedule(read_dash_GPIOs_task);
     HT_SCHED::Scheduler::getInstance().schedule(read_ioexpander_task);
     HT_SCHED::Scheduler::getInstance().schedule(neopixels_task);
-    // HT_SCHED::Scheduler::getInstance().schedule(steering_message_enqueue);
-    // HT_SCHED::Scheduler::getInstance().schedule(loadcell_message_enqueue);
+    HT_SCHED::Scheduler::getInstance().schedule(steering_message_enqueue);
+    HT_SCHED::Scheduler::getInstance().schedule(front_suspension_message_enqueue);
     HT_SCHED::Scheduler::getInstance().schedule(debug_state_print_task);
     HT_SCHED::Scheduler::getInstance().schedule(pedals_calibration_task);
 }
