@@ -143,8 +143,8 @@ void setup() {
     adc_1_offsets[STEERING_1_CHANNEL] = STEERING_1_OFFSET;
     adc_1_scales[STEERING_2_CHANNEL] = STEERING_2_SCALE;
     adc_1_offsets[STEERING_2_CHANNEL] = STEERING_2_OFFSET;
-    adc_1_scales[FR_SUS_POT_CHANNEL] = FL_SUS_POT_SCALE; //changed to maybe fix the derate thing
-    adc_1_offsets[FR_SUS_POT_CHANNEL] = FL_SUS_POT_OFFSET; //changed to maybe fix the derate thing
+    adc_1_scales[FR_SUS_POT_CHANNEL] = FR_SUS_POT_SCALE;
+    adc_1_offsets[FR_SUS_POT_CHANNEL] = FR_SUS_POT_OFFSET; 
     adc_1_scales[FL_SUS_POT_CHANNEL] = FL_SUS_POT_SCALE;
     adc_1_offsets[FL_SUS_POT_CHANNEL] = FL_SUS_POT_OFFSET;
     adc_1_scales[FR_LOADCELL_CHANNEL] = FR_LOADCELL_SCALE;
