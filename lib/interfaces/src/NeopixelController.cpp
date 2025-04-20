@@ -37,8 +37,8 @@ void NeopixelController::refresh_neopixels(VCFData_s &vcf_data, VCRData_s &vcr_d
         set_neopixel_color(LED_ID_e::INERTIA, LED_color_e::RED);
         set_neopixel_color(LED_ID_e::COCKPIT_BRB, LED_color_e::RED);
         set_neopixel_color(LED_ID_e::BOTS, LED_color_e::RED);
-        set_neopixel_color(LED_ID_e::IMD, LED_color_e::RED);
-        set_neopixel_color(LED_ID_e::BMS, LED_color_e::RED);
+        // set_neopixel_color(LED_ID_e::IMD, LED_color_e::RED);
+        // set_neopixel_color(LED_ID_e::BMS, LED_color_e::RED);
         set_neopixel_color(LED_ID_e::MC_ERR, LED_color_e::RED);
         set_neopixel_color(LED_ID_e::RDY_DRIVE, LED_color_e::RED);
         set_neopixel_color(LED_ID_e::GLV, LED_color_e::RED);
