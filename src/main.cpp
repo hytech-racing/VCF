@@ -44,6 +44,7 @@ HT_TASK::Task async_main(HT_TASK::DUMMY_FUNCTION, &async_tasks::handle_async_mai
 HT_TASK::Task CAN_send(HT_TASK::DUMMY_FUNCTION, &handle_CAN_send, CAN_SEND_PRIORITY, CAN_SEND_PERIOD);
 HT_TASK::Task dash_CAN_enqueue(HT_TASK::DUMMY_FUNCTION, &send_dash_data, DASH_SEND_PRIORITY, DASH_SEND_PERIOD);
 HT_TASK::Task pedals_message_enqueue(HT_TASK::DUMMY_FUNCTION, &enqueue_pedals_data, PEDALS_PRIORITY, PEDALS_SAMPLE_PERIOD);
+HT_TASK::Task adc1_sample(HT_TASK::DUMMY_FUNCTION, &run_read_adc1_task, LOADCELL_SEND_PRIORITY, LOADCELL_SEND_PERIOD);
 HT_TASK::Task pedals_sample(HT_TASK::DUMMY_FUNCTION, &run_read_adc2_task, PEDALS_PRIORITY, PEDALS_SEND_PERIOD);
 HT_TASK::Task buzzer_control_task(&init_buzzer_control_task, &run_buzzer_control_task, BUZZER_PRIORITY, BUZZER_WRITE_PERIOD);
 HT_TASK::Task read_dash_GPIOs_task(HT_TASK::DUMMY_FUNCTION, &run_dash_GPIOs_task, DASH_SAMPLE_PRIORITY, DASH_SAMPLE_PERIOD);
@@ -51,7 +52,7 @@ HT_TASK::Task read_ioexpander_task(&create_ioexpander, &read_ioexpander, DASH_SA
 HT_TASK::Task neopixels_task(&init_neopixels_task, &run_update_neopixels_task, NEOPIXEL_UPDATE_PRIORITY, NEOPIXEL_UPDATE_PERIOD);
 
 HT_TASK::Task steering_message_enqueue(HT_TASK::DUMMY_FUNCTION, &enqueue_steering_data, STEERING_SEND_PRIORITY, STEERING_SEND_PERIOD);
-HT_TASK::Task loadcell_message_enqueue(HT_TASK::DUMMY_FUNCTION, &enqueue_front_suspension_data, LOADCELL_SEND_PRIORITY, LOADCELL_SEND_PERIOD);
+HT_TASK::Task front_suspension_message_enqueue(HT_TASK::DUMMY_FUNCTION, &enqueue_front_suspension_data, LOADCELL_SEND_PRIORITY, LOADCELL_SEND_PERIOD);
 
 HT_TASK::Task kick_watchdog_task(&init_kick_watchdog, &run_kick_watchdog, WATCHDOG_PRIORITY, WATCHDOG_KICK_PERIOD); 
 HT_TASK::Task pedals_calibration_task(HT_TASK::DUMMY_FUNCTION, &update_pedals_calibration_task, PEDALS_RECALIBRATION_PRIORITY, PEDALS_RECALIBRATION_PERIOD); 
@@ -77,28 +78,38 @@ HT_TASK::TaskResponse debug_print(const unsigned long& sysMicros, const HT_TASK:
     Serial.println("implaus");
     Serial.println(VCFData_sInstance::instance().system_data.pedals_system_data.implausibility_has_exceeded_max_duration);
 
-    Serial.println("accel 1 min/max");
-    Serial.print(PedalsSystemInstance::instance().get_accel_params().min_pedal_1);
-    Serial.print("   ");
-    Serial.print(PedalsSystemInstance::instance().get_accel_params().max_pedal_1);
-    Serial.println();
-    Serial.println("accel 2 min/max");
-    Serial.print(PedalsSystemInstance::instance().get_accel_params().min_pedal_2);
-    Serial.print("   ");
-    Serial.print(PedalsSystemInstance::instance().get_accel_params().max_pedal_2);
-    Serial.println();
-    Serial.println("brake 1 min/max");
-    Serial.print(PedalsSystemInstance::instance().get_brake_params().min_pedal_1);
-    Serial.print("   ");
-    Serial.print(PedalsSystemInstance::instance().get_brake_params().max_pedal_1);
-    Serial.println();
-    Serial.println("brake 2 min/max");
-    Serial.print(PedalsSystemInstance::instance().get_brake_params().min_pedal_2);
-    Serial.print("   ");
-    Serial.print(PedalsSystemInstance::instance().get_brake_params().max_pedal_2);
-    Serial.println();
+    // Serial.println("accel 1 min/max");
+    // Serial.print(PedalsSystemInstance::instance().get_accel_params().min_pedal_1);
+    // Serial.print("   ");
+    // Serial.print(PedalsSystemInstance::instance().get_accel_params().max_pedal_1);
+    // Serial.println();
+    // Serial.println("accel 2 min/max");
+    // Serial.print(PedalsSystemInstance::instance().get_accel_params().min_pedal_2);
+    // Serial.print("   ");
+    // Serial.print(PedalsSystemInstance::instance().get_accel_params().max_pedal_2);
+    // Serial.println();
+    // Serial.println("brake 1 min/max");
+    // Serial.print(PedalsSystemInstance::instance().get_brake_params().min_pedal_1);
+    // Serial.print("   ");
+    // Serial.print(PedalsSystemInstance::instance().get_brake_params().max_pedal_1);
+    // Serial.println();
+    // Serial.println("brake 2 min/max");
+    // Serial.print(PedalsSystemInstance::instance().get_brake_params().min_pedal_2);
+    // Serial.print("   ");
+    // Serial.print(PedalsSystemInstance::instance().get_brake_params().max_pedal_2);
+    // Serial.println();
     Serial.println();
     
+    Serial.print("Load Cell FR:  ");
+    Serial.println(VCFData_sInstance::instance().interface_data.front_loadcell_data.FR_loadcell_analog);
+    Serial.print("Load Cell FL:  ");
+    Serial.println(VCFData_sInstance::instance().interface_data.front_loadcell_data.FL_loadcell_analog);
+    Serial.print("Suspot FR:  ");
+    Serial.println(VCFData_sInstance::instance().interface_data.front_suspot_data.FR_sus_pot_analog);
+    Serial.print("Suspot FL:  ");
+    Serial.println(VCFData_sInstance::instance().interface_data.front_suspot_data.FL_sus_pot_analog);
+    
+
     // Serial.print("Dim button: ");
     // Serial.println(VCFData_sInstance::instance().interface_data.dash_input_state.dim_btn_is_pressed);
     // Serial.print("preset button: ");
@@ -133,7 +144,7 @@ void setup() {
     adc_1_scales[STEERING_2_CHANNEL] = STEERING_2_SCALE;
     adc_1_offsets[STEERING_2_CHANNEL] = STEERING_2_OFFSET;
     adc_1_scales[FR_SUS_POT_CHANNEL] = FR_SUS_POT_SCALE;
-    adc_1_offsets[FR_SUS_POT_CHANNEL] = FR_SUS_POT_OFFSET;
+    adc_1_offsets[FR_SUS_POT_CHANNEL] = FR_SUS_POT_OFFSET; 
     adc_1_scales[FL_SUS_POT_CHANNEL] = FL_SUS_POT_SCALE;
     adc_1_offsets[FL_SUS_POT_CHANNEL] = FL_SUS_POT_OFFSET;
     adc_1_scales[FR_LOADCELL_CHANNEL] = FR_LOADCELL_SCALE;
@@ -223,12 +234,13 @@ void setup() {
     HT_SCHED::Scheduler::getInstance().schedule(dash_CAN_enqueue);
     HT_SCHED::Scheduler::getInstance().schedule(buzzer_control_task);
     HT_SCHED::Scheduler::getInstance().schedule(pedals_message_enqueue);
+    HT_SCHED::Scheduler::getInstance().schedule(adc1_sample);
     HT_SCHED::Scheduler::getInstance().schedule(pedals_sample);
     HT_SCHED::Scheduler::getInstance().schedule(read_dash_GPIOs_task);
     HT_SCHED::Scheduler::getInstance().schedule(read_ioexpander_task);
     HT_SCHED::Scheduler::getInstance().schedule(neopixels_task);
-    // HT_SCHED::Scheduler::getInstance().schedule(steering_message_enqueue);
-    // HT_SCHED::Scheduler::getInstance().schedule(loadcell_message_enqueue);
+    HT_SCHED::Scheduler::getInstance().schedule(steering_message_enqueue);
+    HT_SCHED::Scheduler::getInstance().schedule(front_suspension_message_enqueue);
     HT_SCHED::Scheduler::getInstance().schedule(debug_state_print_task);
     HT_SCHED::Scheduler::getInstance().schedule(pedals_calibration_task);
 }

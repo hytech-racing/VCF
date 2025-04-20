@@ -56,10 +56,10 @@ constexpr float STEERING_2_SCALE = 0.02197265f; // TODO: Figure out if steering 
 constexpr float STEERING_2_OFFSET = 0;
 // Scale for steering sensor = 0.02197265 . Offset has to be mechanically determined
 
-constexpr float FR_LOADCELL_SCALE = 0.1149f; //Values are from the old MCU rev15 // TODO: Calibrate load cells
-constexpr float FR_LOADCELL_OFFSET = 13.526f / FR_LOADCELL_SCALE;
-constexpr float FL_LOADCELL_SCALE = 0.118f;
-constexpr float FL_LOADCELL_OFFSET = 25.721f / FL_LOADCELL_SCALE;
+constexpr float FR_LOADCELL_SCALE = 1; //Values are from the old MCU rev15 // TODO: Calibrate load cells
+constexpr float FR_LOADCELL_OFFSET = 0 / FR_LOADCELL_SCALE;
+constexpr float FL_LOADCELL_SCALE = 1;
+constexpr float FL_LOADCELL_OFFSET = 0 / FL_LOADCELL_SCALE;
 constexpr float FR_SUS_POT_SCALE = 1;
 constexpr float FR_SUS_POT_OFFSET = 0;
 constexpr float FL_SUS_POT_SCALE = 1;
@@ -82,35 +82,35 @@ constexpr float BRAKE_2_OFFSET = 0;
 constexpr unsigned long MAIN_TASK_PRIORITY = 5;
 
 constexpr unsigned long CAN_SEND_PRIORITY = 10;
-constexpr unsigned long CAN_SEND_PERIOD = 2000;
+constexpr unsigned long CAN_SEND_PERIOD = 2000;               // 2 000 us = 500 Hz
 
-constexpr unsigned long PEDALS_SEND_PERIOD = 3000;        // 3 000 us = 333 Hz
-constexpr unsigned long PEDALS_SAMPLE_PERIOD = 500;       // 500 us = 2 kHz
+constexpr unsigned long PEDALS_SEND_PERIOD = 3000;            // 3 000 us = 333 Hz
+constexpr unsigned long PEDALS_SAMPLE_PERIOD = 500;           // 500 us = 2 kHz
 constexpr unsigned long PEDALS_PRIORITY = 5;
 
-constexpr unsigned long BUZZER_WRITE_PERIOD = 100000;     // 100 000 us = 10 Hz
+constexpr unsigned long BUZZER_WRITE_PERIOD = 100000;         // 100 000 us = 10 Hz
 constexpr unsigned long BUZZER_PRIORITY = 20;
 
-constexpr unsigned long DASH_SAMPLE_PERIOD = 100000;     // 100 000 us = 10 Hz
+constexpr unsigned long DASH_SAMPLE_PERIOD = 100000;          // 100 000 us = 10 Hz
 constexpr unsigned long DASH_SAMPLE_PRIORITY = 21;
 
-constexpr unsigned long DASH_SEND_PERIOD = 100000;        // 100,000 us = 10 Hz
+constexpr unsigned long DASH_SEND_PERIOD = 100000;            // 100,000 us = 10 Hz
 constexpr unsigned long DASH_SEND_PRIORITY = 7;
 
 constexpr unsigned long DEBUG_PRIORITY = 100;
-constexpr unsigned long DEBUG_PERIOD = 10000;             // 500,000 us = 2 Hz
+constexpr unsigned long DEBUG_PERIOD = 10000;                 // 500,000 us = 2 Hz
 
 constexpr unsigned long NEOPIXEL_UPDATE_PRIORITY = 90;
-constexpr unsigned long NEOPIXEL_UPDATE_PERIOD = 100000;             // 100,000 us = 10 Hz
+constexpr unsigned long NEOPIXEL_UPDATE_PERIOD = 100000;      // 100,000 us = 10 Hz
 
-constexpr unsigned long STEERING_SEND_PERIOD = 100000;        // 100,000 us = 10 Hz
+constexpr unsigned long STEERING_SEND_PERIOD = 4000;          // 4,000 us = 250 Hz
 constexpr unsigned long STEERING_SEND_PRIORITY = 25;
 
-constexpr unsigned long LOADCELL_SEND_PERIOD = 100000;        // 100,000 us = 10 Hz
+constexpr unsigned long LOADCELL_SEND_PERIOD = 4000;          // 100,000 us = 10 Hz
 constexpr unsigned long LOADCELL_SEND_PRIORITY = 25;
 
 constexpr unsigned long WATCHDOG_PRIORITY = 1;
-constexpr unsigned long WATCHDOG_KICK_PERIOD = 1000; // 1000 us = 1000 Hz
+constexpr unsigned long WATCHDOG_KICK_PERIOD = 1000;          // 1000 us = 1000 Hz
 
 constexpr unsigned long PEDALS_RECALIBRATION_PRIORITY = 150;
 constexpr unsigned long PEDALS_RECALIBRATION_PERIOD = 100000; // 100 000 us = 10 Hz
