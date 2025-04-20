@@ -103,7 +103,7 @@ constexpr unsigned long DEBUG_PERIOD = 10000;             // 500,000 us = 2 Hz
 constexpr unsigned long NEOPIXEL_UPDATE_PRIORITY = 90;
 constexpr unsigned long NEOPIXEL_UPDATE_PERIOD = 100000;             // 100,000 us = 10 Hz
 
-constexpr unsigned long STEERING_SEND_PERIOD = 100000;        // 100,000 us = 10 Hz
+constexpr unsigned long STEERING_SEND_PERIOD = 4000;        // 100,000 us = 10 Hz
 constexpr unsigned long STEERING_SEND_PRIORITY = 25;
 
 constexpr unsigned long LOADCELL_SEND_PERIOD = 4000;        // 100,000 us = 10 Hz

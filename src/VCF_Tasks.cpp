@@ -244,7 +244,7 @@ HT_TASK::TaskResponse enqueue_front_suspension_data(const unsigned long& sysMicr
     msg_out.fl_load_cell = VCFData_sInstance::instance().interface_data.front_loadcell_data.FL_loadcell_analog;
     msg_out.fr_load_cell = VCFData_sInstance::instance().interface_data.front_loadcell_data.FR_loadcell_analog;
     msg_out.fl_shock_pot = VCFData_sInstance::instance().interface_data.front_suspot_data.FL_sus_pot_analog;
-    msg_out.fr_load_cell = VCFData_sInstance::instance().interface_data.front_suspot_data.FR_sus_pot_analog;
+    msg_out.fr_shock_pot = VCFData_sInstance::instance().interface_data.front_suspot_data.FR_sus_pot_analog;
 
     CAN_util::enqueue_msg(&msg_out, &Pack_FRONT_SUSPENSION_hytech, VCFCANInterfaceImpl::VCFCANInterfaceObjectsInstance::instance().main_can_tx_buffer);
     return HT_TASK::TaskResponse::YIELD;
@@ -256,7 +256,7 @@ HT_TASK::TaskResponse enqueue_steering_data(const unsigned long& sysMicros, cons
     STEERING_DATA_t msg_out;
 
     msg_out.steering_analog_raw = VCFData_sInstance::instance().interface_data.steering_data.analog_steering_degrees;
-    msg_out.steering_digital_raw = VCFData_sInstance::instance().interface_data.steering_data.digital_steering_analog;
+    msg_out.steering_digital_raw = 0; //NOLINT VCFData_sInstance::instance().interface_data.steering_data.digital_steering_analog;
 
     CAN_util::enqueue_msg(&msg_out, &Pack_STEERING_DATA_hytech, VCFCANInterfaceImpl::VCFCANInterfaceObjectsInstance::instance().main_can_tx_buffer);
     return HT_TASK::TaskResponse::YIELD;
