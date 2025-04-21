@@ -98,16 +98,16 @@ HT_TASK::TaskResponse debug_print(const unsigned long& sysMicros, const HT_TASK:
     // Serial.print("   ");
     // Serial.print(PedalsSystemInstance::instance().get_brake_params().max_pedal_2);
     // Serial.println();
-    Serial.println();
+    // Serial.println();
     
-    Serial.print("Load Cell FR:  ");
-    Serial.println(VCFData_sInstance::instance().interface_data.front_loadcell_data.FR_loadcell_analog);
-    Serial.print("Load Cell FL:  ");
-    Serial.println(VCFData_sInstance::instance().interface_data.front_loadcell_data.FL_loadcell_analog);
-    Serial.print("Suspot FR:  ");
-    Serial.println(VCFData_sInstance::instance().interface_data.front_suspot_data.FR_sus_pot_analog);
-    Serial.print("Suspot FL:  ");
-    Serial.println(VCFData_sInstance::instance().interface_data.front_suspot_data.FL_sus_pot_analog);
+    // Serial.print("Load Cell FR:  ");
+    // Serial.println(VCFData_sInstance::instance().interface_data.front_loadcell_data.FR_loadcell_analog);
+    // Serial.print("Load Cell FL:  ");
+    // Serial.println(VCFData_sInstance::instance().interface_data.front_loadcell_data.FL_loadcell_analog);
+    // Serial.print("Suspot FR:  ");
+    // Serial.println(VCFData_sInstance::instance().interface_data.front_suspot_data.FR_sus_pot_analog);
+    // Serial.print("Suspot FL:  ");
+    // Serial.println(VCFData_sInstance::instance().interface_data.front_suspot_data.FL_sus_pot_analog);
     
 
     // Serial.print("Dim button: ");
@@ -221,7 +221,7 @@ void setup() {
 
     // qindesign::network::Ethernet.begin(EthernetIPDefsInstance::instance().vcf_ip, EthernetIPDefsInstance::instance().default_dns, EthernetIPDefsInstance::instance().default_gateway, EthernetIPDefsInstance::instance().car_subnet);
 
-    const uint32_t CAN_baudrate = 500000;
+    const uint32_t CAN_baudrate = 1000000;
     handle_CAN_setup(main_can, CAN_baudrate, &VCFCANInterfaceImpl::on_main_can_recv);
 
     // Setup scheduler
