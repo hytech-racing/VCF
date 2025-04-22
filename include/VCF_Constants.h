@@ -84,7 +84,7 @@ constexpr unsigned long MAIN_TASK_PRIORITY = 5;
 constexpr unsigned long CAN_SEND_PRIORITY = 10;
 constexpr unsigned long CAN_SEND_PERIOD = 2000;               // 2 000 us = 500 Hz
 
-constexpr unsigned long PEDALS_SEND_PERIOD = 3000;            // 3 000 us = 333 Hz
+constexpr unsigned long PEDALS_SEND_PERIOD = 4000;            // 4 000 us = 250 Hz
 constexpr unsigned long PEDALS_SAMPLE_PERIOD = 500;           // 500 us = 2 kHz
 constexpr unsigned long PEDALS_PRIORITY = 5;
 
