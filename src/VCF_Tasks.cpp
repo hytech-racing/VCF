@@ -309,11 +309,20 @@ HT_TASK::TaskResponse enqueue_pedals_data(const unsigned long &sys_micros, const
 
 HT_TASK::TaskResponse run_dash_GPIOs_task(const unsigned long& sys_micros, const HT_TASK::TaskInfo& task_info)
 {
+    bool was_dim_btn_pressed = VCFData_sInstance::instance().interface_data.dash_input_state.dim_btn_is_pressed;
+
     VCFData_sInstance::instance().interface_data.dash_input_state = DashboardInterfaceInstance::instance().get_dashboard_outputs();
+
     if (!VCFData_sInstance::instance().interface_data.dash_input_state.preset_btn_is_pressed)
     {
         VCRInterfaceInstance::instance().disable_calibration_state();
     }
+
+    if (was_dim_btn_pressed && !VCFData_sInstance::instance().interface_data.dash_input_state.dim_btn_is_pressed)
+    {
+        NeopixelControllerInstance::instance().dim_neopixels();
+    }
+
     // if (VCFData_sInstance::instance().interface_data.dash_input_state.start_btn_is_pressed) { // Test code to ensure buzzer timing works (on benchtop)
     //     BuzzerController::getInstance().activate(sys_micros / 1000);
     // }

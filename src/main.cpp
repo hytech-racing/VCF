@@ -110,14 +110,14 @@ HT_TASK::TaskResponse debug_print(const unsigned long& sysMicros, const HT_TASK:
     // Serial.println(VCFData_sInstance::instance().interface_data.front_suspot_data.FL_sus_pot_analog);
     
 
-    // Serial.print("Dim button: ");
-    // Serial.println(VCFData_sInstance::instance().interface_data.dash_input_state.dim_btn_is_pressed);
+    Serial.print("Dim button: ");
+    Serial.println(VCFData_sInstance::instance().interface_data.dash_input_state.dim_btn_is_pressed);
     // Serial.print("preset button: ");
     // Serial.println(VCFData_sInstance::instance().interface_data.dash_input_state.preset_btn_is_pressed);
     // Serial.print("mc reset button: ");
     // Serial.println(VCFData_sInstance::instance().interface_data.dash_input_state.mc_reset_btn_is_pressed);
-    // Serial.print("mode button: ");
-    // Serial.println(VCFData_sInstance::instance().interface_data.dash_input_state.mode_btn_is_pressed);
+    Serial.print("mode button: ");
+    Serial.println(VCFData_sInstance::instance().interface_data.dash_input_state.mode_btn_is_pressed);
     // Serial.print("start button: ");
     // Serial.println(VCFData_sInstance::instance().interface_data.dash_input_state.start_btn_is_pressed);
     // Serial.print("data button: ");
@@ -241,7 +241,7 @@ void setup() {
     HT_SCHED::Scheduler::getInstance().schedule(neopixels_task);
     HT_SCHED::Scheduler::getInstance().schedule(steering_message_enqueue);
     HT_SCHED::Scheduler::getInstance().schedule(front_suspension_message_enqueue);
-    HT_SCHED::Scheduler::getInstance().schedule(debug_state_print_task);
+    // HT_SCHED::Scheduler::getInstance().schedule(debug_state_print_task);
     HT_SCHED::Scheduler::getInstance().schedule(pedals_calibration_task);
 }
 
