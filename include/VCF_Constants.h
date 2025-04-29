@@ -50,9 +50,9 @@ constexpr int BRAKE_2_CHANNEL         = 5;
 // constexpr int UNUSED_CHANNEL       = 7;
 
 /* Scaling and offset */
-constexpr float STEERING_1_SCALE = 0.02197265f; // TODO: Figure out what these mean
+constexpr float STEERING_1_SCALE = 1; // TODO: Figure out what these mean
 constexpr float STEERING_1_OFFSET = 0;
-constexpr float STEERING_2_SCALE = 0.02197265f; // TODO: Figure out if steering 2 = steering 1
+constexpr float STEERING_2_SCALE = 1; // TODO: Figure out if steering 2 = steering 1
 constexpr float STEERING_2_OFFSET = 0;
 // Scale for steering sensor = 0.02197265 . Offset has to be mechanically determined
 
