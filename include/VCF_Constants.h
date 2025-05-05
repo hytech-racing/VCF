@@ -106,7 +106,10 @@ constexpr unsigned long NEOPIXEL_UPDATE_PERIOD = 100000;      // 100,000 us = 10
 constexpr unsigned long STEERING_SEND_PERIOD = 4000;          // 4,000 us = 250 Hz
 constexpr unsigned long STEERING_SEND_PRIORITY = 25;
 
-constexpr unsigned long LOADCELL_SEND_PERIOD = 4000;          // 100,000 us = 10 Hz
+constexpr unsigned long LOADCELL_SAMPLE_PERIOD = 250;         // 250 us = 4 kHz
+constexpr unsigned long LOADCELL_SAMPLE_PRIORITY = 24;
+
+constexpr unsigned long LOADCELL_SEND_PERIOD = 4000;          // 4,000 us = 250 Hz
 constexpr unsigned long LOADCELL_SEND_PRIORITY = 25;
 
 constexpr unsigned long WATCHDOG_PRIORITY = 1;
@@ -119,6 +122,8 @@ constexpr unsigned long PEDALS_RECALIBRATION_PERIOD = 100000; // 100 000 us = 10
 constexpr int WATCHDOG_PIN = 33;
 constexpr int SOFTWARE_OK_PIN = 34; // Watchdog's !RESET pin
 constexpr unsigned long WATCHDOG_KICK_INTERVAL_MS = 10UL;
+
+constexpr float LOADCELL_IIR_FILTER_ALPHA = 0.01f;
 
 /* -------------------------------------------------- */
 /*                EEPROM value addresses              */

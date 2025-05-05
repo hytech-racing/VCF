@@ -20,46 +20,21 @@
 
 
 
-// bool init_adc_task()
-// {
-//     // Initilize one at a time to remove dependence on implicit ordering to match channels.
-//     float adc_1_scales[channels_within_mcp_adc], adc_1_offsets[channels_within_mcp_adc], adc_2_scales[channels_within_mcp_adc], adc_2_offsets[channels_within_mcp_adc];
-//     adc_1_scales[STEERING_1_CHANNEL] = STEERING_1_SCALE;
-//     adc_1_offsets[STEERING_1_CHANNEL] = STEERING_1_OFFSET;
-//     adc_1_scales[STEERING_2_CHANNEL] = STEERING_2_SCALE;
-//     adc_1_offsets[STEERING_2_CHANNEL] = STEERING_2_OFFSET;
-//     adc_1_scales[FR_SUS_POT_CHANNEL] = FR_SUS_POT_SCALE;
-//     adc_1_offsets[FR_SUS_POT_CHANNEL] = FR_SUS_POT_OFFSET;
-//     adc_1_scales[FL_SUS_POT_CHANNEL] = FL_SUS_POT_SCALE;
-//     adc_1_offsets[FL_SUS_POT_CHANNEL] = FL_SUS_POT_OFFSET;
-//     adc_1_scales[FR_LOADCELL_CHANNEL] = FR_LOADCELL_SCALE;
-//     adc_1_offsets[FR_LOADCELL_CHANNEL] = FR_LOADCELL_OFFSET;
-//     adc_1_scales[FL_LOADCELL_CHANNEL] = FL_LOADCELL_SCALE;
-//     adc_1_offsets[FL_LOADCELL_CHANNEL] = FL_LOADCELL_OFFSET;
+float apply_iir_filter(float alpha, float old_value, float new_value)
+{
+    return (alpha * new_value) + (1 - alpha) * (old_value);
+}
 
-//     adc_2_scales[ACCEL_1_CHANNEL] = ACCEL_1_SCALE;
-//     adc_2_offsets[ACCEL_1_CHANNEL] = ACCEL_1_OFFSET;
-//     adc_2_scales[ACCEL_2_CHANNEL] = ACCEL_2_SCALE;
-//     adc_2_offsets[ACCEL_2_CHANNEL] = ACCEL_2_OFFSET;
-//     adc_2_scales[BRAKE_1_CHANNEL] = BRAKE_1_SCALE;
-//     adc_2_offsets[BRAKE_1_CHANNEL] = BRAKE_1_OFFSET;
-//     adc_2_scales[BRAKE_2_CHANNEL] = BRAKE_2_SCALE;
-//     adc_2_offsets[BRAKE_2_CHANNEL] = BRAKE_2_OFFSET;
-
-//     ADCsOnVCFInstance::create(adc_1_scales, adc_1_offsets, adc_2_scales, adc_2_offsets);
-
-//     return HT_TASK::TaskResponse::YIELD;
-// }
 HT_TASK::TaskResponse run_read_adc1_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
 {
     // Samples all eight channels.
     ADCsOnVCFInstance::instance().adc_1.tick();
 
     VCFData_sInstance::instance().interface_data.steering_data.analog_steering_degrees = ADCsOnVCFInstance::instance().adc_1.data.conversions[STEERING_1_CHANNEL].conversion; // Only using steering 1 for now
-    VCFData_sInstance::instance().interface_data.front_loadcell_data.FL_loadcell_analog = ADCsOnVCFInstance::instance().adc_1.data.conversions[FL_LOADCELL_CHANNEL].conversion;
-    VCFData_sInstance::instance().interface_data.front_loadcell_data.FR_loadcell_analog = ADCsOnVCFInstance::instance().adc_1.data.conversions[FR_LOADCELL_CHANNEL].conversion;
-    VCFData_sInstance::instance().interface_data.front_suspot_data.FL_sus_pot_analog = ADCsOnVCFInstance::instance().adc_1.data.conversions[FL_SUS_POT_CHANNEL].raw; // Just use raw for suspots
-    VCFData_sInstance::instance().interface_data.front_suspot_data.FR_sus_pot_analog = ADCsOnVCFInstance::instance().adc_1.data.conversions[FR_SUS_POT_CHANNEL].raw; // Just use raw for suspots
+    VCFData_sInstance::instance().interface_data.front_loadcell_data.FL_loadcell_analog = apply_iir_filter(LOADCELL_IIR_FILTER_ALPHA, VCFData_sInstance::instance().interface_data.front_loadcell_data.FL_loadcell_analog, ADCsOnVCFInstance::instance().adc_1.data.conversions[FL_LOADCELL_CHANNEL].raw);
+    VCFData_sInstance::instance().interface_data.front_loadcell_data.FR_loadcell_analog = apply_iir_filter(LOADCELL_IIR_FILTER_ALPHA, VCFData_sInstance::instance().interface_data.front_loadcell_data.FR_loadcell_analog, ADCsOnVCFInstance::instance().adc_1.data.conversions[FR_LOADCELL_CHANNEL].raw);
+    VCFData_sInstance::instance().interface_data.front_suspot_data.FL_sus_pot_analog = apply_iir_filter(LOADCELL_IIR_FILTER_ALPHA, VCFData_sInstance::instance().interface_data.front_suspot_data.FL_sus_pot_analog, ADCsOnVCFInstance::instance().adc_1.data.conversions[FL_SUS_POT_CHANNEL].raw);
+    VCFData_sInstance::instance().interface_data.front_suspot_data.FR_sus_pot_analog = apply_iir_filter(LOADCELL_IIR_FILTER_ALPHA, VCFData_sInstance::instance().interface_data.front_suspot_data.FR_sus_pot_analog, ADCsOnVCFInstance::instance().adc_1.data.conversions[FR_SUS_POT_CHANNEL].raw);
 
     return HT_TASK::TaskResponse::YIELD;
 }
@@ -68,7 +43,6 @@ HT_TASK::TaskResponse run_read_adc2_task(const unsigned long& sysMicros, const H
 {
     // Samples all eight channels.
     ADCsOnVCFInstance::instance().adc_2.tick();
-    // Serial.println("sampling");
     VCFData_sInstance::instance().interface_data.pedal_sensor_data.accel_1 = ADCsOnVCFInstance::instance().adc_2.data.conversions[ACCEL_1_CHANNEL].conversion;
     VCFData_sInstance::instance().interface_data.pedal_sensor_data.accel_2 = ADCsOnVCFInstance::instance().adc_2.data.conversions[ACCEL_2_CHANNEL].conversion;
     VCFData_sInstance::instance().interface_data.pedal_sensor_data.brake_1 = ADCsOnVCFInstance::instance().adc_2.data.conversions[BRAKE_1_CHANNEL].conversion;
