@@ -40,7 +40,7 @@
 FlexCAN_T4<CAN1, RX_SIZE_256, TX_SIZE_16> main_can;
 
 // Tasks
-HT_TASK::Task async_main(HT_TASK::DUMMY_FUNCTION, &async_tasks::handle_async_main, MAIN_TASK_PRIORITY, 100);
+HT_TASK::Task async_main(HT_TASK::DUMMY_FUNCTION, &async_tasks::handle_async_main, MAIN_TASK_PRIORITY, MAIN_TASK_PERIOD);
 HT_TASK::Task CAN_send(HT_TASK::DUMMY_FUNCTION, &handle_CAN_send, CAN_SEND_PRIORITY, CAN_SEND_PERIOD);
 HT_TASK::Task dash_CAN_enqueue(HT_TASK::DUMMY_FUNCTION, &send_dash_data, DASH_SEND_PRIORITY, DASH_SEND_PERIOD);
 HT_TASK::Task pedals_message_enqueue(HT_TASK::DUMMY_FUNCTION, &enqueue_pedals_data, PEDALS_PRIORITY, PEDALS_SEND_PERIOD);
@@ -172,14 +172,14 @@ void setup() {
         .min_pedal_2 = EEPROMUtilities::read_eeprom_32bit(ACCEL_2_MIN_ADDR),
         .max_pedal_1 = EEPROMUtilities::read_eeprom_32bit(ACCEL_1_MAX_ADDR),
         .max_pedal_2 = EEPROMUtilities::read_eeprom_32bit(ACCEL_2_MAX_ADDR),
-        .activation_percentage = 0.10,
-        .min_sensor_pedal_1 = 90,
-        .min_sensor_pedal_2 = 90,
-        .max_sensor_pedal_1 = 4000,
-        .max_sensor_pedal_2 = 4000,
-        .deadzone_margin = .03,
+        .activation_percentage = 0.10, // NOLINT
+        .min_sensor_pedal_1 = 90, // NOLINT
+        .min_sensor_pedal_2 = 90, // NOLINT
+        .max_sensor_pedal_1 = 4000, // NOLINT
+        .max_sensor_pedal_2 = 4000, // NOLINT
+        .deadzone_margin = .03, // NOLINT
         .implausibility_margin = IMPLAUSIBILITY_PERCENT,
-        .mechanical_activation_percentage = 0.05
+        .mechanical_activation_percentage = 0.05 // NOLINT
     };
     
     PedalsParams brake_params = {
@@ -187,14 +187,14 @@ void setup() {
         .min_pedal_2 = EEPROMUtilities::read_eeprom_32bit(BRAKE_2_MIN_ADDR),
         .max_pedal_1 = EEPROMUtilities::read_eeprom_32bit(BRAKE_1_MAX_ADDR),
         .max_pedal_2 = EEPROMUtilities::read_eeprom_32bit(BRAKE_2_MAX_ADDR),
-        .activation_percentage = 0.075,
-        .min_sensor_pedal_1 = 90,
-        .min_sensor_pedal_2 = 90,
-        .max_sensor_pedal_1 = 4000,
-        .max_sensor_pedal_2 = 4000,
-        .deadzone_margin = .04,
+        .activation_percentage = 0.075, // NOLINT
+        .min_sensor_pedal_1 = 90, // NOLINT
+        .min_sensor_pedal_2 = 90, // NOLINT
+        .max_sensor_pedal_1 = 4000, // NOLINT
+        .max_sensor_pedal_2 = 4000, // NOLINT
+        .deadzone_margin = .04, //NOLINT
         .implausibility_margin = IMPLAUSIBILITY_PERCENT,
-        .mechanical_activation_percentage = 0.5
+        .mechanical_activation_percentage = 0.5 //NOLINT
     };
 
     PedalsSystemInstance::create(accel_params, brake_params); //pass in the two different params
@@ -211,7 +211,7 @@ void setup() {
         .RIGHT_SHIFTER_BUTTON = RIGHT_SHIFTER,
     };
 
-    DashboardInterfaceInstance::create(dashboard_gpios);
+    DashboardInterfaceInstance::create(dashboard_gpios); //NOLINT (linter things dashboard_gpios is not initialized)
     ACUInterfaceInstance::create();
     VCRInterfaceInstance::create();
     // Create can singletons

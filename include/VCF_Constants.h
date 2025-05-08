@@ -80,6 +80,7 @@ constexpr float BRAKE_2_OFFSET = 0;
 /*           Task Periods and Priorities              */
 /* -------------------------------------------------- */
 constexpr unsigned long MAIN_TASK_PRIORITY = 5;
+constexpr unsigned long MAIN_TASK_PERIOD = 100;               // 100 us = 10 kHz
 
 constexpr unsigned long CAN_SEND_PRIORITY = 10;
 constexpr unsigned long CAN_SEND_PERIOD = 2000;               // 2 000 us = 500 Hz
@@ -94,26 +95,26 @@ constexpr unsigned long BUZZER_PRIORITY = 20;
 constexpr unsigned long DASH_SAMPLE_PERIOD = 100000;          // 100 000 us = 10 Hz
 constexpr unsigned long DASH_SAMPLE_PRIORITY = 21;
 
-constexpr unsigned long DASH_SEND_PERIOD = 100000;            // 100,000 us = 10 Hz
+constexpr unsigned long DASH_SEND_PERIOD = 100000;            // 100 000 us = 10 Hz
 constexpr unsigned long DASH_SEND_PRIORITY = 7;
 
 constexpr unsigned long DEBUG_PRIORITY = 100;
-constexpr unsigned long DEBUG_PERIOD = 10000;                 // 500,000 us = 2 Hz
+constexpr unsigned long DEBUG_PERIOD = 10000;                 // 10 000 us = 2 Hz
 
 constexpr unsigned long NEOPIXEL_UPDATE_PRIORITY = 90;
-constexpr unsigned long NEOPIXEL_UPDATE_PERIOD = 100000;      // 100,000 us = 10 Hz
+constexpr unsigned long NEOPIXEL_UPDATE_PERIOD = 100000;      // 100 000 us = 10 Hz
 
-constexpr unsigned long STEERING_SEND_PERIOD = 4000;          // 4,000 us = 250 Hz
+constexpr unsigned long STEERING_SEND_PERIOD = 4000;          // 4 000 us = 250 Hz
 constexpr unsigned long STEERING_SEND_PRIORITY = 25;
 
 constexpr unsigned long LOADCELL_SAMPLE_PERIOD = 250;         // 250 us = 4 kHz
 constexpr unsigned long LOADCELL_SAMPLE_PRIORITY = 24;
 
-constexpr unsigned long LOADCELL_SEND_PERIOD = 4000;          // 4,000 us = 250 Hz
+constexpr unsigned long LOADCELL_SEND_PERIOD = 4000;          // 4 000 us = 250 Hz
 constexpr unsigned long LOADCELL_SEND_PRIORITY = 25;
 
 constexpr unsigned long WATCHDOG_PRIORITY = 1;
-constexpr unsigned long WATCHDOG_KICK_PERIOD = 1000;          // 1000 us = 1000 Hz
+constexpr unsigned long WATCHDOG_KICK_PERIOD = 1000;          // 1 000 us = 1000 Hz
 
 constexpr unsigned long PEDALS_RECALIBRATION_PRIORITY = 150;
 constexpr unsigned long PEDALS_RECALIBRATION_PERIOD = 100000; // 100 000 us = 10 Hz

@@ -21,13 +21,15 @@ DashInputState_s DashboardInterface::get_dashboard_outputs()
 void DashboardInterface::receive_ACU_OK(const CAN_message_t &can_msg) 
 {
     ACU_OK_t unpacked_msg;
-    Unpack_ACU_OK_hytech(&unpacked_msg, can_msg.buf, can_msg.len);
+    Unpack_ACU_OK_hytech(&unpacked_msg, can_msg.buf, can_msg.len); // NOLINT (implicitly decay pointer)
+
+    constexpr uint32_t acu_ok_init_timeout_ms = 2000;
     
-    if (!unpacked_msg.bms_ok && (sys_time::hal_millis() - _dash_created_millis) > 2000) {
+    if (!unpacked_msg.bms_ok && (sys_time::hal_millis() - _dash_created_millis) > acu_ok_init_timeout_ms) {
         bms_ok = false;
     }
 
-    if (!unpacked_msg.imd_ok && (sys_time::hal_millis() - _dash_created_millis) > 2000) {
+    if (!unpacked_msg.imd_ok && (sys_time::hal_millis() - _dash_created_millis) > acu_ok_init_timeout_ms) {
         imd_ok = false;
     }
 }

@@ -18,7 +18,7 @@ void NeopixelController::init_neopixels() {
 void NeopixelController::dim_neopixels() {
     _current_brightness -= STEP_BRIGHTNESS;
     // set current brightness to 0xFF (255) if less than min brightness - sid :) DO NOT CHANGE
-    if (_current_brightness < MIN_BRIGHTNESS) { _current_brightness |= 0xFF; }
+    if (_current_brightness < MIN_BRIGHTNESS) { _current_brightness |= 0xFF; } // NOLINT (bitmask with 255)
     _neopixels.setBrightness(_current_brightness);
 }
 
@@ -76,6 +76,8 @@ void NeopixelController::refresh_neopixels(VCFData_s &vcf_data, VCRData_s &vcr_d
         }
     }
 
+    constexpr float glv_critical_voltage = 22.0f;
+
     set_neopixel_color(LED_ID_e::BRAKE, brake_light_color);
     set_neopixel_color(LED_ID_e::LAUNCH_CTRL, LED_color_e::OFF); // Unused for now
     set_neopixel_color(LED_ID_e::CRIT_CHARGE, interfaces.acu_interface.get_voltages_not_critical() ? LED_color_e::GREEN : LED_color_e::RED); // Unused for now
@@ -86,7 +88,7 @@ void NeopixelController::refresh_neopixels(VCFData_s &vcf_data, VCRData_s &vcr_d
     set_neopixel_color(LED_ID_e::BMS, interfaces.dash_interface.bms_ok ? LED_color_e::GREEN : LED_color_e::RED);
     set_neopixel_color(LED_ID_e::MC_ERR, (vcr_data.interface_data.inverter_data.FL.error || vcr_data.interface_data.inverter_data.FR.error || vcr_data.interface_data.inverter_data.RL.error || vcr_data.interface_data.inverter_data.RR.error) ? LED_color_e::RED : LED_color_e::OFF);
     set_neopixel_color(LED_ID_e::RDY_DRIVE, LED_color_e::RED);
-    set_neopixel_color(LED_ID_e::GLV, vcr_data.interface_data.current_sensor_data.twentyfour_volt_sensor > 22.0f ? LED_color_e::GREEN : LED_color_e::OFF); // No sensor there yet
+    set_neopixel_color(LED_ID_e::GLV, vcr_data.interface_data.current_sensor_data.twentyfour_volt_sensor > glv_critical_voltage ? LED_color_e::GREEN : LED_color_e::OFF); // No sensor there yet
     set_neopixel_color(LED_ID_e::TORQUE_MODE, torque_mode_color);
 
     _neopixels.show();

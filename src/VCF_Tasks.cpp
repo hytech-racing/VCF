@@ -283,7 +283,7 @@ HT_TASK::TaskResponse enqueue_pedals_data(const unsigned long &sys_micros, const
 
 HT_TASK::TaskResponse run_dash_GPIOs_task(const unsigned long& sys_micros, const HT_TASK::TaskInfo& task_info)
 {
-    bool was_dim_btn_pressed = VCFData_sInstance::instance().interface_data.dash_input_state.dim_btn_is_pressed;
+    bool was_dim_btn_pressed = VCFData_sInstance::instance().interface_data.dash_input_state.dim_btn_is_pressed; //NOLINT (linter thinks variable uninitialized)
 
     VCFData_sInstance::instance().interface_data.dash_input_state = DashboardInterfaceInstance::instance().get_dashboard_outputs();
 
@@ -324,7 +324,7 @@ HT_TASK::TaskResponse create_ioexpander(const unsigned long& sys_micros, const H
 
 HT_TASK::TaskResponse read_ioexpander(const unsigned long& sys_micros, const HT_TASK::TaskInfo& task_info)
 {
-    uint16_t in = IOExpanderInstance::instance().read();
+    uint16_t in = IOExpanderInstance::instance().read(); // NOLINT (linter thinks variable uninitialized)
     // for (int i = 0; i < 8; ++i) {
     //     Serial.printf("%d ", in & 0x01);
     //     in = in >> 1;
@@ -338,15 +338,15 @@ HT_TASK::TaskResponse read_ioexpander(const unsigned long& sys_micros, const HT_
         VCFData_sInstance::instance().interface_data.dash_input_state.dial_state = ControllerMode_e::MODE_1;
     } else if (IOExpanderUtils::getBit(in, 1, 0)) {
         VCFData_sInstance::instance().interface_data.dash_input_state.dial_state = ControllerMode_e::MODE_2;
-    } else if (IOExpanderUtils::getBit(in, 1, 5)) {
+    } else if (IOExpanderUtils::getBit(in, 1, 5)) { // NOLINT (pin is magic number)
         VCFData_sInstance::instance().interface_data.dash_input_state.dial_state = ControllerMode_e::MODE_3;
-    } else if (IOExpanderUtils::getBit(in, 1, 4)) {
+    } else if (IOExpanderUtils::getBit(in, 1, 4)) { // NOLINT (pin is magic number)
         VCFData_sInstance::instance().interface_data.dash_input_state.dial_state = ControllerMode_e::MODE_4;
-    } else if (IOExpanderUtils::getBit(in, 1, 3)) {
+    } else if (IOExpanderUtils::getBit(in, 1, 3)) { // NOLINT (pin is magic number)
         VCFData_sInstance::instance().interface_data.dash_input_state.dial_state = ControllerMode_e::MODE_5;
     }
 
-    ControllerMode_e state = VCFData_sInstance::instance().interface_data.dash_input_state.dial_state;
+    ControllerMode_e state = VCFData_sInstance::instance().interface_data.dash_input_state.dial_state; // NOLINT (linter thinks state uninitialized)
     switch (state) {
         case ControllerMode_e::MODE_0:
         {

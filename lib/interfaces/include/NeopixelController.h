@@ -5,7 +5,7 @@
 #define MAX_BRIGHTNESS 255
 #define MIN_BRIGHTNESS 3
 #define BRIGHTNESS_STEPS 4
-#define STEP_BRIGHTNESS (MAX_BRIGHTNESS - MIN_BRIGHTNESS) / BRIGHTNESS_STEPS
+#define STEP_BRIGHTNESS ((MAX_BRIGHTNESS - MIN_BRIGHTNESS) / BRIGHTNESS_STEPS)
 // Note from Justin: I know that this sort of breaks the paradigm that we've put
 // in place for most of our code, but
 // - other libraries do this all the time
