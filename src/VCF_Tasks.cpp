@@ -18,8 +18,6 @@
 #include "WatchdogSystem.h"
 #include "Arduino.h"
 
-
-
 float apply_iir_filter(float alpha, float old_value, float new_value)
 {
     return (alpha * new_value) + (1 - alpha) * (old_value);
@@ -135,25 +133,6 @@ HT_TASK::TaskResponse run_buzzer_control_task(const unsigned long& sysMicros, co
     return HT_TASK::TaskResponse::YIELD;
 }
 
-// bool init_handle_send_vcf_ethernet_data() {
-//     VCF_socket.begin(EthernetIPDefsInstance::instance().VCFData_port);
-
-//     return HT_TASK::TaskResponse::YIELD;
-// }
-// bool run_handle_send_vcf_ethernet_data() {
-//     hytech_msgs_VCFData_s msg = VCFEthernetInterface::make_vcf_data_msg(vcf_data);
-//     if(handle_ethernet_socket_send_pb<hytech_msgs_VCFData_s_size, hytech_msgs_VCFData_s>
-//             (EthernetIPDefsInstance::instance().vcr_ip, 
-//             EthernetIPDefsInstance::instance().VCRData_port, 
-//             &VCF_socket, 
-//             msg, 
-//             &hytech_msgs_VCFData_s_msg)) {
-//         return HT_TASK::TaskResponse::YIELD;
-//     } else {
-//         return false;
-//     }
-// }
-
 // bool init_handle_receive_vcr_ethernet_data() {
 //     VCF_socket.begin(EthernetIPDefsInstance::instance().VCFData_port);
 
@@ -235,30 +214,36 @@ HT_TASK::TaskResponse enqueue_steering_data(const unsigned long& sysMicros, cons
     return HT_TASK::TaskResponse::YIELD;
 }
 
-
-HT_TASK::TaskResponse run_handle_send_vcf_ethernet_data() {
-    hytech_msgs_VCFData_s msg = VCFEthernetInterface::make_vcf_data_msg(VCFData_sInstance::instance());
-    if(handle_ethernet_socket_send_pb<hytech_msgs_VCFData_s_size, hytech_msgs_VCFData_s>
-            (EthernetIPDefsInstance::instance().vcr_ip, 
-            EthernetIPDefsInstance::instance().VCRData_port, 
-            &VCF_socket, 
-            msg, 
-            &hytech_msgs_VCFData_s_msg)) {
-    }
-    return HT_TASK::TaskResponse::YIELD;
-}
-
-HT_TASK::TaskResponse init_handle_receive_vcr_ethernet_data() {
+HT_TASK::TaskResponse init_handle_send_vcf_ethernet_data(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo) {
+    qindesign::network::Ethernet.begin(EthernetIPDefsInstance::instance().vcf_ip, EthernetIPDefsInstance::instance().car_subnet, EthernetIPDefsInstance::instance().default_gateway);
     VCF_socket.begin(EthernetIPDefsInstance::instance().VCFData_port);
 
     return HT_TASK::TaskResponse::YIELD;
 }
 
-HT_TASK::TaskResponse run_handle_receive_vcr_ethernet_data() {
-    etl::optional<hytech_msgs_VCRData_s> protoc_struct = handle_ethernet_socket_receive<hytech_msgs_VCRData_s_size, hytech_msgs_VCRData_s>(&VCF_socket, &hytech_msgs_VCRData_s_msg);
-
-    return HT_TASK::TaskResponse::YIELD;
+HT_TASK::TaskResponse run_handle_send_vcf_ethernet_data(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo) {
+    hytech_msgs_VCFData_s msg = VCFEthernetInterface::make_vcf_data_msg(VCFData_sInstance::instance());
+    if(handle_ethernet_socket_send_pb<hytech_msgs_VCFData_s_size, hytech_msgs_VCFData_s>
+            (EthernetIPDefsInstance::instance().drivebrain_ip,
+            EthernetIPDefsInstance::instance().VCFData_port,
+            &VCF_socket, 
+            msg, 
+            hytech_msgs_VCFData_s_fields)) {
+    }
+    return HT_TASK::TaskResponse::YIELD;  
 }
+
+// HT_TASK::TaskResponse init_handle_receive_vcr_ethernet_data() {
+//     VCF_socket.begin(EthernetIPDefsInstance::instance().VCFData_port);
+
+//     return HT_TASK::TaskResponse::YIELD;
+// }
+
+// HT_TASK::TaskResponse run_handle_receive_vcr_ethernet_data() {
+//     etl::optional<hytech_msgs_VCRData_s> protoc_struct = handle_ethernet_socket_receive<hytech_msgs_VCRData_s_size, hytech_msgs_VCRData_s>(&VCF_socket, &hytech_msgs_VCRData_s_msg);
+
+//     return HT_TASK::TaskResponse::YIELD;
+// }
 
 HT_TASK::TaskResponse enqueue_pedals_data(const unsigned long &sys_micros, const HT_TASK::TaskInfo& task_info)
 {
