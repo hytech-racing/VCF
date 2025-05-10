@@ -241,6 +241,7 @@ void setup() {
     HT_SCHED::Scheduler::getInstance().schedule(front_suspension_message_enqueue);
     HT_SCHED::Scheduler::getInstance().schedule(debug_state_print_task);
     HT_SCHED::Scheduler::getInstance().schedule(pedals_calibration_task);
+    HT_SCHED::Scheduler::getInstance().schedule(ethernet_send_task);
 }
 
 void loop() {
