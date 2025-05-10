@@ -60,8 +60,8 @@ hytech_msgs_VCFData_s VCFEthernetInterface::make_vcf_data_msg(VCFData_s &shared_
     out.has_firmware_version_info = true;
     out.firmware_version_info.project_is_dirty = device_status_t::project_is_dirty;
     out.firmware_version_info.project_on_main_or_master = device_status_t::project_on_main_or_master;
-    std::array<char, 9> ver_hash = convert_version_to_char_arr(device_status_t::firmware_version);
-    std::copy(ver_hash.begin(), ver_hash.end(), out.firmware_version_info.git_hash);
+    std::array<char, ver_hash_len> ver_hash = convert_version_to_char_arr(device_status_t::firmware_version);
+    std::copy(ver_hash.begin(), ver_hash.end(), std::begin(out.firmware_version_info.git_hash));
     out.has_msg_versions = true;
     out.msg_versions.ht_can_version = HT_CAN_LIB_VERSION;
     std::copy(version, version + std::min(strlen(version), sizeof(out.msg_versions.ht_proto_version) - 1), out.msg_versions.ht_proto_version);    
