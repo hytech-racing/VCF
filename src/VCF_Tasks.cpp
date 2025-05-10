@@ -133,22 +133,6 @@ HT_TASK::TaskResponse run_buzzer_control_task(const unsigned long& sysMicros, co
     return HT_TASK::TaskResponse::YIELD;
 }
 
-// bool init_handle_receive_vcr_ethernet_data() {
-//     VCF_socket.begin(EthernetIPDefsInstance::instance().VCFData_port);
-
-//     return HT_TASK::TaskResponse::YIELD;
-// }
-
-// bool run_handle_receive_vcr_ethernet_data() {
-//     etl::optional<hytech_msgs_VCRData_s> protoc_struct = handle_ethernet_socket_receive<hytech_msgs_VCRData_s_size, hytech_msgs_VCRData_s>(&VCF_socket, &hytech_msgs_VCRData_s_msg);
-//     if (protoc_struct) {
-//         return HT_TASK::TaskResponse::YIELD;
-//     } else {
-//         return false;
-//     }
-// }
-
-
 HT_TASK::TaskResponse handle_CAN_send(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
 {
     VCFCANInterfaceObjects& vcf_interface_objects = VCFCANInterfaceImpl::VCFCANInterfaceObjectsInstance::instance();
