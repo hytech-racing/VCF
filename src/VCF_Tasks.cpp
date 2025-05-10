@@ -226,8 +226,8 @@ HT_TASK::TaskResponse run_handle_send_vcf_ethernet_data(const unsigned long& sys
     if(handle_ethernet_socket_send_pb<hytech_msgs_VCFData_s_size, hytech_msgs_VCFData_s>
             (EthernetIPDefsInstance::instance().drivebrain_ip,
             EthernetIPDefsInstance::instance().VCFData_port,
-            &VCF_socket, 
-            msg, 
+            &VCF_socket,
+            msg,
             hytech_msgs_VCFData_s_fields)) {
     }
     return HT_TASK::TaskResponse::YIELD;  
