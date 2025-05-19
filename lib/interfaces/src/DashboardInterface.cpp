@@ -25,11 +25,6 @@ void DashboardInterface::receive_ACU_OK(const CAN_message_t &can_msg)
 
     constexpr uint32_t acu_ok_init_timeout_ms = 2000;
     
-    if (!unpacked_msg.bms_ok && (sys_time::hal_millis() - _dash_created_millis) > acu_ok_init_timeout_ms) {
-        bms_ok = false;
-    }
-
-    if (!unpacked_msg.imd_ok && (sys_time::hal_millis() - _dash_created_millis) > acu_ok_init_timeout_ms) {
-        imd_ok = false;
-    }
+    bms_ok = unpacked_msg.bms_ok;
+    imd_ok = unpacked_msg.imd_ok;
 }
