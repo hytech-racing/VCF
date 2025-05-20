@@ -212,7 +212,6 @@ void setup() {
     };
 
     DashboardInterfaceInstance::create(dashboard_gpios); //NOLINT (linter things dashboard_gpios is not initialized)
-    DashboardInterfaceInstance::instance().bms_ok = DashboardInterfaceInstance::instance().imd_ok = true;
     ACUInterfaceInstance::create();
     VCRInterfaceInstance::create();
     // Create can singletons

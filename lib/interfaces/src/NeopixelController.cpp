@@ -5,10 +5,11 @@ void NeopixelController::init_neopixels() {
     _neopixels.setBrightness(_current_brightness);
     //set init color for every led
     for (int i = 0; i < _neopixel_count; i++) {
-        _neopixels.setPixelColor(i, (uint32_t) LED_color_e::INIT_COLOR);
         // BMS and IMD are off according to rules
         if (i == LED_ID_e::BMS || i == LED_ID_e::IMD){
             _neopixels.setPixelColor(i, (uint32_t) LED_color_e::OFF);
+        } else {
+            _neopixels.setPixelColor(i, (uint32_t) LED_color_e::INIT_COLOR);
         }
     }
     // write data to neopixels
