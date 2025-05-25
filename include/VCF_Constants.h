@@ -56,10 +56,10 @@ constexpr float STEERING_2_SCALE = 1; // TODO: Figure out if steering 2 = steeri
 constexpr float STEERING_2_OFFSET = 0;
 // Scale for steering sensor = 0.02197265 . Offset has to be mechanically determined
 
-constexpr float FR_LOADCELL_SCALE = 1; //Values are from the old MCU rev15 // TODO: Calibrate load cells
-constexpr float FR_LOADCELL_OFFSET = 0;
-constexpr float FL_LOADCELL_SCALE = 1;
-constexpr float FL_LOADCELL_OFFSET = 0;
+constexpr float FR_LOADCELL_SCALE = 0.81; //Values are from the old MCU rev15 // TODO: Calibrate load cells
+constexpr float FR_LOADCELL_OFFSET = 36.8;
+constexpr float FL_LOADCELL_SCALE = 0.63;
+constexpr float FL_LOADCELL_OFFSET = -3.9;
 constexpr float FR_SUS_POT_SCALE = 1;
 constexpr float FR_SUS_POT_OFFSET = 0;
 constexpr float FL_SUS_POT_SCALE = 1;
