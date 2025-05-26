@@ -63,9 +63,9 @@ constexpr float STEERING_2_OFFSET = 0;
 
 constexpr float LBS_TO_NEWTONS = 4.4482216153;
 
-constexpr float FR_LOADCELL_SCALE =  0.19 * LBS_TO_NEWTONS; //Values 
+constexpr float FR_LOADCELL_SCALE =  1.0; //Values 
 constexpr float FR_LOADCELL_OFFSET = 0.0;
-constexpr float FL_LOADCELL_SCALE =  0.19 * LBS_TO_NEWTONS; //Values 
+constexpr float FL_LOADCELL_SCALE =  1.0; //Values 
 constexpr float FL_LOADCELL_OFFSET = 0.0;
 
 constexpr float FR_SUS_POT_SCALE = 1;
