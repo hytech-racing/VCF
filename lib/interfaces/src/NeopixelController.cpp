@@ -80,12 +80,12 @@ void NeopixelController::refresh_neopixels(VCFData_s &vcf_data, VCRData_s &vcr_d
     LED_color_e ready_drive_color = LED_color_e::OFF;
     switch (interfaces.vcr_interface.get_vehicle_state())
     {
-        case static_cast<uint8_t>(VehicleState_e::READY_TO_DRIVE):
+        case VehicleState_e::READY_TO_DRIVE:
         {
             interfaces.vcr_interface.get_db_in_ctrl() ? LED_color_e::BLUE : LED_color_e::GREEN;
             break;
         }
-        case static_cast<uint8_t>(VehicleState_e::WANTING_READY_TO_DRIVE):
+        case VehicleState_e::WANTING_READY_TO_DRIVE:
         {
             LED_color_e::YELLOW;
             break;

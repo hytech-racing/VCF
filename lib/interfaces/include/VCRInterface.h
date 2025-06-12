@@ -22,13 +22,13 @@ class VCRInterface
         void receive_vehicle_state_data(const CAN_message_t &can_msg);
         void receive_software_status(const CAN_message_t &can_msg);
 
-        uint8_t get_vehicle_state() {return _vehicle_state_value;}
+        VehicleState_e get_vehicle_state() {return _vehicle_state_value;}
         bool get_db_in_ctrl() {return _is_db_in_ctrl;}
     
     private: 
 
         bool _is_in_pedals_calibration_state = false;
-        uint8_t _vehicle_state_value;
+        VehicleState_e _vehicle_state_value;
         bool _is_db_in_ctrl;
         TorqueLimit_e _torque_limit = TorqueLimit_e::TCMUX_LOW_TORQUE;
 
