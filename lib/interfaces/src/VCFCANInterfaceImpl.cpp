@@ -24,11 +24,19 @@ namespace VCFCANInterfaceImpl {
                 break;
             }
             case ACU_OK_CANID: 
+            {
                 interfaces.dash_interface.receive_ACU_OK(msg);
                 break;
+            }    
+            case CAR_STATES_CANID:
+            {
+                interfaces.vcr_interface.receive_car_states_data(msg);
+                break;
+            }
             default:
                 break;
-        }
+            }
+
     }
 
     void send_all_CAN_msgs(CANTXBufferType &buffer, FlexCAN_T4_Base *can_interface)

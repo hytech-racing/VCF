@@ -17,16 +17,11 @@ void VCRInterface::receive_dash_control_data(const CAN_message_t &can_msg)
     }
 }
 
-void VCRInterface::receive_vehicle_state_data(const CAN_message_t &can_msg)
+void VCRInterface::receive_car_states_data(const CAN_message_t &can_msg)
 {
-    VEHICLE_STATE_t unpacked_msg;
-    Unpack_VEHICLE_STATE_hytech(&unpacked_msg, can_msg.buf, can_msg.len); //NOLINT
+    CAR_STATES_t unpacked_msg;
+    Unpack_CAR_STATES_hytech(&unpacked_msg, can_msg.buf, can_msg.len); //NOLINT
     _vehicle_state_value = static_cast<VehicleState_e>(unpacked_msg.drivetrain_state);
-}
-
-void VCRInterface::receive_software_status(const CAN_message_t &can_msg)
-{
-    DRIVEBRAIN_STATE_DATA_t unpacked_msg;
-    Unpack_DRIVEBRAIN_STATE_DATA_hytech(&unpacked_msg, can_msg.buf, can_msg.len); //NOLINT
+    _drivetrain_state_value = static_cast<DrivetrainState_e>(unpacked_msg.vehicle_state);
     _is_db_in_ctrl = unpacked_msg.drivebrain_in_control;
 }
