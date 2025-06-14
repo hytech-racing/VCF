@@ -208,6 +208,7 @@ private:
     PedalsSystemData_s _data{};
     PedalsParams _accelParams{};
     PedalsParams _brakeParams{};
+    bool _implaus_occured = false;
     unsigned long _implausibilityStartTime;
 };
 

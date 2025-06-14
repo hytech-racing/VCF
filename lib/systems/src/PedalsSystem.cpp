@@ -1,7 +1,7 @@
 #include <math.h>
 #include "PedalsSystem.h"
-#include <stdio.h>
-#include <iostream>
+// #include <stdio.h>
+// #include <iostream>
 float PedalsSystem::_pedal_percentage(float scaled_pedal_1, float scaled_pedal_2, const PedalsParams& params)
 {
     const float divider = 2.0;
@@ -72,6 +72,12 @@ PedalsSystemData_s PedalsSystem::evaluate_pedals(PedalSensorData_s pedals_data, 
     {
         _implausibilityStartTime = 0;
     }
+    
+    if (implausibility) {
+        _implaus_occured = true;
+    } else if (_implaus_occured && out.accel_percent <= ACCELERATION_PERCENT_LIMIT) {
+        _implaus_occured = false;
+    } 
 
     bool oor = implausibility && (_evaluate_pedal_oor(accel_1, static_cast<int>(_accelParams.min_sensor_pedal_1), static_cast<int>(_accelParams.max_sensor_pedal_1))
                                  || _evaluate_pedal_oor(accel_2, static_cast<int>(_accelParams.min_sensor_pedal_2), static_cast<int>(_accelParams.max_sensor_pedal_2)));
@@ -82,7 +88,8 @@ PedalsSystemData_s PedalsSystem::evaluate_pedals(PedalSensorData_s pedals_data, 
     out.implausibility_has_exceeded_max_duration = _max_duration_of_implausibility_exceeded(curr_millis);
 
     bool oor_or_implausible = (out.implausibility_has_exceeded_max_duration || oor);
-    out.accel_percent = (oor_or_implausible) ? 0 : out.accel_percent;
+    // std::cout << "implaus "<< _implaus_occured <<std::endl;
+    out.accel_percent = (_implaus_occured) ? 0 : out.accel_percent;
     // we dont care if brake is implaus, as long as it isnt oor (likely errored)
     out.brake_percent = (oor) ? 0 : out.brake_percent; 
     return out;

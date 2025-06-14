@@ -446,9 +446,10 @@ TEST(PedalsSystemTesting, check_accel_pressed)
 
     
 
-    test_pedal_data = {872, 3218, 90, 3900};
+    test_pedal_data = {872, 3218, 91, 3900};
     PedalsSystem pedals2(params, params);
     data = pedals2.evaluate_pedals(test_pedal_data, 1000);
+    debug_print_pedals(data);
     EXPECT_FALSE(data.accel_is_pressed);
     EXPECT_NEAR(data.accel_percent, 0.2, 0.001);
     
@@ -525,4 +526,20 @@ TEST(PedalsSystemTesting, check_accel_oor)
     auto data_oor_lo = pedals.evaluate_pedals(test_pedal_oor_lo_val_accel, 1000);
     EXPECT_NEAR(data_oor_lo.accel_percent, 0.0, 0.001);
     EXPECT_TRUE(data_oor_lo.accel_is_implausible);
+}
+
+// T.4.2.4 FSAE rules 2025 v1 (accel vals not within 10 percent of each other) and no time has passed
+TEST(PedalsSystemTesting, test_accel_and_brake_percentages_implausibility_immediate_zero)
+{
+    auto accel_params = gen_positive_and_negative_slope_params();
+    auto brake_params = gen_positive_and_negative_slope_params();
+    PedalsSystem pedals(accel_params, brake_params);
+
+    PedalSensorData_s test_pedal_half_pressed_one = {2045, 94, 94, 3996};
+    PedalSensorData_s test_pedal_not_pressed = {94, 3996, 94, 3996};
+
+    auto res = pedals.evaluate_pedals(test_pedal_half_pressed_one, 1000);
+
+    EXPECT_TRUE(res.accel_is_implausible);
+    EXPECT_NEAR(res.accel_percent, 0.0, 0.001);
 }
