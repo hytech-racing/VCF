@@ -61,9 +61,21 @@ PedalsSystemData_s PedalsSystem::evaluate_pedals(PedalSensorData_s pedals_data, 
 
     out.brake_and_accel_pressed_implausibility_high = accel_pressed && out.brake_is_pressed;
 
+    bool accel_pedal_oor = (_evaluate_pedal_oor(accel_1, static_cast<int>(_accelParams.min_sensor_pedal_1), static_cast<int>(_accelParams.max_sensor_pedal_1))
+                            || _evaluate_pedal_oor(accel_2, static_cast<int>(_accelParams.min_sensor_pedal_2), static_cast<int>(_accelParams.max_sensor_pedal_2)));
 
-    bool implausibility = (out.accel_is_implausible || out.brake_and_accel_pressed_implausibility_high || out.brake_is_implausible);
+    bool brake_pedal_oor = (_evaluate_pedal_oor(brake_1, static_cast<int>(_brakeParams.min_sensor_pedal_1), static_cast<int>(_brakeParams.max_sensor_pedal_1))
+                            || _evaluate_pedal_oor(brake_2, static_cast<int>(_brakeParams.min_sensor_pedal_2), static_cast<int>(_brakeParams.max_sensor_pedal_2)));
+    bool implausibility = (out.accel_is_implausible || out.brake_and_accel_pressed_implausibility_high || out.brake_is_implausible || brake_pedal_oor || accel_pedal_oor);
     
+    
+    // std::cout << "implaus " << implausibility <<std::endl;
+    // std::cout << "accel_pedal_oor " << accel_pedal_oor <<std::endl;
+    // std::cout << "brake_pedal_oor " << brake_pedal_oor <<std::endl;
+    // std::cout << "accel_1 " << accel_1<<std::endl;
+    // std::cout << "accel_2 " << accel_2<<std::endl;
+    // std::cout << "brake_1 " << brake_1<<std::endl;
+    // std::cout << "brake_2 " << brake_2<<std::endl;
     if (implausibility && (_implausibilityStartTime == 0))
     {
         _implausibilityStartTime = curr_millis;
@@ -79,19 +91,15 @@ PedalsSystemData_s PedalsSystem::evaluate_pedals(PedalSensorData_s pedals_data, 
         _implaus_occured = false;
     } 
 
-    bool oor = implausibility && (_evaluate_pedal_oor(accel_1, static_cast<int>(_accelParams.min_sensor_pedal_1), static_cast<int>(_accelParams.max_sensor_pedal_1))
-                                 || _evaluate_pedal_oor(accel_2, static_cast<int>(_accelParams.min_sensor_pedal_2), static_cast<int>(_accelParams.max_sensor_pedal_2)));
-    
     out.mech_brake_is_active = out.brake_percent >= _brakeParams.mechanical_activation_percentage;
 
     
     out.implausibility_has_exceeded_max_duration = _max_duration_of_implausibility_exceeded(curr_millis);
 
-    bool oor_or_implausible = (out.implausibility_has_exceeded_max_duration || oor);
     // std::cout << "implaus "<< _implaus_occured <<std::endl;
     out.accel_percent = (_implaus_occured) ? 0 : out.accel_percent;
     // we dont care if brake is implaus, as long as it isnt oor (likely errored)
-    out.brake_percent = (oor) ? 0 : out.brake_percent; 
+    out.brake_percent = (brake_pedal_oor) ? 0 : out.brake_percent; 
     return out;
 }
 
