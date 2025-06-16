@@ -23,6 +23,14 @@ class VCRInterface
 
         VehicleState_e get_vehicle_state() {return _vehicle_state_value;}
         bool get_db_in_ctrl() {return _is_db_in_ctrl;}
+
+        
+        void receive_inverter1_error(const CAN_message_t &can_msg);
+        void receive_inverter2_error(const CAN_message_t &can_msg);
+        void receive_inverter3_error(const CAN_message_t &can_msg);
+        void receive_inverter4_error(const CAN_message_t &can_msg);
+
+        bool get_inv_error() {return _inv1_error || _inv2_error || _inv3_error || _inv4_error;}
     
     private: 
 
@@ -30,6 +38,12 @@ class VCRInterface
         VehicleState_e _vehicle_state_value;
         DrivetrainState_e _drivetrain_state_value;
         bool _is_db_in_ctrl;
+
+
+        bool _inv1_error = false;
+        bool _inv2_error = false;
+        bool _inv3_error = false;  
+        bool _inv4_error = false;
         TorqueLimit_e _torque_limit = TorqueLimit_e::TCMUX_LOW_TORQUE;
 
 };

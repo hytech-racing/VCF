@@ -96,20 +96,62 @@ void NeopixelController::refresh_neopixels(VCFData_s &vcf_data, VCRData_s &vcr_d
             break;
         }
     }
+
+    
+    LED_color_e vn_status_color = LED_color_e::OFF;
+    switch (interfaces.db_interface.get_vn_status())
+    {
+        case 0:
+        {
+            vn_status_color = LED_color_e::RED;
+            break;
+        }
+        case 1:
+        {
+            vn_status_color = LED_color_e::YELLOW;
+            break;
+        }
+        case 2:
+        {
+            vn_status_color = LED_color_e::GREEN;
+            break;
+        }
+        default:
+        {
+            vn_status_color = LED_color_e::RED;
+            break;
+        }
+    }
+    LED_color_e mech_brake_color = LED_color_e::OFF;
+    switch (vcf_data.system_data.pedals_system_data.mech_brake_is_active)
+    {
+        case true:
+        {
+            mech_brake_color = LED_color_e::RED;
+            break;
+        }
+        case false:
+        {
+            mech_brake_color = LED_color_e::OFF;
+            break;
+        }
+    }
     constexpr float glv_critical_voltage = 22.0f;
 
+
     set_neopixel_color(LED_ID_e::BRAKE, brake_light_color);
-    set_neopixel_color(LED_ID_e::LAUNCH_CTRL, LED_color_e::OFF); // Unused for now
+    set_neopixel_color(LED_ID_e::LAUNCH_CTRL, mech_brake_color);
     set_neopixel_color(LED_ID_e::CRIT_CHARGE, interfaces.acu_interface.get_voltages_not_critical() ? LED_color_e::GREEN : LED_color_e::RED); // Unused for now
-    set_neopixel_color(LED_ID_e::INERTIA, LED_color_e::OFF); // Unused for now
+    set_neopixel_color(LED_ID_e::INERTIA, vn_status_color); // Unused for now
     set_neopixel_color(LED_ID_e::COCKPIT_BRB, LED_color_e::OFF); // Unused for now
-    set_neopixel_color(LED_ID_e::BOTS, LED_color_e::OFF); // Unused for now
+    set_neopixel_color(LED_ID_e::BOTS, mech_brake_color); //RED on Mech Brake
     set_neopixel_color(LED_ID_e::IMD, interfaces.dash_interface.imd_ok ? LED_color_e::GREEN : LED_color_e::RED);
     set_neopixel_color(LED_ID_e::BMS, interfaces.dash_interface.bms_ok ? LED_color_e::GREEN : LED_color_e::RED);
-    set_neopixel_color(LED_ID_e::MC_ERR, (vcr_data.interface_data.inverter_data.FL.error || vcr_data.interface_data.inverter_data.FR.error || vcr_data.interface_data.inverter_data.RL.error || vcr_data.interface_data.inverter_data.RR.error) ? LED_color_e::RED : LED_color_e::OFF);
+    set_neopixel_color(LED_ID_e::MC_ERR, (interfaces.vcr_interface.get_inv_error()) ? LED_color_e::RED : LED_color_e::GREEN);
     set_neopixel_color(LED_ID_e::RDY_DRIVE, ready_drive_color);
     set_neopixel_color(LED_ID_e::GLV, vcr_data.interface_data.current_sensor_data.twentyfour_volt_sensor > glv_critical_voltage ? LED_color_e::GREEN : LED_color_e::OFF); // No sensor there yet
-    set_neopixel_color(LED_ID_e::TORQUE_MODE, torque_mode_color);
+    set_neopixel_color(LED_ID_e::TORQUE_MODE, mech_brake_color); //RED on Mech Brake
+
 
     _neopixels.show();
 

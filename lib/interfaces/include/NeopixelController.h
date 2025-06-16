@@ -72,4 +72,4 @@ class NeopixelController
 
 using NeopixelControllerInstance = etl::singleton<NeopixelController>;
 
-#endif /* NEOPIXEL_CONTROLLER_H */
+#endif /* NEOPIXEL_CONTROLLER_H */  
