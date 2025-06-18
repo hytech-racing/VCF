@@ -14,8 +14,8 @@ constexpr int ADC2_CS = 16; // MCP3208. ADC2 in VCF schematic. Used for pedal po
 
 constexpr int BTN_DIM_READ = 29;
 constexpr int BTN_PRESET_READ = 31;
-constexpr int BTN_MC_CYCLE_READ = 27;
-constexpr int BTN_MODE_READ = 26;
+constexpr int BTN_MC_CYCLE_READ = 26; // MUST NOT BE MAPPED ANYMORE. USED TO BE 27.
+constexpr int BTN_MODE_READ = 27; // USED TO BE 26.
 constexpr int BTN_START_READ = 30;
 constexpr int BTN_DATA_READ = 28;
 constexpr int BUZZER_CONTROL_PIN = 1;
