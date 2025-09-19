@@ -52,6 +52,32 @@ void NeopixelController::refresh_neopixels(VCFData_s &vcf_data, VCRData_s &vcr_d
         brake_light_color = LED_color_e::RED;
     }
 
+    LED_color_e pack_color = LED_color_e::OFF;
+    if (interfaces.acu_interface.get_cell_voltage() > 4.1)
+    {
+        pack_color = LED_color_e::PURPLE;
+    }
+    else if (interfaces.acu_interface.get_cell_voltage() > 3.8)
+    {
+        pack_color = LED_color_e::BLUE;
+    }
+    else if (interfaces.acu_interface.get_cell_voltage() > 3.6)
+    {
+        pack_color = LED_color_e::GREEN;
+    }
+    else if (interfaces.acu_interface.get_cell_voltage() > 3.5)
+    {
+        pack_color = LED_color_e::YELLOW;
+    }
+    else if (interfaces.acu_interface.get_cell_voltage() > 3.4)
+    {
+        pack_color = LED_color_e::ORANGE;
+    }
+    else if (interfaces.acu_interface.get_cell_voltage() < 3.4)
+    {
+        pack_color = LED_color_e::RED;
+    }
+
     LED_color_e torque_mode_color = LED_color_e::OFF;
     switch (interfaces.vcr_interface.get_torque_limit_mode())
     {
@@ -82,25 +108,26 @@ void NeopixelController::refresh_neopixels(VCFData_s &vcf_data, VCRData_s &vcr_d
     {
         case VehicleState_e::READY_TO_DRIVE:
         {
-            interfaces.vcr_interface.get_db_in_ctrl() ? LED_color_e::BLUE : LED_color_e::GREEN;
+            interfaces.vcr_interface.get_db_in_ctrl() ? ready_drive_color = LED_color_e::BLUE : ready_drive_color = LED_color_e::GREEN;
             break;
         }
         case VehicleState_e::WANTING_READY_TO_DRIVE:
         {
-            LED_color_e::YELLOW;
+            ready_drive_color = LED_color_e::YELLOW;
             break;
         }
         default:
         {
-            LED_color_e::RED;
+            ready_drive_color = LED_color_e::RED;
             break;
         }
     }
+
     constexpr float glv_critical_voltage = 22.0f;
 
     set_neopixel_color(LED_ID_e::BRAKE, brake_light_color);
-    set_neopixel_color(LED_ID_e::LAUNCH_CTRL, LED_color_e::OFF); // Unused for now
-    set_neopixel_color(LED_ID_e::CRIT_CHARGE, interfaces.acu_interface.get_voltages_not_critical() ? LED_color_e::GREEN : LED_color_e::RED); // Unused for now
+    set_neopixel_color(LED_ID_e::LAUNCH_CTRL, pack_color); // Unused for now
+    set_neopixel_color(LED_ID_e::CRIT_CHARGE, LED_color_e::OFF); // Unused for now
     set_neopixel_color(LED_ID_e::INERTIA, LED_color_e::OFF); // Unused for now
     set_neopixel_color(LED_ID_e::COCKPIT_BRB, LED_color_e::OFF); // Unused for now
     set_neopixel_color(LED_ID_e::BOTS, LED_color_e::OFF); // Unused for now
@@ -108,7 +135,7 @@ void NeopixelController::refresh_neopixels(VCFData_s &vcf_data, VCRData_s &vcr_d
     set_neopixel_color(LED_ID_e::BMS, interfaces.dash_interface.bms_ok ? LED_color_e::GREEN : LED_color_e::RED);
     set_neopixel_color(LED_ID_e::MC_ERR, (vcr_data.interface_data.inverter_data.FL.error || vcr_data.interface_data.inverter_data.FR.error || vcr_data.interface_data.inverter_data.RL.error || vcr_data.interface_data.inverter_data.RR.error) ? LED_color_e::RED : LED_color_e::OFF);
     set_neopixel_color(LED_ID_e::RDY_DRIVE, ready_drive_color);
-    set_neopixel_color(LED_ID_e::GLV, vcr_data.interface_data.current_sensor_data.twentyfour_volt_sensor > glv_critical_voltage ? LED_color_e::GREEN : LED_color_e::OFF); // No sensor there yet
+    set_neopixel_color(LED_ID_e::GLV, vcr_data.interface_data.current_sensor_data.twentyfour_volt_sensor > glv_critical_voltage ? LED_color_e::GREEN : LED_color_e::YELLOW); // No sensor there yet
     set_neopixel_color(LED_ID_e::TORQUE_MODE, torque_mode_color);
 
     _neopixels.show();

@@ -43,7 +43,10 @@ enum class LED_color_e
     RED = 0xFF0000,
     INIT_COLOR = 0xFF007F,
     BLUE = 0xFF,
+    PURPLE = 0x703fab,
+    ORANGE = 0xf5a742,
 };
+
 
 class NeopixelController
 {

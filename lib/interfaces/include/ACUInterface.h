@@ -13,14 +13,14 @@ class ACUInterface
 
         ACUCoreData_s get_last_recvd_data() {return _last_recvd_data;}
 
-        bool get_voltages_not_critical() {return _voltages_not_critical;}
+        float get_cell_voltage() {return _min_cell_voltage;}
 
         void receive_ACU_voltages(const CAN_message_t &can_msg);
     
     private: 
 
         ACUCoreData_s _last_recvd_data;
-        bool _voltages_not_critical = false;
+        float _min_cell_voltage = 0;
 
 };
 
