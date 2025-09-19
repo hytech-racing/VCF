@@ -187,7 +187,7 @@ void setup() {
         .min_pedal_2 = EEPROMUtilities::read_eeprom_32bit(BRAKE_2_MIN_ADDR),
         .max_pedal_1 = EEPROMUtilities::read_eeprom_32bit(BRAKE_1_MAX_ADDR),
         .max_pedal_2 = EEPROMUtilities::read_eeprom_32bit(BRAKE_2_MAX_ADDR),
-        .activation_percentage = 0.075, // NOLINT
+        .activation_percentage = 0.50, // NOLINT
         .min_sensor_pedal_1 = 90, // NOLINT
         .min_sensor_pedal_2 = 90, // NOLINT
         .max_sensor_pedal_1 = 4000, // NOLINT
