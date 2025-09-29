@@ -53,27 +53,27 @@ void NeopixelController::refresh_neopixels(VCFData_s &vcf_data, VCRData_s &vcr_d
     }
 
     LED_color_e pack_color = LED_color_e::OFF;
-    if (interfaces.acu_interface.get_cell_voltage() > 4.1)
+    if (interfaces.acu_interface.get_cell_voltage() > 4.1) //NOLINT 4.1 is near max voltage
     {
         pack_color = LED_color_e::PURPLE;
     }
-    else if (interfaces.acu_interface.get_cell_voltage() > 3.8)
+    else if (interfaces.acu_interface.get_cell_voltage() > 3.8) //NOLINT 3.8 is second from max voltage
     {
         pack_color = LED_color_e::BLUE;
     }
-    else if (interfaces.acu_interface.get_cell_voltage() > 3.6)
+    else if (interfaces.acu_interface.get_cell_voltage() > 3.6) //NOLINT volts
     {
         pack_color = LED_color_e::GREEN;
     }
-    else if (interfaces.acu_interface.get_cell_voltage() > 3.5)
+    else if (interfaces.acu_interface.get_cell_voltage() > 3.5) //NOLINT volts
     {
         pack_color = LED_color_e::YELLOW;
     }
-    else if (interfaces.acu_interface.get_cell_voltage() > 3.4)
+    else if (interfaces.acu_interface.get_cell_voltage() > 3.4) //NOLINT volts
     {
         pack_color = LED_color_e::ORANGE;
     }
-    else if (interfaces.acu_interface.get_cell_voltage() < 3.4)
+    else if (interfaces.acu_interface.get_cell_voltage() < 3.4) //NOLINT volts
     {
         pack_color = LED_color_e::RED;
     }
