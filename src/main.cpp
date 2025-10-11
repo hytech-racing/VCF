@@ -88,8 +88,13 @@ HT_TASK::TaskResponse debug_print(const unsigned long& sysMicros, const HT_TASK:
     // Serial.print("   ");
     // Serial.print(PedalsSystemInstance::instance().get_accel_params().max_pedal_2);
     // Serial.println();
-    // Serial.println("brake 1 min/max");
-    // Serial.print(PedalsSystemInstance::instance().get_brake_params().min_pedal_1);
+
+
+    // Serial.print("accel_1:     ");
+    // Serial.println(VCFData_sInstance::instance().interface_data.pedal_sensor_data.accel_1);
+    // Serial.print("accel_2:     ");
+    // Serial.println(VCFData_sInstance::instance().interface_data.pedal_sensor_data.accel_2);
+    // // Serial.print(PedalsSystemInstance::instance().get_brake_params().min_pedal_1);
     // Serial.print("   ");
     // Serial.print(PedalsSystemInstance::instance().get_brake_params().max_pedal_1);
     // Serial.println();
@@ -242,6 +247,7 @@ void setup() {
     HT_SCHED::Scheduler::getInstance().schedule(debug_state_print_task);
     HT_SCHED::Scheduler::getInstance().schedule(pedals_calibration_task);
     HT_SCHED::Scheduler::getInstance().schedule(ethernet_send_task);
+
 }
 
 void loop() {
