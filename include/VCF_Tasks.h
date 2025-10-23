@@ -33,6 +33,7 @@
 #include "SharedFirmwareTypes.h"
 #include "VCFCANInterfaceImpl.h"
 #include "VCFEthernetInterface.h"
+#include "PedalsSystem.h"
 #include "ht_sched.hpp"
 #include "ht_task.hpp"
 #include "BuzzerController.h"

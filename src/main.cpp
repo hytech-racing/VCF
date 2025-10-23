@@ -225,6 +225,11 @@ void setup() {
     // Setup scheduler
     HT_SCHED::Scheduler::getInstance().setTimingFunction(micros);
 
+    EthernetIPDefsInstance::create();
+    uint8_t mac[6]; // NOLINT (mac addresses are always 6 bytes)
+    qindesign::network::Ethernet.macAddress(&mac[0]);
+    qindesign::network::Ethernet.begin(mac, EthernetIPDefsInstance::instance().vcf_ip, EthernetIPDefsInstance::instance().default_dns, EthernetIPDefsInstance::instance().default_gateway, EthernetIPDefsInstance::instance().car_subnet);
+
     // Schedule Tasks
     HT_SCHED::Scheduler::getInstance().schedule(kick_watchdog_task);
     HT_SCHED::Scheduler::getInstance().schedule(async_main); 
