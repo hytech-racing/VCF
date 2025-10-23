@@ -25,6 +25,7 @@ namespace VCFEthernetInterface
      */
     void receive_pb_msg_vcr(const hytech_msgs_VCRData_s &msg_in, VCFData_s &shared_state, unsigned long curr_millis);
 
+    constexpr const size_t ver_hash_len = 9;
 }
 
 #endif /* VCF_ETHERNET_INTERFACE_H */

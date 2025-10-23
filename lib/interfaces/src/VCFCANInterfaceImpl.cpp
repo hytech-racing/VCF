@@ -1,4 +1,5 @@
 #include "VCFCANInterfaceImpl.h"
+#include "BuzzerController.h"
 
 namespace VCFCANInterfaceImpl {
     void on_main_can_recv(const CAN_message_t &msg)
@@ -10,12 +11,32 @@ namespace VCFCANInterfaceImpl {
 
     void vcf_recv_switch(CANInterfaces &interfaces, const CAN_message_t &msg, unsigned long millis)
     {
-        // TODO Implement this later
         switch (msg.id) 
         {
+            case DASHBOARD_BUZZER_CONTROL_CANID:
+            {
+                interfaces.vcr_interface.receive_dash_control_data(msg);
+                break;
+            } 
+            case BMS_VOLTAGES_CANID:
+            {
+                interfaces.acu_interface.receive_ACU_voltages(msg);
+                break;
+            }
+            case ACU_OK_CANID: 
+            {
+                interfaces.dash_interface.receive_ACU_OK(msg);
+                break;
+            }    
+            case CAR_STATES_CANID:
+            {
+                interfaces.vcr_interface.receive_car_states_data(msg);
+                break;
+            }
             default:
                 break;
-        }
+            }
+
     }
 
     void send_all_CAN_msgs(CANTXBufferType &buffer, FlexCAN_T4_Base *can_interface)
@@ -29,4 +50,5 @@ namespace VCFCANInterfaceImpl {
             can_interface->write(msg);
         }
     }
+
 }
