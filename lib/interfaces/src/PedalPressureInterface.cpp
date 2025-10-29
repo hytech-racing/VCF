@@ -8,6 +8,8 @@ constexpr uint32_t PEDAL_PRESSURE_CANID = 0x0CBU;
 constexpr uint8_t PEDAL_PRESSURE_DLC = 2U;  // 16-bit pedal pressure
 constexpr uint8_t BYTE_MASK = 0xFF;
 constexpr size_t CAN_MSG_SIZE = sizeof(CAN_message_t);
+constexpr uint8_t PEDAL_PRESSURE_SHIFT = 8U;
+
 
 void PedalPressureInterface::send_pedal_pressure_CAN(uint16_t pedal_pressure)
 {
@@ -19,7 +21,7 @@ void PedalPressureInterface::send_pedal_pressure_CAN(uint16_t pedal_pressure)
 
     // Encode the 16-bit pedal pressure
     msg.buf[0] = static_cast<uint8_t>(pedal_pressure & BYTE_MASK);        // low byte
-    msg.buf[1] = static_cast<uint8_t>((pedal_pressure >> 8) & BYTE_MASK); // high byte
+    msg.buf[1] = static_cast<uint8_t>((pedal_pressure >> PEDAL_PRESSURE_SHIFT) & BYTE_MASK); // high byte
 
     // Copy to raw buffer for TX queue
     uint8_t raw_buf[CAN_MSG_SIZE];
