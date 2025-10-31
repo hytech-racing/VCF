@@ -21,6 +21,14 @@ class VCRInterface
 
         void receive_car_states_data(const CAN_message_t &can_msg);
 
+        void receive_inverter_status_1(const CAN_message_t &can_msg);
+
+        void receive_inverter_status_2(const CAN_message_t &can_msg);
+
+        void receive_inverter_status_3(const CAN_message_t &can_msg);
+
+        void receive_inverter_status_4(const CAN_message_t &can_msg);
+
         VehicleState_e get_vehicle_state() {return _vehicle_state_value;}
         bool get_db_in_ctrl() {return _is_db_in_ctrl;}
     
@@ -30,6 +38,10 @@ class VCRInterface
         VehicleState_e _vehicle_state_value;
         DrivetrainState_e _drivetrain_state_value;
         bool _is_db_in_ctrl;
+        bool _inv1_error;
+        bool _inv2_error;
+        bool _inv3_error;
+        bool _inv4_error;
         TorqueLimit_e _torque_limit = TorqueLimit_e::TCMUX_LOW_TORQUE;
 
 };
