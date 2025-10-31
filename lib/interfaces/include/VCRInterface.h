@@ -31,7 +31,7 @@ class VCRInterface
 
         VehicleState_e get_vehicle_state() {return _vehicle_state_value;}
         bool get_db_in_ctrl() {return _is_db_in_ctrl;}
-    
+        bool get_inverter_error() {return _inv1_error || _inv2_error || _inv3_error || _inv4_error;}
     private: 
 
         bool _is_in_pedals_calibration_state = false;
