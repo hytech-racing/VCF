@@ -30,26 +30,28 @@ void VCRInterface::receive_inverter_status_1(const CAN_message_t &can_msg)
 {
     INV1_STATUS_t unpacked_msg;
     Unpack_INV1_STATUS_hytech(&unpacked_msg, can_msg.buf, can_msg.len); //NOLINT
-    _inv1_error = unpacked_msg.error;
+    _vcr_data.interface_data.inverter_data.FL.error = unpacked_msg.error;
 }
-
 void VCRInterface::receive_inverter_status_2(const CAN_message_t &can_msg)
 {
     INV2_STATUS_t unpacked_msg;
     Unpack_INV2_STATUS_hytech(&unpacked_msg, can_msg.buf, can_msg.len); //NOLINT
-    _inv2_error = unpacked_msg.error;
+    _vcr_data.interface_data.inverter_data.FR.error = unpacked_msg.error;
 }
-
 void VCRInterface::receive_inverter_status_3(const CAN_message_t &can_msg)
 {
     INV3_STATUS_t unpacked_msg;
     Unpack_INV3_STATUS_hytech(&unpacked_msg, can_msg.buf, can_msg.len); //NOLINT
-    _inv3_error = unpacked_msg.error;
+    _vcr_data.interface_data.inverter_data.RL.error = unpacked_msg.error;
 }
-
 void VCRInterface::receive_inverter_status_4(const CAN_message_t &can_msg)
 {
     INV4_STATUS_t unpacked_msg;
     Unpack_INV4_STATUS_hytech(&unpacked_msg, can_msg.buf, can_msg.len); //NOLINT
-    _inv4_error = unpacked_msg.error;
+    _vcr_data.interface_data.inverter_data.RR.error = unpacked_msg.error;
+}
+
+bool VCRInterface::get_inverter_error()
+{
+    _inv_error_msg = _vcr_data.interface_data.inverter_data.FL.error || _vcr_data.interface_data.inverter_data.FR.error || _vcr_data.interface_data.inverter_data.RL.error || _vcr_data.interface_data.inverter_data.RR.error;
 }

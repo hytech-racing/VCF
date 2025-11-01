@@ -31,17 +31,15 @@ class VCRInterface
 
         VehicleState_e get_vehicle_state() {return _vehicle_state_value;}
         bool get_db_in_ctrl() {return _is_db_in_ctrl;}
-        bool get_inverter_error() {return _inv1_error || _inv2_error || _inv3_error || _inv4_error;}
+        bool get_inverter_error();
     private: 
 
         bool _is_in_pedals_calibration_state = false;
         VehicleState_e _vehicle_state_value;
         DrivetrainState_e _drivetrain_state_value;
         bool _is_db_in_ctrl;
-        bool _inv1_error;
-        bool _inv2_error;
-        bool _inv3_error;
-        bool _inv4_error;
+        bool _inv_error_msg;
+        VCRData_s _vcr_data;
         TorqueLimit_e _torque_limit = TorqueLimit_e::TCMUX_LOW_TORQUE;
 
 };
