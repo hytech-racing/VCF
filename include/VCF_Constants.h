@@ -25,64 +25,6 @@ constexpr int LEFT_SHIFTER = 10;
 constexpr int NEOPIXEL_CONTROL_PIN = 0;
 constexpr int NEOPIXEL_COUNT = 12; // 12 neopixeles on dashboard
 
-/* -------------------------------------------------- */
-/*                 ADC pins and configs               */
-/* -------------------------------------------------- */
-
-/* Channels on ADC_1 */
-constexpr int FR_LOADCELL_CHANNEL     = 0;
-constexpr int FL_LOADCELL_CHANNEL     = 1;
-constexpr int FL_SUS_POT_CHANNEL      = 2;
-constexpr int FR_SUS_POT_CHANNEL      = 3;
-constexpr int STEERING_2_CHANNEL      = 4;
-constexpr int STEERING_1_CHANNEL      = 5;
-// constexpr int UNUSED_CHANNEL       = 6;
-// constexpr int UNUSED_CHANNEL       = 7;
-
-/* Channels on ADC_2 */
-// constexpr int UNUSED_CHANNEL       = 0;
-// constexpr int UNUSED_CHANNEL       = 1;
-constexpr int ACCEL_1_CHANNEL         = 2;
-constexpr int ACCEL_2_CHANNEL         = 3;
-constexpr int BRAKE_1_CHANNEL         = 4;
-constexpr int BRAKE_2_CHANNEL         = 5;
-// constexpr int UNUSED_CHANNEL       = 6;
-// constexpr int UNUSED_CHANNEL       = 7;
-
-/* Scaling and offset */
-constexpr float STEERING_1_SCALE = 1; // TODO: Figure out what these mean
-constexpr float STEERING_1_OFFSET = 0;
-constexpr float STEERING_2_SCALE = 1; // TODO: Figure out if steering 2 = steering 1
-constexpr float STEERING_2_OFFSET = 0;
-// Scale for steering sensor = 0.02197265 . Offset has to be mechanically determined
-
-// constexpr float FR_LOADCELL_SCALE = 0.81; //Values are from the old MCU rev15 // TODO: Calibrate load cells
-// constexpr float FR_LOADCELL_OFFSET = 36.8;
-// constexpr float FL_LOADCELL_SCALE = 0.63;
-// constexpr float FL_LOADCELL_OFFSET = -3.9;
-
-constexpr float LBS_TO_NEWTONS = 4.4482216153;
-
-constexpr float FR_LOADCELL_SCALE =  1.0; //Values 
-constexpr float FR_LOADCELL_OFFSET = 0.0;
-constexpr float FL_LOADCELL_SCALE =  1.0; //Values 
-constexpr float FL_LOADCELL_OFFSET = 0.0;
-
-constexpr float FR_SUS_POT_SCALE = 1;
-constexpr float FR_SUS_POT_OFFSET = 0;
-constexpr float FL_SUS_POT_SCALE = 1;
-constexpr float FL_SUS_POT_OFFSET = 0;
-
-constexpr float ACCEL_1_SCALE = 1; // TODO: Figure out what these should be
-constexpr float ACCEL_1_OFFSET = 0;
-constexpr float ACCEL_2_SCALE = 1;
-constexpr float ACCEL_2_OFFSET = 0;
-constexpr float BRAKE_1_SCALE = 1;
-constexpr float BRAKE_1_OFFSET = 0;
-constexpr float BRAKE_2_SCALE = 1;
-constexpr float BRAKE_2_OFFSET = 0;
-
-
 
 /* -------------------------------------------------- */
 /*           Task Periods and Priorities              */

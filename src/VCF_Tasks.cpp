@@ -14,7 +14,7 @@
 #include "SystemTimeInterface.h"
 #include "PedalsSystem.h"
 #include "WatchdogSystem.h"
-
+#include "ADCInterface.h"
 #include "WatchdogSystem.h"
 #include "Arduino.h"
 
@@ -84,7 +84,7 @@ HT_TASK::TaskResponse update_pedals_calibration_task(const unsigned long& sysMic
     return HT_TASK::TaskResponse::YIELD;
 }
 
-// bool init_read_gpio_task()
+// bool _read_gpio_task()
 // {
 //     // Setting digital/analog buttons D10-D6, A8 as inputs
 //     pinMode(BTN_DIM_READ, INPUT);
