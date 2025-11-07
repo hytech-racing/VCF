@@ -38,10 +38,8 @@ class VCRInterface
         VehicleState_e _vehicle_state_value;
         DrivetrainState_e _drivetrain_state_value;
         bool _is_db_in_ctrl;
-        bool _inv_error_msg;
         VCRData_s _vcr_data;
         TorqueLimit_e _torque_limit = TorqueLimit_e::TCMUX_LOW_TORQUE;
-
 };
 
 
