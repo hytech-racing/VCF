@@ -7,7 +7,14 @@
 #include "etl/singleton.h"
 #include "hytech.h"
 #include "FlexCAN_T4.h"
+struct InvData {
 
+    bool FL;
+    bool FR;
+    bool RL;
+    bool RR;
+
+};
 class VCRInterface 
 {
     public:
@@ -32,6 +39,7 @@ class VCRInterface
         VehicleState_e get_vehicle_state() {return _vehicle_state_value;}
         bool get_db_in_ctrl() {return _is_db_in_ctrl;}
         bool get_inverter_error();
+
     private: 
 
         bool _is_in_pedals_calibration_state = false;
@@ -40,9 +48,8 @@ class VCRInterface
         bool _is_db_in_ctrl;
         VCRData_s _vcr_data;
         TorqueLimit_e _torque_limit = TorqueLimit_e::TCMUX_LOW_TORQUE;
+        InvData _inv_error_status;
 };
-
-
 
 using VCRInterfaceInstance = etl::singleton<VCRInterface>;
 

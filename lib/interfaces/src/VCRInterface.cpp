@@ -53,5 +53,14 @@ void VCRInterface::receive_inverter_status_4(const CAN_message_t &can_msg)
 
 bool VCRInterface::get_inverter_error()
 {
-    return _vcr_data.interface_data.inverter_data.FL.error || _vcr_data.interface_data.inverter_data.FR.error || _vcr_data.interface_data.inverter_data.RL.error || _vcr_data.interface_data.inverter_data.RR.error;
+    _inv_error_status.FL = _vcr_data.interface_data.inverter_data.FL.error;
+    _inv_error_status.FR = _vcr_data.interface_data.inverter_data.FR.error;
+    _inv_error_status.RL = _vcr_data.interface_data.inverter_data.RL.error;
+    _inv_error_status.RR = _vcr_data.interface_data.inverter_data.RR.error;
+
+    return _inv_error_status.FL || _inv_error_status.FR || _inv_error_status.RL || _inv_error_status.RR;
+
 }
+
+
+
