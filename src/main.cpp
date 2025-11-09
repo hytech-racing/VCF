@@ -160,6 +160,8 @@ void setup() {
     adc_2_offsets[BRAKE_1_CHANNEL] = BRAKE_1_OFFSET;
     adc_2_scales[BRAKE_2_CHANNEL] = BRAKE_2_SCALE;
     adc_2_offsets[BRAKE_2_CHANNEL] = BRAKE_2_OFFSET;
+    adc_2_offsets[PEDAL_PRESSURE_CHANNEL] = PEDAL_PRESSURE_OFFSET; 
+    adc_2_scales[PEDAL_PRESSURE_CHANNEL] = PEDAL_PRESSURE_SCALE;
     ADCsOnVCFInstance::create(adc_1_scales, adc_1_offsets, adc_2_scales, adc_2_offsets);
 
     EthernetIPDefsInstance::create();

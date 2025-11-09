@@ -40,7 +40,7 @@ constexpr int STEERING_1_CHANNEL      = 5;
 // constexpr int UNUSED_CHANNEL       = 7;
 
 /* Channels on ADC_2 */
-// constexpr int UNUSED_CHANNEL       = 0;
+constexpr int PEDAL_PRESSURE_CHANNEL  = 0;
 // constexpr int UNUSED_CHANNEL       = 1;
 constexpr int ACCEL_1_CHANNEL         = 2;
 constexpr int ACCEL_2_CHANNEL         = 3;
@@ -81,6 +81,8 @@ constexpr float BRAKE_1_SCALE = 1;
 constexpr float BRAKE_1_OFFSET = 0;
 constexpr float BRAKE_2_SCALE = 1;
 constexpr float BRAKE_2_OFFSET = 0;
+constexpr float PEDAL_PRESSURE_SCALE = 1; // TODO: Figure out what these should be from calibration/ datasheet
+constexpr float PEDAL_PRESSURE_OFFSET = 0; //TODO: Figure out what these should be from calibration/ datasheet
 
 
 
