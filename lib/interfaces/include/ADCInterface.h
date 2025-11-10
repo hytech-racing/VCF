@@ -6,111 +6,168 @@
 #include <Arduino.h>
 #include "SharedFirmwareTypes.h"
 #include <MCP_ADC.h>
-#include <VCF_Constants.h>
 #include "etl/singleton.h"
 
-/* -------------------------------------------------- */
-/*                 ADC pins and configs               */
-/* -------------------------------------------------- */
-/* Channels Per ADC*/
-constexpr unsigned int MCP_ADC_CHANNELS = 8;
+namespace adc_default_parameters {
+  constexpr const unsigned int channels_within_mcp_adc = 8;
+}
+struct ADCPinout_s {
+    int adc1_spi_cs_pin;
+    int adc2_spi_cs_pin;
+};
 
-/* Filter Alpha*/
-constexpr unsigned int IIR_FILTER_ALPHA = 0.01f;
+struct ADCChannels_s {
+    /* ADC 1 */
+    int fr_loadcell_channel;
+    int fl_loadcell_channel;
+    int fr_suspot_channel;
+    int fl_suspot_channel;
+    int steering_1_channel;
+    int steering_2_channel;
 
-/* Channels on ADC_1 */
-constexpr int FR_LOADCELL_CHANNEL     = 0;
-constexpr int FL_LOADCELL_CHANNEL     = 1;
-constexpr int FL_SUS_POT_CHANNEL      = 2;
-constexpr int FR_SUS_POT_CHANNEL      = 3;
-constexpr int STEERING_2_CHANNEL      = 4;
-constexpr int STEERING_1_CHANNEL      = 5;
-// constexpr int UNUSED_CHANNEL       = 6;
-// constexpr int UNUSED_CHANNEL       = 7;
+    /* ADC 2 */
+    int accel_1_channel;
+    int accel_2_channel;
+    int brake_1_channel;
+    int brake_2_channel;
+};
 
-/* Channels on ADC_2 */
-// constexpr int UNUSED_CHANNEL       = 0;
-// constexpr int UNUSED_CHANNEL       = 1;
-constexpr int ACCEL_1_CHANNEL         = 2;
-constexpr int ACCEL_2_CHANNEL         = 3;
-constexpr int BRAKE_1_CHANNEL         = 4;
-constexpr int BRAKE_2_CHANNEL         = 5;
-// constexpr int UNUSED_CHANNEL       = 6;
-// constexpr int UNUSED_CHANNEL       = 7;
+struct ADCScales_s {
+    /* ADC 1 */
+    float steering_1_scale;
+    float steering_2_scale;
+    float fr_loadcell_scale;
+    float fl_loadcell_scale;
+    float fr_suspot_scale;
+    float fl_suspot_scale;
 
-/* Scaling and offset */
-constexpr float STEERING_1_SCALE = 1; // TODO: Figure out what these mean
-constexpr float STEERING_1_OFFSET = 0;
-constexpr float STEERING_2_SCALE = 1; // TODO: Figure out if steering 2 = steering 1
-constexpr float STEERING_2_OFFSET = 0;
-// Scale for steering sensor = 0.02197265 . Offset has to be mechanically determined
+    /* ADC 2 */
+    float accel_1_scale;
+    float accel_2_scale;
+    float brake_1_scale;
+    float brake_2_scale;
+};
 
-// constexpr float FR_LOADCELL_SCALE = 0.81; //Values are from the old MCU rev15 // TODO: Calibrate load cells
-// constexpr float FR_LOADCELL_OFFSET = 36.8;
-// constexpr float FL_LOADCELL_SCALE = 0.63;
-// constexpr float FL_LOADCELL_OFFSET = -3.9;
+struct ADCOffsets_s {
+    /* ADC 1 */
+    float steering_1_offset;
+    float steering_2_offset;
+    float fr_loadcell_offset;
+    float fl_loadcell_offset;
+    float fr_suspot_offset;
+    float fl_suspot_offset;
 
-constexpr float LBS_TO_NEWTONS = 4.4482216153;
+    /* ADC 2 */
+    float accel_1_offset;
+    float accel_2_offset;
+    float brake_1_offset;
+    float brake_2_offset;
+};
 
-constexpr float FR_LOADCELL_SCALE =  1.0; //Values 
-constexpr float FR_LOADCELL_OFFSET = 0.0;
-constexpr float FL_LOADCELL_SCALE =  1.0; //Values 
-constexpr float FL_LOADCELL_OFFSET = 0.0;
-
-constexpr float FR_SUS_POT_SCALE = 1;
-constexpr float FR_SUS_POT_OFFSET = 0;
-constexpr float FL_SUS_POT_SCALE = 1;
-constexpr float FL_SUS_POT_OFFSET = 0;
-
-constexpr float ACCEL_1_SCALE = 1; // TODO: Figure out what these should be
-constexpr float ACCEL_1_OFFSET = 0;
-constexpr float ACCEL_2_SCALE = 1;
-constexpr float ACCEL_2_OFFSET = 0;
-constexpr float BRAKE_1_SCALE = 1;
-constexpr float BRAKE_1_OFFSET = 0;
-constexpr float BRAKE_2_SCALE = 1;
-constexpr float BRAKE_2_OFFSET = 0;
-
+struct ADCInterfaceParams_s {
+    ADCPinout_s pinouts;
+    ADCChannels_s channels;
+    ADCScales_s scales;
+    ADCOffsets_s offsets;
+};
 
 class ADCInterface
 {
     public:
-        ADCInterface(
-                const float (&adc_1_scales)[MCP_ADC_CHANNELS],
-                const float (&adc_1_offsets)[MCP_ADC_CHANNELS],
-                const float (&adc_2_scales)[MCP_ADC_CHANNELS],
-                const float (&adc_2_offsets)[MCP_ADC_CHANNELS]
-            ) :
-        adc1(ADC1_CS, MCP_ADC_DEFAULT_SPI_SDI, MCP_ADC_DEFAULT_SPI_SDO, MCP_ADC_DEFAULT_SPI_CLK, MCP_ADC_DEFAULT_SPI_SPEED, adc_1_scales, adc_1_offsets), 
-        adc2(ADC2_CS, MCP_ADC_DEFAULT_SPI_SDI, MCP_ADC_DEFAULT_SPI_SDO, MCP_ADC_DEFAULT_SPI_CLK, MCP_ADC_DEFAULT_SPI_SPEED, adc_2_scales, adc_2_offsets)
-        {};
+        ADCInterface(ADCPinout_s pinouts, ADCChannels_s channels, ADCScales_s scales, ADCOffsets_s offsets):
+        _adc_parameters {
+            pinouts,
+            channels,
+            scales,
+            offsets
+        },
+        _adc1 (
+            _adc_parameters.pinouts.adc1_spi_cs_pin,
+            MCP_ADC_DEFAULT_SPI_SDI,
+            MCP_ADC_DEFAULT_SPI_SDO,
+            MCP_ADC_DEFAULT_SPI_CLK,
+            MCP_ADC_DEFAULT_SPI_SPEED,
+            adc1_scales().data(),
+            adc1_offsets().data()
+        ), 
+        _adc2 (
+            _adc_parameters.pinouts.adc2_spi_cs_pin,
+            MCP_ADC_DEFAULT_SPI_SDI,
+            MCP_ADC_DEFAULT_SPI_SDO,
+            MCP_ADC_DEFAULT_SPI_CLK,
+            MCP_ADC_DEFAULT_SPI_SPEED,
+            adc2_scales().data(),
+            adc2_offsets().data()
+        ) {};
 
-        struct ADC1InterfaceData_s {
-            float analog_steering_degrees;
-            float FL_load_cell;
-            float FR_load_cell;
-            float FL_sus_pot;
-            float FR_sus_pot;
-        };
+        void adc1_tick();
+        void adc2_tick();
 
-        struct ADC2InterfaceData_s {
-            float acceleration_1;
-            float acceleration_2;
-            float brake_1;
-            float brake_2;
-        };
-        
-        using ADC1Data = etl::singleton<ADCInterface::ADC1InterfaceData_s>;
-        using ADC2Data = etl::singleton<ADCInterface::ADC2InterfaceData_s>;
-
-        ADC1InterfaceData_s read_adc1();
-        ADC2InterfaceData_s read_adc2();
-
-    private:
-        
-        MCP_ADC<MCP_ADC_CHANNELS> adc1;
-        MCP_ADC<MCP_ADC_CHANNELS> adc2;
         static float iir_filter(float alpha, float prev_value, float new_value);
+        /* ------ ADC 1 ------ */
+        
+        /**
+         * @return Analog Steering Degrees [Channel 1]
+         */
+        AnalogConversion_s steering_degrees_1();
+        
+        /**
+         * @return Analog Steering Degrees [Channel 2]
+         */
+        AnalogConversion_s steering_degrees_2();
+        
+        /**
+         * @return Front Left Cell
+         */
+        AnalogConversion_s FL_load_cell();
+        
+        /**
+         * @return Front Right Load Cell
+         */
+        AnalogConversion_s FR_load_cell();
+        
+        /**
+         * @return Front Left Suspension Potentiometer Reading 
+         */
+        AnalogConversion_s FL_sus_pot();
+        
+        /**
+         * @return Front Right Suspension Potentiometer Reading
+         */
+        AnalogConversion_s FR_sus_pot();
+
+        /* ------ ADC 2 ------ */
+
+        /**
+         * @return Acceleration Pedal 1
+         */
+        AnalogConversion_s acceleration_1();
+
+        /**
+         * @return Acceleration Pedal 2
+         */
+        AnalogConversion_s acceleration_2();
+        
+        /**
+         * @return Brake Pedal 1
+         */
+        AnalogConversion_s brake_1();
+        
+        /**
+         * @return Brake Pedal 2
+         */
+        AnalogConversion_s brake_2();
+        
+    private:
+        ADCInterfaceParams_s _adc_parameters = {};
+
+        MCP_ADC<adc_default_parameters::channels_within_mcp_adc> _adc1;
+        MCP_ADC<adc_default_parameters::channels_within_mcp_adc> _adc2;
+        
+        std::array<float, adc_default_parameters::channels_within_mcp_adc> adc1_scales();
+        std::array<float, adc_default_parameters::channels_within_mcp_adc> adc1_offsets();
+        std::array<float, adc_default_parameters::channels_within_mcp_adc> adc2_scales();
+        std::array<float, adc_default_parameters::channels_within_mcp_adc> adc2_offsets();
 };
 
 using ADCInterfaceInstance = etl::singleton<ADCInterface>;

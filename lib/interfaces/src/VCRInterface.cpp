@@ -1,4 +1,5 @@
 #include "VCRInterface.h"
+#include "hytech.h"
 
 void VCRInterface::receive_dash_control_data(const CAN_message_t &can_msg)
 {
