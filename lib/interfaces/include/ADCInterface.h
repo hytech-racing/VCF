@@ -73,37 +73,40 @@ struct ADCInterfaceParams_s {
 
 class ADCInterface
 {
+    /* ------ Public Functions ------ */
     public:
         ADCInterface(ADCPinout_s pinouts, ADCChannels_s channels, ADCScales_s scales, ADCOffsets_s offsets) :
-        _adc_parameters {
-            pinouts,
-            channels,
-            scales,
-            offsets
-        },
-        _adc1 (
-            _adc_parameters.pinouts.adc1_spi_cs_pin,
-            MCP_ADC_DEFAULT_SPI_SDI,
-            MCP_ADC_DEFAULT_SPI_SDO,
-            MCP_ADC_DEFAULT_SPI_CLK,
-            MCP_ADC_DEFAULT_SPI_SPEED,
-            adc1_scales().data(),
-            adc1_offsets().data()
-        ), 
-        _adc2 (
-            _adc_parameters.pinouts.adc2_spi_cs_pin,
-            MCP_ADC_DEFAULT_SPI_SDI,
-            MCP_ADC_DEFAULT_SPI_SDO,
-            MCP_ADC_DEFAULT_SPI_CLK,
-            MCP_ADC_DEFAULT_SPI_SPEED,
-            adc2_scales().data(),
-            adc2_offsets().data()
-        ) {};
+            _adc_parameters {
+                .pinouts = pinouts,
+                .channels = channels,
+                .scales = scales,
+                .offsets = offsets
+            },
+            _adc1 (
+                _adc_parameters.pinouts.adc1_spi_cs_pin,
+                MCP_ADC_DEFAULT_SPI_SDI,
+                MCP_ADC_DEFAULT_SPI_SDO,
+                MCP_ADC_DEFAULT_SPI_CLK,
+                MCP_ADC_DEFAULT_SPI_SPEED,
+                adc1_scales().data(),
+                adc1_offsets().data()
+            ), 
+            _adc2 (
+                _adc_parameters.pinouts.adc2_spi_cs_pin,
+                MCP_ADC_DEFAULT_SPI_SDI,
+                MCP_ADC_DEFAULT_SPI_SDO,
+                MCP_ADC_DEFAULT_SPI_CLK,
+                MCP_ADC_DEFAULT_SPI_SPEED,
+                adc2_scales().data(),
+                adc2_offsets().data()
+            )
+        {};
 
         void adc1_tick();
         void adc2_tick();
 
         static float iir_filter(float alpha, float prev_value, float new_value);
+
         /* ------ ADC 1 ------ */
         
         /**
@@ -158,19 +161,21 @@ class ADCInterface
          */
         AnalogConversion_s brake_2();
         
+    /* ------ Private Functions ------ */
     private:
-        ADCInterfaceParams_s _adc_parameters = {};
-
-        // MCP3208. ADC1 in VCF schematic. Used for steering, load cells, and sus pots.
-        MCP_ADC<adc_default_parameters::channels_within_mcp_adc> _adc1;
-
-        // MCP3208. ADC2 in VCF schematic. Used for pedal position sensors.
-        MCP_ADC<adc_default_parameters::channels_within_mcp_adc> _adc2;
-        
         std::array<float, adc_default_parameters::channels_within_mcp_adc> adc1_scales();
         std::array<float, adc_default_parameters::channels_within_mcp_adc> adc1_offsets();
         std::array<float, adc_default_parameters::channels_within_mcp_adc> adc2_scales();
         std::array<float, adc_default_parameters::channels_within_mcp_adc> adc2_offsets();
+
+    /* ------ Private Data Members ------ */
+    private:
+        ADCInterfaceParams_s _adc_parameters = {};
+        // MCP3208. ADC1 in VCF schematic. Used for steering, load cells, and sus pots.
+        MCP_ADC<adc_default_parameters::channels_within_mcp_adc> _adc1;
+        // MCP3208. ADC2 in VCF schematic. Used for pedal position sensors.
+        MCP_ADC<adc_default_parameters::channels_within_mcp_adc> _adc2;
+
 };
 
 using ADCInterfaceInstance = etl::singleton<ADCInterface>;

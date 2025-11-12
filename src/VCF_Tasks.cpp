@@ -17,11 +17,6 @@
 #include "WatchdogSystem.h"
 #include "Arduino.h"
 
-float apply_iir_filter(float alpha, float old_value, float new_value)
-{
-    return (alpha * new_value) + (1 - alpha) * (old_value);
-}
-
 HT_TASK::TaskResponse run_read_adc1_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
 {
     // Samples all eight channels.
