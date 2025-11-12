@@ -18,8 +18,8 @@ struct ADCPinout_s {
 
 struct ADCChannels_s {
     /* ADC 1 */
-    int steering_1_channel;
-    int steering_2_channel;
+    int steering_cw_channel;
+    int steering_ccw_channel;
     int fr_loadcell_channel;
     int fl_loadcell_channel;
     int fr_suspot_channel;
@@ -34,8 +34,8 @@ struct ADCChannels_s {
 
 struct ADCScales_s {
     /* ADC 1 */
-    float steering_1_scale;
-    float steering_2_scale;
+    float steering_cw_scale;
+    float steering_ccw_scale;
     float fr_loadcell_scale;
     float fl_loadcell_scale;
     float fr_suspot_scale;
@@ -50,8 +50,8 @@ struct ADCScales_s {
 
 struct ADCOffsets_s {
     /* ADC 1 */
-    float steering_1_offset;
-    float steering_2_offset;
+    float steering_cw_offset;
+    float steering_ccw_offset;
     float fr_loadcell_offset;
     float fl_loadcell_offset;
     float fr_suspot_offset;
@@ -109,12 +109,12 @@ class ADCInterface
         /**
          * @return Analog Steering Degrees [Channel 1]
          */
-        AnalogConversion_s steering_degrees_1();
+        AnalogConversion_s steering_degrees_cw();
         
         /**
          * @return Analog Steering Degrees [Channel 2]
          */
-        AnalogConversion_s steering_degrees_2();
+        AnalogConversion_s steering_degrees_ccw();
         
         /**
          * @return Front Left Cell

@@ -27,7 +27,7 @@ HT_TASK::TaskResponse run_read_adc1_task(const unsigned long& sysMicros, const H
     // Samples all eight channels.
     ADCInterfaceInstance::instance().adc1_tick();
 
-    VCFData_sInstance::instance().interface_data.steering_data.analog_steering_degrees = ADCInterfaceInstance::instance().steering_degrees_1().conversion; // Only using steering 1 for now
+    VCFData_sInstance::instance().interface_data.steering_data.analog_steering_degrees = ADCInterfaceInstance::instance().steering_degrees_cw().conversion; // Only using steering 1 for now
     
     VCFData_sInstance::instance().interface_data.front_loadcell_data.FL_loadcell_analog = ADCInterface::iir_filter(
         LOADCELL_IIR_FILTER_ALPHA, 
