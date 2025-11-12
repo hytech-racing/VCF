@@ -7,12 +7,9 @@
 #include "etl/singleton.h"
 #include "hytech.h"
 #include "FlexCAN_T4.h"
-struct Inv_error_state {
+struct InverterErrorFlags_s{
 
-    bool FL;
-    bool FR;
-    bool RL;
-    bool RR;
+    veh_vec<bool> error;
 
 };
 class VCRInterface 
@@ -47,7 +44,9 @@ class VCRInterface
         DrivetrainState_e _drivetrain_state_value;
         bool _is_db_in_ctrl;
         TorqueLimit_e _torque_limit = TorqueLimit_e::TCMUX_LOW_TORQUE;
-        Inv_error_state _inv_error_status;
+        InverterErrorFlags_s _inv_error_status; //creates object that reflects the inverter error status...the object 
+        //holds the error flags for each inverter, the getter above returns True if there's an error in any of the 4
+        
 };
 
 using VCRInterfaceInstance = etl::singleton<VCRInterface>;
