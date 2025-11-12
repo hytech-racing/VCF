@@ -83,7 +83,6 @@ constexpr float BRAKE_2_SCALE = 1;
 constexpr float BRAKE_2_OFFSET = 0;
 
 
-
 /* -------------------------------------------------- */
 /*           Task Periods and Priorities              */
 /* -------------------------------------------------- */

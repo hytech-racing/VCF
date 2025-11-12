@@ -12,7 +12,3 @@ VCRData_s vcr_data = {};
 
 qindesign::network::EthernetUDP VCF_socket;
 qindesign::network::EthernetUDP VCR_socket;
-
-// /* ADC setup */
-// MCP_ADC<channels_within_mcp_adc> adc_1 = MCP_ADC<channels_within_mcp_adc>(ADC1_CS);
-// MCP_ADC<channels_within_mcp_adc> adc_2 = MCP_ADC<channels_within_mcp_adc>(ADC2_CS);

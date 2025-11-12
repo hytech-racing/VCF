@@ -14,25 +14,39 @@
 #include "SystemTimeInterface.h"
 #include "PedalsSystem.h"
 #include "WatchdogSystem.h"
-
 #include "WatchdogSystem.h"
 #include "Arduino.h"
-
-float apply_iir_filter(float alpha, float old_value, float new_value)
-{
-    return (alpha * new_value) + (1 - alpha) * (old_value);
-}
 
 HT_TASK::TaskResponse run_read_adc1_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
 {
     // Samples all eight channels.
-    ADCsOnVCFInstance::instance().adc_1.tick();
+    ADCInterfaceInstance::instance().adc1_tick();
 
-    VCFData_sInstance::instance().interface_data.steering_data.analog_steering_degrees = ADCsOnVCFInstance::instance().adc_1.data.conversions[STEERING_1_CHANNEL].conversion; // Only using steering 1 for now
-    VCFData_sInstance::instance().interface_data.front_loadcell_data.FL_loadcell_analog = apply_iir_filter(LOADCELL_IIR_FILTER_ALPHA, VCFData_sInstance::instance().interface_data.front_loadcell_data.FL_loadcell_analog, ADCsOnVCFInstance::instance().adc_1.data.conversions[FL_LOADCELL_CHANNEL].conversion);
-    VCFData_sInstance::instance().interface_data.front_loadcell_data.FR_loadcell_analog = apply_iir_filter(LOADCELL_IIR_FILTER_ALPHA, VCFData_sInstance::instance().interface_data.front_loadcell_data.FR_loadcell_analog, ADCsOnVCFInstance::instance().adc_1.data.conversions[FR_LOADCELL_CHANNEL].conversion);
-    VCFData_sInstance::instance().interface_data.front_suspot_data.FL_sus_pot_analog = apply_iir_filter(LOADCELL_IIR_FILTER_ALPHA, VCFData_sInstance::instance().interface_data.front_suspot_data.FL_sus_pot_analog, ADCsOnVCFInstance::instance().adc_1.data.conversions[FL_SUS_POT_CHANNEL].raw);
-    VCFData_sInstance::instance().interface_data.front_suspot_data.FR_sus_pot_analog = apply_iir_filter(LOADCELL_IIR_FILTER_ALPHA, VCFData_sInstance::instance().interface_data.front_suspot_data.FR_sus_pot_analog, ADCsOnVCFInstance::instance().adc_1.data.conversions[FR_SUS_POT_CHANNEL].raw);
+    VCFData_sInstance::instance().interface_data.steering_data.analog_steering_degrees = ADCInterfaceInstance::instance().steering_degrees_cw().conversion; // Only using steering 1 for now
+    
+    VCFData_sInstance::instance().interface_data.front_loadcell_data.FL_loadcell_analog = ADCInterface::iir_filter(
+        LOADCELL_IIR_FILTER_ALPHA, 
+        VCFData_sInstance::instance().interface_data.front_loadcell_data.FL_loadcell_analog, 
+        ADCInterfaceInstance::instance().FL_load_cell().conversion
+    );
+
+    VCFData_sInstance::instance().interface_data.front_loadcell_data.FR_loadcell_analog = ADCInterface::iir_filter(
+        LOADCELL_IIR_FILTER_ALPHA, 
+        VCFData_sInstance::instance().interface_data.front_loadcell_data.FR_loadcell_analog, 
+        ADCInterfaceInstance::instance().FR_load_cell().conversion
+    );
+
+    VCFData_sInstance::instance().interface_data.front_suspot_data.FL_sus_pot_analog = ADCInterface::iir_filter(
+        LOADCELL_IIR_FILTER_ALPHA,
+        VCFData_sInstance::instance().interface_data.front_suspot_data.FL_sus_pot_analog, 
+        ADCInterfaceInstance::instance().FL_sus_pot().raw
+    );
+
+    VCFData_sInstance::instance().interface_data.front_suspot_data.FR_sus_pot_analog = ADCInterface::iir_filter(
+        LOADCELL_IIR_FILTER_ALPHA,
+        VCFData_sInstance::instance().interface_data.front_suspot_data.FR_sus_pot_analog,
+        ADCInterfaceInstance::instance().FR_sus_pot().raw
+    );
 
     return HT_TASK::TaskResponse::YIELD;
 }
@@ -40,11 +54,11 @@ HT_TASK::TaskResponse run_read_adc1_task(const unsigned long& sysMicros, const H
 HT_TASK::TaskResponse run_read_adc2_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
 {
     // Samples all eight channels.
-    ADCsOnVCFInstance::instance().adc_2.tick();
-    VCFData_sInstance::instance().interface_data.pedal_sensor_data.accel_1 = ADCsOnVCFInstance::instance().adc_2.data.conversions[ACCEL_1_CHANNEL].conversion;
-    VCFData_sInstance::instance().interface_data.pedal_sensor_data.accel_2 = ADCsOnVCFInstance::instance().adc_2.data.conversions[ACCEL_2_CHANNEL].conversion;
-    VCFData_sInstance::instance().interface_data.pedal_sensor_data.brake_1 = ADCsOnVCFInstance::instance().adc_2.data.conversions[BRAKE_1_CHANNEL].conversion;
-    VCFData_sInstance::instance().interface_data.pedal_sensor_data.brake_2 = ADCsOnVCFInstance::instance().adc_2.data.conversions[BRAKE_2_CHANNEL].conversion;
+    ADCInterfaceInstance::instance().adc2_tick();
+    VCFData_sInstance::instance().interface_data.pedal_sensor_data.accel_1 = ADCInterfaceInstance::instance().acceleration_1().conversion;
+    VCFData_sInstance::instance().interface_data.pedal_sensor_data.accel_2 = ADCInterfaceInstance::instance().acceleration_2().conversion;
+    VCFData_sInstance::instance().interface_data.pedal_sensor_data.brake_1 = ADCInterfaceInstance::instance().brake_1().conversion;
+    VCFData_sInstance::instance().interface_data.pedal_sensor_data.brake_2 = ADCInterfaceInstance::instance().brake_2().conversion;
     return HT_TASK::TaskResponse::YIELD;
 }
 
@@ -84,7 +98,7 @@ HT_TASK::TaskResponse update_pedals_calibration_task(const unsigned long& sysMic
     return HT_TASK::TaskResponse::YIELD;
 }
 
-// bool init_read_gpio_task()
+// bool _read_gpio_task()
 // {
 //     // Setting digital/analog buttons D10-D6, A8 as inputs
 //     pinMode(BTN_DIM_READ, INPUT);
