@@ -33,6 +33,27 @@ namespace VCFCANInterfaceImpl {
                 interfaces.vcr_interface.receive_car_states_data(msg);
                 break;
             }
+            case INV1_STATUS_CANID:
+            {
+                interfaces.vcr_interface.receive_inverter_status_1(msg);
+                break;
+            }
+            case INV2_STATUS_CANID:
+            {
+                interfaces.vcr_interface.receive_inverter_status_2(msg);
+                break;
+            }
+            case INV3_STATUS_CANID:
+            {
+                interfaces.vcr_interface.receive_inverter_status_3(msg);
+                break;
+            }
+            case INV4_STATUS_CANID:
+            {
+                interfaces.vcr_interface.receive_inverter_status_4(msg);
+                break;
+            }
+
             default:
                 break;
             }

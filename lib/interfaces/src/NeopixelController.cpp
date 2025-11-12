@@ -133,7 +133,7 @@ void NeopixelController::refresh_neopixels(VCFData_s &vcf_data, VCRData_s &vcr_d
     set_neopixel_color(LED_ID_e::BOTS, LED_color_e::OFF); // Unused for now
     set_neopixel_color(LED_ID_e::IMD, interfaces.dash_interface.imd_ok ? LED_color_e::GREEN : LED_color_e::RED);
     set_neopixel_color(LED_ID_e::BMS, interfaces.dash_interface.bms_ok ? LED_color_e::GREEN : LED_color_e::RED);
-    set_neopixel_color(LED_ID_e::MC_ERR, (vcr_data.interface_data.inverter_data.FL.error || vcr_data.interface_data.inverter_data.FR.error || vcr_data.interface_data.inverter_data.RL.error || vcr_data.interface_data.inverter_data.RR.error) ? LED_color_e::RED : LED_color_e::OFF);
+    set_neopixel_color(LED_ID_e::MC_ERR, interfaces.vcr_interface.get_inverter_error() ? LED_color_e::RED : LED_color_e::GREEN);
     set_neopixel_color(LED_ID_e::RDY_DRIVE, ready_drive_color);
     set_neopixel_color(LED_ID_e::GLV, vcr_data.interface_data.current_sensor_data.twentyfour_volt_sensor > glv_critical_voltage ? LED_color_e::GREEN : LED_color_e::YELLOW); // No sensor there yet
     set_neopixel_color(LED_ID_e::TORQUE_MODE, torque_mode_color);
