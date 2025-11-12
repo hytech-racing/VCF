@@ -138,30 +138,48 @@ void setup() {
     Serial.begin(115200); // NOLINT
 
     // Initialize all singletons
-    float adc_1_scales[channels_within_mcp_adc], adc_1_offsets[channels_within_mcp_adc], adc_2_scales[channels_within_mcp_adc], adc_2_offsets[channels_within_mcp_adc];
-    
-    adc_1_scales[STEERING_1_CHANNEL] = STEERING_1_SCALE;
-    adc_1_offsets[STEERING_1_CHANNEL] = STEERING_1_OFFSET;
-    adc_1_scales[STEERING_2_CHANNEL] = STEERING_2_SCALE;
-    adc_1_offsets[STEERING_2_CHANNEL] = STEERING_2_OFFSET;
-    adc_1_scales[FR_SUS_POT_CHANNEL] = FR_SUS_POT_SCALE;
-    adc_1_offsets[FR_SUS_POT_CHANNEL] = FR_SUS_POT_OFFSET; 
-    adc_1_scales[FL_SUS_POT_CHANNEL] = FL_SUS_POT_SCALE;
-    adc_1_offsets[FL_SUS_POT_CHANNEL] = FL_SUS_POT_OFFSET;
-    adc_1_scales[FR_LOADCELL_CHANNEL] = FR_LOADCELL_SCALE;
-    adc_1_offsets[FR_LOADCELL_CHANNEL] = FR_LOADCELL_OFFSET;
-    adc_1_scales[FL_LOADCELL_CHANNEL] = FL_LOADCELL_SCALE;
-    adc_1_offsets[FL_LOADCELL_CHANNEL] = FL_LOADCELL_OFFSET;
-
-    adc_2_scales[ACCEL_1_CHANNEL] = ACCEL_1_SCALE;
-    adc_2_offsets[ACCEL_1_CHANNEL] = ACCEL_1_OFFSET;
-    adc_2_scales[ACCEL_2_CHANNEL] = ACCEL_2_SCALE;
-    adc_2_offsets[ACCEL_2_CHANNEL] = ACCEL_2_OFFSET;
-    adc_2_scales[BRAKE_1_CHANNEL] = BRAKE_1_SCALE;
-    adc_2_offsets[BRAKE_1_CHANNEL] = BRAKE_1_OFFSET;
-    adc_2_scales[BRAKE_2_CHANNEL] = BRAKE_2_SCALE;
-    adc_2_offsets[BRAKE_2_CHANNEL] = BRAKE_2_OFFSET;
-    ADCsOnVCFInstance::create(adc_1_scales, adc_1_offsets, adc_2_scales, adc_2_offsets);
+    ADCInterfaceInstance::create(
+        ADCPinout_s {
+            ADC1_CS,
+            ADC2_CS
+        },
+        ADCChannels_s {
+            STEERING_1_CHANNEL,
+            STEERING_2_CHANNEL,
+            FR_LOADCELL_CHANNEL,
+            FL_LOADCELL_CHANNEL,
+            FR_SUS_POT_CHANNEL,
+            FL_SUS_POT_CHANNEL,
+            ACCEL_1_CHANNEL,
+            ACCEL_2_CHANNEL,
+            BRAKE_1_CHANNEL,
+            BRAKE_2_CHANNEL
+        },
+        ADCScales_s { 
+            STEERING_1_SCALE, 
+            STEERING_2_SCALE, 
+            FR_LOADCELL_SCALE,
+            FL_LOADCELL_SCALE,
+            FR_SUS_POT_SCALE,
+            FL_SUS_POT_SCALE, 
+            ACCEL_1_SCALE, 
+            ACCEL_2_SCALE, 
+            BRAKE_1_SCALE, 
+            BRAKE_2_SCALE
+        }, 
+        ADCOffsets_s {
+            STEERING_1_OFFSET,
+            STEERING_2_OFFSET,
+            FR_LOADCELL_OFFSET,
+            FL_LOADCELL_OFFSET,
+            FR_SUS_POT_OFFSET,
+            FL_SUS_POT_OFFSET,
+            ACCEL_1_OFFSET,
+            ACCEL_2_OFFSET,
+            BRAKE_1_OFFSET,
+            BRAKE_2_OFFSET
+        }
+    );
 
     EthernetIPDefsInstance::create();
     VCRData_sInstance::create();
@@ -172,7 +190,8 @@ void setup() {
         .min_pedal_1 = EEPROMUtilities::read_eeprom_32bit(ACCEL_1_MIN_ADDR),
         .min_pedal_2 = EEPROMUtilities::read_eeprom_32bit(ACCEL_2_MIN_ADDR),
         .max_pedal_1 = EEPROMUtilities::read_eeprom_32bit(ACCEL_1_MAX_ADDR),
-        .max_pedal_2 = EEPROMUtilities::read_eeprom_32bit(ACCEL_2_MAX_ADDR),
+        .max_pedal_2 = 
+        EEPROMUtilities::read_eeprom_32bit(ACCEL_2_MAX_ADDR),
         .activation_percentage = 0.10, // NOLINT
         .min_sensor_pedal_1 = 90, // NOLINT
         .min_sensor_pedal_2 = 90, // NOLINT

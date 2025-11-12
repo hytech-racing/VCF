@@ -18,12 +18,12 @@ struct ADCPinout_s {
 
 struct ADCChannels_s {
     /* ADC 1 */
+    int steering_1_channel;
+    int steering_2_channel;
     int fr_loadcell_channel;
     int fl_loadcell_channel;
     int fr_suspot_channel;
     int fl_suspot_channel;
-    int steering_1_channel;
-    int steering_2_channel;
 
     /* ADC 2 */
     int accel_1_channel;
@@ -74,7 +74,7 @@ struct ADCInterfaceParams_s {
 class ADCInterface
 {
     public:
-        ADCInterface(ADCPinout_s pinouts, ADCChannels_s channels, ADCScales_s scales, ADCOffsets_s offsets):
+        ADCInterface(ADCPinout_s pinouts, ADCChannels_s channels, ADCScales_s scales, ADCOffsets_s offsets) :
         _adc_parameters {
             pinouts,
             channels,

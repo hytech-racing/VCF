@@ -16,7 +16,6 @@
 #include "WatchdogSystem.h"
 #include "WatchdogSystem.h"
 #include "Arduino.h"
-#include "ADCInterface.h"
 
 float apply_iir_filter(float alpha, float old_value, float new_value)
 {
