@@ -1,7 +1,7 @@
 #ifndef ADC_INTERFACE_H
 #define ADC_INTERFACE_H
 
-/// @brief This file defines ADC interface - which should replace the handling of ADC code in the VCF repo. The actual implementation is currently in VCF_Tasks and we want to move it here.
+/// @brief This file defines ADC interface. The interface instantiates the ADC modules and provides getter functions to access each sensor's values.
 
 #include <Arduino.h>
 #include "SharedFirmwareTypes.h"
@@ -161,7 +161,10 @@ class ADCInterface
     private:
         ADCInterfaceParams_s _adc_parameters = {};
 
+        // MCP3208. ADC1 in VCF schematic. Used for steering, load cells, and sus pots.
         MCP_ADC<adc_default_parameters::channels_within_mcp_adc> _adc1;
+
+        // MCP3208. ADC2 in VCF schematic. Used for pedal position sensors.
         MCP_ADC<adc_default_parameters::channels_within_mcp_adc> _adc2;
         
         std::array<float, adc_default_parameters::channels_within_mcp_adc> adc1_scales();

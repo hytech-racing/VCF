@@ -28,11 +28,6 @@ constexpr int NEOPIXEL_COUNT = 12; // 12 neopixeles on dashboard
 /* -------------------------------------------------- */
 /*                 ADC pins and configs               */
 /* -------------------------------------------------- */
-/* Channels Per ADC*/
-constexpr unsigned int MCP_ADC_CHANNELS = 8;
-
-/* Filter Alpha*/
-constexpr unsigned int IIR_FILTER_ALPHA = 0.01f;
 
 /* Channels on ADC_1 */
 constexpr int FR_LOADCELL_CHANNEL     = 0;
