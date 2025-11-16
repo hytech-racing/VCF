@@ -45,11 +45,62 @@ namespace VCFInterfaces {
     // watchdog pins
     constexpr int WATCHDOG_PIN = 33;
     constexpr int SOFTWARE_OK_PIN = 34; // Watchdog's !RESET pin
+
+        //ADC configs
+    /* Scaling and offset */
+    constexpr float STEERING_1_SCALE = 1; // TODO: Figure out what these mean
+    constexpr float STEERING_1_OFFSET = 0;
+    constexpr float STEERING_2_SCALE = 1; // TODO: Figure out if steering 2 = steering 1
+    constexpr float STEERING_2_OFFSET = 0;
+    // Scale for steering sensor = 0.02197265 . Offset has to be mechanically determined
+
+    // constexpr float FR_LOADCELL_SCALE = 0.81; //Values are from the old MCU rev15 // TODO: Calibrate load cells
+    // constexpr float FR_LOADCELL_OFFSET = 36.8;
+    // constexpr float FL_LOADCELL_SCALE = 0.63;
+    // constexpr float FL_LOADCELL_OFFSET = -3.9;
+
+
+    constexpr float FR_LOADCELL_SCALE =  1.0; //Values 
+    constexpr float FR_LOADCELL_OFFSET = 0.0;
+    constexpr float FL_LOADCELL_SCALE =  1.0; //Values 
+    constexpr float FL_LOADCELL_OFFSET = 0.0;
+
+    constexpr float FR_SUS_POT_SCALE = 1;
+    constexpr float FR_SUS_POT_OFFSET = 0;
+    constexpr float FL_SUS_POT_SCALE = 1;
+    constexpr float FL_SUS_POT_OFFSET = 0;
+
+    constexpr float ACCEL_1_SCALE = 1; // TODO: Figure out what these should be
+    constexpr float ACCEL_1_OFFSET = 0;
+    constexpr float ACCEL_2_SCALE = 1;
+    constexpr float ACCEL_2_OFFSET = 0;
+    constexpr float BRAKE_1_SCALE = 1;
+    constexpr float BRAKE_1_OFFSET = 0;
+    constexpr float BRAKE_2_SCALE = 1;
+    constexpr float BRAKE_2_OFFSET = 0;
+
 }
 
 // calibration and processing constants
 namespace VCFSystems { 
-    // task priorities and periods)
+    constexpr float LBS_TO_NEWTONS = 4.4482216153;
+}
+
+// software configuration constants
+namespace VCFConstants {
+    // EEPROM addresses for min and max calibration values
+    constexpr uint32_t ACCEL_1_MIN_ADDR = 0;
+    constexpr uint32_t ACCEL_2_MIN_ADDR = 4;
+    constexpr uint32_t ACCEL_1_MAX_ADDR = 8;
+    constexpr uint32_t ACCEL_2_MAX_ADDR = 12;
+    constexpr uint32_t BRAKE_1_MIN_ADDR = 16;
+    constexpr uint32_t BRAKE_2_MIN_ADDR = 20;
+    constexpr uint32_t BRAKE_1_MAX_ADDR = 24;
+    constexpr uint32_t BRAKE_2_MAX_ADDR = 28;
+
+    constexpr unsigned long WATCHDOG_KICK_INTERVAL_MS = 10UL;
+
+    // task priorities and periods
     constexpr unsigned long MAIN_TASK_PRIORITY = 5;
     constexpr unsigned long MAIN_TASK_PERIOD = 100;               // 100 us = 10 kHz
 
@@ -87,64 +138,16 @@ namespace VCFSystems {
     constexpr unsigned long LOADCELL_SEND_PERIOD = 4000;          // 4 000 us = 250 Hz
     constexpr unsigned long LOADCELL_SEND_PRIORITY = 25;
 
-    constexpr unsigned long WATCHDOG_PRIORITY = 1;
-    constexpr unsigned long WATCHDOG_KICK_PERIOD = 1000;          // 1 000 us = 1000 Hz
 
     constexpr unsigned long PEDALS_RECALIBRATION_PRIORITY = 150;
     constexpr unsigned long PEDALS_RECALIBRATION_PERIOD = 100000; // 100 000 us = 10 Hz
     
-    //ADC configs
-    /* Scaling and offset */
-    constexpr float STEERING_1_SCALE = 1; // TODO: Figure out what these mean
-    constexpr float STEERING_1_OFFSET = 0;
-    constexpr float STEERING_2_SCALE = 1; // TODO: Figure out if steering 2 = steering 1
-    constexpr float STEERING_2_OFFSET = 0;
-    // Scale for steering sensor = 0.02197265 . Offset has to be mechanically determined
-
-    // constexpr float FR_LOADCELL_SCALE = 0.81; //Values are from the old MCU rev15 // TODO: Calibrate load cells
-    // constexpr float FR_LOADCELL_OFFSET = 36.8;
-    // constexpr float FL_LOADCELL_SCALE = 0.63;
-    // constexpr float FL_LOADCELL_OFFSET = -3.9;
-
-    constexpr float LBS_TO_NEWTONS = 4.4482216153;
-
-    constexpr float FR_LOADCELL_SCALE =  1.0; //Values 
-    constexpr float FR_LOADCELL_OFFSET = 0.0;
-    constexpr float FL_LOADCELL_SCALE =  1.0; //Values 
-    constexpr float FL_LOADCELL_OFFSET = 0.0;
-
-    constexpr float FR_SUS_POT_SCALE = 1;
-    constexpr float FR_SUS_POT_OFFSET = 0;
-    constexpr float FL_SUS_POT_SCALE = 1;
-    constexpr float FL_SUS_POT_OFFSET = 0;
-
-    constexpr float ACCEL_1_SCALE = 1; // TODO: Figure out what these should be
-    constexpr float ACCEL_1_OFFSET = 0;
-    constexpr float ACCEL_2_SCALE = 1;
-    constexpr float ACCEL_2_OFFSET = 0;
-    constexpr float BRAKE_1_SCALE = 1;
-    constexpr float BRAKE_1_OFFSET = 0;
-    constexpr float BRAKE_2_SCALE = 1;
-    constexpr float BRAKE_2_OFFSET = 0;
-    
     // IIR filter alphas
     constexpr float LOADCELL_IIR_FILTER_ALPHA = 0.01f;
-}
 
-// software configuration constants
-namespace VCFConstants {
-    // EEPROM addresses for min and max calibration values
-    constexpr uint32_t ACCEL_1_MIN_ADDR = 0;
-    constexpr uint32_t ACCEL_2_MIN_ADDR = 4;
-    constexpr uint32_t ACCEL_1_MAX_ADDR = 8;
-    constexpr uint32_t ACCEL_2_MAX_ADDR = 12;
-    constexpr uint32_t BRAKE_1_MIN_ADDR = 16;
-    constexpr uint32_t BRAKE_2_MIN_ADDR = 20;
-    constexpr uint32_t BRAKE_1_MAX_ADDR = 24;
-    constexpr uint32_t BRAKE_2_MAX_ADDR = 28;
+    constexpr unsigned long WATCHDOG_PRIORITY = 1;
+    constexpr unsigned long WATCHDOG_KICK_PERIOD = 1000;          // 1 000 us = 1000 Hz
 
-    // watch dog
-    constexpr unsigned long WATCHDOG_KICK_INTERVAL_MS = 10UL;
 }
 
 #endif /* VCF_CONSTANTS */

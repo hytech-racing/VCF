@@ -14,6 +14,11 @@
 #include "SystemTimeInterface.h"
 #include "PedalsSystem.h"
 #include "WatchdogSystem.h"
+#include "DashboardInterface.h"
+#include "VCFEthernetInterface.h"
+#include "ACUInterface.h"
+#include <EEPROM.h>
+#include "FlexCAN_T4.h"
 
 #include "WatchdogSystem.h"
 #include "Arduino.h"
@@ -29,10 +34,10 @@ HT_TASK::TaskResponse run_read_adc1_task(const unsigned long& sysMicros, const H
     ADCsOnVCFInstance::instance().adc_1.tick();
 
     VCFData_sInstance::instance().interface_data.steering_data.analog_steering_degrees = ADCsOnVCFInstance::instance().adc_1.data.conversions[VCFInterfaces::STEERING_1_CHANNEL].conversion; // Only using steering 1 for now
-    VCFData_sInstance::instance().interface_data.front_loadcell_data.FL_loadcell_analog = apply_iir_filter(VCFSystems::LOADCELL_IIR_FILTER_ALPHA, VCFData_sInstance::instance().interface_data.front_loadcell_data.FL_loadcell_analog, ADCsOnVCFInstance::instance().adc_1.data.conversions[VCFInterfaces::FL_LOADCELL_CHANNEL].conversion);
-    VCFData_sInstance::instance().interface_data.front_loadcell_data.FR_loadcell_analog = apply_iir_filter(VCFSystems::LOADCELL_IIR_FILTER_ALPHA, VCFData_sInstance::instance().interface_data.front_loadcell_data.FR_loadcell_analog, ADCsOnVCFInstance::instance().adc_1.data.conversions[VCFInterfaces::FR_LOADCELL_CHANNEL].conversion);
-    VCFData_sInstance::instance().interface_data.front_suspot_data.FL_sus_pot_analog = apply_iir_filter(VCFSystems::LOADCELL_IIR_FILTER_ALPHA, VCFData_sInstance::instance().interface_data.front_suspot_data.FL_sus_pot_analog, ADCsOnVCFInstance::instance().adc_1.data.conversions[VCFInterfaces::FL_SUS_POT_CHANNEL].raw);
-    VCFData_sInstance::instance().interface_data.front_suspot_data.FR_sus_pot_analog = apply_iir_filter(VCFSystems::LOADCELL_IIR_FILTER_ALPHA, VCFData_sInstance::instance().interface_data.front_suspot_data.FR_sus_pot_analog, ADCsOnVCFInstance::instance().adc_1.data.conversions[VCFInterfaces::FR_SUS_POT_CHANNEL].raw);
+    VCFData_sInstance::instance().interface_data.front_loadcell_data.FL_loadcell_analog = apply_iir_filter(VCFConstants::LOADCELL_IIR_FILTER_ALPHA, VCFData_sInstance::instance().interface_data.front_loadcell_data.FL_loadcell_analog, ADCsOnVCFInstance::instance().adc_1.data.conversions[VCFInterfaces::FL_LOADCELL_CHANNEL].conversion);
+    VCFData_sInstance::instance().interface_data.front_loadcell_data.FR_loadcell_analog = apply_iir_filter(VCFConstants::LOADCELL_IIR_FILTER_ALPHA, VCFData_sInstance::instance().interface_data.front_loadcell_data.FR_loadcell_analog, ADCsOnVCFInstance::instance().adc_1.data.conversions[VCFInterfaces::FR_LOADCELL_CHANNEL].conversion);
+    VCFData_sInstance::instance().interface_data.front_suspot_data.FL_sus_pot_analog = apply_iir_filter(VCFConstants::LOADCELL_IIR_FILTER_ALPHA, VCFData_sInstance::instance().interface_data.front_suspot_data.FL_sus_pot_analog, ADCsOnVCFInstance::instance().adc_1.data.conversions[VCFInterfaces::FL_SUS_POT_CHANNEL].raw);
+    VCFData_sInstance::instance().interface_data.front_suspot_data.FR_sus_pot_analog = apply_iir_filter(VCFConstants::LOADCELL_IIR_FILTER_ALPHA, VCFData_sInstance::instance().interface_data.front_suspot_data.FR_sus_pot_analog, ADCsOnVCFInstance::instance().adc_1.data.conversions[VCFInterfaces::FR_SUS_POT_CHANNEL].raw);
 
     return HT_TASK::TaskResponse::YIELD;
 }
@@ -395,3 +400,161 @@ namespace async_tasks
         return HT_TASK::TaskResponse::YIELD;
     }
 };
+HT_TASK::TaskResponse debug_print(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
+{
+    // Serial.println("accel1 raw accel2 raw");
+    // Serial.print(VCFData_sInstance::instance().interface_data.pedal_sensor_data.accel_1);
+    // Serial.print("   ");
+    // Serial.print(VCFData_sInstance::instance().interface_data.pedal_sensor_data.accel_2);
+    // Serial.println();
+    // Serial.println("brake1 raw brake2 raw");
+    // Serial.print(VCFData_sInstance::instance().interface_data.pedal_sensor_data.brake_1);
+    // Serial.print("   ");
+    // Serial.print(VCFData_sInstance::instance().interface_data.pedal_sensor_data.brake_2);
+    // Serial.println();
+    // Serial.println("accel brake percents");
+    // Serial.print(VCFData_sInstance::instance().system_data.pedals_system_data.accel_percent);
+    // Serial.print("   ");
+    // Serial.print(VCFData_sInstance::instance().system_data.pedals_system_data.brake_percent);
+    // Serial.println();
+    // Serial.println("implaus");
+    // Serial.println(VCFData_sInstance::instance().system_data.pedals_system_data.implausibility_has_exceeded_max_duration);
+
+    // Serial.println("accel 1 min/max");
+    // Serial.print(PedalsSystemInstance::instance().get_accel_params().min_pedal_1);
+    // Serial.print("   ");
+    // Serial.print(PedalsSystemInstance::instance().get_accel_params().max_pedal_1);
+    // Serial.println();
+    // Serial.println("accel 2 min/max");
+    // Serial.print(PedalsSystemInstance::instance().get_accel_params().min_pedal_2);
+    // Serial.print("   ");
+    // Serial.print(PedalsSystemInstance::instance().get_accel_params().max_pedal_2);
+    // Serial.println();
+    // Serial.println("brake 1 min/max");
+    // Serial.print(PedalsSystemInstance::instance().get_brake_params().min_pedal_1);
+    // Serial.print("   ");
+    // Serial.print(PedalsSystemInstance::instance().get_brake_params().max_pedal_1);
+    // Serial.println();
+    // Serial.println("brake 2 min/max");
+    // Serial.print(PedalsSystemInstance::instance().get_brake_params().min_pedal_2);
+    // Serial.print("   ");
+    // Serial.print(PedalsSystemInstance::instance().get_brake_params().max_pedal_2);
+    // Serial.println();
+    // Serial.println();
+    
+    // Serial.print("Load Cell FR:  ");
+    // Serial.println(VCFData_sInstance::instance().interface_data.front_loadcell_data.FR_loadcell_analog);
+    // Serial.print("Load Cell FL:  ");
+    // Serial.println(VCFData_sInstance::instance().interface_data.front_loadcell_data.FL_loadcell_analog);
+    // Serial.print("Suspot FR:  ");
+    // Serial.println(VCFData_sInstance::instance().interface_data.front_suspot_data.FR_sus_pot_analog);
+    // Serial.print("Suspot FL:  ");
+    // Serial.println(VCFData_sInstance::instance().interface_data.front_suspot_data.FL_sus_pot_analog);
+    
+
+    // Serial.print("Dim button: ");
+    // Serial.println(VCFData_sInstance::instance().interface_data.dash_input_state.dim_btn_is_pressed);
+    // Serial.print("preset button: ");
+    // Serial.println(VCFData_sInstance::instance().interface_data.dash_input_state.preset_btn_is_pressed);
+    // Serial.print("mc reset button: ");
+    // Serial.println(VCFData_sInstance::instance().interface_data.dash_input_state.mc_reset_btn_is_pressed);
+    // Serial.print("mode button: ");
+    // Serial.println(VCFData_sInstance::instance().interface_data.dash_input_state.mode_btn_is_pressed);
+    // Serial.print("start button: ");
+    // Serial.println(VCFData_sInstance::instance().interface_data.dash_input_state.start_btn_is_pressed);
+    // Serial.print("data button: ");
+    // Serial.println(VCFData_sInstance::instance().interface_data.dash_input_state.data_btn_is_pressed);
+
+    // Serial.println("jkkjhhkjkjh");
+
+    return HT_TASK::TaskResponse::YIELD;
+}
+
+namespace setup_handlers {
+    void setup_hardware(FlexCAN_T4_Base* main_can)
+    {
+        // Initialize all singletons
+        float adc_1_scales[channels_within_mcp_adc], adc_1_offsets[channels_within_mcp_adc], adc_2_scales[channels_within_mcp_adc], adc_2_offsets[channels_within_mcp_adc];
+        
+        adc_1_scales[VCFInterfaces::STEERING_1_CHANNEL] = VCFInterfaces::STEERING_1_SCALE;
+        adc_1_offsets[VCFInterfaces::STEERING_1_CHANNEL] = VCFInterfaces::STEERING_1_OFFSET;
+        adc_1_scales[VCFInterfaces::STEERING_2_CHANNEL] = VCFInterfaces::STEERING_2_SCALE;
+        adc_1_offsets[VCFInterfaces::STEERING_2_CHANNEL] = VCFInterfaces::STEERING_2_OFFSET;
+        adc_1_scales[VCFInterfaces::FR_SUS_POT_CHANNEL] = VCFInterfaces::FR_SUS_POT_SCALE;
+        adc_1_offsets[VCFInterfaces::FR_SUS_POT_CHANNEL] = VCFInterfaces::FR_SUS_POT_OFFSET; 
+        adc_1_scales[VCFInterfaces::FL_SUS_POT_CHANNEL] = VCFInterfaces::FL_SUS_POT_SCALE;
+        adc_1_offsets[VCFInterfaces::FL_SUS_POT_CHANNEL] = VCFInterfaces::FL_SUS_POT_OFFSET;
+        adc_1_scales[VCFInterfaces::FR_LOADCELL_CHANNEL] = VCFInterfaces::FR_LOADCELL_SCALE;
+        adc_1_offsets[VCFInterfaces::FR_LOADCELL_CHANNEL] = VCFInterfaces::FR_LOADCELL_OFFSET;
+        adc_1_scales[VCFInterfaces::FL_LOADCELL_CHANNEL] = VCFInterfaces::FL_LOADCELL_SCALE;
+        adc_1_offsets[VCFInterfaces::FL_LOADCELL_CHANNEL] = VCFInterfaces::FL_LOADCELL_OFFSET;
+
+        adc_2_scales[VCFInterfaces::ACCEL_1_CHANNEL] = VCFInterfaces::ACCEL_1_SCALE;
+        adc_2_offsets[VCFInterfaces::ACCEL_1_CHANNEL] = VCFInterfaces::ACCEL_1_OFFSET;
+        adc_2_scales[VCFInterfaces::ACCEL_2_CHANNEL] = VCFInterfaces::ACCEL_2_SCALE;
+        adc_2_offsets[VCFInterfaces::ACCEL_2_CHANNEL] = VCFInterfaces::ACCEL_2_OFFSET;
+        adc_2_scales[VCFInterfaces::BRAKE_1_CHANNEL] = VCFInterfaces::BRAKE_1_SCALE;
+        adc_2_offsets[VCFInterfaces::BRAKE_1_CHANNEL] = VCFInterfaces::BRAKE_1_OFFSET;
+        adc_2_scales[VCFInterfaces::BRAKE_2_CHANNEL] = VCFInterfaces::BRAKE_2_SCALE;
+        adc_2_offsets[VCFInterfaces::BRAKE_2_CHANNEL] = VCFInterfaces::BRAKE_2_OFFSET;
+        ADCsOnVCFInstance::create(adc_1_scales, adc_1_offsets, adc_2_scales, adc_2_offsets);
+
+        EthernetIPDefsInstance::create();
+        VCRData_sInstance::create();
+        VCFData_sInstance::create();
+
+        // Create pedals singleton
+        PedalsParams accel_params = {
+            .min_pedal_1 = EEPROMUtilities::read_eeprom_32bit(VCFConstants::ACCEL_1_MIN_ADDR),
+            .min_pedal_2 = EEPROMUtilities::read_eeprom_32bit(VCFConstants::ACCEL_2_MIN_ADDR),
+            .max_pedal_1 = EEPROMUtilities::read_eeprom_32bit(VCFConstants::ACCEL_1_MAX_ADDR),
+            .max_pedal_2 = EEPROMUtilities::read_eeprom_32bit(VCFConstants::ACCEL_2_MAX_ADDR),
+            .activation_percentage = 0.10, // NOLINT
+            .min_sensor_pedal_1 = 90, // NOLINT
+            .min_sensor_pedal_2 = 90, // NOLINT
+            .max_sensor_pedal_1 = 4000, // NOLINT
+            .max_sensor_pedal_2 = 4000, // NOLINT
+            .deadzone_margin = .03, // NOLINT
+            .implausibility_margin = IMPLAUSIBILITY_PERCENT,
+            .mechanical_activation_percentage = 0.05 // NOLINT
+        };
+        
+        PedalsParams brake_params = {
+            .min_pedal_1 = EEPROMUtilities::read_eeprom_32bit(VCFConstants::BRAKE_1_MIN_ADDR),
+            .min_pedal_2 = EEPROMUtilities::read_eeprom_32bit(VCFConstants::BRAKE_2_MIN_ADDR),
+            .max_pedal_1 = EEPROMUtilities::read_eeprom_32bit(VCFConstants::BRAKE_1_MAX_ADDR),
+            .max_pedal_2 = EEPROMUtilities::read_eeprom_32bit(VCFConstants::BRAKE_2_MAX_ADDR),
+            .activation_percentage = 0.50, // NOLINT
+            .min_sensor_pedal_1 = 90, // NOLINT
+            .min_sensor_pedal_2 = 90, // NOLINT
+            .max_sensor_pedal_1 = 4000, // NOLINT
+            .max_sensor_pedal_2 = 4000, // NOLINT
+            .deadzone_margin = .04, //NOLINT
+            .implausibility_margin = IMPLAUSIBILITY_PERCENT,
+            .mechanical_activation_percentage = 0.5 //NOLINT
+        };
+
+        PedalsSystemInstance::create(accel_params, brake_params); //pass in the two different params
+        
+        // Create dashboard singleton
+        DashboardGPIOs_s dashboard_gpios = {
+            .DIM_BUTTON = VCFInterfaces::BTN_DIM_READ,
+            .PRESET_BUTTON = VCFInterfaces::BTN_PRESET_READ,
+            .MC_CYCLE_BUTTON = VCFInterfaces::BTN_MC_CYCLE_READ,
+            .MODE_BUTTON = VCFInterfaces::BTN_MODE_READ,
+            .START_BUTTON = VCFInterfaces::BTN_START_READ,
+            .DATA_BUTTON = VCFInterfaces::BTN_DATA_READ,
+            .LEFT_SHIFTER_BUTTON = VCFInterfaces::LEFT_SHIFTER,
+            .RIGHT_SHIFTER_BUTTON = VCFInterfaces::RIGHT_SHIFTER,
+        };
+
+        DashboardInterfaceInstance::create(dashboard_gpios); //NOLINT (linter things dashboard_gpios is not initialized)
+        ACUInterfaceInstance::create();
+        VCRInterfaceInstance::create();
+        // Create can singletons
+        VCFCANInterfaceImpl::CANInterfacesInstance::create(DashboardInterfaceInstance::instance(), ACUInterfaceInstance::instance(), VCRInterfaceInstance::instance()); 
+        auto main_can_recv = etl::delegate<void(CANInterfaces &, const CAN_message_t &, unsigned long)>::create<VCFCANInterfaceImpl::vcf_recv_switch>();
+        VCFCANInterfaceImpl::VCFCANInterfaceObjectsInstance::create(main_can_recv, &main_can); // NOLINT (Not sure why it's uninitialized. I think it is.)
+
+    }
+}
