@@ -28,11 +28,11 @@ HT_TASK::TaskResponse run_read_adc1_task(const unsigned long& sysMicros, const H
     // Samples all eight channels.
     ADCsOnVCFInstance::instance().adc_1.tick();
 
-    VCFData_sInstance::instance().interface_data.steering_data.analog_steering_degrees = ADCsOnVCFInstance::instance().adc_1.data.conversions[STEERING_1_CHANNEL].conversion; // Only using steering 1 for now
-    VCFData_sInstance::instance().interface_data.front_loadcell_data.FL_loadcell_analog = apply_iir_filter(LOADCELL_IIR_FILTER_ALPHA, VCFData_sInstance::instance().interface_data.front_loadcell_data.FL_loadcell_analog, ADCsOnVCFInstance::instance().adc_1.data.conversions[FL_LOADCELL_CHANNEL].conversion);
-    VCFData_sInstance::instance().interface_data.front_loadcell_data.FR_loadcell_analog = apply_iir_filter(LOADCELL_IIR_FILTER_ALPHA, VCFData_sInstance::instance().interface_data.front_loadcell_data.FR_loadcell_analog, ADCsOnVCFInstance::instance().adc_1.data.conversions[FR_LOADCELL_CHANNEL].conversion);
-    VCFData_sInstance::instance().interface_data.front_suspot_data.FL_sus_pot_analog = apply_iir_filter(LOADCELL_IIR_FILTER_ALPHA, VCFData_sInstance::instance().interface_data.front_suspot_data.FL_sus_pot_analog, ADCsOnVCFInstance::instance().adc_1.data.conversions[FL_SUS_POT_CHANNEL].raw);
-    VCFData_sInstance::instance().interface_data.front_suspot_data.FR_sus_pot_analog = apply_iir_filter(LOADCELL_IIR_FILTER_ALPHA, VCFData_sInstance::instance().interface_data.front_suspot_data.FR_sus_pot_analog, ADCsOnVCFInstance::instance().adc_1.data.conversions[FR_SUS_POT_CHANNEL].raw);
+    VCFData_sInstance::instance().interface_data.steering_data.analog_steering_degrees = ADCsOnVCFInstance::instance().adc_1.data.conversions[VCFInterfaces::STEERING_1_CHANNEL].conversion; // Only using steering 1 for now
+    VCFData_sInstance::instance().interface_data.front_loadcell_data.FL_loadcell_analog = apply_iir_filter(VCFSystems::LOADCELL_IIR_FILTER_ALPHA, VCFData_sInstance::instance().interface_data.front_loadcell_data.FL_loadcell_analog, ADCsOnVCFInstance::instance().adc_1.data.conversions[VCFInterfaces::FL_LOADCELL_CHANNEL].conversion);
+    VCFData_sInstance::instance().interface_data.front_loadcell_data.FR_loadcell_analog = apply_iir_filter(VCFSystems::LOADCELL_IIR_FILTER_ALPHA, VCFData_sInstance::instance().interface_data.front_loadcell_data.FR_loadcell_analog, ADCsOnVCFInstance::instance().adc_1.data.conversions[VCFInterfaces::FR_LOADCELL_CHANNEL].conversion);
+    VCFData_sInstance::instance().interface_data.front_suspot_data.FL_sus_pot_analog = apply_iir_filter(VCFSystems::LOADCELL_IIR_FILTER_ALPHA, VCFData_sInstance::instance().interface_data.front_suspot_data.FL_sus_pot_analog, ADCsOnVCFInstance::instance().adc_1.data.conversions[VCFInterfaces::FL_SUS_POT_CHANNEL].raw);
+    VCFData_sInstance::instance().interface_data.front_suspot_data.FR_sus_pot_analog = apply_iir_filter(VCFSystems::LOADCELL_IIR_FILTER_ALPHA, VCFData_sInstance::instance().interface_data.front_suspot_data.FR_sus_pot_analog, ADCsOnVCFInstance::instance().adc_1.data.conversions[VCFInterfaces::FR_SUS_POT_CHANNEL].raw);
 
     return HT_TASK::TaskResponse::YIELD;
 }
@@ -41,24 +41,24 @@ HT_TASK::TaskResponse run_read_adc2_task(const unsigned long& sysMicros, const H
 {
     // Samples all eight channels.
     ADCsOnVCFInstance::instance().adc_2.tick();
-    VCFData_sInstance::instance().interface_data.pedal_sensor_data.accel_1 = ADCsOnVCFInstance::instance().adc_2.data.conversions[ACCEL_1_CHANNEL].conversion;
-    VCFData_sInstance::instance().interface_data.pedal_sensor_data.accel_2 = ADCsOnVCFInstance::instance().adc_2.data.conversions[ACCEL_2_CHANNEL].conversion;
-    VCFData_sInstance::instance().interface_data.pedal_sensor_data.brake_1 = ADCsOnVCFInstance::instance().adc_2.data.conversions[BRAKE_1_CHANNEL].conversion;
-    VCFData_sInstance::instance().interface_data.pedal_sensor_data.brake_2 = ADCsOnVCFInstance::instance().adc_2.data.conversions[BRAKE_2_CHANNEL].conversion;
+    VCFData_sInstance::instance().interface_data.pedal_sensor_data.accel_1 = ADCsOnVCFInstance::instance().adc_2.data.conversions[VCFInterfaces::ACCEL_1_CHANNEL].conversion;
+    VCFData_sInstance::instance().interface_data.pedal_sensor_data.accel_2 = ADCsOnVCFInstance::instance().adc_2.data.conversions[VCFInterfaces::ACCEL_2_CHANNEL].conversion;
+    VCFData_sInstance::instance().interface_data.pedal_sensor_data.brake_1 = ADCsOnVCFInstance::instance().adc_2.data.conversions[VCFInterfaces::BRAKE_1_CHANNEL].conversion;
+    VCFData_sInstance::instance().interface_data.pedal_sensor_data.brake_2 = ADCsOnVCFInstance::instance().adc_2.data.conversions[VCFInterfaces::BRAKE_2_CHANNEL].conversion;
     return HT_TASK::TaskResponse::YIELD;
 }
 
 HT_TASK::TaskResponse init_kick_watchdog(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
 {
-    WatchdogInstance::create(WATCHDOG_KICK_INTERVAL_MS); // NOLINT
-    pinMode(WATCHDOG_PIN, OUTPUT);
-    pinMode(SOFTWARE_OK_PIN, OUTPUT);
+    WatchdogInstance::create(VCFConstants::WATCHDOG_KICK_INTERVAL_MS); // NOLINT
+    pinMode(VCFInterfaces::WATCHDOG_PIN, OUTPUT);
+    pinMode(VCFInterfaces::SOFTWARE_OK_PIN, OUTPUT);
     return HT_TASK::TaskResponse::YIELD;
 }
 
 HT_TASK::TaskResponse run_kick_watchdog(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo) {
-    digitalWrite(SOFTWARE_OK_PIN , HIGH);
-    digitalWrite(WATCHDOG_PIN, WatchdogInstance::instance().get_watchdog_state(sys_time::hal_millis()));
+    digitalWrite(VCFInterfaces::SOFTWARE_OK_PIN , HIGH);
+    digitalWrite(VCFInterfaces::WATCHDOG_PIN, WatchdogInstance::instance().get_watchdog_state(sys_time::hal_millis()));
     return HT_TASK::TaskResponse::YIELD;
 }
 
@@ -71,14 +71,14 @@ HT_TASK::TaskResponse update_pedals_calibration_task(const unsigned long& sysMic
     if (VCRInterfaceInstance::instance().is_in_pedals_calibration_state())
     {
         PedalsSystemInstance::instance().recalibrate_min_max(VCFData_sInstance::instance().interface_data.pedal_sensor_data);
-        EEPROMUtilities::write_eeprom_32bit(ACCEL_1_MIN_ADDR, PedalsSystemInstance::instance().get_accel_params().min_pedal_1);
-        EEPROMUtilities::write_eeprom_32bit(ACCEL_1_MAX_ADDR, PedalsSystemInstance::instance().get_accel_params().max_pedal_1);
-        EEPROMUtilities::write_eeprom_32bit(ACCEL_2_MIN_ADDR, PedalsSystemInstance::instance().get_accel_params().min_pedal_2);
-        EEPROMUtilities::write_eeprom_32bit(ACCEL_2_MAX_ADDR, PedalsSystemInstance::instance().get_accel_params().max_pedal_2);
-        EEPROMUtilities::write_eeprom_32bit(BRAKE_1_MIN_ADDR, PedalsSystemInstance::instance().get_brake_params().min_pedal_1);
-        EEPROMUtilities::write_eeprom_32bit(BRAKE_1_MAX_ADDR, PedalsSystemInstance::instance().get_brake_params().max_pedal_1);
-        EEPROMUtilities::write_eeprom_32bit(BRAKE_2_MIN_ADDR, PedalsSystemInstance::instance().get_brake_params().min_pedal_2);
-        EEPROMUtilities::write_eeprom_32bit(BRAKE_2_MAX_ADDR, PedalsSystemInstance::instance().get_brake_params().max_pedal_2);
+        EEPROMUtilities::write_eeprom_32bit(VCFConstants::ACCEL_1_MIN_ADDR, PedalsSystemInstance::instance().get_accel_params().min_pedal_1);
+        EEPROMUtilities::write_eeprom_32bit(VCFConstants::ACCEL_1_MAX_ADDR, PedalsSystemInstance::instance().get_accel_params().max_pedal_1);
+        EEPROMUtilities::write_eeprom_32bit(VCFConstants::ACCEL_2_MIN_ADDR, PedalsSystemInstance::instance().get_accel_params().min_pedal_2);
+        EEPROMUtilities::write_eeprom_32bit(VCFConstants::ACCEL_2_MAX_ADDR, PedalsSystemInstance::instance().get_accel_params().max_pedal_2);
+        EEPROMUtilities::write_eeprom_32bit(VCFConstants::BRAKE_1_MIN_ADDR, PedalsSystemInstance::instance().get_brake_params().min_pedal_1);
+        EEPROMUtilities::write_eeprom_32bit(VCFConstants::BRAKE_1_MAX_ADDR, PedalsSystemInstance::instance().get_brake_params().max_pedal_1);
+        EEPROMUtilities::write_eeprom_32bit(VCFConstants::BRAKE_2_MIN_ADDR, PedalsSystemInstance::instance().get_brake_params().min_pedal_2);
+        EEPROMUtilities::write_eeprom_32bit(VCFConstants::BRAKE_2_MAX_ADDR, PedalsSystemInstance::instance().get_brake_params().max_pedal_2);
     }
 
     return HT_TASK::TaskResponse::YIELD;
@@ -118,7 +118,7 @@ HT_TASK::TaskResponse update_pedals_calibration_task(const unsigned long& sysMic
 
 HT_TASK::TaskResponse init_buzzer_control_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
 {
-    pinMode(BUZZER_CONTROL_PIN, OUTPUT);
+    pinMode(VCFInterfaces::BUZZER_CONTROL_PIN, OUTPUT);
 
     return HT_TASK::TaskResponse::YIELD;
 }
@@ -128,7 +128,7 @@ HT_TASK::TaskResponse run_buzzer_control_task(const unsigned long& sysMicros, co
 
     bool buzzer_is_active = BuzzerController::getInstance().buzzer_is_active(sys_time::hal_millis()); //NOLINT
 
-    digitalWrite(BUZZER_CONTROL_PIN, buzzer_is_active);
+    digitalWrite(VCFInterfaces::BUZZER_CONTROL_PIN, buzzer_is_active);
     
     return HT_TASK::TaskResponse::YIELD;
 }
@@ -359,7 +359,7 @@ HT_TASK::TaskResponse read_ioexpander(const unsigned long& sys_micros, const HT_
 
 HT_TASK::TaskResponse init_neopixels_task(const unsigned long& sys_micros, const HT_TASK::TaskInfo& task_info)
 {
-    NeopixelControllerInstance::create(NEOPIXEL_COUNT, NEOPIXEL_CONTROL_PIN);
+    NeopixelControllerInstance::create(VCFInterfaces::NEOPIXEL_COUNT, VCFInterfaces::NEOPIXEL_CONTROL_PIN);
     NeopixelControllerInstance::instance().init_neopixels();
     return HT_TASK::TaskResponse::YIELD;
 }
