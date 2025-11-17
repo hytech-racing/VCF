@@ -501,18 +501,17 @@ void init_pedals_system()
 
 void init_dashboard_interface()
 {
-    DashboardGPIOs_s dashboard_gpios = {
-        .DIM_BUTTON = VCFInterfaces::BTN_DIM_READ,
-        .PRESET_BUTTON = VCFInterfaces::BTN_PRESET_READ,
-        .MC_CYCLE_BUTTON = VCFInterfaces::BTN_MC_CYCLE_READ,
-        .MODE_BUTTON = VCFInterfaces::BTN_MODE_READ,
-        .START_BUTTON = VCFInterfaces::BTN_START_READ,
-        .DATA_BUTTON = VCFInterfaces::BTN_DATA_READ,
-        .LEFT_SHIFTER_BUTTON = VCFInterfaces::LEFT_SHIFTER,
-        .RIGHT_SHIFTER_BUTTON = VCFInterfaces::RIGHT_SHIFTER,
-    };
-
-    DashboardInterfaceInstance::create(dashboard_gpios);
+    DashboardInterfaceInstance::create(DashboardGPIOs_s {
+                                            .DIM_BUTTON = VCFInterfaces::BTN_DIM_READ,
+                                            .PRESET_BUTTON = VCFInterfaces::BTN_PRESET_READ,
+                                            .MC_CYCLE_BUTTON = VCFInterfaces::BTN_MC_CYCLE_READ,
+                                            .MODE_BUTTON = VCFInterfaces::BTN_MODE_READ,
+                                            .START_BUTTON = VCFInterfaces::BTN_START_READ,
+                                            .DATA_BUTTON = VCFInterfaces::BTN_DATA_READ,
+                                            .LEFT_SHIFTER_BUTTON = VCFInterfaces::LEFT_SHIFTER,
+                                            .RIGHT_SHIFTER_BUTTON = VCFInterfaces::RIGHT_SHIFTER,
+                                        }
+                                    );
 }
 
 void init_adc_scales()
