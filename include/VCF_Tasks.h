@@ -116,6 +116,10 @@ HT_TASK::TaskResponse init_kick_watchdog(const unsigned long& sysMicros, const H
 
 HT_TASK::TaskResponse debug_print(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
 
+void init_pedals_system();
+void init_dashboard_interface();
+void init_adc_scales();
+
 namespace async_tasks {
     // the others in the VCF Tasks can just stay there, they dont need forward declarations.
     HT_TASK::TaskResponse handle_async_main(const unsigned long& sys_micros, const HT_TASK::TaskInfo& task_info);

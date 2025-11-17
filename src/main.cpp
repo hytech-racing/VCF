@@ -31,11 +31,6 @@
 /* CAN Interface stuff */
 #include "VCFCANInterfaceImpl.h"
 #include "CANInterface.h"
-// #include "VCFEthernetInterface.h"
-#include "ht_sched.hpp"
-#include "ht_task.hpp"
-
-#include "hytech.h"
 
 FlexCAN_T4<CAN1, RX_SIZE_256, TX_SIZE_16> main_can;
 
@@ -64,15 +59,27 @@ void setup() {
     SPI.begin();
     Serial.begin(115200); // NOLINT
 
-    setup_handlers::setup_hardware(&main_can);
+    init_adc_scales();
+    EthernetIPDefsInstance::create();
+    VCRData_sInstance::create();
+    VCFData_sInstance::create();
+
+    init_pedals_system();
+    init_dashboard_interface();
     
+    ACUInterfaceInstance::create();
+    VCRInterfaceInstance::create();
+    // Create can singletons
+    VCFCANInterfaceImpl::CANInterfacesInstance::create(DashboardInterfaceInstance::instance(), ACUInterfaceInstance::instance(), VCRInterfaceInstance::instance()); 
+    auto main_can_recv = etl::delegate<void(CANInterfaces &, const CAN_message_t &, unsigned long)>::create<VCFCANInterfaceImpl::vcf_recv_switch>();
+    VCFCANInterfaceImpl::VCFCANInterfaceObjectsInstance::create(main_can_recv, &main_can); // NOLINT (Not sure why it's uninitialized. I think it is.)
+
     const uint32_t CAN_baudrate = 1000000;
     handle_CAN_setup(main_can, CAN_baudrate, &VCFCANInterfaceImpl::on_main_can_recv);
 
     // Setup scheduler
     HT_SCHED::Scheduler::getInstance().setTimingFunction(micros);
 
-    EthernetIPDefsInstance::create();
     uint8_t mac[6]; // NOLINT (mac addresses are always 6 bytes)
     qindesign::network::Ethernet.macAddress(&mac[0]);
     qindesign::network::Ethernet.begin(mac, EthernetIPDefsInstance::instance().vcf_ip, EthernetIPDefsInstance::instance().default_dns, EthernetIPDefsInstance::instance().default_gateway, EthernetIPDefsInstance::instance().car_subnet);
