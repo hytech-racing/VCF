@@ -501,17 +501,18 @@ void init_pedals_system()
 
 void init_dashboard_interface()
 {
-    DashboardInterfaceInstance::create(DashboardGPIOs_s {
-                                            .DIM_BUTTON = VCFInterfaces::BTN_DIM_READ,
-                                            .PRESET_BUTTON = VCFInterfaces::BTN_PRESET_READ,
-                                            .MC_CYCLE_BUTTON = VCFInterfaces::BTN_MC_CYCLE_READ,
-                                            .MODE_BUTTON = VCFInterfaces::BTN_MODE_READ,
-                                            .START_BUTTON = VCFInterfaces::BTN_START_READ,
-                                            .DATA_BUTTON = VCFInterfaces::BTN_DATA_READ,
-                                            .LEFT_SHIFTER_BUTTON = VCFInterfaces::LEFT_SHIFTER,
-                                            .RIGHT_SHIFTER_BUTTON = VCFInterfaces::RIGHT_SHIFTER,
-                                        }
-                                    );
+    DashboardGPIOs_s dashboard_gpios = {
+        .DIM_BUTTON = VCFInterfaces::BTN_DIM_READ,
+        .PRESET_BUTTON = VCFInterfaces::BTN_PRESET_READ,
+        .MC_CYCLE_BUTTON = VCFInterfaces::BTN_MC_CYCLE_READ,
+        .MODE_BUTTON = VCFInterfaces::BTN_MODE_READ,
+        .START_BUTTON = VCFInterfaces::BTN_START_READ,
+        .DATA_BUTTON = VCFInterfaces::BTN_DATA_READ,
+        .LEFT_SHIFTER_BUTTON = VCFInterfaces::LEFT_SHIFTER,
+        .RIGHT_SHIFTER_BUTTON = VCFInterfaces::RIGHT_SHIFTER,
+    };
+
+    DashboardInterfaceInstance::create(dashboard_gpios);
 }
 
 void init_adc_scales()
@@ -540,4 +541,32 @@ void init_adc_scales()
     adc_2_scales[VCFInterfaces::BRAKE_2_CHANNEL] = VCFInterfaces::BRAKE_2_SCALE;
     adc_2_offsets[VCFInterfaces::BRAKE_2_CHANNEL] = VCFInterfaces::BRAKE_2_OFFSET;
     ADCsOnVCFInstance::create(adc_1_scales, adc_1_offsets, adc_2_scales, adc_2_offsets);
+}
+
+void init_adc_all(){
+    init_adc_scales();
+    EthernetIPDefsInstance::create();
+    VCRData_sInstance::create();
+    VCFData_sInstance::create();
+
+    init_pedals_system();
+    init_dashboard_interface();
+    
+    ACUInterfaceInstance::create();
+    VCRInterfaceInstance::create();
+    // Create can singletons
+    VCFCANInterfaceImpl::CANInterfacesInstance::create(DashboardInterfaceInstance::instance(), ACUInterfaceInstance::instance(), VCRInterfaceInstance::instance()); 
+    auto main_can_recv = etl::delegate<void(CANInterfaces &, const CAN_message_t &, unsigned long)>::create<VCFCANInterfaceImpl::vcf_recv_switch>();
+    VCFCANInterfaceImpl::VCFCANInterfaceObjectsInstance::create(main_can_recv, &main_can); // NOLINT (Not sure why it's uninitialized. I think it is.)
+
+    const uint32_t CAN_baudrate = 1000000;
+    handle_CAN_setup(main_can, CAN_baudrate, &VCFCANInterfaceImpl::on_main_can_recv);
+
+    // Setup scheduler
+    HT_SCHED::Scheduler::getInstance().setTimingFunction(micros);
+
+    uint8_t mac[6]; // NOLINT (mac addresses are always 6 bytes)
+    qindesign::network::Ethernet.macAddress(&mac[0]);
+    qindesign::network::Ethernet.begin(mac, EthernetIPDefsInstance::instance().vcf_ip, EthernetIPDefsInstance::instance().default_dns, EthernetIPDefsInstance::instance().default_gateway, EthernetIPDefsInstance::instance().car_subnet);
+
 }
