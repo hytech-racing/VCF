@@ -137,7 +137,9 @@ void setup() {
     SPI.begin();
     Serial.begin(115200); // NOLINT
 
-    // Initialize all singletons
+    /* Create all singletons */
+
+    // Create ADC singleton
     ADCInterfaceInstance::create(
         ADCPinout_s {
             ADC1_CS,
@@ -190,8 +192,7 @@ void setup() {
         .min_pedal_1 = EEPROMUtilities::read_eeprom_32bit(ACCEL_1_MIN_ADDR),
         .min_pedal_2 = EEPROMUtilities::read_eeprom_32bit(ACCEL_2_MIN_ADDR),
         .max_pedal_1 = EEPROMUtilities::read_eeprom_32bit(ACCEL_1_MAX_ADDR),
-        .max_pedal_2 = 
-        EEPROMUtilities::read_eeprom_32bit(ACCEL_2_MAX_ADDR),
+        .max_pedal_2 = EEPROMUtilities::read_eeprom_32bit(ACCEL_2_MAX_ADDR),
         .activation_percentage = 0.10, // NOLINT
         .min_sensor_pedal_1 = 90, // NOLINT
         .min_sensor_pedal_2 = 90, // NOLINT

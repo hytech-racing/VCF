@@ -98,7 +98,7 @@ HT_TASK::TaskResponse update_pedals_calibration_task(const unsigned long& sysMic
     return HT_TASK::TaskResponse::YIELD;
 }
 
-// bool _read_gpio_task()
+// bool init_read_gpio_task()
 // {
 //     // Setting digital/analog buttons D10-D6, A8 as inputs
 //     pinMode(BTN_DIM_READ, INPUT);

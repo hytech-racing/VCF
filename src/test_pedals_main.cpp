@@ -48,21 +48,63 @@ const PedalsParams brake_params = {
 
 void setup(){
     PedalsSystemInstance::create(accel_params, brake_params); //pass in the two different params
+    ADCInterfaceInstance::create(
+        ADCPinout_s {
+            ADC1_CS,
+            ADC2_CS
+        },
+        ADCChannels_s {
+            STEERING_1_CHANNEL,
+            STEERING_2_CHANNEL,
+            FR_LOADCELL_CHANNEL,
+            FL_LOADCELL_CHANNEL,
+            FR_SUS_POT_CHANNEL,
+            FL_SUS_POT_CHANNEL,
+            ACCEL_1_CHANNEL,
+            ACCEL_2_CHANNEL,
+            BRAKE_1_CHANNEL,
+            BRAKE_2_CHANNEL
+        },
+        ADCScales_s { 
+            STEERING_1_SCALE, 
+            STEERING_2_SCALE, 
+            FR_LOADCELL_SCALE,
+            FL_LOADCELL_SCALE,
+            FR_SUS_POT_SCALE,
+            FL_SUS_POT_SCALE, 
+            ACCEL_1_SCALE, 
+            ACCEL_2_SCALE, 
+            BRAKE_1_SCALE, 
+            BRAKE_2_SCALE
+        }, 
+        ADCOffsets_s {
+            STEERING_1_OFFSET,
+            STEERING_2_OFFSET,
+            FR_LOADCELL_OFFSET,
+            FL_LOADCELL_OFFSET,
+            FR_SUS_POT_OFFSET,
+            FL_SUS_POT_OFFSET,
+            ACCEL_1_OFFSET,
+            ACCEL_2_OFFSET,
+            BRAKE_1_OFFSET,
+            BRAKE_2_OFFSET
+        }
+    );
     const int begin_time = 115200;
     Serial.begin(begin_time);
     SPI.begin();
-    init_adc_task();
+    // init_adc_task();
 }
 
 void loop(){
 
-    ADCsOnVCFInstance::instance().adc_2.tick();
+    ADCInterfaceInstance::instance().adc2_tick();
     PedalSensorData_s pedal_sensor_data = {};
     
-    pedal_sensor_data.accel_1 = ADCsOnVCFInstance::instance().adc_2.data.conversions[ACCEL_1_CHANNEL].conversion;
-    pedal_sensor_data.accel_2 = ADCsOnVCFInstance::instance().adc_2.data.conversions[ACCEL_2_CHANNEL].conversion;
-    pedal_sensor_data.brake_1 = ADCsOnVCFInstance::instance().adc_2.data.conversions[BRAKE_1_CHANNEL].conversion;
-    pedal_sensor_data.brake_2 = ADCsOnVCFInstance::instance().adc_2.data.conversions[BRAKE_2_CHANNEL].conversion;
+    pedal_sensor_data.accel_1 = ADCInterfaceInstance::instance().acceleration_1().conversion;
+    pedal_sensor_data.accel_2 = ADCInterfaceInstance::instance().acceleration_2().conversion;
+    pedal_sensor_data.brake_1 = ADCInterfaceInstance::instance().brake_1().conversion;
+    pedal_sensor_data.brake_2 = ADCInterfaceInstance::instance().brake_2().conversion;
     
     PedalsSystemData_s data = PedalsSystemInstance::instance().evaluate_pedals(pedal_sensor_data, millis());
 

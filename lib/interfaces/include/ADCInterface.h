@@ -3,8 +3,8 @@
 
 /// @brief This file defines ADC interface. The interface instantiates the ADC modules and provides getter functions to access each sensor's values.
 
-#include <Arduino.h>
-#include "SharedFirmwareTypes.h"
+// #include <Arduino.h>
+// #include "SharedFirmwareTypes.h"
 #include <MCP_ADC.h>
 #include "etl/singleton.h"
 
@@ -110,12 +110,12 @@ class ADCInterface
         /* ------ ADC 1 ------ */
         
         /**
-         * @return Analog Steering Degrees [Channel 1]
+         * @return Analog Steering Degrees [Steering 1]
          */
         AnalogConversion_s steering_degrees_cw();
         
         /**
-         * @return Analog Steering Degrees [Channel 2]
+         * @return Analog Steering Degrees [Steering 2]
          */
         AnalogConversion_s steering_degrees_ccw();
         
