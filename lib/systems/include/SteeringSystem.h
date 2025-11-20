@@ -1,6 +1,5 @@
 #ifndef STEERINGSYSTEM
 #define STEERINGSYSTEM
-#include "VCF_Constants.h"
 #include <etl/singleton.h>
 #include "SharedFirmwareTypes.h"
 
@@ -50,7 +49,7 @@ public:
     void recalibrate_min_max(SteeringSensorData_s &curr_values)
     {
         // If steering is at min travel and is closer to the observed max, then this sensor is a negative coefficient.
-        uint32_t raw_value = static_cast<uint32_t>(curr_values.analog_steering_raw);
+        uint32_t raw_value = static_cast<uint32_t>(curr_values.analog_steering_degrees);
         bool steering_1_flipped = std::abs((int) raw_value - (int) max_observed_steering_1) < std::abs((int) raw_value - (int) min_observed_steering_1);
         
         _params.min_steering_1 = steering_1_flipped ? max_observed_steering_1 : min_observed_steering_1;
@@ -69,7 +68,7 @@ public:
      */
     void update_observed_steering_limits(SteeringSensorData_s &curr_values)
     {
-        uint32_t raw_value = static_cast<uint32_t>(curr_values.analog_steering_raw);
+        uint32_t raw_value = static_cast<uint32_t>(curr_values.analog_steering_degrees);
         min_observed_steering_1 = std::min(min_observed_steering_1, raw_value);
         max_observed_steering_1 = std::max(max_observed_steering_1, raw_value);
         // Note: steering_2 not currently used, but keeping for future redundancy

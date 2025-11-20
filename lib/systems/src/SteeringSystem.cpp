@@ -8,9 +8,9 @@ SteeringSystemData_s SteeringSystem::evaluate_steering(SteeringSensorData_s stee
     _last_update_micros = curr_micros;
 
     SteeringSystemData_s out = {};
-    out.steering_is_implausible = _evaluate_steering_implausibilities(static_cast<int>(steering_data.analog_steering_raw), static_cast<int>(_params.min_sensor_steering_1), static_cast<int>(_params.max_sensor_steering_1), static_cast<int>(_params.min_steering_1), static_cast<int>(_params.max_steering_1), _params.implausibility_margin, dt);
+    out.steering_is_implausible = _evaluate_steering_implausibilities(static_cast<int>(steering_data.analog_steering_degrees), static_cast<int>(_params.min_sensor_steering_1), static_cast<int>(_params.max_sensor_steering_1), static_cast<int>(_params.min_steering_1), static_cast<int>(_params.max_steering_1), _params.implausibility_margin, dt);
 
-    _prev_steering_analog = steering_data.analog_steering_raw;
+    _prev_steering_analog = steering_data.analog_steering_degrees;
 
     return out;
 }

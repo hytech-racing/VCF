@@ -14,6 +14,7 @@
 #include "SystemTimeInterface.h"
 #include "PedalsSystem.h"
 #include "WatchdogSystem.h"
+#include "SteeringSystem.h"
 
 #include "WatchdogSystem.h"
 #include "Arduino.h"
@@ -28,7 +29,7 @@ HT_TASK::TaskResponse run_read_adc1_task(const unsigned long& sysMicros, const H
     // Samples all eight channels.
     ADCsOnVCFInstance::instance().adc_1.tick();
 
-    VCFData_sInstance::instance().interface_data.steering_data.analog_steering_raw = ADCsOnVCFInstance::instance().adc_1.data.conversions[STEERING_1_CHANNEL].conversion; // Only using steering 1 for now
+    VCFData_sInstance::instance().interface_data.steering_data.analog_steering_degrees = ADCsOnVCFInstance::instance().adc_1.data.conversions[STEERING_1_CHANNEL].conversion; // Only using steering 1 for now
     VCFData_sInstance::instance().interface_data.front_loadcell_data.FL_loadcell_analog = apply_iir_filter(LOADCELL_IIR_FILTER_ALPHA, VCFData_sInstance::instance().interface_data.front_loadcell_data.FL_loadcell_analog, ADCsOnVCFInstance::instance().adc_1.data.conversions[FL_LOADCELL_CHANNEL].conversion);
     VCFData_sInstance::instance().interface_data.front_loadcell_data.FR_loadcell_analog = apply_iir_filter(LOADCELL_IIR_FILTER_ALPHA, VCFData_sInstance::instance().interface_data.front_loadcell_data.FR_loadcell_analog, ADCsOnVCFInstance::instance().adc_1.data.conversions[FR_LOADCELL_CHANNEL].conversion);
     VCFData_sInstance::instance().interface_data.front_suspot_data.FL_sus_pot_analog = apply_iir_filter(LOADCELL_IIR_FILTER_ALPHA, VCFData_sInstance::instance().interface_data.front_suspot_data.FL_sus_pot_analog, ADCsOnVCFInstance::instance().adc_1.data.conversions[FL_SUS_POT_CHANNEL].raw);
@@ -79,6 +80,22 @@ HT_TASK::TaskResponse update_pedals_calibration_task(const unsigned long& sysMic
         EEPROMUtilities::write_eeprom_32bit(BRAKE_1_MAX_ADDR, PedalsSystemInstance::instance().get_brake_params().max_pedal_1);
         EEPROMUtilities::write_eeprom_32bit(BRAKE_2_MIN_ADDR, PedalsSystemInstance::instance().get_brake_params().min_pedal_2);
         EEPROMUtilities::write_eeprom_32bit(BRAKE_2_MAX_ADDR, PedalsSystemInstance::instance().get_brake_params().max_pedal_2);
+    }
+
+    return HT_TASK::TaskResponse::YIELD;
+}
+
+HT_TASK::TaskResponse update_steering_calibration_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo) {
+    // Update observed steering limits (ONLY USED FOR RECALIBRATION)
+    SteeringSystemInstance::instance().update_observed_steering_limits(VCFData_sInstance::instance().interface_data.steering_data);
+
+    // TODO: Add separate steering calibration state in VCRInterface when CAN message supports it
+    // For now, using pedals calibration state as placeholder
+    if (VCRInterfaceInstance::instance().is_in_pedals_calibration_state())
+    {
+        SteeringSystemInstance::instance().recalibrate_min_max(VCFData_sInstance::instance().interface_data.steering_data);
+        EEPROMUtilities::write_eeprom_32bit(STEERING_1_MIN_ADDR, SteeringSystemInstance::instance().get_params().min_steering_1);
+        EEPROMUtilities::write_eeprom_32bit(STEERING_1_MAX_ADDR, SteeringSystemInstance::instance().get_params().max_steering_1);
     }
 
     return HT_TASK::TaskResponse::YIELD;
@@ -191,7 +208,7 @@ HT_TASK::TaskResponse enqueue_steering_data(const unsigned long& sysMicros, cons
 {
     STEERING_DATA_t msg_out;
 
-    msg_out.steering_analog_raw = VCFData_sInstance::instance().interface_data.steering_data.analog_steering_raw;
+    msg_out.steering_analog_raw = VCFData_sInstance::instance().interface_data.steering_data.analog_steering_degrees;
     msg_out.steering_digital_raw = 0; //NOLINT VCFData_sInstance::instance().interface_data.steering_data.digital_steering_analog;
 
     CAN_util::enqueue_msg(&msg_out, &Pack_STEERING_DATA_hytech, VCFCANInterfaceImpl::VCFCANInterfaceObjectsInstance::instance().main_can_tx_buffer);
@@ -391,6 +408,9 @@ namespace async_tasks
         handle_async_recvs();
         // Serial.println("test");
         VCFData_sInstance::instance().system_data.pedals_system_data = PedalsSystemInstance::instance().evaluate_pedals(VCFData_sInstance::instance().interface_data.pedal_sensor_data, sys_time::hal_millis());
+        // Evaluate steering - data stored in SteeringSystemInstance, accessible via get_steering_system_data()
+        // TODO: Add steering_system_data to VCFSystemData_s in shared_firmware_types library
+        // SteeringSystemInstance::instance().evaluate_steering(VCFData_sInstance::instance().interface_data.steering_data, sys_micros);
         // Serial.println(VCFData_sInstance::instance().system_data.pedals_system_data.accel_percent);
         return HT_TASK::TaskResponse::YIELD;
     }

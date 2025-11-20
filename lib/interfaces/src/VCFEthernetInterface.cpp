@@ -25,7 +25,7 @@ hytech_msgs_VCFData_s VCFEthernetInterface::make_vcf_data_msg(VCFData_s &shared_
     out.front_suspot_data.FL_sus_pot_analog = shared_state.interface_data.front_suspot_data.FL_sus_pot_analog;
 
     // Steering
-    out.steering_data.analog_steering_raw = shared_state.interface_data.steering_data.analog_steering_raw;
+    out.steering_data.analog_steering_degrees = shared_state.interface_data.steering_data.analog_steering_degrees;
     out.steering_data.digital_steering_analog = shared_state.interface_data.steering_data.digital_steering_analog;
     
     // Dash

@@ -22,6 +22,7 @@
 #include "VCF_Constants.h"
 #include "VCF_Tasks.h"
 #include "PedalsSystem.h"
+#include "SteeringSystem.h"
 #include "DashboardInterface.h"
 #include "VCFEthernetInterface.h"
 #include "WatchdogSystem.h"
@@ -55,7 +56,8 @@ HT_TASK::Task steering_message_enqueue(HT_TASK::DUMMY_FUNCTION, &enqueue_steerin
 HT_TASK::Task front_suspension_message_enqueue(HT_TASK::DUMMY_FUNCTION, &enqueue_front_suspension_data, LOADCELL_SEND_PRIORITY, LOADCELL_SEND_PERIOD);
 
 HT_TASK::Task kick_watchdog_task(&init_kick_watchdog, &run_kick_watchdog, WATCHDOG_PRIORITY, WATCHDOG_KICK_PERIOD); 
-HT_TASK::Task pedals_calibration_task(HT_TASK::DUMMY_FUNCTION, &update_pedals_calibration_task, PEDALS_RECALIBRATION_PRIORITY, PEDALS_RECALIBRATION_PERIOD); 
+HT_TASK::Task pedals_calibration_task(HT_TASK::DUMMY_FUNCTION, &update_pedals_calibration_task, PEDALS_RECALIBRATION_PRIORITY, PEDALS_RECALIBRATION_PERIOD);
+HT_TASK::Task steering_calibration_task(HT_TASK::DUMMY_FUNCTION, &update_steering_calibration_task, STEERING_RECALIBRATION_PRIORITY, STEERING_RECALIBRATION_PERIOD); 
 
 
 HT_TASK::TaskResponse debug_print(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
@@ -199,6 +201,22 @@ void setup() {
 
     PedalsSystemInstance::create(accel_params, brake_params); //pass in the two different params
     
+    // Create steering singleton
+    SteeringParams steering_params = {
+        .min_steering_1 = EEPROMUtilities::read_eeprom_32bit(STEERING_1_MIN_ADDR),
+        .max_steering_1 = EEPROMUtilities::read_eeprom_32bit(STEERING_1_MAX_ADDR),
+        .min_steering_2 = 0, // Not currently used
+        .max_steering_2 = 0, // Not currently used
+        .min_sensor_steering_1 = 90, // NOLINT - Min value sensor can output
+        .min_sensor_steering_2 = 90, // NOLINT - Not currently used
+        .max_sensor_steering_1 = 4000, // NOLINT - Max value sensor can output
+        .max_sensor_steering_2 = 4000, // NOLINT - Not currently used
+        .implausibility_margin = IMPLAUSIBILITY_PERCENT,
+        .max_dtheta_threshold = 1000.0f, // NOLINT - Threshold for rate of change check
+        .cross_sensor_tolerance_deg = 5.0f // NOLINT - Not currently used
+    };
+    SteeringSystemInstance::create(steering_params);
+    
     // Create dashboard singleton
     DashboardGPIOs_s dashboard_gpios = {
         .DIM_BUTTON = BTN_DIM_READ,
@@ -246,6 +264,7 @@ void setup() {
     HT_SCHED::Scheduler::getInstance().schedule(front_suspension_message_enqueue);
     HT_SCHED::Scheduler::getInstance().schedule(debug_state_print_task);
     HT_SCHED::Scheduler::getInstance().schedule(pedals_calibration_task);
+    HT_SCHED::Scheduler::getInstance().schedule(steering_calibration_task);
     HT_SCHED::Scheduler::getInstance().schedule(ethernet_send_task);
 }
 
