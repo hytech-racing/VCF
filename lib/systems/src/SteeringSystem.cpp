@@ -1,16 +1,20 @@
 #include <math.h>
 #include "SteeringSystem.h"
 
+namespace {
+    constexpr float MICROSECONDS_TO_SECONDS = 1e6f;
+}
+
 SteeringSystemData_s SteeringSystem::evaluate_steering(SteeringSensorData_s steering_data,
                                               unsigned long curr_micros)
 {
-    float dt = (_last_update_micros == 0) ? 0.0f : (curr_micros - _last_update_micros) / 1e6f;
+    float dt = (_last_update_micros == 0) ? 0.0f : static_cast<float>(curr_micros - _last_update_micros) / MICROSECONDS_TO_SECONDS;
     _last_update_micros = curr_micros;
 
     SteeringSystemData_s out = {};
     out.steering_is_implausible = _evaluate_steering_implausibilities(static_cast<int>(steering_data.analog_steering_degrees), static_cast<int>(_params.min_sensor_steering_1), static_cast<int>(_params.max_sensor_steering_1), static_cast<int>(_params.min_steering_1), static_cast<int>(_params.max_steering_1), _params.implausibility_margin, dt);
 
-    _prev_steering_analog = steering_data.analog_steering_degrees;
+    _prev_steering_analog = static_cast<uint32_t>(steering_data.analog_steering_degrees);
 
     return out;
 }
