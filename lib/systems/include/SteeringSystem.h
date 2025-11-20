@@ -1,5 +1,7 @@
 #ifndef STEERINGSYSTEM
 #define STEERINGSYSTEM
+#include <math.h>
+#include <tuple>
 #include <etl/singleton.h>
 #include "SharedFirmwareTypes.h"
 
@@ -23,11 +25,11 @@ class SteeringSystem
 {
 public:
     SteeringSystem(const SteeringParams &params)
-        : _params(params), _last_update_micros(0), _prev_steering_analog(0)
+        : steering_params(params), _last_update_micros(0), _prev_steering_analog(0)
     { }
 
     void set_params(const SteeringParams &params) {
-        _params = params;
+        steering_params = params;
     }
 
     const SteeringSystemData_s &get_steering_system_data() {
@@ -39,7 +41,7 @@ public:
     SteeringSystemData_s evaluate_steering(SteeringSensorData_s steering_data,
                                   unsigned long curr_micros);
 
-    SteeringParams get_params() {return _params;}
+    SteeringParams get_steering_params() {return steering_params;}
 
     /**
      * This is a way to force-update the calibrated min/max values.
@@ -52,12 +54,12 @@ public:
         uint32_t raw_value = static_cast<uint32_t>(curr_values.analog_steering_degrees);
         bool steering_1_flipped = std::abs((int) raw_value - (int) max_observed_steering_1) < std::abs((int) raw_value - (int) min_observed_steering_1);
         
-        _params.min_steering_1 = steering_1_flipped ? max_observed_steering_1 : min_observed_steering_1;
-        _params.max_steering_1 = steering_1_flipped ? min_observed_steering_1 : max_observed_steering_1;
+        steering_params.min_steering_1 = steering_1_flipped ? max_observed_steering_1 : min_observed_steering_1;
+        steering_params.max_steering_1 = steering_1_flipped ? min_observed_steering_1 : max_observed_steering_1;
         // Note: steering_2 not currently used, but keeping structure for future redundancy
         // bool steering_2_flipped = std::abs((int) raw_value_2 - (int) max_observed_steering_2) < std::abs((int) raw_value_2 - (int) min_observed_steering_2);
-        // _params.min_steering_2 = steering_2_flipped ? max_observed_steering_2 : min_observed_steering_2;
-        // _params.max_steering_2 = steering_2_flipped ? min_observed_steering_2 : max_observed_steering_2;
+        // steering_params.min_steering_2 = steering_2_flipped ? max_observed_steering_2 : min_observed_steering_2;
+        // steering_params.max_steering_2 = steering_2_flipped ? min_observed_steering_2 : max_observed_steering_2;
     }
 
     /**
@@ -123,7 +125,7 @@ private:
 
 private:
     SteeringSystemData_s _data{};
-    SteeringParams _params{};
+    SteeringParams steering_params{};
     bool _implaus_occured = false;
     unsigned long _last_update_micros = 0;
     uint32_t _prev_steering_analog = 0;

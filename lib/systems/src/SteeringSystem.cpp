@@ -12,7 +12,7 @@ SteeringSystemData_s SteeringSystem::evaluate_steering(SteeringSensorData_s stee
     _last_update_micros = curr_micros;
 
     SteeringSystemData_s out = {};
-    out.steering_is_implausible = _evaluate_steering_implausibilities(static_cast<int>(steering_data.analog_steering_degrees), static_cast<int>(_params.min_sensor_steering_1), static_cast<int>(_params.max_sensor_steering_1), static_cast<int>(_params.min_steering_1), static_cast<int>(_params.max_steering_1), _params.implausibility_margin, dt);
+    out.steering_is_implausible = _evaluate_steering_implausibilities(static_cast<int>(steering_data.analog_steering_degrees), static_cast<int>(steering_params.min_sensor_steering_1), static_cast<int>(steering_params.max_sensor_steering_1), static_cast<int>(steering_params.min_steering_1), static_cast<int>(steering_params.max_steering_1), steering_params.implausibility_margin, dt);
 
     _prev_steering_analog = static_cast<uint32_t>(steering_data.analog_steering_degrees);
 
@@ -23,7 +23,7 @@ bool SteeringSystem::_evaluate_steering_dtheta(int steering_analog, float dt)
 {
     if (dt <= 0.0f) return false;
     float dtheta = fabs(steering_analog - _prev_steering_analog) / dt;
-    return (dtheta > _params.max_dtheta_threshold);
+    return (dtheta > steering_params.max_dtheta_threshold);
 }
 
 bool SteeringSystem::_evaluate_steering_implausibilities(int steering_analog, int min_sensor_value, int max_sensor_value, int min_steering_value, int max_steering_value, float implausibility_margin, float dt)

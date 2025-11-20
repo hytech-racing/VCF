@@ -94,8 +94,8 @@ HT_TASK::TaskResponse update_steering_calibration_task(const unsigned long& sysM
     if (VCRInterfaceInstance::instance().is_in_pedals_calibration_state())
     {
         SteeringSystemInstance::instance().recalibrate_min_max(VCFData_sInstance::instance().interface_data.steering_data);
-        EEPROMUtilities::write_eeprom_32bit(STEERING_1_MIN_ADDR, SteeringSystemInstance::instance().get_params().min_steering_1);
-        EEPROMUtilities::write_eeprom_32bit(STEERING_1_MAX_ADDR, SteeringSystemInstance::instance().get_params().max_steering_1);
+        EEPROMUtilities::write_eeprom_32bit(STEERING_1_MIN_ADDR, SteeringSystemInstance::instance().get_steering_params().min_steering_1);
+        EEPROMUtilities::write_eeprom_32bit(STEERING_1_MAX_ADDR, SteeringSystemInstance::instance().get_steering_params().max_steering_1);
     }
 
     return HT_TASK::TaskResponse::YIELD;

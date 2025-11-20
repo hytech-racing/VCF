@@ -202,20 +202,20 @@ void setup() {
     PedalsSystemInstance::create(accel_params, brake_params); //pass in the two different params
     
     // Create steering singleton
-    const SteeringParams steering_params{
-        EEPROMUtilities::read_eeprom_32bit(STEERING_1_MIN_ADDR),
-        EEPROMUtilities::read_eeprom_32bit(STEERING_1_MAX_ADDR),
-        0, // min_steering_2 - Not currently used
-        0, // max_steering_2 - Not currently used
-        90, // min_sensor_steering_1 - NOLINT - Min value sensor can output
-        90, // min_sensor_steering_2 - NOLINT - Not currently used
-        4000, // max_sensor_steering_1 - NOLINT - Max value sensor can output
-        4000, // max_sensor_steering_2 - NOLINT - Not currently used
-        IMPLAUSIBILITY_PERCENT,
-        1000.0f, // max_dtheta_threshold - NOLINT - Threshold for rate of change check
-        5.0f // cross_sensor_tolerance_deg - NOLINT - Not currently used
+    SteeringParams steering_params = { // NOLINT
+        .min_steering_1 = EEPROMUtilities::read_eeprom_32bit(STEERING_1_MIN_ADDR),
+        .max_steering_1 = EEPROMUtilities::read_eeprom_32bit(STEERING_1_MAX_ADDR),
+        .min_steering_2 = 0, // Not currently used
+        .max_steering_2 = 0, // Not currently used
+        .min_sensor_steering_1 = 90, // NOLINT - Min value sensor can output
+        .min_sensor_steering_2 = 90, // NOLINT - Not currently used
+        .max_sensor_steering_1 = 4000, // NOLINT - Max value sensor can output
+        .max_sensor_steering_2 = 4000, // NOLINT - Not currently used
+        .implausibility_margin = IMPLAUSIBILITY_PERCENT,
+        .max_dtheta_threshold = 1000.0f, // NOLINT - Threshold for rate of change check
+        .cross_sensor_tolerance_deg = 5.0f // NOLINT - Not currently used
     };
-    SteeringSystemInstance::create(steering_params);
+    SteeringSystemInstance::create(steering_params); // NOLINT
     
     // Create dashboard singleton
     DashboardGPIOs_s dashboard_gpios = {
