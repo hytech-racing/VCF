@@ -11,6 +11,7 @@ struct SteeringParams {
     uint32_t min_steering_2;  // (optional) for redundant steering sensor
     uint32_t max_steering_2;
 
+    // TODO: Verify behavior and values
     uint32_t min_sensor_steering_1; // Min value that the sensor can output (if ADC reads less than this, sensor is likely unplugged)
     uint32_t min_sensor_steering_2; // Min value that the sensor can output (if ADC reads less than this, sensor is likely unplugged)
     uint32_t max_sensor_steering_1; // Max value that the sensor can output (if ADC reads more than this, sensor is likely unplugged)
@@ -77,6 +78,8 @@ public:
         // min_observed_steering_2 = std::min(min_observed_steering_2, raw_value_2);
         // max_observed_steering_2 = std::max(max_observed_steering_2, raw_value_2);
     }
+
+    // TODO: Verify behavior and values
     uint32_t min_observed_steering_1 = 4096;
     uint32_t max_observed_steering_1 = 0;
     uint32_t min_observed_steering_2 = 4095;
@@ -100,16 +103,9 @@ private:
                             
     /// @brief
     /// @param steering_analog the value of the steering
-    /// @param min_sensor_value the min value of the steering -- min sensor value
-    /// @param max_sensor_value the max value of the steering -- max sensor value
-    /// @param implaus_margin_scale the implausibility margin scale
+    /// @param dt the time since the last tick
     /// @return true if the steering is implausible, false otherwise
     bool _evaluate_steering_implausibilities(int steering_analog,
-                                             int min_sensor_value,
-                                             int max_sensor_value,
-                                             int min_steering_value,
-                                             int max_steering_value,
-                                             float implausibility_margin,
                                              float dt);
 
     /// @brief

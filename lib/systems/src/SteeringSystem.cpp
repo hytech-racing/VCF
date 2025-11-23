@@ -12,24 +12,29 @@ SteeringSystemData_s SteeringSystem::evaluate_steering(SteeringSensorData_s stee
     _last_update_micros = curr_micros;
 
     SteeringSystemData_s out = {};
-    out.steering_is_implausible = _evaluate_steering_implausibilities(static_cast<int>(steering_data.analog_steering_degrees), static_cast<int>(steering_params.min_sensor_steering_1), static_cast<int>(steering_params.max_sensor_steering_1), static_cast<int>(steering_params.min_steering_1), static_cast<int>(steering_params.max_steering_1), steering_params.implausibility_margin, dt);
+    out.steering_is_implausible = _evaluate_steering_implausibilities(static_cast<int>(steering_data.analog_steering_degrees), dt);
 
     _prev_steering_analog = static_cast<uint32_t>(steering_data.analog_steering_degrees);
 
     return out;
 }
 
+// Make sure the sensor readings didn't change an abnormal amount in one tick
 bool SteeringSystem::_evaluate_steering_dtheta(int steering_analog, float dt)
 {
     if (dt <= 0.0f) return false;
+
+    // Approximate derivative of steering angle
     float dtheta = fabs(steering_analog - _prev_steering_analog) / dt;
+
+    // Check if the steering angle changed by more than the threshold
     return (dtheta > steering_params.max_dtheta_threshold);
 }
 
-bool SteeringSystem::_evaluate_steering_implausibilities(int steering_analog, int min_sensor_value, int max_sensor_value, int min_steering_value, int max_steering_value, float implausibility_margin, float dt)
+bool SteeringSystem::_evaluate_steering_implausibilities(int steering_analog, float dt)
 {
-    bool steering_oor = _evaluate_steering_oor(steering_analog, min_sensor_value, max_sensor_value);
-    bool steering_min_max_implaus = _evaluate_min_max_steering_implausibilities(steering_analog, min_steering_value, max_steering_value, implausibility_margin);
+    bool steering_oor = _evaluate_steering_oor(steering_analog, static_cast<int>(steering_params.min_sensor_steering_1), static_cast<int>(steering_params.max_sensor_steering_1));
+    bool steering_min_max_implaus = _evaluate_min_max_steering_implausibilities(steering_analog, static_cast<int>(steering_params.min_steering_1), static_cast<int>(steering_params.max_steering_1), steering_params.implausibility_margin);
     bool steering_dtheta = _evaluate_steering_dtheta(steering_analog, dt);
     return steering_oor || steering_min_max_implaus || steering_dtheta;
 }

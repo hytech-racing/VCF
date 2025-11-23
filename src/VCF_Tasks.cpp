@@ -89,9 +89,7 @@ HT_TASK::TaskResponse update_steering_calibration_task(const unsigned long& sysM
     // Update observed steering limits (ONLY USED FOR RECALIBRATION)
     SteeringSystemInstance::instance().update_observed_steering_limits(VCFData_sInstance::instance().interface_data.steering_data);
 
-    // TODO: Add separate steering calibration state in VCRInterface when CAN message supports it
-    // For now, using pedals calibration state as placeholder
-    if (VCRInterfaceInstance::instance().is_in_pedals_calibration_state())
+    if (VCRInterfaceInstance::instance().is_in_steering_calibration_state())
     {
         SteeringSystemInstance::instance().recalibrate_min_max(VCFData_sInstance::instance().interface_data.steering_data);
         EEPROMUtilities::write_eeprom_32bit(STEERING_1_MIN_ADDR, SteeringSystemInstance::instance().get_steering_params().min_steering_1);
@@ -275,7 +273,8 @@ HT_TASK::TaskResponse run_dash_GPIOs_task(const unsigned long& sys_micros, const
 
     if (!VCFData_sInstance::instance().interface_data.dash_input_state.preset_btn_is_pressed)
     {
-        VCRInterfaceInstance::instance().disable_calibration_state();
+        VCRInterfaceInstance::instance().disable_pedals_calibration_state();
+        VCRInterfaceInstance::instance().disable_steering_calibration_state();
     }
 
     if (was_dim_btn_pressed && !VCFData_sInstance::instance().interface_data.dash_input_state.dim_btn_is_pressed)

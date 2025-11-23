@@ -10,6 +10,7 @@ void VCRInterface::receive_dash_control_data(const CAN_message_t &can_msg)
     }
 
     _is_in_pedals_calibration_state = unpacked_msg.in_pedal_calibration_state;
+    _is_in_steering_calibration_state = unpacked_msg.in_steering_calibration_state;
 
     if (unpacked_msg.torque_limit_enum_value < ((int) TorqueLimit_e::TCMUX_NUM_TORQUE_LIMITS)) // check for validity
     {
