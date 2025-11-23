@@ -14,6 +14,7 @@
 #include "SystemTimeInterface.h"
 #include "PedalsSystem.h"
 #include "WatchdogSystem.h"
+#include "SteeringSystem.h"
 
 #include "WatchdogSystem.h"
 #include "Arduino.h"
@@ -79,6 +80,20 @@ HT_TASK::TaskResponse update_pedals_calibration_task(const unsigned long& sysMic
         EEPROMUtilities::write_eeprom_32bit(BRAKE_1_MAX_ADDR, PedalsSystemInstance::instance().get_brake_params().max_pedal_1);
         EEPROMUtilities::write_eeprom_32bit(BRAKE_2_MIN_ADDR, PedalsSystemInstance::instance().get_brake_params().min_pedal_2);
         EEPROMUtilities::write_eeprom_32bit(BRAKE_2_MAX_ADDR, PedalsSystemInstance::instance().get_brake_params().max_pedal_2);
+    }
+
+    return HT_TASK::TaskResponse::YIELD;
+}
+
+HT_TASK::TaskResponse update_steering_calibration_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo) {
+    // Update observed steering limits (ONLY USED FOR RECALIBRATION)
+    SteeringSystemInstance::instance().update_observed_steering_limits(VCFData_sInstance::instance().interface_data.steering_data);
+
+    if (VCRInterfaceInstance::instance().is_in_steering_calibration_state())
+    {
+        SteeringSystemInstance::instance().recalibrate_min_max(VCFData_sInstance::instance().interface_data.steering_data);
+        EEPROMUtilities::write_eeprom_32bit(STEERING_1_MIN_ADDR, SteeringSystemInstance::instance().get_steering_params().min_steering_1);
+        EEPROMUtilities::write_eeprom_32bit(STEERING_1_MAX_ADDR, SteeringSystemInstance::instance().get_steering_params().max_steering_1);
     }
 
     return HT_TASK::TaskResponse::YIELD;
@@ -258,7 +273,8 @@ HT_TASK::TaskResponse run_dash_GPIOs_task(const unsigned long& sys_micros, const
 
     if (!VCFData_sInstance::instance().interface_data.dash_input_state.preset_btn_is_pressed)
     {
-        VCRInterfaceInstance::instance().disable_calibration_state();
+        VCRInterfaceInstance::instance().disable_pedals_calibration_state();
+        VCRInterfaceInstance::instance().disable_steering_calibration_state();
     }
 
     if (was_dim_btn_pressed && !VCFData_sInstance::instance().interface_data.dash_input_state.dim_btn_is_pressed)
@@ -391,6 +407,9 @@ namespace async_tasks
         handle_async_recvs();
         // Serial.println("test");
         VCFData_sInstance::instance().system_data.pedals_system_data = PedalsSystemInstance::instance().evaluate_pedals(VCFData_sInstance::instance().interface_data.pedal_sensor_data, sys_time::hal_millis());
+        // Evaluate steering - data stored in SteeringSystemInstance, accessible via get_steering_system_data()
+        // TODO: Add steering_system_data to VCFSystemData_s in shared_firmware_types library
+        // SteeringSystemInstance::instance().evaluate_steering(VCFData_sInstance::instance().interface_data.steering_data, sys_micros);
         // Serial.println(VCFData_sInstance::instance().system_data.pedals_system_data.accel_percent);
         return HT_TASK::TaskResponse::YIELD;
     }

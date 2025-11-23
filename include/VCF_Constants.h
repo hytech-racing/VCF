@@ -130,6 +130,9 @@ constexpr unsigned long WATCHDOG_KICK_PERIOD = 1000;          // 1 000 us = 1000
 constexpr unsigned long PEDALS_RECALIBRATION_PRIORITY = 150;
 constexpr unsigned long PEDALS_RECALIBRATION_PERIOD = 100000; // 100 000 us = 10 Hz
 
+constexpr unsigned long STEERING_RECALIBRATION_PRIORITY = 151;
+constexpr unsigned long STEERING_RECALIBRATION_PERIOD = 100000; // 100 000 us = 10 Hz
+
 
 constexpr int WATCHDOG_PIN = 33;
 constexpr int SOFTWARE_OK_PIN = 34; // Watchdog's !RESET pin
@@ -148,5 +151,7 @@ constexpr uint32_t BRAKE_1_MIN_ADDR = 16;
 constexpr uint32_t BRAKE_2_MIN_ADDR = 20;
 constexpr uint32_t BRAKE_1_MAX_ADDR = 24;
 constexpr uint32_t BRAKE_2_MAX_ADDR = 28;
+constexpr uint32_t STEERING_1_MIN_ADDR = 32;
+constexpr uint32_t STEERING_1_MAX_ADDR = 36;
 
 #endif /* VCF_CONSTANTS */

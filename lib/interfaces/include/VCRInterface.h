@@ -13,11 +13,13 @@ class VCRInterface
     public:
 
         bool is_in_pedals_calibration_state() {return _is_in_pedals_calibration_state;}
+        bool is_in_steering_calibration_state() {return _is_in_steering_calibration_state;}
         TorqueLimit_e get_torque_limit_mode() {return _torque_limit;}
 
         void receive_dash_control_data(const CAN_message_t &can_msg);
 
-        void disable_calibration_state() {_is_in_pedals_calibration_state = false;}
+        void disable_pedals_calibration_state() {_is_in_pedals_calibration_state = false;}
+        void disable_steering_calibration_state() {_is_in_steering_calibration_state = false;}
 
         void receive_car_states_data(const CAN_message_t &can_msg);
 
@@ -27,6 +29,7 @@ class VCRInterface
     private: 
 
         bool _is_in_pedals_calibration_state = false;
+        bool _is_in_steering_calibration_state = false;
         VehicleState_e _vehicle_state_value;
         DrivetrainState_e _drivetrain_state_value;
         bool _is_db_in_ctrl;

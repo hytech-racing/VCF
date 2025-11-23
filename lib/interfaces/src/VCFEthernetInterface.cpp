@@ -3,6 +3,8 @@
 #include "ht_can_version.h"
 #include "hytech_msgs_version.h"
 #include "device_fw_version.h"
+#include <algorithm>
+#include <cstring>
 
 hytech_msgs_VCFData_s VCFEthernetInterface::make_vcf_data_msg(VCFData_s &shared_state)
 {
@@ -64,7 +66,8 @@ hytech_msgs_VCFData_s VCFEthernetInterface::make_vcf_data_msg(VCFData_s &shared_
     std::copy(ver_hash.begin(), ver_hash.end(), std::begin(out.firmware_version_info.git_hash));
     out.has_msg_versions = true;
     out.msg_versions.ht_can_version = HT_CAN_LIB_VERSION;
-    std::copy(version, version + std::min(strlen(version), sizeof(out.msg_versions.ht_proto_version) - 1), out.msg_versions.ht_proto_version);    
+    const size_t version_len = std::min(strlen(version), sizeof(out.msg_versions.ht_proto_version) - 1);
+    std::copy_n(version, version_len, std::begin(out.msg_versions.ht_proto_version));
     out.msg_versions.ht_proto_version[sizeof(out.msg_versions.ht_proto_version) - 1] = '\0';
 
     return out;

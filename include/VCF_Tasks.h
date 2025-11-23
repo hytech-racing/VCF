@@ -34,6 +34,7 @@
 #include "VCFCANInterfaceImpl.h"
 #include "VCFEthernetInterface.h"
 #include "PedalsSystem.h"
+#include "SteeringSystem.h"
 #include "ht_sched.hpp"
 #include "ht_task.hpp"
 #include "BuzzerController.h"
@@ -52,6 +53,8 @@ HT_TASK::TaskResponse run_read_adc1_task(const unsigned long& sysMicros, const H
 HT_TASK::TaskResponse run_kick_watchdog(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
 
 HT_TASK::TaskResponse update_pedals_calibration_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
+
+HT_TASK::TaskResponse update_steering_calibration_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
 
 /**
  * NOTE: These channels are UNUSED BY DEFAULT and exist ONLY FOR TESTING. You
