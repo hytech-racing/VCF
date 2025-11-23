@@ -37,8 +37,6 @@
 
 #include "hytech.h"
 
-FlexCAN_T4<CAN1, RX_SIZE_256, TX_SIZE_16> main_can;
-
 // Tasks
 HT_TASK::Task async_main(HT_TASK::DUMMY_FUNCTION, &async_tasks::handle_async_main, VCFConstants::MAIN_TASK_PRIORITY, VCFConstants::MAIN_TASK_PERIOD);
 HT_TASK::Task CAN_send(HT_TASK::DUMMY_FUNCTION, &handle_CAN_send, VCFConstants::CAN_SEND_PRIORITY, VCFConstants::CAN_SEND_PERIOD);
@@ -60,22 +58,10 @@ HT_TASK::Task pedals_calibration_task(HT_TASK::DUMMY_FUNCTION, &update_pedals_ca
 HT_TASK::Task debug_state_print_task(HT_TASK::DUMMY_FUNCTION, &debug_print, VCFConstants::DEBUG_PRIORITY, VCFConstants::DEBUG_PERIOD);
 
 void setup() {
-
-    SPI.begin();
-    Serial.begin(115200); // NOLINT
-
-    setup_handlers::setup_hardware(&main_can);
-    
-    const uint32_t CAN_baudrate = 1000000;
-    handle_CAN_setup(main_can, CAN_baudrate, &VCFCANInterfaceImpl::on_main_can_recv);
+    setup_all_interfaces(); //must be first (if we ever have a setup systems)
 
     // Setup scheduler
     HT_SCHED::Scheduler::getInstance().setTimingFunction(micros);
-
-    EthernetIPDefsInstance::create();
-    uint8_t mac[6]; // NOLINT (mac addresses are always 6 bytes)
-    qindesign::network::Ethernet.macAddress(&mac[0]);
-    qindesign::network::Ethernet.begin(mac, EthernetIPDefsInstance::instance().vcf_ip, EthernetIPDefsInstance::instance().default_dns, EthernetIPDefsInstance::instance().default_gateway, EthernetIPDefsInstance::instance().car_subnet);
 
     // Schedule Tasks
     HT_SCHED::Scheduler::getInstance().schedule(kick_watchdog_task);

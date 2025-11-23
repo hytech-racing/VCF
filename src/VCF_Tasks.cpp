@@ -470,91 +470,99 @@ HT_TASK::TaskResponse debug_print(const unsigned long& sysMicros, const HT_TASK:
     return HT_TASK::TaskResponse::YIELD;
 }
 
-namespace setup_handlers {
-    void setup_hardware(FlexCAN_T4_Base* main_can)
-    {
-        // Initialize all singletons
-        float adc_1_scales[channels_within_mcp_adc], adc_1_offsets[channels_within_mcp_adc], adc_2_scales[channels_within_mcp_adc], adc_2_offsets[channels_within_mcp_adc];
-        
-        adc_1_scales[VCFInterfaces::STEERING_1_CHANNEL] = VCFInterfaces::STEERING_1_SCALE;
-        adc_1_offsets[VCFInterfaces::STEERING_1_CHANNEL] = VCFInterfaces::STEERING_1_OFFSET;
-        adc_1_scales[VCFInterfaces::STEERING_2_CHANNEL] = VCFInterfaces::STEERING_2_SCALE;
-        adc_1_offsets[VCFInterfaces::STEERING_2_CHANNEL] = VCFInterfaces::STEERING_2_OFFSET;
-        adc_1_scales[VCFInterfaces::FR_SUS_POT_CHANNEL] = VCFInterfaces::FR_SUS_POT_SCALE;
-        adc_1_offsets[VCFInterfaces::FR_SUS_POT_CHANNEL] = VCFInterfaces::FR_SUS_POT_OFFSET; 
-        adc_1_scales[VCFInterfaces::FL_SUS_POT_CHANNEL] = VCFInterfaces::FL_SUS_POT_SCALE;
-        adc_1_offsets[VCFInterfaces::FL_SUS_POT_CHANNEL] = VCFInterfaces::FL_SUS_POT_OFFSET;
-        adc_1_scales[VCFInterfaces::FR_LOADCELL_CHANNEL] = VCFInterfaces::FR_LOADCELL_SCALE;
-        adc_1_offsets[VCFInterfaces::FR_LOADCELL_CHANNEL] = VCFInterfaces::FR_LOADCELL_OFFSET;
-        adc_1_scales[VCFInterfaces::FL_LOADCELL_CHANNEL] = VCFInterfaces::FL_LOADCELL_SCALE;
-        adc_1_offsets[VCFInterfaces::FL_LOADCELL_CHANNEL] = VCFInterfaces::FL_LOADCELL_OFFSET;
+void setup_all_interfaces() {
+    SPI.begin();
+    Serial.begin(VCFConstants::SERIAL_BAUDRATE); // NOLINT
 
-        adc_2_scales[VCFInterfaces::ACCEL_1_CHANNEL] = VCFInterfaces::ACCEL_1_SCALE;
-        adc_2_offsets[VCFInterfaces::ACCEL_1_CHANNEL] = VCFInterfaces::ACCEL_1_OFFSET;
-        adc_2_scales[VCFInterfaces::ACCEL_2_CHANNEL] = VCFInterfaces::ACCEL_2_SCALE;
-        adc_2_offsets[VCFInterfaces::ACCEL_2_CHANNEL] = VCFInterfaces::ACCEL_2_OFFSET;
-        adc_2_scales[VCFInterfaces::BRAKE_1_CHANNEL] = VCFInterfaces::BRAKE_1_SCALE;
-        adc_2_offsets[VCFInterfaces::BRAKE_1_CHANNEL] = VCFInterfaces::BRAKE_1_OFFSET;
-        adc_2_scales[VCFInterfaces::BRAKE_2_CHANNEL] = VCFInterfaces::BRAKE_2_SCALE;
-        adc_2_offsets[VCFInterfaces::BRAKE_2_CHANNEL] = VCFInterfaces::BRAKE_2_OFFSET;
-        ADCsOnVCFInstance::create(adc_1_scales, adc_1_offsets, adc_2_scales, adc_2_offsets);
+    // Initialize all singletons
+    float adc_1_scales[channels_within_mcp_adc], adc_1_offsets[channels_within_mcp_adc], adc_2_scales[channels_within_mcp_adc], adc_2_offsets[channels_within_mcp_adc];
+    
+    adc_1_scales[VCFInterfaces::STEERING_1_CHANNEL] = VCFInterfaces::STEERING_1_SCALE;
+    adc_1_offsets[VCFInterfaces::STEERING_1_CHANNEL] = VCFInterfaces::STEERING_1_OFFSET;
+    adc_1_scales[VCFInterfaces::STEERING_2_CHANNEL] = VCFInterfaces::STEERING_2_SCALE;
+    adc_1_offsets[VCFInterfaces::STEERING_2_CHANNEL] = VCFInterfaces::STEERING_2_OFFSET;
+    adc_1_scales[VCFInterfaces::FR_SUS_POT_CHANNEL] = VCFInterfaces::FR_SUS_POT_SCALE;
+    adc_1_offsets[VCFInterfaces::FR_SUS_POT_CHANNEL] = VCFInterfaces::FR_SUS_POT_OFFSET; 
+    adc_1_scales[VCFInterfaces::FL_SUS_POT_CHANNEL] = VCFInterfaces::FL_SUS_POT_SCALE;
+    adc_1_offsets[VCFInterfaces::FL_SUS_POT_CHANNEL] = VCFInterfaces::FL_SUS_POT_OFFSET;
+    adc_1_scales[VCFInterfaces::FR_LOADCELL_CHANNEL] = VCFInterfaces::FR_LOADCELL_SCALE;
+    adc_1_offsets[VCFInterfaces::FR_LOADCELL_CHANNEL] = VCFInterfaces::FR_LOADCELL_OFFSET;
+    adc_1_scales[VCFInterfaces::FL_LOADCELL_CHANNEL] = VCFInterfaces::FL_LOADCELL_SCALE;
+    adc_1_offsets[VCFInterfaces::FL_LOADCELL_CHANNEL] = VCFInterfaces::FL_LOADCELL_OFFSET;
 
-        EthernetIPDefsInstance::create();
-        VCRData_sInstance::create();
-        VCFData_sInstance::create();
+    adc_2_scales[VCFInterfaces::ACCEL_1_CHANNEL] = VCFInterfaces::ACCEL_1_SCALE;
+    adc_2_offsets[VCFInterfaces::ACCEL_1_CHANNEL] = VCFInterfaces::ACCEL_1_OFFSET;
+    adc_2_scales[VCFInterfaces::ACCEL_2_CHANNEL] = VCFInterfaces::ACCEL_2_SCALE;
+    adc_2_offsets[VCFInterfaces::ACCEL_2_CHANNEL] = VCFInterfaces::ACCEL_2_OFFSET;
+    adc_2_scales[VCFInterfaces::BRAKE_1_CHANNEL] = VCFInterfaces::BRAKE_1_SCALE;
+    adc_2_offsets[VCFInterfaces::BRAKE_1_CHANNEL] = VCFInterfaces::BRAKE_1_OFFSET;
+    adc_2_scales[VCFInterfaces::BRAKE_2_CHANNEL] = VCFInterfaces::BRAKE_2_SCALE;
+    adc_2_offsets[VCFInterfaces::BRAKE_2_CHANNEL] = VCFInterfaces::BRAKE_2_OFFSET;
+    ADCsOnVCFInstance::create(adc_1_scales, adc_1_offsets, adc_2_scales, adc_2_offsets);
 
-        // Create pedals singleton
-        PedalsParams accel_params = {
-            .min_pedal_1 = EEPROMUtilities::read_eeprom_32bit(VCFConstants::ACCEL_1_MIN_ADDR),
-            .min_pedal_2 = EEPROMUtilities::read_eeprom_32bit(VCFConstants::ACCEL_2_MIN_ADDR),
-            .max_pedal_1 = EEPROMUtilities::read_eeprom_32bit(VCFConstants::ACCEL_1_MAX_ADDR),
-            .max_pedal_2 = EEPROMUtilities::read_eeprom_32bit(VCFConstants::ACCEL_2_MAX_ADDR),
-            .activation_percentage = 0.10, // NOLINT
-            .min_sensor_pedal_1 = 90, // NOLINT
-            .min_sensor_pedal_2 = 90, // NOLINT
-            .max_sensor_pedal_1 = 4000, // NOLINT
-            .max_sensor_pedal_2 = 4000, // NOLINT
-            .deadzone_margin = .03, // NOLINT
-            .implausibility_margin = IMPLAUSIBILITY_PERCENT,
-            .mechanical_activation_percentage = 0.05 // NOLINT
-        };
-        
-        PedalsParams brake_params = {
-            .min_pedal_1 = EEPROMUtilities::read_eeprom_32bit(VCFConstants::BRAKE_1_MIN_ADDR),
-            .min_pedal_2 = EEPROMUtilities::read_eeprom_32bit(VCFConstants::BRAKE_2_MIN_ADDR),
-            .max_pedal_1 = EEPROMUtilities::read_eeprom_32bit(VCFConstants::BRAKE_1_MAX_ADDR),
-            .max_pedal_2 = EEPROMUtilities::read_eeprom_32bit(VCFConstants::BRAKE_2_MAX_ADDR),
-            .activation_percentage = 0.50, // NOLINT
-            .min_sensor_pedal_1 = 90, // NOLINT
-            .min_sensor_pedal_2 = 90, // NOLINT
-            .max_sensor_pedal_1 = 4000, // NOLINT
-            .max_sensor_pedal_2 = 4000, // NOLINT
-            .deadzone_margin = .04, //NOLINT
-            .implausibility_margin = IMPLAUSIBILITY_PERCENT,
-            .mechanical_activation_percentage = 0.5 //NOLINT
-        };
+    EthernetIPDefsInstance::create();
+    VCRData_sInstance::create();
+    VCFData_sInstance::create();
 
-        PedalsSystemInstance::create(accel_params, brake_params); //pass in the two different params
-        
-        // Create dashboard singleton
-        DashboardGPIOs_s dashboard_gpios = {
-            .DIM_BUTTON = VCFInterfaces::BTN_DIM_READ,
-            .PRESET_BUTTON = VCFInterfaces::BTN_PRESET_READ,
-            .MC_CYCLE_BUTTON = VCFInterfaces::BTN_MC_CYCLE_READ,
-            .MODE_BUTTON = VCFInterfaces::BTN_MODE_READ,
-            .START_BUTTON = VCFInterfaces::BTN_START_READ,
-            .DATA_BUTTON = VCFInterfaces::BTN_DATA_READ,
-            .LEFT_SHIFTER_BUTTON = VCFInterfaces::LEFT_SHIFTER,
-            .RIGHT_SHIFTER_BUTTON = VCFInterfaces::RIGHT_SHIFTER,
-        };
+    // Create pedals singleton
+    PedalsParams accel_params = {
+        .min_pedal_1 = EEPROMUtilities::read_eeprom_32bit(VCFConstants::ACCEL_1_MIN_ADDR),
+        .min_pedal_2 = EEPROMUtilities::read_eeprom_32bit(VCFConstants::ACCEL_2_MIN_ADDR),
+        .max_pedal_1 = EEPROMUtilities::read_eeprom_32bit(VCFConstants::ACCEL_1_MAX_ADDR),
+        .max_pedal_2 = EEPROMUtilities::read_eeprom_32bit(VCFConstants::ACCEL_2_MAX_ADDR),
+        .activation_percentage = 0.10, // NOLINT
+        .min_sensor_pedal_1 = 90, // NOLINT
+        .min_sensor_pedal_2 = 90, // NOLINT
+        .max_sensor_pedal_1 = 4000, // NOLINT
+        .max_sensor_pedal_2 = 4000, // NOLINT
+        .deadzone_margin = .03, // NOLINT
+        .implausibility_margin = IMPLAUSIBILITY_PERCENT,
+        .mechanical_activation_percentage = 0.05 // NOLINT
+    };
+    
+    PedalsParams brake_params = {
+        .min_pedal_1 = EEPROMUtilities::read_eeprom_32bit(VCFConstants::BRAKE_1_MIN_ADDR),
+        .min_pedal_2 = EEPROMUtilities::read_eeprom_32bit(VCFConstants::BRAKE_2_MIN_ADDR),
+        .max_pedal_1 = EEPROMUtilities::read_eeprom_32bit(VCFConstants::BRAKE_1_MAX_ADDR),
+        .max_pedal_2 = EEPROMUtilities::read_eeprom_32bit(VCFConstants::BRAKE_2_MAX_ADDR),
+        .activation_percentage = 0.50, // NOLINT
+        .min_sensor_pedal_1 = 90, // NOLINT
+        .min_sensor_pedal_2 = 90, // NOLINT
+        .max_sensor_pedal_1 = 4000, // NOLINT
+        .max_sensor_pedal_2 = 4000, // NOLINT
+        .deadzone_margin = .04, //NOLINT
+        .implausibility_margin = IMPLAUSIBILITY_PERCENT,
+        .mechanical_activation_percentage = 0.5 //NOLINT
+    };
 
-        DashboardInterfaceInstance::create(dashboard_gpios); //NOLINT (linter things dashboard_gpios is not initialized)
-        ACUInterfaceInstance::create();
-        VCRInterfaceInstance::create();
-        // Create can singletons
-        VCFCANInterfaceImpl::CANInterfacesInstance::create(DashboardInterfaceInstance::instance(), ACUInterfaceInstance::instance(), VCRInterfaceInstance::instance()); 
-        auto main_can_recv = etl::delegate<void(CANInterfaces &, const CAN_message_t &, unsigned long)>::create<VCFCANInterfaceImpl::vcf_recv_switch>();
-        VCFCANInterfaceImpl::VCFCANInterfaceObjectsInstance::create(main_can_recv, &main_can); // NOLINT (Not sure why it's uninitialized. I think it is.)
+    PedalsSystemInstance::create(accel_params, brake_params); //pass in the two different params
+    
+    // Create dashboard singleton
+    DashboardGPIOs_s dashboard_gpios = {
+        .DIM_BUTTON = VCFInterfaces::BTN_DIM_READ,
+        .PRESET_BUTTON = VCFInterfaces::BTN_PRESET_READ,
+        .MC_CYCLE_BUTTON = VCFInterfaces::BTN_MC_CYCLE_READ,
+        .MODE_BUTTON = VCFInterfaces::BTN_MODE_READ,
+        .START_BUTTON = VCFInterfaces::BTN_START_READ,
+        .DATA_BUTTON = VCFInterfaces::BTN_DATA_READ,
+        .LEFT_SHIFTER_BUTTON = VCFInterfaces::LEFT_SHIFTER,
+        .RIGHT_SHIFTER_BUTTON = VCFInterfaces::RIGHT_SHIFTER,
+    };
 
-    }
+    DashboardInterfaceInstance::create(dashboard_gpios); //NOLINT (linter things dashboard_gpios is not initialized)
+    ACUInterfaceInstance::create();
+    VCRInterfaceInstance::create();
+    // Create can singletons
+    VCFCANInterfaceImpl::CANInterfacesInstance::create(DashboardInterfaceInstance::instance(), ACUInterfaceInstance::instance(), VCRInterfaceInstance::instance()); 
+    auto main_can_recv = etl::delegate<void(CANInterfaces &, const CAN_message_t &, unsigned long)>::create<VCFCANInterfaceImpl::vcf_recv_switch>();
+    VCFCANInterfaceImpl::VCFCANInterfaceObjectsInstance::create(main_can_recv, &main_can); // NOLINT (Not sure why it's uninitialized. I think it is.)
+
+    const uint32_t CAN_baudrate = 1000000;
+    handle_CAN_setup(main_can, CAN_baudrate, &VCFCANInterfaceImpl::on_main_can_recv);
+
+    EthernetIPDefsInstance::create();
+    uint8_t mac[6]; // NOLINT (mac addresses are always 6 bytes)
+    qindesign::network::Ethernet.macAddress(&mac[0]);
+    qindesign::network::Ethernet.begin(mac, EthernetIPDefsInstance::instance().vcf_ip, EthernetIPDefsInstance::instance().default_dns, EthernetIPDefsInstance::instance().default_gateway, EthernetIPDefsInstance::instance().car_subnet);
+
 }

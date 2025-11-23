@@ -88,6 +88,8 @@ namespace VCFSystems {
 
 // software configuration constants
 namespace VCFConstants {
+    const size_t SERIAL_BAUDRATE = 115200;
+    
     // EEPROM addresses for min and max calibration values
     constexpr uint32_t ACCEL_1_MIN_ADDR = 0;
     constexpr uint32_t ACCEL_2_MIN_ADDR = 4;
