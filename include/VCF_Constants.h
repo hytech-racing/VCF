@@ -4,7 +4,7 @@
 #include <stdint.h>
 
 // hardware connections constants
-namespace VCFInterfaces { 
+namespace VCFInterfaceConstants { 
     constexpr int ADC1_CS = 17; // MCP3208. ADC1 in VCF schematic. Used for steering, sus pots, and load cells.
     constexpr int ADC2_CS = 16; // MCP3208. ADC2 in VCF schematic. Used for pedal position sensors.
 
@@ -82,7 +82,7 @@ namespace VCFInterfaces {
 }
 
 // calibration and processing constants
-namespace VCFSystems { 
+namespace VCFSystemConstants { 
     constexpr float LBS_TO_NEWTONS = 4.4482216153;
 }
 

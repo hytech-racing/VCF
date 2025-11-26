@@ -33,11 +33,11 @@ HT_TASK::TaskResponse run_read_adc1_task(const unsigned long& sysMicros, const H
     // Samples all eight channels.
     ADCsOnVCFInstance::instance().adc_1.tick();
 
-    VCFData_sInstance::instance().interface_data.steering_data.analog_steering_degrees = ADCsOnVCFInstance::instance().adc_1.data.conversions[VCFInterfaces::STEERING_1_CHANNEL].conversion; // Only using steering 1 for now
-    VCFData_sInstance::instance().interface_data.front_loadcell_data.FL_loadcell_analog = apply_iir_filter(VCFConstants::LOADCELL_IIR_FILTER_ALPHA, VCFData_sInstance::instance().interface_data.front_loadcell_data.FL_loadcell_analog, ADCsOnVCFInstance::instance().adc_1.data.conversions[VCFInterfaces::FL_LOADCELL_CHANNEL].conversion);
-    VCFData_sInstance::instance().interface_data.front_loadcell_data.FR_loadcell_analog = apply_iir_filter(VCFConstants::LOADCELL_IIR_FILTER_ALPHA, VCFData_sInstance::instance().interface_data.front_loadcell_data.FR_loadcell_analog, ADCsOnVCFInstance::instance().adc_1.data.conversions[VCFInterfaces::FR_LOADCELL_CHANNEL].conversion);
-    VCFData_sInstance::instance().interface_data.front_suspot_data.FL_sus_pot_analog = apply_iir_filter(VCFConstants::LOADCELL_IIR_FILTER_ALPHA, VCFData_sInstance::instance().interface_data.front_suspot_data.FL_sus_pot_analog, ADCsOnVCFInstance::instance().adc_1.data.conversions[VCFInterfaces::FL_SUS_POT_CHANNEL].raw);
-    VCFData_sInstance::instance().interface_data.front_suspot_data.FR_sus_pot_analog = apply_iir_filter(VCFConstants::LOADCELL_IIR_FILTER_ALPHA, VCFData_sInstance::instance().interface_data.front_suspot_data.FR_sus_pot_analog, ADCsOnVCFInstance::instance().adc_1.data.conversions[VCFInterfaces::FR_SUS_POT_CHANNEL].raw);
+    VCFData_sInstance::instance().interface_data.steering_data.analog_steering_degrees = ADCsOnVCFInstance::instance().adc_1.data.conversions[VCFInterfaceConstants::STEERING_1_CHANNEL].conversion; // Only using steering 1 for now
+    VCFData_sInstance::instance().interface_data.front_loadcell_data.FL_loadcell_analog = apply_iir_filter(VCFConstants::LOADCELL_IIR_FILTER_ALPHA, VCFData_sInstance::instance().interface_data.front_loadcell_data.FL_loadcell_analog, ADCsOnVCFInstance::instance().adc_1.data.conversions[VCFInterfaceConstants::FL_LOADCELL_CHANNEL].conversion);
+    VCFData_sInstance::instance().interface_data.front_loadcell_data.FR_loadcell_analog = apply_iir_filter(VCFConstants::LOADCELL_IIR_FILTER_ALPHA, VCFData_sInstance::instance().interface_data.front_loadcell_data.FR_loadcell_analog, ADCsOnVCFInstance::instance().adc_1.data.conversions[VCFInterfaceConstants::FR_LOADCELL_CHANNEL].conversion);
+    VCFData_sInstance::instance().interface_data.front_suspot_data.FL_sus_pot_analog = apply_iir_filter(VCFConstants::LOADCELL_IIR_FILTER_ALPHA, VCFData_sInstance::instance().interface_data.front_suspot_data.FL_sus_pot_analog, ADCsOnVCFInstance::instance().adc_1.data.conversions[VCFInterfaceConstants::FL_SUS_POT_CHANNEL].raw);
+    VCFData_sInstance::instance().interface_data.front_suspot_data.FR_sus_pot_analog = apply_iir_filter(VCFConstants::LOADCELL_IIR_FILTER_ALPHA, VCFData_sInstance::instance().interface_data.front_suspot_data.FR_sus_pot_analog, ADCsOnVCFInstance::instance().adc_1.data.conversions[VCFInterfaceConstants::FR_SUS_POT_CHANNEL].raw);
 
     return HT_TASK::TaskResponse::YIELD;
 }
@@ -46,24 +46,24 @@ HT_TASK::TaskResponse run_read_adc2_task(const unsigned long& sysMicros, const H
 {
     // Samples all eight channels.
     ADCsOnVCFInstance::instance().adc_2.tick();
-    VCFData_sInstance::instance().interface_data.pedal_sensor_data.accel_1 = ADCsOnVCFInstance::instance().adc_2.data.conversions[VCFInterfaces::ACCEL_1_CHANNEL].conversion;
-    VCFData_sInstance::instance().interface_data.pedal_sensor_data.accel_2 = ADCsOnVCFInstance::instance().adc_2.data.conversions[VCFInterfaces::ACCEL_2_CHANNEL].conversion;
-    VCFData_sInstance::instance().interface_data.pedal_sensor_data.brake_1 = ADCsOnVCFInstance::instance().adc_2.data.conversions[VCFInterfaces::BRAKE_1_CHANNEL].conversion;
-    VCFData_sInstance::instance().interface_data.pedal_sensor_data.brake_2 = ADCsOnVCFInstance::instance().adc_2.data.conversions[VCFInterfaces::BRAKE_2_CHANNEL].conversion;
+    VCFData_sInstance::instance().interface_data.pedal_sensor_data.accel_1 = ADCsOnVCFInstance::instance().adc_2.data.conversions[VCFInterfaceConstants::ACCEL_1_CHANNEL].conversion;
+    VCFData_sInstance::instance().interface_data.pedal_sensor_data.accel_2 = ADCsOnVCFInstance::instance().adc_2.data.conversions[VCFInterfaceConstants::ACCEL_2_CHANNEL].conversion;
+    VCFData_sInstance::instance().interface_data.pedal_sensor_data.brake_1 = ADCsOnVCFInstance::instance().adc_2.data.conversions[VCFInterfaceConstants::BRAKE_1_CHANNEL].conversion;
+    VCFData_sInstance::instance().interface_data.pedal_sensor_data.brake_2 = ADCsOnVCFInstance::instance().adc_2.data.conversions[VCFInterfaceConstants::BRAKE_2_CHANNEL].conversion;
     return HT_TASK::TaskResponse::YIELD;
 }
 
 HT_TASK::TaskResponse init_kick_watchdog(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
 {
     WatchdogInstance::create(VCFConstants::WATCHDOG_KICK_INTERVAL_MS); // NOLINT
-    pinMode(VCFInterfaces::WATCHDOG_PIN, OUTPUT);
-    pinMode(VCFInterfaces::SOFTWARE_OK_PIN, OUTPUT);
+    pinMode(VCFInterfaceConstants::WATCHDOG_PIN, OUTPUT);
+    pinMode(VCFInterfaceConstants::SOFTWARE_OK_PIN, OUTPUT);
     return HT_TASK::TaskResponse::YIELD;
 }
 
 HT_TASK::TaskResponse run_kick_watchdog(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo) {
-    digitalWrite(VCFInterfaces::SOFTWARE_OK_PIN , HIGH);
-    digitalWrite(VCFInterfaces::WATCHDOG_PIN, WatchdogInstance::instance().get_watchdog_state(sys_time::hal_millis()));
+    digitalWrite(VCFInterfaceConstants::SOFTWARE_OK_PIN , HIGH);
+    digitalWrite(VCFInterfaceConstants::WATCHDOG_PIN, WatchdogInstance::instance().get_watchdog_state(sys_time::hal_millis()));
     return HT_TASK::TaskResponse::YIELD;
 }
 
@@ -123,7 +123,7 @@ HT_TASK::TaskResponse update_pedals_calibration_task(const unsigned long& sysMic
 
 HT_TASK::TaskResponse init_buzzer_control_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
 {
-    pinMode(VCFInterfaces::BUZZER_CONTROL_PIN, OUTPUT);
+    pinMode(VCFInterfaceConstants::BUZZER_CONTROL_PIN, OUTPUT);
 
     return HT_TASK::TaskResponse::YIELD;
 }
@@ -133,7 +133,7 @@ HT_TASK::TaskResponse run_buzzer_control_task(const unsigned long& sysMicros, co
 
     bool buzzer_is_active = BuzzerController::getInstance().buzzer_is_active(sys_time::hal_millis()); //NOLINT
 
-    digitalWrite(VCFInterfaces::BUZZER_CONTROL_PIN, buzzer_is_active);
+    digitalWrite(VCFInterfaceConstants::BUZZER_CONTROL_PIN, buzzer_is_active);
     
     return HT_TASK::TaskResponse::YIELD;
 }
@@ -364,7 +364,7 @@ HT_TASK::TaskResponse read_ioexpander(const unsigned long& sys_micros, const HT_
 
 HT_TASK::TaskResponse init_neopixels_task(const unsigned long& sys_micros, const HT_TASK::TaskInfo& task_info)
 {
-    NeopixelControllerInstance::create(VCFInterfaces::NEOPIXEL_COUNT, VCFInterfaces::NEOPIXEL_CONTROL_PIN);
+    NeopixelControllerInstance::create(VCFInterfaceConstants::NEOPIXEL_COUNT, VCFInterfaceConstants::NEOPIXEL_CONTROL_PIN);
     NeopixelControllerInstance::instance().init_neopixels();
     return HT_TASK::TaskResponse::YIELD;
 }
@@ -477,27 +477,27 @@ void setup_all_interfaces() {
     // Initialize all singletons
     float adc_1_scales[channels_within_mcp_adc], adc_1_offsets[channels_within_mcp_adc], adc_2_scales[channels_within_mcp_adc], adc_2_offsets[channels_within_mcp_adc];
     
-    adc_1_scales[VCFInterfaces::STEERING_1_CHANNEL] = VCFInterfaces::STEERING_1_SCALE;
-    adc_1_offsets[VCFInterfaces::STEERING_1_CHANNEL] = VCFInterfaces::STEERING_1_OFFSET;
-    adc_1_scales[VCFInterfaces::STEERING_2_CHANNEL] = VCFInterfaces::STEERING_2_SCALE;
-    adc_1_offsets[VCFInterfaces::STEERING_2_CHANNEL] = VCFInterfaces::STEERING_2_OFFSET;
-    adc_1_scales[VCFInterfaces::FR_SUS_POT_CHANNEL] = VCFInterfaces::FR_SUS_POT_SCALE;
-    adc_1_offsets[VCFInterfaces::FR_SUS_POT_CHANNEL] = VCFInterfaces::FR_SUS_POT_OFFSET; 
-    adc_1_scales[VCFInterfaces::FL_SUS_POT_CHANNEL] = VCFInterfaces::FL_SUS_POT_SCALE;
-    adc_1_offsets[VCFInterfaces::FL_SUS_POT_CHANNEL] = VCFInterfaces::FL_SUS_POT_OFFSET;
-    adc_1_scales[VCFInterfaces::FR_LOADCELL_CHANNEL] = VCFInterfaces::FR_LOADCELL_SCALE;
-    adc_1_offsets[VCFInterfaces::FR_LOADCELL_CHANNEL] = VCFInterfaces::FR_LOADCELL_OFFSET;
-    adc_1_scales[VCFInterfaces::FL_LOADCELL_CHANNEL] = VCFInterfaces::FL_LOADCELL_SCALE;
-    adc_1_offsets[VCFInterfaces::FL_LOADCELL_CHANNEL] = VCFInterfaces::FL_LOADCELL_OFFSET;
+    adc_1_scales[VCFInterfaceConstants::STEERING_1_CHANNEL] = VCFInterfaceConstants::STEERING_1_SCALE;
+    adc_1_offsets[VCFInterfaceConstants::STEERING_1_CHANNEL] = VCFInterfaceConstants::STEERING_1_OFFSET;
+    adc_1_scales[VCFInterfaceConstants::STEERING_2_CHANNEL] = VCFInterfaceConstants::STEERING_2_SCALE;
+    adc_1_offsets[VCFInterfaceConstants::STEERING_2_CHANNEL] = VCFInterfaceConstants::STEERING_2_OFFSET;
+    adc_1_scales[VCFInterfaceConstants::FR_SUS_POT_CHANNEL] = VCFInterfaceConstants::FR_SUS_POT_SCALE;
+    adc_1_offsets[VCFInterfaceConstants::FR_SUS_POT_CHANNEL] = VCFInterfaceConstants::FR_SUS_POT_OFFSET; 
+    adc_1_scales[VCFInterfaceConstants::FL_SUS_POT_CHANNEL] = VCFInterfaceConstants::FL_SUS_POT_SCALE;
+    adc_1_offsets[VCFInterfaceConstants::FL_SUS_POT_CHANNEL] = VCFInterfaceConstants::FL_SUS_POT_OFFSET;
+    adc_1_scales[VCFInterfaceConstants::FR_LOADCELL_CHANNEL] = VCFInterfaceConstants::FR_LOADCELL_SCALE;
+    adc_1_offsets[VCFInterfaceConstants::FR_LOADCELL_CHANNEL] = VCFInterfaceConstants::FR_LOADCELL_OFFSET;
+    adc_1_scales[VCFInterfaceConstants::FL_LOADCELL_CHANNEL] = VCFInterfaceConstants::FL_LOADCELL_SCALE;
+    adc_1_offsets[VCFInterfaceConstants::FL_LOADCELL_CHANNEL] = VCFInterfaceConstants::FL_LOADCELL_OFFSET;
 
-    adc_2_scales[VCFInterfaces::ACCEL_1_CHANNEL] = VCFInterfaces::ACCEL_1_SCALE;
-    adc_2_offsets[VCFInterfaces::ACCEL_1_CHANNEL] = VCFInterfaces::ACCEL_1_OFFSET;
-    adc_2_scales[VCFInterfaces::ACCEL_2_CHANNEL] = VCFInterfaces::ACCEL_2_SCALE;
-    adc_2_offsets[VCFInterfaces::ACCEL_2_CHANNEL] = VCFInterfaces::ACCEL_2_OFFSET;
-    adc_2_scales[VCFInterfaces::BRAKE_1_CHANNEL] = VCFInterfaces::BRAKE_1_SCALE;
-    adc_2_offsets[VCFInterfaces::BRAKE_1_CHANNEL] = VCFInterfaces::BRAKE_1_OFFSET;
-    adc_2_scales[VCFInterfaces::BRAKE_2_CHANNEL] = VCFInterfaces::BRAKE_2_SCALE;
-    adc_2_offsets[VCFInterfaces::BRAKE_2_CHANNEL] = VCFInterfaces::BRAKE_2_OFFSET;
+    adc_2_scales[VCFInterfaceConstants::ACCEL_1_CHANNEL] = VCFInterfaceConstants::ACCEL_1_SCALE;
+    adc_2_offsets[VCFInterfaceConstants::ACCEL_1_CHANNEL] = VCFInterfaceConstants::ACCEL_1_OFFSET;
+    adc_2_scales[VCFInterfaceConstants::ACCEL_2_CHANNEL] = VCFInterfaceConstants::ACCEL_2_SCALE;
+    adc_2_offsets[VCFInterfaceConstants::ACCEL_2_CHANNEL] = VCFInterfaceConstants::ACCEL_2_OFFSET;
+    adc_2_scales[VCFInterfaceConstants::BRAKE_1_CHANNEL] = VCFInterfaceConstants::BRAKE_1_SCALE;
+    adc_2_offsets[VCFInterfaceConstants::BRAKE_1_CHANNEL] = VCFInterfaceConstants::BRAKE_1_OFFSET;
+    adc_2_scales[VCFInterfaceConstants::BRAKE_2_CHANNEL] = VCFInterfaceConstants::BRAKE_2_SCALE;
+    adc_2_offsets[VCFInterfaceConstants::BRAKE_2_CHANNEL] = VCFInterfaceConstants::BRAKE_2_OFFSET;
     ADCsOnVCFInstance::create(adc_1_scales, adc_1_offsets, adc_2_scales, adc_2_offsets);
 
     EthernetIPDefsInstance::create();
@@ -539,14 +539,14 @@ void setup_all_interfaces() {
     
     // Create dashboard singleton
     DashboardGPIOs_s dashboard_gpios = {
-        .DIM_BUTTON = VCFInterfaces::BTN_DIM_READ,
-        .PRESET_BUTTON = VCFInterfaces::BTN_PRESET_READ,
-        .MC_CYCLE_BUTTON = VCFInterfaces::BTN_MC_CYCLE_READ,
-        .MODE_BUTTON = VCFInterfaces::BTN_MODE_READ,
-        .START_BUTTON = VCFInterfaces::BTN_START_READ,
-        .DATA_BUTTON = VCFInterfaces::BTN_DATA_READ,
-        .LEFT_SHIFTER_BUTTON = VCFInterfaces::LEFT_SHIFTER,
-        .RIGHT_SHIFTER_BUTTON = VCFInterfaces::RIGHT_SHIFTER,
+        .DIM_BUTTON = VCFInterfaceConstants::BTN_DIM_READ,
+        .PRESET_BUTTON = VCFInterfaceConstants::BTN_PRESET_READ,
+        .MC_CYCLE_BUTTON = VCFInterfaceConstants::BTN_MC_CYCLE_READ,
+        .MODE_BUTTON = VCFInterfaceConstants::BTN_MODE_READ,
+        .START_BUTTON = VCFInterfaceConstants::BTN_START_READ,
+        .DATA_BUTTON = VCFInterfaceConstants::BTN_DATA_READ,
+        .LEFT_SHIFTER_BUTTON = VCFInterfaceConstants::LEFT_SHIFTER,
+        .RIGHT_SHIFTER_BUTTON = VCFInterfaceConstants::RIGHT_SHIFTER,
     };
 
     DashboardInterfaceInstance::create(dashboard_gpios); //NOLINT (linter things dashboard_gpios is not initialized)
