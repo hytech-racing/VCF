@@ -53,6 +53,8 @@ namespace VCFCANInterfaceImpl {
     void vcf_recv_switch(CANInterfaces &interfaces, const CAN_message_t &msg, unsigned long millis);
     void send_all_CAN_msgs(CANTXBufferType &buffer, FlexCAN_T4_Base *can_interface);
 
+    extern FlexCAN_T4<CAN1, RX_SIZE_256, TX_SIZE_16> main_can;
+
     using VCFCANInterfaceObjectsInstance = etl::singleton<VCFCANInterfaceObjects>;
     using CANInterfacesInstance = etl::singleton<CANInterfaces>;
 }

@@ -121,8 +121,6 @@ namespace async_tasks {
     HT_TASK::TaskResponse handle_async_main(const unsigned long& sys_micros, const HT_TASK::TaskInfo& task_info);
 }
 
-static FlexCAN_T4<CAN1, RX_SIZE_256, TX_SIZE_16> main_can;
-
 void setup_all_interfaces();
 
 #endif /* VCF_TASKS */

@@ -34,10 +34,10 @@ HT_TASK::TaskResponse run_read_adc1_task(const unsigned long& sysMicros, const H
     ADCsOnVCFInstance::instance().adc_1.tick();
 
     VCFData_sInstance::instance().interface_data.steering_data.analog_steering_degrees = ADCsOnVCFInstance::instance().adc_1.data.conversions[VCFInterfaceConstants::STEERING_1_CHANNEL].conversion; // Only using steering 1 for now
-    VCFData_sInstance::instance().interface_data.front_loadcell_data.FL_loadcell_analog = apply_iir_filter(VCFConstants::LOADCELL_IIR_FILTER_ALPHA, VCFData_sInstance::instance().interface_data.front_loadcell_data.FL_loadcell_analog, ADCsOnVCFInstance::instance().adc_1.data.conversions[VCFInterfaceConstants::FL_LOADCELL_CHANNEL].conversion);
-    VCFData_sInstance::instance().interface_data.front_loadcell_data.FR_loadcell_analog = apply_iir_filter(VCFConstants::LOADCELL_IIR_FILTER_ALPHA, VCFData_sInstance::instance().interface_data.front_loadcell_data.FR_loadcell_analog, ADCsOnVCFInstance::instance().adc_1.data.conversions[VCFInterfaceConstants::FR_LOADCELL_CHANNEL].conversion);
-    VCFData_sInstance::instance().interface_data.front_suspot_data.FL_sus_pot_analog = apply_iir_filter(VCFConstants::LOADCELL_IIR_FILTER_ALPHA, VCFData_sInstance::instance().interface_data.front_suspot_data.FL_sus_pot_analog, ADCsOnVCFInstance::instance().adc_1.data.conversions[VCFInterfaceConstants::FL_SUS_POT_CHANNEL].raw);
-    VCFData_sInstance::instance().interface_data.front_suspot_data.FR_sus_pot_analog = apply_iir_filter(VCFConstants::LOADCELL_IIR_FILTER_ALPHA, VCFData_sInstance::instance().interface_data.front_suspot_data.FR_sus_pot_analog, ADCsOnVCFInstance::instance().adc_1.data.conversions[VCFInterfaceConstants::FR_SUS_POT_CHANNEL].raw);
+    VCFData_sInstance::instance().interface_data.front_loadcell_data.FL_loadcell_analog = apply_iir_filter(VCFTaskConstants::LOADCELL_IIR_FILTER_ALPHA, VCFData_sInstance::instance().interface_data.front_loadcell_data.FL_loadcell_analog, ADCsOnVCFInstance::instance().adc_1.data.conversions[VCFInterfaceConstants::FL_LOADCELL_CHANNEL].conversion);
+    VCFData_sInstance::instance().interface_data.front_loadcell_data.FR_loadcell_analog = apply_iir_filter(VCFTaskConstants::LOADCELL_IIR_FILTER_ALPHA, VCFData_sInstance::instance().interface_data.front_loadcell_data.FR_loadcell_analog, ADCsOnVCFInstance::instance().adc_1.data.conversions[VCFInterfaceConstants::FR_LOADCELL_CHANNEL].conversion);
+    VCFData_sInstance::instance().interface_data.front_suspot_data.FL_sus_pot_analog = apply_iir_filter(VCFTaskConstants::LOADCELL_IIR_FILTER_ALPHA, VCFData_sInstance::instance().interface_data.front_suspot_data.FL_sus_pot_analog, ADCsOnVCFInstance::instance().adc_1.data.conversions[VCFInterfaceConstants::FL_SUS_POT_CHANNEL].raw);
+    VCFData_sInstance::instance().interface_data.front_suspot_data.FR_sus_pot_analog = apply_iir_filter(VCFTaskConstants::LOADCELL_IIR_FILTER_ALPHA, VCFData_sInstance::instance().interface_data.front_suspot_data.FR_sus_pot_analog, ADCsOnVCFInstance::instance().adc_1.data.conversions[VCFInterfaceConstants::FR_SUS_POT_CHANNEL].raw);
 
     return HT_TASK::TaskResponse::YIELD;
 }
@@ -55,7 +55,7 @@ HT_TASK::TaskResponse run_read_adc2_task(const unsigned long& sysMicros, const H
 
 HT_TASK::TaskResponse init_kick_watchdog(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
 {
-    WatchdogInstance::create(VCFConstants::WATCHDOG_KICK_INTERVAL_MS); // NOLINT
+    WatchdogInstance::create(VCFInterfaceConstants::WATCHDOG_KICK_INTERVAL_MS); // NOLINT
     pinMode(VCFInterfaceConstants::WATCHDOG_PIN, OUTPUT);
     pinMode(VCFInterfaceConstants::SOFTWARE_OK_PIN, OUTPUT);
     return HT_TASK::TaskResponse::YIELD;
@@ -76,14 +76,14 @@ HT_TASK::TaskResponse update_pedals_calibration_task(const unsigned long& sysMic
     if (VCRInterfaceInstance::instance().is_in_pedals_calibration_state())
     {
         PedalsSystemInstance::instance().recalibrate_min_max(VCFData_sInstance::instance().interface_data.pedal_sensor_data);
-        EEPROMUtilities::write_eeprom_32bit(VCFConstants::ACCEL_1_MIN_ADDR, PedalsSystemInstance::instance().get_accel_params().min_pedal_1);
-        EEPROMUtilities::write_eeprom_32bit(VCFConstants::ACCEL_1_MAX_ADDR, PedalsSystemInstance::instance().get_accel_params().max_pedal_1);
-        EEPROMUtilities::write_eeprom_32bit(VCFConstants::ACCEL_2_MIN_ADDR, PedalsSystemInstance::instance().get_accel_params().min_pedal_2);
-        EEPROMUtilities::write_eeprom_32bit(VCFConstants::ACCEL_2_MAX_ADDR, PedalsSystemInstance::instance().get_accel_params().max_pedal_2);
-        EEPROMUtilities::write_eeprom_32bit(VCFConstants::BRAKE_1_MIN_ADDR, PedalsSystemInstance::instance().get_brake_params().min_pedal_1);
-        EEPROMUtilities::write_eeprom_32bit(VCFConstants::BRAKE_1_MAX_ADDR, PedalsSystemInstance::instance().get_brake_params().max_pedal_1);
-        EEPROMUtilities::write_eeprom_32bit(VCFConstants::BRAKE_2_MIN_ADDR, PedalsSystemInstance::instance().get_brake_params().min_pedal_2);
-        EEPROMUtilities::write_eeprom_32bit(VCFConstants::BRAKE_2_MAX_ADDR, PedalsSystemInstance::instance().get_brake_params().max_pedal_2);
+        EEPROMUtilities::write_eeprom_32bit(VCFInterfaceConstants::ACCEL_1_MIN_ADDR, PedalsSystemInstance::instance().get_accel_params().min_pedal_1);
+        EEPROMUtilities::write_eeprom_32bit(VCFInterfaceConstants::ACCEL_1_MAX_ADDR, PedalsSystemInstance::instance().get_accel_params().max_pedal_1);
+        EEPROMUtilities::write_eeprom_32bit(VCFInterfaceConstants::ACCEL_2_MIN_ADDR, PedalsSystemInstance::instance().get_accel_params().min_pedal_2);
+        EEPROMUtilities::write_eeprom_32bit(VCFInterfaceConstants::ACCEL_2_MAX_ADDR, PedalsSystemInstance::instance().get_accel_params().max_pedal_2);
+        EEPROMUtilities::write_eeprom_32bit(VCFInterfaceConstants::BRAKE_1_MIN_ADDR, PedalsSystemInstance::instance().get_brake_params().min_pedal_1);
+        EEPROMUtilities::write_eeprom_32bit(VCFInterfaceConstants::BRAKE_1_MAX_ADDR, PedalsSystemInstance::instance().get_brake_params().max_pedal_1);
+        EEPROMUtilities::write_eeprom_32bit(VCFInterfaceConstants::BRAKE_2_MIN_ADDR, PedalsSystemInstance::instance().get_brake_params().min_pedal_2);
+        EEPROMUtilities::write_eeprom_32bit(VCFInterfaceConstants::BRAKE_2_MAX_ADDR, PedalsSystemInstance::instance().get_brake_params().max_pedal_2);
     }
 
     return HT_TASK::TaskResponse::YIELD;
@@ -472,7 +472,7 @@ HT_TASK::TaskResponse debug_print(const unsigned long& sysMicros, const HT_TASK:
 
 void setup_all_interfaces() {
     SPI.begin();
-    Serial.begin(VCFConstants::SERIAL_BAUDRATE); // NOLINT
+    Serial.begin(VCFTaskConstants::SERIAL_BAUDRATE); // NOLINT
 
     // Initialize all singletons
     float adc_1_scales[channels_within_mcp_adc], adc_1_offsets[channels_within_mcp_adc], adc_2_scales[channels_within_mcp_adc], adc_2_offsets[channels_within_mcp_adc];
@@ -506,33 +506,33 @@ void setup_all_interfaces() {
 
     // Create pedals singleton
     PedalsParams accel_params = {
-        .min_pedal_1 = EEPROMUtilities::read_eeprom_32bit(VCFConstants::ACCEL_1_MIN_ADDR),
-        .min_pedal_2 = EEPROMUtilities::read_eeprom_32bit(VCFConstants::ACCEL_2_MIN_ADDR),
-        .max_pedal_1 = EEPROMUtilities::read_eeprom_32bit(VCFConstants::ACCEL_1_MAX_ADDR),
-        .max_pedal_2 = EEPROMUtilities::read_eeprom_32bit(VCFConstants::ACCEL_2_MAX_ADDR),
-        .activation_percentage = 0.10, // NOLINT
-        .min_sensor_pedal_1 = 90, // NOLINT
-        .min_sensor_pedal_2 = 90, // NOLINT
-        .max_sensor_pedal_1 = 4000, // NOLINT
-        .max_sensor_pedal_2 = 4000, // NOLINT
-        .deadzone_margin = .03, // NOLINT
+        .min_pedal_1 = EEPROMUtilities::read_eeprom_32bit(VCFInterfaceConstants::ACCEL_1_MIN_ADDR),
+        .min_pedal_2 = EEPROMUtilities::read_eeprom_32bit(VCFInterfaceConstants::ACCEL_2_MIN_ADDR),
+        .max_pedal_1 = EEPROMUtilities::read_eeprom_32bit(VCFInterfaceConstants::ACCEL_1_MAX_ADDR),
+        .max_pedal_2 = EEPROMUtilities::read_eeprom_32bit(VCFInterfaceConstants::ACCEL_2_MAX_ADDR),
+        .activation_percentage = VCFInterfaceConstants::ACCEL_ACTIVATION_PERCENTAGE,
+        .min_sensor_pedal_1 = VCFInterfaceConstants::ACCEL_MIN_SENSOR_PEDAL_1,
+        .min_sensor_pedal_2 = VCFInterfaceConstants::ACCEL_MIN_SENSOR_PEDAL_2,
+        .max_sensor_pedal_1 = VCFInterfaceConstants::ACCEL_MAX_SENSOR_PEDAL_1,
+        .max_sensor_pedal_2 = VCFInterfaceConstants::ACCEL_MAX_SENSOR_PEDAL_2,
+        .deadzone_margin = VCFInterfaceConstants::ACCEL_DEADZONE_MARGIN,
         .implausibility_margin = IMPLAUSIBILITY_PERCENT,
-        .mechanical_activation_percentage = 0.05 // NOLINT
+        .mechanical_activation_percentage = VCFInterfaceConstants::ACCEL_MECHANICAL_ACTIVATION_PERCENTAGE
     };
     
     PedalsParams brake_params = {
-        .min_pedal_1 = EEPROMUtilities::read_eeprom_32bit(VCFConstants::BRAKE_1_MIN_ADDR),
-        .min_pedal_2 = EEPROMUtilities::read_eeprom_32bit(VCFConstants::BRAKE_2_MIN_ADDR),
-        .max_pedal_1 = EEPROMUtilities::read_eeprom_32bit(VCFConstants::BRAKE_1_MAX_ADDR),
-        .max_pedal_2 = EEPROMUtilities::read_eeprom_32bit(VCFConstants::BRAKE_2_MAX_ADDR),
-        .activation_percentage = 0.50, // NOLINT
-        .min_sensor_pedal_1 = 90, // NOLINT
-        .min_sensor_pedal_2 = 90, // NOLINT
-        .max_sensor_pedal_1 = 4000, // NOLINT
-        .max_sensor_pedal_2 = 4000, // NOLINT
-        .deadzone_margin = .04, //NOLINT
+        .min_pedal_1 = EEPROMUtilities::read_eeprom_32bit(VCFInterfaceConstants::BRAKE_1_MIN_ADDR),
+        .min_pedal_2 = EEPROMUtilities::read_eeprom_32bit(VCFInterfaceConstants::BRAKE_2_MIN_ADDR),
+        .max_pedal_1 = EEPROMUtilities::read_eeprom_32bit(VCFInterfaceConstants::BRAKE_1_MAX_ADDR),
+        .max_pedal_2 = EEPROMUtilities::read_eeprom_32bit(VCFInterfaceConstants::BRAKE_2_MAX_ADDR),
+        .activation_percentage = VCFInterfaceConstants::BRAKE_ACTIVATION_PERCENTAGE,
+        .min_sensor_pedal_1 = VCFInterfaceConstants::BRAKE_MIN_SENSOR_PEDAL_1,
+        .min_sensor_pedal_2 = VCFInterfaceConstants::BRAKE_MIN_SENSOR_PEDAL_2,
+        .max_sensor_pedal_1 = VCFInterfaceConstants::BRAKE_MAX_SENSOR_PEDAL_1,
+        .max_sensor_pedal_2 = VCFInterfaceConstants::BRAKE_MAX_SENSOR_PEDAL_2,
+        .deadzone_margin = VCFInterfaceConstants::BRAKE_DEADZONE_MARGIN,
         .implausibility_margin = IMPLAUSIBILITY_PERCENT,
-        .mechanical_activation_percentage = 0.5 //NOLINT
+        .mechanical_activation_percentage = VCFInterfaceConstants::BRAKE_MECHANICAL_ACTIVATION_PERCENTAGE
     };
 
     PedalsSystemInstance::create(accel_params, brake_params); //pass in the two different params
@@ -555,10 +555,10 @@ void setup_all_interfaces() {
     // Create can singletons
     VCFCANInterfaceImpl::CANInterfacesInstance::create(DashboardInterfaceInstance::instance(), ACUInterfaceInstance::instance(), VCRInterfaceInstance::instance()); 
     auto main_can_recv = etl::delegate<void(CANInterfaces &, const CAN_message_t &, unsigned long)>::create<VCFCANInterfaceImpl::vcf_recv_switch>();
-    VCFCANInterfaceImpl::VCFCANInterfaceObjectsInstance::create(main_can_recv, &main_can); // NOLINT (Not sure why it's uninitialized. I think it is.)
+    VCFCANInterfaceImpl::VCFCANInterfaceObjectsInstance::create(main_can_recv, &VCFCANInterfaceImpl::main_can); // NOLINT (Not sure why it's uninitialized. I think it is.)
 
     const uint32_t CAN_baudrate = 1000000;
-    handle_CAN_setup(main_can, CAN_baudrate, &VCFCANInterfaceImpl::on_main_can_recv);
+    handle_CAN_setup(VCFCANInterfaceImpl::main_can, CAN_baudrate, &VCFCANInterfaceImpl::on_main_can_recv);
 
     EthernetIPDefsInstance::create();
     uint8_t mac[6]; // NOLINT (mac addresses are always 6 bytes)

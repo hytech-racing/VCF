@@ -79,6 +79,32 @@ namespace VCFInterfaceConstants {
     constexpr float BRAKE_2_SCALE = 1;
     constexpr float BRAKE_2_OFFSET = 0;
 
+    // EEPROM addresses for min and max calibration values
+    constexpr uint32_t ACCEL_1_MIN_ADDR = 0;
+    constexpr uint32_t ACCEL_2_MIN_ADDR = 4;
+    constexpr uint32_t ACCEL_1_MAX_ADDR = 8;
+    constexpr uint32_t ACCEL_2_MAX_ADDR = 12;
+    constexpr float ACCEL_ACTIVATION_PERCENTAGE = 0.10f;
+    constexpr uint32_t ACCEL_MIN_SENSOR_PEDAL_1 = 90;
+    constexpr uint32_t ACCEL_MIN_SENSOR_PEDAL_2 = 90;
+    constexpr uint32_t ACCEL_MAX_SENSOR_PEDAL_1 = 4000;
+    constexpr uint32_t ACCEL_MAX_SENSOR_PEDAL_2 = 4000;
+    constexpr float ACCEL_DEADZONE_MARGIN = 0.03f;
+    constexpr float ACCEL_MECHANICAL_ACTIVATION_PERCENTAGE = 0.05f;
+
+    constexpr uint32_t BRAKE_1_MIN_ADDR = 16;
+    constexpr uint32_t BRAKE_2_MIN_ADDR = 20;
+    constexpr uint32_t BRAKE_1_MAX_ADDR = 24;
+    constexpr uint32_t BRAKE_2_MAX_ADDR = 28;
+    constexpr float BRAKE_ACTIVATION_PERCENTAGE = 0.50f;
+    constexpr uint32_t BRAKE_MIN_SENSOR_PEDAL_1 = 90;
+    constexpr uint32_t BRAKE_MIN_SENSOR_PEDAL_2 = 90;
+    constexpr uint32_t BRAKE_MAX_SENSOR_PEDAL_1 = 4000;
+    constexpr uint32_t BRAKE_MAX_SENSOR_PEDAL_2 = 4000;
+    constexpr float BRAKE_DEADZONE_MARGIN = 0.04f;
+    constexpr float BRAKE_MECHANICAL_ACTIVATION_PERCENTAGE = 0.5f;
+
+    constexpr unsigned long WATCHDOG_KICK_INTERVAL_MS = 10UL;
 }
 
 // calibration and processing constants
@@ -87,20 +113,8 @@ namespace VCFSystemConstants {
 }
 
 // software configuration constants
-namespace VCFConstants {
+namespace VCFTaskConstants {
     const size_t SERIAL_BAUDRATE = 115200;
-    
-    // EEPROM addresses for min and max calibration values
-    constexpr uint32_t ACCEL_1_MIN_ADDR = 0;
-    constexpr uint32_t ACCEL_2_MIN_ADDR = 4;
-    constexpr uint32_t ACCEL_1_MAX_ADDR = 8;
-    constexpr uint32_t ACCEL_2_MAX_ADDR = 12;
-    constexpr uint32_t BRAKE_1_MIN_ADDR = 16;
-    constexpr uint32_t BRAKE_2_MIN_ADDR = 20;
-    constexpr uint32_t BRAKE_1_MAX_ADDR = 24;
-    constexpr uint32_t BRAKE_2_MAX_ADDR = 28;
-
-    constexpr unsigned long WATCHDOG_KICK_INTERVAL_MS = 10UL;
 
     // task priorities and periods
     constexpr unsigned long MAIN_TASK_PRIORITY = 5;

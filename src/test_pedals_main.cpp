@@ -59,10 +59,10 @@ void loop(){
     ADCsOnVCFInstance::instance().adc_2.tick();
     PedalSensorData_s pedal_sensor_data = {};
     
-    pedal_sensor_data.accel_1 = ADCsOnVCFInstance::instance().adc_2.data.conversions[ACCEL_1_CHANNEL].conversion;
-    pedal_sensor_data.accel_2 = ADCsOnVCFInstance::instance().adc_2.data.conversions[ACCEL_2_CHANNEL].conversion;
-    pedal_sensor_data.brake_1 = ADCsOnVCFInstance::instance().adc_2.data.conversions[BRAKE_1_CHANNEL].conversion;
-    pedal_sensor_data.brake_2 = ADCsOnVCFInstance::instance().adc_2.data.conversions[BRAKE_2_CHANNEL].conversion;
+    pedal_sensor_data.accel_1 = ADCsOnVCFInstance::instance().adc_2.data.conversions[VCFInterfaceConstants::ACCEL_1_CHANNEL].conversion;
+    pedal_sensor_data.accel_2 = ADCsOnVCFInstance::instance().adc_2.data.conversions[VCFInterfaceConstants::ACCEL_2_CHANNEL].conversion;
+    pedal_sensor_data.brake_1 = ADCsOnVCFInstance::instance().adc_2.data.conversions[VCFInterfaceConstants::BRAKE_1_CHANNEL].conversion;
+    pedal_sensor_data.brake_2 = ADCsOnVCFInstance::instance().adc_2.data.conversions[VCFInterfaceConstants::BRAKE_2_CHANNEL].conversion;
     
     PedalsSystemData_s data = PedalsSystemInstance::instance().evaluate_pedals(pedal_sensor_data, millis());
 

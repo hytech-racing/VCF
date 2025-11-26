@@ -38,24 +38,26 @@
 #include "hytech.h"
 
 // Tasks
-HT_TASK::Task async_main(HT_TASK::DUMMY_FUNCTION, &async_tasks::handle_async_main, VCFConstants::MAIN_TASK_PRIORITY, VCFConstants::MAIN_TASK_PERIOD);
-HT_TASK::Task CAN_send(HT_TASK::DUMMY_FUNCTION, &handle_CAN_send, VCFConstants::CAN_SEND_PRIORITY, VCFConstants::CAN_SEND_PERIOD);
-HT_TASK::Task dash_CAN_enqueue(HT_TASK::DUMMY_FUNCTION, &send_dash_data, VCFConstants::DASH_SEND_PRIORITY, VCFConstants::DASH_SEND_PERIOD);
-HT_TASK::Task pedals_message_enqueue(HT_TASK::DUMMY_FUNCTION, &enqueue_pedals_data, VCFConstants::PEDALS_PRIORITY, VCFConstants::PEDALS_SEND_PERIOD);
-HT_TASK::Task adc1_sample(HT_TASK::DUMMY_FUNCTION, &run_read_adc1_task, VCFConstants::LOADCELL_SAMPLE_PRIORITY, VCFConstants::LOADCELL_SAMPLE_PERIOD);
-HT_TASK::Task pedals_sample(HT_TASK::DUMMY_FUNCTION, &run_read_adc2_task, VCFConstants::PEDALS_PRIORITY, VCFConstants::PEDALS_SAMPLE_PERIOD);
-HT_TASK::Task buzzer_control_task(&init_buzzer_control_task, &run_buzzer_control_task, VCFConstants::BUZZER_PRIORITY, VCFConstants::BUZZER_WRITE_PERIOD);
-HT_TASK::Task read_dash_GPIOs_task(HT_TASK::DUMMY_FUNCTION, &run_dash_GPIOs_task, VCFConstants::DASH_SAMPLE_PRIORITY, VCFConstants::DASH_SAMPLE_PERIOD);
-HT_TASK::Task read_ioexpander_task(&create_ioexpander, &read_ioexpander, VCFConstants::DASH_SAMPLE_PRIORITY, VCFConstants::DASH_SAMPLE_PERIOD);
-HT_TASK::Task neopixels_task(&init_neopixels_task, &run_update_neopixels_task, VCFConstants::NEOPIXEL_UPDATE_PRIORITY, VCFConstants::NEOPIXEL_UPDATE_PERIOD);
-HT_TASK::Task ethernet_send_task(init_handle_send_vcf_ethernet_data, run_handle_send_vcf_ethernet_data, VCFConstants::ETHERNET_SEND_PRIORITY, VCFConstants::ETHERNET_SEND_PERIOD);
-HT_TASK::Task steering_message_enqueue(HT_TASK::DUMMY_FUNCTION, &enqueue_steering_data, VCFConstants::STEERING_SEND_PRIORITY, VCFConstants::STEERING_SEND_PERIOD);
-HT_TASK::Task front_suspension_message_enqueue(HT_TASK::DUMMY_FUNCTION, &enqueue_front_suspension_data, VCFConstants::LOADCELL_SEND_PRIORITY, VCFConstants::LOADCELL_SEND_PERIOD);
+HT_TASK::Task async_main(HT_TASK::DUMMY_FUNCTION, &async_tasks::handle_async_main, VCFTaskConstants::MAIN_TASK_PRIORITY, VCFTaskConstants::MAIN_TASK_PERIOD);
+HT_TASK::Task CAN_send(HT_TASK::DUMMY_FUNCTION, &handle_CAN_send, VCFTaskConstants::CAN_SEND_PRIORITY, VCFTaskConstants::CAN_SEND_PERIOD);
+HT_TASK::Task dash_CAN_enqueue(HT_TASK::DUMMY_FUNCTION, &send_dash_data, VCFTaskConstants::DASH_SEND_PRIORITY, VCFTaskConstants::DASH_SEND_PERIOD);
+HT_TASK::Task pedals_message_enqueue(HT_TASK::DUMMY_FUNCTION, &enqueue_pedals_data, VCFTaskConstants::PEDALS_PRIORITY, VCFTaskConstants::PEDALS_SEND_PERIOD);
+HT_TASK::Task adc1_sample(HT_TASK::DUMMY_FUNCTION, &run_read_adc1_task, VCFTaskConstants::LOADCELL_SAMPLE_PRIORITY, VCFTaskConstants::LOADCELL_SAMPLE_PERIOD);
+HT_TASK::Task pedals_sample(HT_TASK::DUMMY_FUNCTION, &run_read_adc2_task, VCFTaskConstants::PEDALS_PRIORITY, VCFTaskConstants::PEDALS_SAMPLE_PERIOD);
+HT_TASK::Task buzzer_control_task(&init_buzzer_control_task, &run_buzzer_control_task, VCFTaskConstants::BUZZER_PRIORITY, VCFTaskConstants::BUZZER_WRITE_PERIOD);
+HT_TASK::Task read_dash_GPIOs_task(HT_TASK::DUMMY_FUNCTION, &run_dash_GPIOs_task, VCFTaskConstants::DASH_SAMPLE_PRIORITY, VCFTaskConstants::DASH_SAMPLE_PERIOD);
+HT_TASK::Task read_ioexpander_task(&create_ioexpander, &read_ioexpander, VCFTaskConstants::DASH_SAMPLE_PRIORITY, VCFTaskConstants::DASH_SAMPLE_PERIOD);
+HT_TASK::Task neopixels_task(&init_neopixels_task, &run_update_neopixels_task, VCFTaskConstants::NEOPIXEL_UPDATE_PRIORITY, VCFTaskConstants::NEOPIXEL_UPDATE_PERIOD);
+HT_TASK::Task ethernet_send_task(init_handle_send_vcf_ethernet_data, run_handle_send_vcf_ethernet_data, VCFTaskConstants::ETHERNET_SEND_PRIORITY, VCFTaskConstants::ETHERNET_SEND_PERIOD);
+HT_TASK::Task steering_message_enqueue(HT_TASK::DUMMY_FUNCTION, &enqueue_steering_data, VCFTaskConstants::STEERING_SEND_PRIORITY, VCFTaskConstants::STEERING_SEND_PERIOD);
+HT_TASK::Task front_suspension_message_enqueue(HT_TASK::DUMMY_FUNCTION, &enqueue_front_suspension_data, VCFTaskConstants::LOADCELL_SEND_PRIORITY, VCFTaskConstants::LOADCELL_SEND_PERIOD);
 
-HT_TASK::Task kick_watchdog_task(&init_kick_watchdog, &run_kick_watchdog, VCFConstants::WATCHDOG_PRIORITY, VCFConstants::WATCHDOG_KICK_PERIOD); 
-HT_TASK::Task pedals_calibration_task(HT_TASK::DUMMY_FUNCTION, &update_pedals_calibration_task, VCFConstants::PEDALS_RECALIBRATION_PRIORITY, VCFConstants::PEDALS_RECALIBRATION_PERIOD); 
+HT_TASK::Task kick_watchdog_task(&init_kick_watchdog, &run_kick_watchdog, VCFTaskConstants::WATCHDOG_PRIORITY, VCFTaskConstants::WATCHDOG_KICK_PERIOD); 
+HT_TASK::Task pedals_calibration_task(HT_TASK::DUMMY_FUNCTION, &update_pedals_calibration_task, VCFTaskConstants::PEDALS_RECALIBRATION_PRIORITY, VCFTaskConstants::PEDALS_RECALIBRATION_PERIOD); 
 
-HT_TASK::Task debug_state_print_task(HT_TASK::DUMMY_FUNCTION, &debug_print, VCFConstants::DEBUG_PRIORITY, VCFConstants::DEBUG_PERIOD);
+HT_TASK::Task debug_state_print_task(HT_TASK::DUMMY_FUNCTION, &debug_print, VCFTaskConstants::DEBUG_PRIORITY, VCFTaskConstants::DEBUG_PERIOD);
+
+FlexCAN_T4<CAN1, RX_SIZE_256, TX_SIZE_16> VCFCANInterfaceImpl::main_can;
 
 void setup() {
     setup_all_interfaces(); //must be first (if we ever have a setup systems)
