@@ -115,12 +115,13 @@ HT_TASK::TaskResponse enqueue_steering_data(const unsigned long& sysMicros, cons
 
 HT_TASK::TaskResponse init_kick_watchdog(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
 
+HT_TASK::TaskResponse debug_print(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
+
 namespace async_tasks {
     // the others in the VCF Tasks can just stay there, they dont need forward declarations.
     HT_TASK::TaskResponse handle_async_main(const unsigned long& sys_micros, const HT_TASK::TaskInfo& task_info);
 }
-namespace setup_handlers {
-    void setup_hardware();
-}
+
+void setup_all_interfaces();
 
 #endif /* VCF_TASKS */

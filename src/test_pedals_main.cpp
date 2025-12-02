@@ -50,44 +50,44 @@ void setup(){
     PedalsSystemInstance::create(accel_params, brake_params); //pass in the two different params
     ADCInterfaceInstance::create(
         ADCPinout_s {
-            ADC1_CS,
-            ADC2_CS
+            VCFInterfaceConstants::ADC1_CS,
+            VCFInterfaceConstants::ADC2_CS
         },
         ADCChannels_s {
-            STEERING_1_CHANNEL,
-            STEERING_2_CHANNEL,
-            FR_LOADCELL_CHANNEL,
-            FL_LOADCELL_CHANNEL,
-            FR_SUS_POT_CHANNEL,
-            FL_SUS_POT_CHANNEL,
-            ACCEL_1_CHANNEL,
-            ACCEL_2_CHANNEL,
-            BRAKE_1_CHANNEL,
-            BRAKE_2_CHANNEL
+            VCFInterfaceConstants::STEERING_1_CHANNEL,
+            VCFInterfaceConstants::STEERING_2_CHANNEL,
+            VCFInterfaceConstants::FR_LOADCELL_CHANNEL,
+            VCFInterfaceConstants::FL_LOADCELL_CHANNEL,
+            VCFInterfaceConstants::FR_SUS_POT_CHANNEL,
+            VCFInterfaceConstants::FL_SUS_POT_CHANNEL,
+            VCFInterfaceConstants::ACCEL_1_CHANNEL,
+            VCFInterfaceConstants::ACCEL_2_CHANNEL,
+            VCFInterfaceConstants::BRAKE_1_CHANNEL,
+            VCFInterfaceConstants::BRAKE_2_CHANNEL
         },
         ADCScales_s { 
-            STEERING_1_SCALE, 
-            STEERING_2_SCALE, 
-            FR_LOADCELL_SCALE,
-            FL_LOADCELL_SCALE,
-            FR_SUS_POT_SCALE,
-            FL_SUS_POT_SCALE, 
-            ACCEL_1_SCALE, 
-            ACCEL_2_SCALE, 
-            BRAKE_1_SCALE, 
-            BRAKE_2_SCALE
+            VCFInterfaceConstants::STEERING_1_SCALE, 
+            VCFInterfaceConstants::STEERING_2_SCALE, 
+            VCFInterfaceConstants::FR_LOADCELL_SCALE,
+            VCFInterfaceConstants::FL_LOADCELL_SCALE,
+            VCFInterfaceConstants::FR_SUS_POT_SCALE,
+            VCFInterfaceConstants::FL_SUS_POT_SCALE, 
+            VCFInterfaceConstants::ACCEL_1_SCALE, 
+            VCFInterfaceConstants::ACCEL_2_SCALE, 
+            VCFInterfaceConstants::BRAKE_1_SCALE, 
+            VCFInterfaceConstants::BRAKE_2_SCALE
         }, 
         ADCOffsets_s {
-            STEERING_1_OFFSET,
-            STEERING_2_OFFSET,
-            FR_LOADCELL_OFFSET,
-            FL_LOADCELL_OFFSET,
-            FR_SUS_POT_OFFSET,
-            FL_SUS_POT_OFFSET,
-            ACCEL_1_OFFSET,
-            ACCEL_2_OFFSET,
-            BRAKE_1_OFFSET,
-            BRAKE_2_OFFSET
+            VCFInterfaceConstants::STEERING_1_OFFSET,
+            VCFInterfaceConstants::STEERING_2_OFFSET,
+            VCFInterfaceConstants::FR_LOADCELL_OFFSET,
+            VCFInterfaceConstants::FL_LOADCELL_OFFSET,
+            VCFInterfaceConstants::FR_SUS_POT_OFFSET,
+            VCFInterfaceConstants::FL_SUS_POT_OFFSET,
+            VCFInterfaceConstants::ACCEL_1_OFFSET,
+            VCFInterfaceConstants::ACCEL_2_OFFSET,
+            VCFInterfaceConstants::BRAKE_1_OFFSET,
+            VCFInterfaceConstants::BRAKE_2_OFFSET
         }
     );
     const int begin_time = 115200;
