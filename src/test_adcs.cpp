@@ -4,7 +4,8 @@
 
 #include "Logger.h"
 
-long last = millis();
+unsigned long const DELAY = 100;
+unsigned long last = millis();
 
 void setup()
 {
@@ -55,7 +56,7 @@ void setup()
 
 void loop()
 {
-    if (millis() - 100 > last) {
+    if (millis() - DELAY > last) {
         ADCInterfaceInstance::instance().adc1_tick();
         hal_printf("ADC1 Front Right Load Cell Raw: %d\n", ADCInterfaceInstance::instance().FR_load_cell().raw);
         hal_printf("ADC1 Front Left Load Cell Raw:  %d\n", ADCInterfaceInstance::instance().FL_load_cell().raw);
