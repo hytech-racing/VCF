@@ -470,6 +470,8 @@ HT_TASK::TaskResponse debug_print(const unsigned long& sysMicros, const HT_TASK:
     return HT_TASK::TaskResponse::YIELD;
 }
 
+FlexCAN_T4<CAN1, RX_SIZE_256, TX_SIZE_16> VCFCANInterfaceImpl::main_can;
+
 void setup_all_interfaces() {
     SPI.begin();
     Serial.begin(VCFTaskConstants::SERIAL_BAUDRATE); // NOLINT

@@ -57,8 +57,6 @@ HT_TASK::Task pedals_calibration_task(HT_TASK::DUMMY_FUNCTION, &update_pedals_ca
 
 HT_TASK::Task debug_state_print_task(HT_TASK::DUMMY_FUNCTION, &debug_print, VCFTaskConstants::DEBUG_PRIORITY, VCFTaskConstants::DEBUG_PERIOD);
 
-FlexCAN_T4<CAN1, RX_SIZE_256, TX_SIZE_16> VCFCANInterfaceImpl::main_can;
-
 void setup() {
     setup_all_interfaces(); //must be first (if we ever have a setup systems)
 
