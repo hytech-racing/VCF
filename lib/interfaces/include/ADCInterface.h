@@ -3,8 +3,6 @@
 
 /// @brief This file defines ADC interface. The interface instantiates the ADC modules and provides getter functions to access each sensor's values.
 
-// #include <Arduino.h>
-// #include "SharedFirmwareTypes.h"
 #include <MCP_ADC.h>
 #include "etl/singleton.h"
 
