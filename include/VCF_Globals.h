@@ -50,8 +50,8 @@ struct ADCsOnVCF_s
                 const float (&adc_1_offsets)[channels_within_mcp_adc],
                 const float (&adc_2_scales)[channels_within_mcp_adc],
                 const float (&adc_2_offsets)[channels_within_mcp_adc]) :
-        adc_1(ADC1_CS, MCP_ADC_DEFAULT_SPI_SDI, MCP_ADC_DEFAULT_SPI_SDO, MCP_ADC_DEFAULT_SPI_CLK, MCP_ADC_DEFAULT_SPI_SPEED, adc_1_scales, adc_1_offsets),
-        adc_2(ADC2_CS, MCP_ADC_DEFAULT_SPI_SDI, MCP_ADC_DEFAULT_SPI_SDO, MCP_ADC_DEFAULT_SPI_CLK, MCP_ADC_DEFAULT_SPI_SPEED, adc_2_scales, adc_2_offsets)
+        adc_1(VCFInterfaceConstants::ADC1_CS, MCP_ADC_DEFAULT_SPI_SDI, MCP_ADC_DEFAULT_SPI_SDO, MCP_ADC_DEFAULT_SPI_CLK, MCP_ADC_DEFAULT_SPI_SPEED, adc_1_scales, adc_1_offsets),
+        adc_2(VCFInterfaceConstants::ADC2_CS, MCP_ADC_DEFAULT_SPI_SDI, MCP_ADC_DEFAULT_SPI_SDO, MCP_ADC_DEFAULT_SPI_CLK, MCP_ADC_DEFAULT_SPI_SPEED, adc_2_scales, adc_2_offsets)
     {}
     
     // MCP3208. ADC1 in VCF schematic. Used for steering, load cells, and sus pots.
