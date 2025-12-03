@@ -25,3 +25,36 @@ void VCRInterface::receive_car_states_data(const CAN_message_t &can_msg)
     _drivetrain_state_value = static_cast<DrivetrainState_e>(unpacked_msg.drivetrain_state);
     _is_db_in_ctrl = unpacked_msg.drivebrain_in_control;
 }
+
+void VCRInterface::receive_inverter_status_1(const CAN_message_t &can_msg)
+{
+    INV1_STATUS_t unpacked_msg;
+    Unpack_INV1_STATUS_hytech(&unpacked_msg, can_msg.buf, can_msg.len); //NOLINT
+    _inv_error_status.error.FL = unpacked_msg.error;
+}
+void VCRInterface::receive_inverter_status_2(const CAN_message_t &can_msg)
+{
+    INV2_STATUS_t unpacked_msg;
+    Unpack_INV2_STATUS_hytech(&unpacked_msg, can_msg.buf, can_msg.len); //NOLINT
+    _inv_error_status.error.FR = unpacked_msg.error;
+}
+void VCRInterface::receive_inverter_status_3(const CAN_message_t &can_msg)
+{
+    INV3_STATUS_t unpacked_msg;
+    Unpack_INV3_STATUS_hytech(&unpacked_msg, can_msg.buf, can_msg.len); //NOLINT
+    _inv_error_status.error.RL = unpacked_msg.error;
+}
+void VCRInterface::receive_inverter_status_4(const CAN_message_t &can_msg)
+{
+    INV4_STATUS_t unpacked_msg;
+    Unpack_INV4_STATUS_hytech(&unpacked_msg, can_msg.buf, can_msg.len); //NOLINT
+    _inv_error_status.error.RR = unpacked_msg.error;
+}
+
+bool VCRInterface::get_inverter_error()
+{
+    return _inv_error_status.error.FL || _inv_error_status.error.FR || _inv_error_status.error.RL || _inv_error_status.error.RR;
+}
+
+
+
