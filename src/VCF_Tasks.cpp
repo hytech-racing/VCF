@@ -386,7 +386,7 @@ HT_TASK::TaskResponse init_neopixels_task(const unsigned long& sys_micros, const
 
 HT_TASK::TaskResponse run_update_neopixels_task(const unsigned long& sys_micros, const HT_TASK::TaskInfo& task_info)
 {
-    NeopixelControllerInstance::instance().refresh_neopixels(VCFData_sInstance::instance(), VCRData_sInstance::instance(), VCFCANInterfaceImpl::CANInterfacesInstance::instance());
+    NeopixelControllerInstance::instance().refresh_neopixels(VCFData_sInstance::instance(), VCFCANInterfaceImpl::CANInterfacesInstance::instance());
     return HT_TASK::TaskResponse::YIELD;
 }
 
@@ -537,7 +537,6 @@ void setup_all_interfaces() {
     });
 
     EthernetIPDefsInstance::create();
-    VCRData_sInstance::create();
     VCFData_sInstance::create();
 
     // Create pedals singleton

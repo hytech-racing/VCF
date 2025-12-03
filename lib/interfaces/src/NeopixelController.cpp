@@ -27,7 +27,7 @@ void NeopixelController::set_neopixel(uint16_t id, uint32_t c) {
     _neopixels.setPixelColor(id, c);
 }
 
-void NeopixelController::refresh_neopixels(VCFData_s &vcf_data, VCRData_s &vcr_data, CANInterfaces &interfaces) {
+void NeopixelController::refresh_neopixels(VCFData_s &vcf_data, CANInterfaces &interfaces) {
 
     // If we are in pedals recalibration state, LIGHT UP DASHBOARD ALL RED.
     if (interfaces.vcr_interface.is_in_pedals_calibration_state()) {
@@ -135,7 +135,7 @@ void NeopixelController::refresh_neopixels(VCFData_s &vcf_data, VCRData_s &vcr_d
     set_neopixel_color(LED_ID_e::BMS, interfaces.dash_interface.bms_ok ? LED_color_e::GREEN : LED_color_e::RED);
     set_neopixel_color(LED_ID_e::MC_ERR, interfaces.vcr_interface.get_inverter_error() ? LED_color_e::RED : LED_color_e::GREEN);
     set_neopixel_color(LED_ID_e::RDY_DRIVE, ready_drive_color);
-    set_neopixel_color(LED_ID_e::GLV, vcr_data.interface_data.current_sensor_data.twentyfour_volt_sensor > glv_critical_voltage ? LED_color_e::GREEN : LED_color_e::YELLOW); // No sensor there yet
+    set_neopixel_color(LED_ID_e::GLV, LED_color_e::OFF); // No sensor there yet
     set_neopixel_color(LED_ID_e::TORQUE_MODE, torque_mode_color);
 
     _neopixels.show();
