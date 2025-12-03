@@ -29,7 +29,6 @@
 
 /* Interface and system data structs */
 using VCFData_sInstance = etl::singleton<VCFData_s>;
-using VCRData_sInstance = etl::singleton<VCRData_s>;
 
 /* IOExpander setup */
 using IOExpanderInstance = etl::singleton<MCP23017>;
