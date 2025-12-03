@@ -40,13 +40,14 @@
 #include "IOExpanderUtils.h"
 #include "NeopixelController.h"
 #include "WatchdogSystem.h"
+#include "ADCInterface.h"
 
 /**
  * The read_adc1 task will command adc1 to sample all eight channels, convert
  * the outputs, and store them in structs defined in shared_firmware_types. This
  * function relies on adc_1 being defined in VCFGlobals.h.
  */
-HT_TASK::TaskResponse init_adc_task();
+// HT_TASK::TaskResponse init_adc_task();
 HT_TASK::TaskResponse run_read_adc1_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
 
 HT_TASK::TaskResponse run_kick_watchdog(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);

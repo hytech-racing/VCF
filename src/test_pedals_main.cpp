@@ -48,21 +48,63 @@ const PedalsParams brake_params = {
 
 void setup(){
     PedalsSystemInstance::create(accel_params, brake_params); //pass in the two different params
+    ADCInterfaceInstance::create(
+        ADCPinout_s {
+            VCFInterfaceConstants::ADC1_CS,
+            VCFInterfaceConstants::ADC2_CS
+        },
+        ADCChannels_s {
+            VCFInterfaceConstants::STEERING_1_CHANNEL,
+            VCFInterfaceConstants::STEERING_2_CHANNEL,
+            VCFInterfaceConstants::FR_LOADCELL_CHANNEL,
+            VCFInterfaceConstants::FL_LOADCELL_CHANNEL,
+            VCFInterfaceConstants::FR_SUS_POT_CHANNEL,
+            VCFInterfaceConstants::FL_SUS_POT_CHANNEL,
+            VCFInterfaceConstants::ACCEL_1_CHANNEL,
+            VCFInterfaceConstants::ACCEL_2_CHANNEL,
+            VCFInterfaceConstants::BRAKE_1_CHANNEL,
+            VCFInterfaceConstants::BRAKE_2_CHANNEL
+        },
+        ADCScales_s { 
+            VCFInterfaceConstants::STEERING_1_SCALE, 
+            VCFInterfaceConstants::STEERING_2_SCALE, 
+            VCFInterfaceConstants::FR_LOADCELL_SCALE,
+            VCFInterfaceConstants::FL_LOADCELL_SCALE,
+            VCFInterfaceConstants::FR_SUS_POT_SCALE,
+            VCFInterfaceConstants::FL_SUS_POT_SCALE, 
+            VCFInterfaceConstants::ACCEL_1_SCALE, 
+            VCFInterfaceConstants::ACCEL_2_SCALE, 
+            VCFInterfaceConstants::BRAKE_1_SCALE, 
+            VCFInterfaceConstants::BRAKE_2_SCALE
+        }, 
+        ADCOffsets_s {
+            VCFInterfaceConstants::STEERING_1_OFFSET,
+            VCFInterfaceConstants::STEERING_2_OFFSET,
+            VCFInterfaceConstants::FR_LOADCELL_OFFSET,
+            VCFInterfaceConstants::FL_LOADCELL_OFFSET,
+            VCFInterfaceConstants::FR_SUS_POT_OFFSET,
+            VCFInterfaceConstants::FL_SUS_POT_OFFSET,
+            VCFInterfaceConstants::ACCEL_1_OFFSET,
+            VCFInterfaceConstants::ACCEL_2_OFFSET,
+            VCFInterfaceConstants::BRAKE_1_OFFSET,
+            VCFInterfaceConstants::BRAKE_2_OFFSET
+        }
+    );
     const int begin_time = 115200;
     Serial.begin(begin_time);
     SPI.begin();
-    init_adc_task();
+    // init_adc_task();
 }
 
 void loop(){
 
-    ADCsOnVCFInstance::instance().adc_2.tick();
+    ADCInterfaceInstance::instance().adc2_tick();
     PedalSensorData_s pedal_sensor_data = {};
     
-    pedal_sensor_data.accel_1 = ADCsOnVCFInstance::instance().adc_2.data.conversions[VCFInterfaceConstants::ACCEL_1_CHANNEL].conversion;
-    pedal_sensor_data.accel_2 = ADCsOnVCFInstance::instance().adc_2.data.conversions[VCFInterfaceConstants::ACCEL_2_CHANNEL].conversion;
-    pedal_sensor_data.brake_1 = ADCsOnVCFInstance::instance().adc_2.data.conversions[VCFInterfaceConstants::BRAKE_1_CHANNEL].conversion;
-    pedal_sensor_data.brake_2 = ADCsOnVCFInstance::instance().adc_2.data.conversions[VCFInterfaceConstants::BRAKE_2_CHANNEL].conversion;
+    pedal_sensor_data.accel_1 = ADCInterfaceInstance::instance().acceleration_1().conversion;
+    pedal_sensor_data.accel_2 = ADCInterfaceInstance::instance().acceleration_2().conversion;
+    pedal_sensor_data.brake_1 = ADCInterfaceInstance::instance().brake_1().conversion;
+    pedal_sensor_data.brake_2 = ADCInterfaceInstance::instance().brake_2().conversion;
     
     PedalsSystemData_s data = PedalsSystemInstance::instance().evaluate_pedals(pedal_sensor_data, millis());
 
