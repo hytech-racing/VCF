@@ -8,7 +8,7 @@ std::array<float, adc_default_parameters::channels_within_mcp_adc> ADCInterface:
   scales[_adc_parameters.channels.steering_cw_channel]   = _adc_parameters.scales.steering_cw_scale; 
   scales[_adc_parameters.channels.steering_ccw_channel]  = _adc_parameters.scales.steering_ccw_scale;
   scales[_adc_parameters.channels.fr_loadcell_channel]   = _adc_parameters.scales.fr_loadcell_scale;
-  scales[_adc_parameters.channels.fl_suspot_channel]     = _adc_parameters.scales.fl_loadcell_scale;
+  scales[_adc_parameters.channels.fl_loadcell_channel]     = _adc_parameters.scales.fl_loadcell_scale;
   scales[_adc_parameters.channels.fr_suspot_channel]     = _adc_parameters.scales.fr_suspot_scale;
   scales[_adc_parameters.channels.fl_suspot_channel]     = _adc_parameters.scales.fl_suspot_scale;
   
@@ -21,7 +21,7 @@ std::array<float, adc_default_parameters::channels_within_mcp_adc> ADCInterface:
   offsets[_adc_parameters.channels.steering_cw_channel]  = _adc_parameters.offsets.steering_cw_offset; 
   offsets[_adc_parameters.channels.steering_ccw_channel] = _adc_parameters.offsets.steering_ccw_offset;
   offsets[_adc_parameters.channels.fr_loadcell_channel]  = _adc_parameters.offsets.fr_loadcell_offset;
-  offsets[_adc_parameters.channels.fl_suspot_channel]    = _adc_parameters.offsets.fl_loadcell_offset;
+  offsets[_adc_parameters.channels.fl_loadcell_channel]    = _adc_parameters.offsets.fl_loadcell_offset;
   offsets[_adc_parameters.channels.fr_suspot_channel]    = _adc_parameters.offsets.fr_suspot_offset;
   offsets[_adc_parameters.channels.fl_suspot_channel]    = _adc_parameters.offsets.fl_suspot_offset;
   
@@ -75,7 +75,7 @@ AnalogConversion_s ADCInterface::FL_load_cell() {
 }
 
 AnalogConversion_s ADCInterface::FR_load_cell() {
-    return _adc1.data.conversions[_adc_parameters.channels.fl_loadcell_channel];
+    return _adc1.data.conversions[_adc_parameters.channels.fr_loadcell_channel];
 }
 
 AnalogConversion_s ADCInterface::FL_sus_pot() {
