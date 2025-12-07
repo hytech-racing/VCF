@@ -112,15 +112,15 @@ void ADCInterface::update_filtered_values(float alpha) {
         FR_loadcell_analog,
         FR_load_cell().conversion
     );
-    FL_loadcell_analog = iir_filter(
+    FL_sus_pot_analog = iir_filter(
         alpha,
         FL_sus_pot_analog,
-        FL_sus_pot().conversion
+        FL_sus_pot().raw
     );
-    FL_loadcell_analog = iir_filter(
+    FR_sus_pot_analog = iir_filter(
         alpha,
         FR_sus_pot_analog,
-        FR_sus_pot().conversion
+        FR_sus_pot().raw
     );
 }
 

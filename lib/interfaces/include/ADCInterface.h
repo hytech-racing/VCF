@@ -69,13 +69,6 @@ struct ADCInterfaceParams_s {
     ADCOffsets_s offsets;
 };
 
-struct FilteredADCValues_s {
-    float FL_loadcell_analog;
-    float FR_loadcell_analog;
-    float FL_sus_pot_analog;
-    float FR_sus_pot_analog;
-};
-
 class ADCInterface
 {
     /* ------ Public Functions ------ */
