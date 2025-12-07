@@ -27,7 +27,7 @@ void NeopixelController::set_neopixel(uint16_t id, uint32_t c) {
     _neopixels.setPixelColor(id, c);
 }
 
-void NeopixelController::refresh_neopixels(VCFData_s &vcf_data, CANInterfaces &interfaces) {
+void NeopixelController::refresh_neopixels(const PedalsSystemData_s &pedals_data, CANInterfaces &interfaces) {
 
     // If we are in pedals recalibration state, LIGHT UP DASHBOARD ALL RED.
     if (interfaces.vcr_interface.is_in_pedals_calibration_state()) {
@@ -46,9 +46,9 @@ void NeopixelController::refresh_neopixels(VCFData_s &vcf_data, CANInterfaces &i
     }
 
     LED_color_e brake_light_color = LED_color_e::OFF;
-    if (vcf_data.system_data.pedals_system_data.brake_is_pressed && !vcf_data.system_data.pedals_system_data.implausibility_has_exceeded_max_duration) {
+    if (pedals_data.brake_is_pressed && !pedals_data.implausibility_has_exceeded_max_duration) {
         brake_light_color = LED_color_e::GREEN;
-    } else if (vcf_data.system_data.pedals_system_data.implausibility_has_exceeded_max_duration) {
+    } else if (pedals_data.implausibility_has_exceeded_max_duration) {
         brake_light_color = LED_color_e::RED;
     }
 

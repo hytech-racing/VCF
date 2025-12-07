@@ -69,6 +69,13 @@ struct ADCInterfaceParams_s {
     ADCOffsets_s offsets;
 };
 
+struct FilteredADCValues_s {
+    float FL_loadcell_analog;
+    float FR_loadcell_analog;
+    float FL_sus_pot_analog;
+    float FR_sus_pot_analog;
+};
+
 class ADCInterface
 {
     /* ------ Public Functions ------ */
@@ -137,6 +144,23 @@ class ADCInterface
          */
         AnalogConversion_s FR_sus_pot();
 
+        // Getters for 
+        float get_filtered_FL_load_cell();
+        
+        float get_filtered_FR_load_cell();
+
+        float get_filtered_FL_sus_pot();
+
+        float get_filtered_FR_sus_pot();
+
+        void update_filtered_values(float alpha);
+        
+        // void update_filtered_FR_load_cell();
+
+        // void update_filtered_FL_sus_pot();
+
+        // void update_filtered_FR_sus_pot();
+
         /* ------ ADC 2 ------ */
 
         /**
@@ -169,6 +193,7 @@ class ADCInterface
     /* ------ Private Data Members ------ */
     private:
         ADCInterfaceParams_s _adc_parameters = {};
+        FilteredADCValues_s _filteredValues = {};
         // MCP3208. ADC1 in VCF schematic. Used for steering, load cells, and sus pots.
         MCP_ADC<adc_default_parameters::channels_within_mcp_adc> _adc1;
         // MCP3208. ADC2 in VCF schematic. Used for pedal position sensors.
