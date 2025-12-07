@@ -86,69 +86,43 @@ AnalogConversion_s ADCInterface::FR_sus_pot() {
 }
 
 float ADCInterface::get_filtered_FL_load_cell() {
-    return _filteredValues.FL_loadcell_analog;
+    return FL_loadcell_analog;
 }
 
 float ADCInterface::get_filtered_FR_load_cell() {
-    return _filteredValues.FR_loadcell_analog;
+    return FR_loadcell_analog;
 }
 
 float ADCInterface::get_filtered_FL_sus_pot() {
-    return _filteredValues.FL_sus_pot_analog;
+    return FL_sus_pot_analog;
 }
 
 float ADCInterface::get_filtered_FR_sus_pot() {
-    return _filteredValues.FR_sus_pot_analog;
+    return FR_sus_pot_analog;
 }
 
 void ADCInterface::update_filtered_values(float alpha) {
-    _filteredValues.FL_loadcell_analog = iir_filter(
+    FL_loadcell_analog = iir_filter(
         alpha,
-        _filteredValues.FL_loadcell_analog,
+        FL_loadcell_analog,
         FL_load_cell().conversion
     );
-    _filteredValues.FR_loadcell_analog = iir_filter(
+    FR_loadcell_analog = iir_filter(
         alpha,
-        _filteredValues.FR_loadcell_analog,
+        FR_loadcell_analog,
         FR_load_cell().conversion
     );
-    _filteredValues.FL_loadcell_analog = iir_filter(
+    FL_loadcell_analog = iir_filter(
         alpha,
-        _filteredValues.FL_sus_pot_analog,
+        FL_sus_pot_analog,
         FL_sus_pot().conversion
     );
-    _filteredValues.FL_loadcell_analog = iir_filter(
+    FL_loadcell_analog = iir_filter(
         alpha,
-        _filteredValues.FR_sus_pot_analog,
+        FR_sus_pot_analog,
         FR_sus_pot().conversion
     );
 }
-
-// void ADCInterface::set_filtered_FR_load_cell() {
-//     _filteredValues.FR_loadcell_analog = iir_filter(
-//         VCFTaskConstants::LOADCELL_IIR_FILTER_ALPHA,
-//         _filteredValues.FR_loadcell_analog,
-//         FR_load_cell().conversion
-//     );
-// }
-
-// void ADCInterface::set_filtered_FL_sus_pot() {
-//     _filteredValues.FL_loadcell_analog = iir_filter(
-//         VCFTaskConstants::LOADCELL_IIR_FILTER_ALPHA,
-//         _filteredValues.FL_sus_pot_analog,
-//         FL_sus_pot().conversion
-//     );
-// }
-
-// void ADCInterface::set_filtered_FR_sus_pot() {
-//     _filteredValues.FL_loadcell_analog = iir_filter(
-//         VCFTaskConstants::LOADCELL_IIR_FILTER_ALPHA,
-//         _filteredValues.FR_sus_pot_analog,
-//         FR_sus_pot().conversion
-//     );
-// }
-
-float filtered_FR_sus_pot();
 
 /* -------------------- ADC 2 Functions -------------------- */
 void ADCInterface::adc2_tick() {

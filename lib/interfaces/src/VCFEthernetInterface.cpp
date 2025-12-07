@@ -19,14 +19,14 @@ hytech_msgs_VCFData_s VCFEthernetInterface::make_vcf_data_msg(ADCInterface &ADCI
     // Load cells
     // out.front_loadcell_data.FL_loadcell_analog = shared_state.interface_data.front_loadcell_data.FL_loadcell_analog;
     // out.front_loadcell_data.FR_loadcell_analog = shared_state.interface_data.front_loadcell_data.FR_loadcell_analog;
-    out.front_loadcell_data.FL_loadcell_analog = ADCInterfaceInstance.get_filtered_FL_load_cell();
-    out.front_loadcell_data.FR_loadcell_analog = ADCInterfaceInstance.get_filtered_FR_load_cell();
+    out.front_loadcell_data.FL_loadcell_analog = static_cast<uint32_t>(ADCInterfaceInstance.get_filtered_FL_load_cell());
+    out.front_loadcell_data.FR_loadcell_analog = static_cast<uint32_t>(ADCInterfaceInstance.get_filtered_FR_load_cell());
 
     // Sus pots
     // out.front_suspot_data.FL_sus_pot_analog = shared_state.interface_data.front_suspot_data.FL_sus_pot_analog;
     // out.front_suspot_data.FR_sus_pot_analog = shared_state.interface_data.front_suspot_data.FR_sus_pot_analog;
-    out.front_suspot_data.FL_sus_pot_analog = ADCInterfaceInstance.get_filtered_FL_sus_pot();
-    out.front_suspot_data.FR_sus_pot_analog = ADCInterfaceInstance.get_filtered_FR_sus_pot();
+    out.front_suspot_data.FL_sus_pot_analog = static_cast<uint32_t>(ADCInterfaceInstance.get_filtered_FL_sus_pot());
+    out.front_suspot_data.FR_sus_pot_analog = static_cast<uint32_t>(ADCInterfaceInstance.get_filtered_FR_sus_pot());
 
     // Steering
     // out.steering_data.analog_steering_degrees = shared_state.interface_data.steering_data.analog_steering_degrees;
