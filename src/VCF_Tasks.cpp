@@ -23,10 +23,10 @@
 #include "WatchdogSystem.h"
 #include "Arduino.h"
 
-HT_TASK::TaskResponse run_read_adc1_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
+HT_TASK::TaskResponse run_read_adc0_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
 {
     // Samples all eight channels.
-    ADCInterfaceInstance::instance().adc1_tick();
+    ADCInterfaceInstance::instance().adc0_tick();
 
     VCFData_sInstance::instance().interface_data.steering_data.analog_steering_degrees = ADCInterfaceInstance::instance().steering_degrees_cw().conversion; // Only using steering 1 for now
     
@@ -57,10 +57,10 @@ HT_TASK::TaskResponse run_read_adc1_task(const unsigned long& sysMicros, const H
     return HT_TASK::TaskResponse::YIELD;
 }
 
-HT_TASK::TaskResponse run_read_adc2_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
+HT_TASK::TaskResponse run_read_adc1_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
 {
     // Samples all eight channels.
-    ADCInterfaceInstance::instance().adc2_tick();
+    ADCInterfaceInstance::instance().adc1_tick();
     VCFData_sInstance::instance().interface_data.pedal_sensor_data.accel_1 = ADCInterfaceInstance::instance().acceleration_1().conversion;
     VCFData_sInstance::instance().interface_data.pedal_sensor_data.accel_2 = ADCInterfaceInstance::instance().acceleration_2().conversion;
     VCFData_sInstance::instance().interface_data.pedal_sensor_data.brake_1 = ADCInterfaceInstance::instance().brake_1().conversion;
@@ -496,8 +496,8 @@ void setup_all_interfaces() {
     // Create ADC interface singleton
     ADCInterfaceInstance::create(
     ADCPinout_s {
-        VCFInterfaceConstants::ADC1_CS,
-        VCFInterfaceConstants::ADC2_CS
+        VCFInterfaceConstants::ADC0_CS,
+        VCFInterfaceConstants::ADC1_CS
     },
     ADCChannels_s {
         VCFInterfaceConstants::STEERING_1_CHANNEL,
