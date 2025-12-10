@@ -53,6 +53,8 @@ class DashboardInterface
 
         bool bms_ok = true;
         bool imd_ok = true;
+
+        void set_dial_state(ControllerMode_e mode);
     
     private: 
 

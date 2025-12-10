@@ -1,8 +1,7 @@
 #include "ADCInterface.h"
 
 
-
-std::array<float, adc_default_parameters::channels_within_mcp_adc> ADCInterface::adc1_scales() {
+std::array<float, adc_default_parameters::channels_within_mcp_adc> ADCInterface::adc0_scales() {
   std::array<float, adc_default_parameters::channels_within_mcp_adc> scales = {};
 
   scales[_adc_parameters.channels.steering_cw_channel]   = _adc_parameters.scales.steering_cw_scale; 
@@ -15,7 +14,7 @@ std::array<float, adc_default_parameters::channels_within_mcp_adc> ADCInterface:
   return scales;
 }
 
-std::array<float, adc_default_parameters::channels_within_mcp_adc> ADCInterface::adc1_offsets() {
+std::array<float, adc_default_parameters::channels_within_mcp_adc> ADCInterface::adc0_offsets() {
   std::array<float, adc_default_parameters::channels_within_mcp_adc> offsets = {};
 
   offsets[_adc_parameters.channels.steering_cw_channel]  = _adc_parameters.offsets.steering_cw_offset; 
@@ -28,7 +27,7 @@ std::array<float, adc_default_parameters::channels_within_mcp_adc> ADCInterface:
   return offsets;
 }
 
-std::array<float, adc_default_parameters::channels_within_mcp_adc> ADCInterface::adc2_scales() {
+std::array<float, adc_default_parameters::channels_within_mcp_adc> ADCInterface::adc1_scales() {
   std::array<float, adc_default_parameters::channels_within_mcp_adc> scales = {};
   
   scales[_adc_parameters.channels.accel_1_channel]   = _adc_parameters.scales.accel_1_scale; 
@@ -39,7 +38,7 @@ std::array<float, adc_default_parameters::channels_within_mcp_adc> ADCInterface:
   return scales;
 }
 
-std::array<float, adc_default_parameters::channels_within_mcp_adc> ADCInterface::adc2_offsets() {
+std::array<float, adc_default_parameters::channels_within_mcp_adc> ADCInterface::adc1_offsets() {
   std::array<float, adc_default_parameters::channels_within_mcp_adc> offsets = {};
 
   offsets[_adc_parameters.channels.accel_1_channel]  = _adc_parameters.offsets.accel_1_offset; 
@@ -57,54 +56,91 @@ float ADCInterface::iir_filter(float alpha, float prev_value, float new_value)
 
 
 
-/* -------------------- ADC 1 Functions -------------------- */
-void ADCInterface::adc1_tick() {
-    _adc1.tick();
+/* -------------------- ADC 0 Functions -------------------- */
+void ADCInterface::adc0_tick() {
+    _adc0.tick();
 }
 
 AnalogConversion_s ADCInterface::steering_degrees_cw() {
-    return _adc1.data.conversions[_adc_parameters.channels.steering_cw_channel];
+    return _adc0.data.conversions[_adc_parameters.channels.steering_cw_channel];
 }
 
 AnalogConversion_s ADCInterface::steering_degrees_ccw() {
-    return _adc1.data.conversions[_adc_parameters.channels.steering_ccw_channel];
+    return _adc0.data.conversions[_adc_parameters.channels.steering_ccw_channel];
 }
 
 AnalogConversion_s ADCInterface::FL_load_cell() {
-    return _adc1.data.conversions[_adc_parameters.channels.fl_loadcell_channel];
+    return _adc0.data.conversions[_adc_parameters.channels.fl_loadcell_channel];
 }
 
 AnalogConversion_s ADCInterface::FR_load_cell() {
-    return _adc1.data.conversions[_adc_parameters.channels.fr_loadcell_channel];
+    return _adc0.data.conversions[_adc_parameters.channels.fr_loadcell_channel];
 }
 
 AnalogConversion_s ADCInterface::FL_sus_pot() {
-    return _adc1.data.conversions[_adc_parameters.channels.fl_suspot_channel];
+    return _adc0.data.conversions[_adc_parameters.channels.fl_suspot_channel];
 }
 
 AnalogConversion_s ADCInterface::FR_sus_pot() {
-    return _adc1.data.conversions[_adc_parameters.channels.fr_suspot_channel];
+    return _adc0.data.conversions[_adc_parameters.channels.fr_suspot_channel];
 }
 
+float ADCInterface::get_filtered_FL_load_cell() {
+    return FL_loadcell_analog;
+}
 
+float ADCInterface::get_filtered_FR_load_cell() {
+    return FR_loadcell_analog;
+}
 
-/* -------------------- ADC 2 Functions -------------------- */
-void ADCInterface::adc2_tick() {
-    _adc2.tick();
+float ADCInterface::get_filtered_FL_sus_pot() {
+    return FL_sus_pot_analog;
+}
+
+float ADCInterface::get_filtered_FR_sus_pot() {
+    return FR_sus_pot_analog;
+}
+
+void ADCInterface::update_filtered_values(float alpha) {
+    FL_loadcell_analog = iir_filter(
+        alpha,
+        FL_loadcell_analog,
+        FL_load_cell().conversion
+    );
+    FR_loadcell_analog = iir_filter(
+        alpha,
+        FR_loadcell_analog,
+        FR_load_cell().conversion
+    );
+    FL_sus_pot_analog = iir_filter(
+        alpha,
+        FL_sus_pot_analog,
+        static_cast<float>(FL_sus_pot().raw)
+    );
+    FR_sus_pot_analog = iir_filter(
+        alpha,
+        FR_sus_pot_analog,
+        static_cast<float>(FR_sus_pot().raw)
+    );
+}
+
+/* -------------------- ADC 1 Functions -------------------- */
+void ADCInterface::adc1_tick() {
+    _adc1.tick();
 } 
 
 AnalogConversion_s ADCInterface::acceleration_1() {
-    return _adc2.data.conversions[_adc_parameters.channels.accel_1_channel];
+    return _adc1.data.conversions[_adc_parameters.channels.accel_1_channel];
 }
 
 AnalogConversion_s ADCInterface::acceleration_2() {
-    return _adc2.data.conversions[_adc_parameters.channels.accel_2_channel];
+    return _adc1.data.conversions[_adc_parameters.channels.accel_2_channel];
 }
 
 AnalogConversion_s ADCInterface::brake_1() {
-    return _adc2.data.conversions[_adc_parameters.channels.brake_1_channel];
+    return _adc1.data.conversions[_adc_parameters.channels.brake_1_channel];
 }
 
 AnalogConversion_s ADCInterface::brake_2() {
-    return _adc2.data.conversions[_adc_parameters.channels.brake_2_channel];
+    return _adc1.data.conversions[_adc_parameters.channels.brake_2_channel];
 }

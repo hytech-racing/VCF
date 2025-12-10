@@ -5,8 +5,8 @@
 
 // hardware connections constants
 namespace VCFInterfaceConstants { 
-    constexpr int ADC1_CS = 17; // MCP3208. ADC1 in VCF schematic. Used for steering, sus pots, and load cells.
-    constexpr int ADC2_CS = 16; // MCP3208. ADC2 in VCF schematic. Used for pedal position sensors.
+    constexpr int ADC0_CS = 17; // MCP3208. ADC0 in VCF schematic. Used for steering, sus pots, and load cells.
+    constexpr int ADC1_CS = 16; // MCP3208. ADC1 in VCF schematic. Used for pedal position sensors.
 
     //Teensy 4.1 GPIO pins  
     constexpr int BTN_DIM_READ = 29;

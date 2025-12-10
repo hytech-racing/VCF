@@ -31,3 +31,7 @@ void DashboardInterface::receive_ACU_OK(const CAN_message_t &can_msg)
     bms_ok = unpacked_msg.bms_ok;
     imd_ok = unpacked_msg.imd_ok;
 }
+
+void DashboardInterface::set_dial_state(ControllerMode_e mode) {
+    _dashboard_outputs.dial_state = mode;
+}
