@@ -23,47 +23,18 @@
 #include "WatchdogSystem.h"
 #include "Arduino.h"
 
+HT_TASK::TaskResponse run_read_adc0_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
+{
+    // Updates all eight channels.
+    ADCInterfaceInstance::instance().adc0_tick();
+    ADCInterfaceInstance::instance().update_filtered_values(VCFTaskConstants::LOADCELL_IIR_FILTER_ALPHA);
+    return HT_TASK::TaskResponse::YIELD;
+}
+
 HT_TASK::TaskResponse run_read_adc1_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
 {
     // Samples all eight channels.
     ADCInterfaceInstance::instance().adc1_tick();
-    ADCInterfaceInstance::instance().update_filtered_values(VCFTaskConstants::LOADCELL_IIR_FILTER_ALPHA);
-    // VCFData_sInstance::instance().interface_data.steering_data.analog_steering_degrees = ADCInterfaceInstance::instance().steering_degrees_cw().conversion; // Only using steering 1 for now
-    
-    // VCFData_sInstance::instance().interface_data.front_loadcell_data.FL_loadcell_analog = ADCInterface::iir_filter(
-    //     VCFTaskConstants::LOADCELL_IIR_FILTER_ALPHA, 
-    //     VCFData_sInstance::instance().interface_data.front_loadcell_data.FL_loadcell_analog,
-    //     ADCInterfaceInstance::instance().FL_load_cell().conversion
-    // );
-
-    // VCFData_sInstance::instance().interface_data.front_loadcell_data.FR_loadcell_analog = ADCInterface::iir_filter(
-    //     VCFTaskConstants::LOADCELL_IIR_FILTER_ALPHA, 
-    //     VCFData_sInstance::instance().interface_data.front_loadcell_data.FR_loadcell_analog, 
-    //     ADCInterfaceInstance::instance().FR_load_cell().conversion
-    // );
-
-    // VCFData_sInstance::instance().interface_data.front_suspot_data.FL_sus_pot_analog = ADCInterface::iir_filter(
-    //     VCFTaskConstants::LOADCELL_IIR_FILTER_ALPHA,
-    //     VCFData_sInstance::instance().interface_data.front_suspot_data.FL_sus_pot_analog, 
-    //     ADCInterfaceInstance::instance().FL_sus_pot().raw
-    // );
-
-    // VCFData_sInstance::instance().interface_data.front_suspot_data.FR_sus_pot_analog = ADCInterface::iir_filter(
-    //     VCFTaskConstants::LOADCELL_IIR_FILTER_ALPHA,
-    //     VCFData_sInstance::instance().interface_data.front_suspot_data.FR_sus_pot_analog,
-    //     ADCInterfaceInstance::instance().FR_sus_pot().raw
-    // );
-    return HT_TASK::TaskResponse::YIELD;
-}
-
-HT_TASK::TaskResponse run_read_adc2_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
-{
-    // Samples all eight channels.
-    ADCInterfaceInstance::instance().adc2_tick();
-    // VCFData_sInstance::instance().interface_data.pedal_sensor_data.accel_1 = ADCInterfaceInstance::instance().acceleration_1().conversion;
-    // VCFData_sInstance::instance().interface_data.pedal_sensor_data.accel_2 = ADCInterfaceInstance::instance().acceleration_2().conversion;
-    // VCFData_sInstance::instance().interface_data.pedal_sensor_data.brake_1 = ADCInterfaceInstance::instance().brake_1().conversion;
-    // VCFData_sInstance::instance().interface_data.pedal_sensor_data.brake_2 = ADCInterfaceInstance::instance().brake_2().conversion;
     PedalsSystemInstance::instance().set_pedals_sensor_data(PedalSensorData_s{
         .accel_1 = static_cast<uint32_t>(ADCInterfaceInstance::instance().acceleration_1().conversion),
         .accel_2 = static_cast<uint32_t>(ADCInterfaceInstance::instance().acceleration_2().conversion),
@@ -92,7 +63,6 @@ HT_TASK::TaskResponse update_pedals_calibration_task(const unsigned long& sysMic
     // Observed pedal values (ONLY USED FOR RECALIBRATION)
     // WARNING: These are the true min/max observed values, NOT the "value at min travel" and "value at max travel"
     //          that are defined in the PedalsParam struct.
-    // PedalsSystemInstance::instance().update_observed_pedal_limits(VCFData_sInstance::instance().interface_data.pedal_sensor_data);
     PedalsSystemInstance::instance().update_observed_pedal_limits(PedalsSystemInstance::instance().get_pedals_sensor_data());
 
     if (VCRInterfaceInstance::instance().is_in_pedals_calibration_state())
@@ -206,11 +176,6 @@ HT_TASK::TaskResponse enqueue_front_suspension_data(const unsigned long& sysMicr
     CANInterfaces can_interface = VCFCANInterfaceImpl::CANInterfacesInstance::instance();
     FRONT_SUSPENSION_t msg_out;
 
-    // msg_out.fr_load_cell = VCFData_sInstance::instance().interface_data.front_loadcell_data.FR_loadcell_analog;
-    // msg_out.fl_load_cell = VCFData_sInstance::instance().interface_data.front_loadcell_data.FL_loadcell_analog;
-    // msg_out.fr_shock_pot = VCFData_sInstance::instance().interface_data.front_suspot_data.FR_sus_pot_analog;
-    // msg_out.fl_shock_pot = VCFData_sInstance::instance().interface_data.front_suspot_data.FL_sus_pot_analog;
-
     msg_out.fr_load_cell = ADCInterfaceInstance::instance().get_filtered_FR_load_cell();
     msg_out.fl_load_cell = ADCInterfaceInstance::instance().get_filtered_FL_load_cell();
     msg_out.fr_shock_pot = ADCInterfaceInstance::instance().get_filtered_FR_sus_pot();
@@ -224,7 +189,6 @@ HT_TASK::TaskResponse enqueue_steering_data(const unsigned long& sysMicros, cons
 {
     STEERING_DATA_t msg_out;
 
-    // msg_out.steering_analog_raw = VCFData_sInstance::instance().interface_data.steering_data.analog_steering_degrees;
     msg_out.steering_analog_raw = ADCInterfaceInstance::instance().steering_degrees_cw().conversion;
     msg_out.steering_digital_raw = 0; //NOLINT VCFData_sInstance::instance().interface_data.steering_data.digital_steering_analog;
 
@@ -267,19 +231,6 @@ HT_TASK::TaskResponse run_handle_send_vcf_ethernet_data(const unsigned long& sys
 HT_TASK::TaskResponse enqueue_pedals_data(const unsigned long &sys_micros, const HT_TASK::TaskInfo& task_info)
 {
     PEDALS_SYSTEM_DATA_t pedals_data = {};
-    // PEDALS_SYSTEM_DATA_t pedals_data = PedalsSystemInstance::instance().get_pedals_system_data();
-    // pedals_data.accel_implausible = VCFData_sInstance::instance().system_data.pedals_system_data.accel_is_implausible;
-    // pedals_data.brake_implausible = VCFData_sInstance::instance().system_data.pedals_system_data.brake_is_implausible;
-    // pedals_data.brake_accel_implausibility = VCFData_sInstance::instance().system_data.pedals_system_data.brake_and_accel_pressed_implausibility_high;
-
-    // pedals_data.accel_pedal_active = VCFData_sInstance::instance().system_data.pedals_system_data.accel_is_pressed;
-    // pedals_data.brake_pedal_active = VCFData_sInstance::instance().system_data.pedals_system_data.brake_is_pressed;
-    // pedals_data.mechanical_brake_active = VCFData_sInstance::instance().system_data.pedals_system_data.mech_brake_is_active;
-    // pedals_data.implaus_exceeded_max_duration = VCFData_sInstance::instance().system_data.pedals_system_data.implausibility_has_exceeded_max_duration;
-
-    
-    // pedals_data.accel_pedal_ro = HYTECH_accel_pedal_ro_toS(VCFData_sInstance::instance().system_data.pedals_system_data.accel_percent);
-    // pedals_data.brake_pedal_ro = HYTECH_brake_pedal_ro_toS(VCFData_sInstance::instance().system_data.pedals_system_data.brake_percent);
 
     pedals_data.accel_implausible = PedalsSystemInstance::instance().get_pedals_system_data().accel_is_implausible;
     pedals_data.brake_implausible = PedalsSystemInstance::instance().get_pedals_system_data().brake_is_implausible;
@@ -301,33 +252,19 @@ HT_TASK::TaskResponse enqueue_pedals_data(const unsigned long &sys_micros, const
 
 HT_TASK::TaskResponse run_dash_GPIOs_task(const unsigned long& sys_micros, const HT_TASK::TaskInfo& task_info)
 {
-    // bool was_dim_btn_pressed = VCFData_sInstance::instance().interface_data.dash_input_state.dim_btn_is_pressed; //NOLINT (linter thinks variable uninitialized)
     bool was_dim_btn_pressed = DashboardInterfaceInstance::instance().get_dashboard_outputs().dim_btn_is_pressed; //NOLINT (linter thinks variable uninitialized)
     DashboardInterfaceInstance::instance().get_dashboard_outputs() = DashboardInterfaceInstance::instance().get_dashboard_outputs();
-
-    // if (!VCFData_sInstance::instance().interface_data.dash_input_state.preset_btn_is_pressed)
-    // {
-    //     VCRInterfaceInstance::instance().disable_calibration_state();
-    // }
 
     if (!DashboardInterfaceInstance::instance().get_dashboard_outputs().preset_btn_is_pressed)
     {
         VCRInterfaceInstance::instance().disable_calibration_state();
     }
 
-    // if (was_dim_btn_pressed && !VCFData_sInstance::instance().interface_data.dash_input_state.dim_btn_is_pressed)
-    // {
-    //     NeopixelControllerInstance::instance().dim_neopixels();
-    // }
-
     if (was_dim_btn_pressed && !DashboardInterfaceInstance::instance().get_dashboard_outputs().dim_btn_is_pressed)
     {
         NeopixelControllerInstance::instance().dim_neopixels();
     }
 
-    // if (VCFData_sInstance::instance().interface_data.dash_input_state.start_btn_is_pressed) { // Test code to ensure buzzer timing works (on benchtop)
-    //     BuzzerController::getInstance().activate(sys_micros / 1000);
-    // }
     return HT_TASK::TaskResponse::YIELD;
 }
 
@@ -360,20 +297,6 @@ HT_TASK::TaskResponse read_ioexpander(const unsigned long& sys_micros, const HT_
     // Serial.println("");
 
     // Yes, I know there are magic numbers here. I just trial-and-errored it from the dash connector pinning.
-    // if (IOExpanderUtils::getBit(in, 1, 2)) {
-    //     VCFData_sInstance::instance().interface_data.dash_input_state.dial_state = ControllerMode_e::MODE_0;
-    // } else if (IOExpanderUtils::getBit(in, 1, 1)) {
-    //     VCFData_sInstance::instance().interface_data.dash_input_state.dial_state = ControllerMode_e::MODE_1;
-    // } else if (IOExpanderUtils::getBit(in, 1, 0)) {
-    //     VCFData_sInstance::instance().interface_data.dash_input_state.dial_state = ControllerMode_e::MODE_2;
-    // } else if (IOExpanderUtils::getBit(in, 1, 5)) { // NOLINT (pin is magic number)
-    //     VCFData_sInstance::instance().interface_data.dash_input_state.dial_state = ControllerMode_e::MODE_3;
-    // } else if (IOExpanderUtils::getBit(in, 1, 4)) { // NOLINT (pin is magic number)
-    //     VCFData_sInstance::instance().interface_data.dash_input_state.dial_state = ControllerMode_e::MODE_4;
-    // } else if (IOExpanderUtils::getBit(in, 1, 3)) { // NOLINT (pin is magic number)
-    //     VCFData_sInstance::instance().interface_data.dash_input_state.dial_state = ControllerMode_e::MODE_5;
-    // }
-
     if (IOExpanderUtils::getBit(in, 1, 2)) {
         DashboardInterfaceInstance::instance().set_dial_state(ControllerMode_e::MODE_0);
     } else if (IOExpanderUtils::getBit(in, 1, 1)) {
@@ -388,7 +311,6 @@ HT_TASK::TaskResponse read_ioexpander(const unsigned long& sys_micros, const HT_
         DashboardInterfaceInstance::instance().set_dial_state(ControllerMode_e::MODE_5);
     }
 
-    // ControllerMode_e state = VCFData_sInstance::instance().interface_data.dash_input_state.dial_state; // NOLINT (linter thinks state uninitialized)
     ControllerMode_e state = DashboardInterfaceInstance::instance().get_dashboard_outputs().dial_state; // NOLINT (linter thinks state uninitialized)
     switch (state) {
         case ControllerMode_e::MODE_0:
@@ -553,8 +475,8 @@ void setup_all_interfaces() {
     // Create ADC interface singleton
     ADCInterfaceInstance::create(
     ADCPinout_s {
-        VCFInterfaceConstants::ADC1_CS,
-        VCFInterfaceConstants::ADC2_CS
+        VCFInterfaceConstants::ADC0_CS,
+        VCFInterfaceConstants::ADC1_CS
     },
     ADCChannels_s {
         VCFInterfaceConstants::STEERING_1_CHANNEL,
@@ -594,7 +516,6 @@ void setup_all_interfaces() {
     });
 
     EthernetIPDefsInstance::create();
-    // VCFData_sInstance::create();
 
     // Create pedals singleton
     PedalsParams accel_params = {

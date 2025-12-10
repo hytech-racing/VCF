@@ -7,7 +7,6 @@
 #include "SharedFirmwareTypes.h"
 
 /* Interface and system data structs */
-VCFData_s vcf_data = {};
 
 qindesign::network::EthernetUDP VCF_socket;
 qindesign::network::EthernetUDP VCR_socket;
