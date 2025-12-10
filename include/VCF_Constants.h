@@ -5,21 +5,21 @@
 
 // hardware connections constants
 namespace VCFInterfaceConstants { 
-    constexpr int ADC0_CS = 17; // MCP3208. ADC0 in VCF schematic. Used for steering, sus pots, and load cells.
-    constexpr int ADC1_CS = 16; // MCP3208. ADC1 in VCF schematic. Used for pedal position sensors.
+    constexpr int ADC0_CS = 10; // MCP3208. ADC1 in VCF schematic. Used for steering, sus pots, and load cells.
+    constexpr int ADC1_CS = 38; // MCP3208. ADC2 in VCF schematic. Used for pedal position sensors.
 
     //Teensy 4.1 GPIO pins  
-    constexpr int BTN_DIM_READ = 29;
-    constexpr int BTN_PRESET_READ = 31;
-    constexpr int BTN_MC_CYCLE_READ = 26; // MUST NOT BE MAPPED ANYMORE. USED TO BE 27.
-    constexpr int BTN_MODE_READ = 27; // USED TO BE 26.
-    constexpr int BTN_START_READ = 30;
-    constexpr int BTN_DATA_READ = 28;
-    constexpr int BUZZER_CONTROL_PIN = 1;
-    constexpr int RIGHT_SHIFTER = 9;
-    constexpr int LEFT_SHIFTER = 10;
+    // constexpr int BTN_DIM_READ = 28;
+    // constexpr int BTN_PRESET_READ = 31;
+    constexpr int BTN_MC_CYCLE_READ = 31; // MUST NOT BE MAPPED ANYMORE. USED TO BE 27.
+    // constexpr int BTN_MODE_READ = 27; // USED TO BE 26.
+    constexpr int BTN_START_READ = 29;
+    constexpr int BTN_DATA_READ = 30;
+    constexpr int BUZZER_CONTROL_PIN = 32;
+    constexpr int RIGHT_SHIFTER = 26;
+    constexpr int LEFT_SHIFTER = 27;
 
-    constexpr int NEOPIXEL_CONTROL_PIN = 0;
+    constexpr int NEOPIXEL_CONTROL_PIN = 33;
     constexpr int NEOPIXEL_COUNT = 12; // 12 neopixeles on dashboard
     //ADC Pins
     /* Channels on ADC_1 */
@@ -43,8 +43,8 @@ namespace VCFInterfaceConstants {
     // constexpr int UNUSED_CHANNEL       = 7;
 
     // watchdog pins
-    constexpr int WATCHDOG_PIN = 33;
-    constexpr int SOFTWARE_OK_PIN = 34; // Watchdog's !RESET pin
+    constexpr int WATCHDOG_PIN = 36;
+    constexpr int SOFTWARE_OK_PIN = 37; // Watchdog's !MR pin
 
         //ADC configs
     /* Scaling and offset */

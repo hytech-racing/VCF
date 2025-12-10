@@ -575,10 +575,10 @@ void setup_all_interfaces() {
     
     // Create dashboard singleton
     DashboardGPIOs_s dashboard_gpios = {
-        .DIM_BUTTON = VCFInterfaceConstants::BTN_DIM_READ,
-        .PRESET_BUTTON = VCFInterfaceConstants::BTN_PRESET_READ,
+        // .DIM_BUTTON = VCFInterfaceConstants::BTN_DIM_READ,
+        // .PRESET_BUTTON = VCFInterfaceConstants::BTN_PRESET_READ,
         .MC_CYCLE_BUTTON = VCFInterfaceConstants::BTN_MC_CYCLE_READ,
-        .MODE_BUTTON = VCFInterfaceConstants::BTN_MODE_READ,
+        // .MODE_BUTTON = VCFInterfaceConstants::BTN_MODE_READ,
         .START_BUTTON = VCFInterfaceConstants::BTN_START_READ,
         .DATA_BUTTON = VCFInterfaceConstants::BTN_DATA_READ,
         .LEFT_SHIFTER_BUTTON = VCFInterfaceConstants::LEFT_SHIFTER,
