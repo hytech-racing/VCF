@@ -22,7 +22,7 @@ hytech_msgs_VCFData_s VCFEthernetInterface::make_vcf_data_msg(VCFData_s &shared_
 
     // Sus pots
     out.front_suspot_data.FL_sus_pot_analog = shared_state.interface_data.front_suspot_data.FL_sus_pot_analog;
-    out.front_suspot_data.FL_sus_pot_analog = shared_state.interface_data.front_suspot_data.FL_sus_pot_analog;
+    out.front_suspot_data.FR_sus_pot_analog = shared_state.interface_data.front_suspot_data.FR_sus_pot_analog; 
 
     // Steering
     out.steering_data.analog_steering_degrees = shared_state.interface_data.steering_data.analog_steering_degrees;
