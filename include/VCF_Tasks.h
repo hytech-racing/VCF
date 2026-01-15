@@ -41,6 +41,7 @@
 #include "NeopixelController.h"
 #include "WatchdogSystem.h"
 #include "ADCInterface.h"
+#include "CANInterface.h"
 
 /**
  * The read_adc1 task will command adc1 to sample all eight channels, convert
