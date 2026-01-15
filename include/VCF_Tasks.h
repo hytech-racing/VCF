@@ -64,6 +64,8 @@ HT_TASK::TaskResponse update_pedals_calibration_task(const unsigned long& sysMic
  */
 HT_TASK::TaskResponse run_read_adc2_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
 
+HT_TASK::TaskResponse run_read_digital_steering_sensor(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
+
 /**
  * The buzzer_control task will control the buzzer control pin. This function
  * relies on the buzzer_control pin definition in VCF_Constants.h;

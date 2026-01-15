@@ -19,6 +19,7 @@
 #include "ACUInterface.h"
 #include <EEPROM.h>
 #include "FlexCAN_T4.h"
+#include "ORBIS_BR10.h"
 
 #include "WatchdogSystem.h"
 #include "Arduino.h"
@@ -66,6 +67,18 @@ HT_TASK::TaskResponse run_read_adc2_task(const unsigned long& sysMicros, const H
     VCFData_sInstance::instance().interface_data.pedal_sensor_data.brake_1 = ADCInterfaceInstance::instance().brake_1().conversion;
     VCFData_sInstance::instance().interface_data.pedal_sensor_data.brake_2 = ADCInterfaceInstance::instance().brake_2().conversion;
     return HT_TASK::TaskResponse::YIELD;
+}
+
+HT_TASK::TaskResponse run_read_digital_steering_sensor(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
+{
+    SteeringEncoderConversion_s data =  OrbisBRInstance::instance().position();
+
+    Serial.print("RAW: ");
+    Serial.println(data.raw); 
+    Serial.println("ANGLE: ");
+    Serial.println(data.angle); 
+    Serial.println("STATUS: "); 
+    Serial.println(static_cast<int>(data.status));
 }
 
 HT_TASK::TaskResponse init_kick_watchdog(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
@@ -572,6 +585,10 @@ void setup_all_interfaces() {
     };
 
     PedalsSystemInstance::create(accel_params, brake_params); //pass in the two different params
+    
+    // Create Digital Steering Sensor singleton
+    OrbisBRInstance::create(&Serial3, 9); // pass in two different params
+
     
     // Create dashboard singleton
     DashboardGPIOs_s dashboard_gpios = {

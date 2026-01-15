@@ -6,6 +6,7 @@
 
 /* From shared-firmware-interfaces */
 #include "MCP_ADC.h"
+#include "ORBIS_BR10.h"
 
 /* From shared-firmware-interfaces */
 #include "EthernetAddressDefs.h"
@@ -33,6 +34,9 @@ using VCRData_sInstance = etl::singleton<VCRData_s>;
 
 /* IOExpander setup */
 using IOExpanderInstance = etl::singleton<MCP23017>;
+
+/* Digital Steering Setup */
+using OrbisBRInstance = etl::singleton<OrbisBR>;
 
 /* Ethernet sockets */
 extern qindesign::network::EthernetUDP VCF_socket;
