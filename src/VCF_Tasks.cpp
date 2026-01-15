@@ -71,14 +71,16 @@ HT_TASK::TaskResponse run_read_adc2_task(const unsigned long& sysMicros, const H
 
 HT_TASK::TaskResponse run_read_digital_steering_sensor(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
 {
-    SteeringEncoderConversion_s data =  OrbisBRInstance::instance().position();
+    OrbisBRInstance::instance().sample();
 
-    Serial.print("RAW: ");
-    Serial.println(data.raw); 
-    Serial.println("ANGLE: ");
-    Serial.println(data.angle); 
-    Serial.println("STATUS: "); 
-    Serial.println(static_cast<int>(data.status));
+    SteeringEncoderConversion_s data = OrbisBRInstance::instance().position();
+
+    Serial.println("RAW: " + data.raw);
+    // Serial.println("ANGLE: " + data.angle);
+    Serial.printf("ANGLE: %.2f\n", data.angle);
+    // Serial.println("STATUS: "); 
+    // Serial.println(static_cast<int>(data.status));
+    return HT_TASK::TaskResponse::YIELD;
 }
 
 HT_TASK::TaskResponse init_kick_watchdog(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
@@ -587,7 +589,7 @@ void setup_all_interfaces() {
     PedalsSystemInstance::create(accel_params, brake_params); //pass in the two different params
     
     // Create Digital Steering Sensor singleton
-    OrbisBRInstance::create(&Serial3, 9); // pass in two different params
+    OrbisBRInstance::create(&Serial3, 115200); // pass in two different params
 
     
     // Create dashboard singleton

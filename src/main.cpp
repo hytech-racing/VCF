@@ -48,6 +48,7 @@ HT_TASK::Task pedals_sample(HT_TASK::DUMMY_FUNCTION, &run_read_adc2_task, VCFTas
 HT_TASK::Task buzzer_control_task(&init_buzzer_control_task, &run_buzzer_control_task, VCFTaskConstants::BUZZER_PRIORITY, VCFTaskConstants::BUZZER_WRITE_PERIOD);
 HT_TASK::Task read_dash_GPIOs_task(HT_TASK::DUMMY_FUNCTION, &run_dash_GPIOs_task, VCFTaskConstants::DASH_SAMPLE_PRIORITY, VCFTaskConstants::DASH_SAMPLE_PERIOD);
 HT_TASK::Task read_ioexpander_task(&create_ioexpander, &read_ioexpander, VCFTaskConstants::DASH_SAMPLE_PRIORITY, VCFTaskConstants::DASH_SAMPLE_PERIOD);
+HT_TASK::Task read_digital_steering_sensor(HT_TASK::DUMMY_FUNCTION, &run_read_digital_steering_sensor, VCFTaskConstants::DEBUG_PRIORITY, VCFTaskConstants::DEBUG_PERIOD);
 HT_TASK::Task neopixels_task(&init_neopixels_task, &run_update_neopixels_task, VCFTaskConstants::NEOPIXEL_UPDATE_PRIORITY, VCFTaskConstants::NEOPIXEL_UPDATE_PERIOD);
 HT_TASK::Task ethernet_send_task(init_handle_send_vcf_ethernet_data, run_handle_send_vcf_ethernet_data, VCFTaskConstants::ETHERNET_SEND_PRIORITY, VCFTaskConstants::ETHERNET_SEND_PERIOD);
 HT_TASK::Task steering_message_enqueue(HT_TASK::DUMMY_FUNCTION, &enqueue_steering_data, VCFTaskConstants::STEERING_SEND_PRIORITY, VCFTaskConstants::STEERING_SEND_PERIOD);
@@ -81,6 +82,7 @@ void setup() {
     HT_SCHED::Scheduler::getInstance().schedule(debug_state_print_task);
     HT_SCHED::Scheduler::getInstance().schedule(pedals_calibration_task);
     HT_SCHED::Scheduler::getInstance().schedule(ethernet_send_task);
+    HT_SCHED::Scheduler::getInstance().schedule(read_digital_steering_sensor);
 }
 
 void loop() {

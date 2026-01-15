@@ -38,6 +38,7 @@ public:
     void sample();
     SteeringEncoderConversion_s convert();
     SteeringEncoderConversion_s position();
+    void setOffset(float newOffset);
 
 private:
 // Data
@@ -45,6 +46,7 @@ private:
     int _serialSpeed;
     int _position_data;
     SteeringEncoderConversion_s _lastConversion;
+    float _angleOffset = 0.0f;
     
     bool _isCalibrated = false;
     bool _isOffsetSet = false;

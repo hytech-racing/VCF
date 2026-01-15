@@ -154,8 +154,10 @@ void OrbisBR::sample()
     
     // Convert position data to angle
     float angle = ((float)_position_data - 8192) / 8192.0f * 180.0f;
+    angle += _angleOffset;  // Apply software offset
     _lastConversion.raw = _position_data;
     _lastConversion.angle = angle;
+    
 
     // Decode errors, detailed status bytes
     // bool anyError = 
@@ -183,4 +185,9 @@ SteeringEncoderConversion_s OrbisBR::position()
 {
     sample();
     return _lastConversion;
+}
+
+void OrbisBR::setOffset(float newOffset)
+{
+    _angleOffset = newOffset;
 }
