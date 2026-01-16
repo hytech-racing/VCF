@@ -1,5 +1,5 @@
-#ifndef ORBIS_BR
-#define ORBIS_BR
+#ifndef ORBIS_BR10_H
+#define ORBIS_BR10_H
 
 #include <Arduino.h>
 #include "SteeringEncoderInterface.h"
@@ -27,34 +27,36 @@ const uint16_t ORBIS_BR_BITMASK_DETAILED_TEMP_RANGE       = (0b1 << 5);     // 0
 const uint16_t ORBIS_BR_BITMASK_DETAILED_DIST_FAR         = (0b1 << 6);     // 0b01000000, errors if high
 const uint16_t ORBIS_BR_BITMASK_DETAILED_DIST_NEAR        = (0b1 << 7);     // 0b10000000, errors if high
 
-class OrbisBR : public SteeringEncoderInterface
+class OrbisBR10 : public SteeringEncoderInterface
 {
 public:
 // Constructors
-    OrbisBR(HardwareSerial* serial, int serialSpeed);
-    // OrbisBR(HardwareSerial* Serial3, int ORBIS_BR_DEFAULT_BAUD_RATE);
+    OrbisBR10(HardwareSerial* serial, int serialSpeed);
 // Functions
+    void sample();    
     void init();
-    void sample();
-    SteeringEncoderConversion_s convert();
     SteeringEncoderConversion_s position();
     void setOffset(float newOffset);
 
 private:
 // Data
-    HardwareSerial* _serial;
-    int _serialSpeed;
-    int _position_data;
-    SteeringEncoderConversion_s _lastConversion;
-    float _angleOffset = 0.0f;
-    
-    bool _isCalibrated = false;
-    bool _isOffsetSet = false;
+
+    SteeringEncoderConversion_s convert() {}
 
     bool performSelfCalibration();
     void setEncoderOffset(uint16_t offsetCounts);
     void saveConfiguration();
     void decodeErrors(uint8_t general, uint8_t detailed);
+
+    HardwareSerial* _serial;
+    int _serialSpeed;
+
+    uint16_t _position_data;
+    SteeringEncoderConversion_s _lastConversion;
+    float _angleOffset = 0.0f;
+
+    bool _isCalibrated = false;
+    bool _isOffsetSet = false;
 };
 
-#endif /* ORBIS_BR */
+#endif /* ORBIS_BR10_H */

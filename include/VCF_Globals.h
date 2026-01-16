@@ -36,7 +36,7 @@ using VCRData_sInstance = etl::singleton<VCRData_s>;
 using IOExpanderInstance = etl::singleton<MCP23017>;
 
 /* Digital Steering Setup */
-using OrbisBRInstance = etl::singleton<OrbisBR>;
+using OrbisBRInstance = etl::singleton<OrbisBR10>;
 
 /* Ethernet sockets */
 extern qindesign::network::EthernetUDP VCF_socket;

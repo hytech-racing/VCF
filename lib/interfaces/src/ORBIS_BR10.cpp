@@ -1,17 +1,17 @@
 #include "ORBIS_BR10.h"
 
-OrbisBR::OrbisBR(HardwareSerial* serial, int serialSpeed)
+OrbisBR10::OrbisBR10(HardwareSerial* serial, int serialSpeed)
 : _serial(serial)
 , _serialSpeed(serialSpeed)
-, _position_data(0)
 {
    _lastConversion.status = SteeringEncoderStatus_e::STEERING_ENCODER_ERROR;
 }
 
-void OrbisBR::init() // all initialization (calibration and configuration)
+void OrbisBR10::init() // all initialization (calibration and configuration)
 {
     _serial->begin(_serialSpeed);
 
+    bool _isCalibrated = false;
     while (!_isCalibrated)
     {
         _isCalibrated = performSelfCalibration();
@@ -20,13 +20,12 @@ void OrbisBR::init() // all initialization (calibration and configuration)
             delay(500);
         }
     }
-    
-    if (_isCalibrated && !_isOffsetSet)
-    {
-        setEncoderOffset(0x0000);
-        _isOffsetSet = true;
-        saveConfiguration();
-    }
+       
+    setEncoderOffset(0x0000);
+    delay(10);
+
+    saveConfiguration();
+    delay(50);
 
     //Continous-Response Setting ('T')
     // Using auto-start, and short position request, period = 1000 µs, should have delay(1)
@@ -43,9 +42,8 @@ void OrbisBR::init() // all initialization (calibration and configuration)
     //encoder should auto-start on future power-ups
 }
 
-
 // Self-Calibration Function 
-bool OrbisBR::performSelfCalibration()
+bool OrbisBR10::performSelfCalibration()
 {
     // Unlock encoder sequence
     _serial->write(0xCD); 
@@ -66,8 +64,8 @@ bool OrbisBR::performSelfCalibration()
 
         if (timeoutError || parameterError)
         {
-            // _lastConversion.errors.calibrationTimeout   = timeoutError;
-            // _lastConversion.errors.calibrationParameter = parameterError;
+            _lastConversion.errors.calibrationTimeout   = timeoutError;
+            _lastConversion.errors.calibrationParameter = parameterError;
             return false;
         }
         else
@@ -77,13 +75,13 @@ bool OrbisBR::performSelfCalibration()
     } 
     else
     {
-        // _lastConversion.errors.noData = true;  // no response
+        _lastConversion.errors.noData = true;  // no response
         return false;
     }
 }
 
 // Offset Function
-void OrbisBR::setEncoderOffset(uint16_t offsetCounts)
+void OrbisBR10::setEncoderOffset(uint16_t offsetCounts)
 {
     _serial->write(0xCD);  // unlock sequence
     _serial->write(0xEF);
@@ -98,35 +96,39 @@ void OrbisBR::setEncoderOffset(uint16_t offsetCounts)
 }
 
 // Save Configuration in Non-Volatile Memory Function
-void OrbisBR::saveConfiguration()
+void OrbisBR10::saveConfiguration()
 {
     _serial->write(0x63);  // 'c' save to non-volatile
 }
 
+
+
+
+
 // check/flag for individual errors
-void OrbisBR::decodeErrors(uint8_t general, uint8_t detailed)
+void OrbisBR10::decodeErrors(uint8_t general, uint8_t detailed)
 {
     // General bits error low (0)
-    // _lastConversion.errors.generalError     = !(general & ORBIS_BR_BITMASK_GENERAL_ERROR);
-    // _lastConversion.errors.generalWarning   = !(general & ORBIS_BR_BITMASK_GENERAL_WARNING);
+    _lastConversion.errors.generalError     = !(general & ORBIS_BR_BITMASK_GENERAL_ERROR);
+    _lastConversion.errors.generalWarning   = !(general & ORBIS_BR_BITMASK_GENERAL_WARNING);
 
     // Detailed bits are error high (1)
-    // _lastConversion.errors.counterError     = detailed & ORBIS_BR_BITMASK_DETAILED_COUNTER_ERROR;
-    // _lastConversion.errors.speedHigh        = detailed & ORBIS_BR_BITMASK_DETAILED_SPEED_HIGH;
-    // _lastConversion.errors.tempRange        = detailed & ORBIS_BR_BITMASK_DETAILED_TEMP_RANGE;
-    // _lastConversion.errors.distFar          = detailed & ORBIS_BR_BITMASK_DETAILED_DIST_FAR;
-    // _lastConversion.errors.distNear         = detailed & ORBIS_BR_BITMASK_DETAILED_DIST_NEAR;
+    _lastConversion.errors.counterError     = detailed & ORBIS_BR_BITMASK_DETAILED_COUNTER_ERROR;
+    _lastConversion.errors.speedHigh        = detailed & ORBIS_BR_BITMASK_DETAILED_SPEED_HIGH;
+    _lastConversion.errors.tempRange        = detailed & ORBIS_BR_BITMASK_DETAILED_TEMP_RANGE;
+    _lastConversion.errors.distFar          = detailed & ORBIS_BR_BITMASK_DETAILED_DIST_FAR;
+    _lastConversion.errors.distNear         = detailed & ORBIS_BR_BITMASK_DETAILED_DIST_NEAR;
 }
 
 // sample data function
-void OrbisBR::sample()
+void OrbisBR10::sample()
 {
     _lastConversion = SteeringEncoderConversion_s();
     _serial->write(0x64); delay(1);   // position request + detailed status: 1 byte echo, 2 byte position, 1 byte detailed status
     
     if (_serial->available() < 4)     // check if received all 4 bytes
     { 
-        // _lastConversion.errors.noData = true;
+        _lastConversion.errors.noData = true;
         _lastConversion.status = SteeringEncoderStatus_e::STEERING_ENCODER_ERROR;
         return;
     }   
@@ -139,7 +141,7 @@ void OrbisBR::sample()
 
     if (echo != 0x64)
     {
-        // _lastConversion.errors.noData = true;
+        _lastConversion.errors.noData = true;
         _lastConversion.status = SteeringEncoderStatus_e::STEERING_ENCODER_ERROR;
         return;
     }
@@ -160,34 +162,29 @@ void OrbisBR::sample()
     
 
     // Decode errors, detailed status bytes
-    // bool anyError = 
-    // (
-    //     // _lastConversion.errors.generalError   ||
-    //     // _lastConversion.errors.counterError   ||
-    //     // _lastConversion.errors.speedHigh      ||
-    //     // _lastConversion.errors.tempRange      ||
-    //     // _lastConversion.errors.distFar        ||
-    //     // _lastConversion.errors.distNear       ||
-    //     // _lastConversion.errors.noData
-    // );
+    bool anyError = 
+     (
+        _lastConversion.errors.generalError   ||
+        _lastConversion.errors.counterError   ||
+        _lastConversion.errors.speedHigh      ||
+        _lastConversion.errors.tempRange      ||
+        _lastConversion.errors.distFar        ||
+        _lastConversion.errors.distNear       ||
+        _lastConversion.errors.noData
+     );
     
-    // _lastConversion.status = anyError
-    //     ? SteeringEncoderStatus_e::STEERING_ENCODER_ERROR
-    //     : SteeringEncoderStatus_e::STEERING_ENCODER_NOMINAL;
+    _lastConversion.status = anyError
+         ? SteeringEncoderStatus_e::STEERING_ENCODER_ERROR
+         : SteeringEncoderStatus_e::STEERING_ENCODER_NOMINAL;
 }
 
-SteeringEncoderConversion_s OrbisBR::convert()
-{
-    return _lastConversion;
-}
-
-SteeringEncoderConversion_s OrbisBR::position()
+SteeringEncoderConversion_s OrbisBR10::position()
 {
     sample();
     return _lastConversion;
 }
 
-void OrbisBR::setOffset(float newOffset)
+void OrbisBR10::setOffset(float newOffset)
 {
     _angleOffset = newOffset;
 }
