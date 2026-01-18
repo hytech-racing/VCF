@@ -14,53 +14,57 @@ void setup()
 {
     Serial.begin(BAUD_RATE);
 
-    OrbisBRInstance::create(&Serial3, BAUD_RATE);
+    // OrbisBRInstance::create(&Serial3, BAUD_RATE);
 
-    OrbisBRInstance::instance().init();
-
+    // OrbisBRInstance::instance().init();
+    Serial3.begin(BAUD_RATE, SERIAL_8N1);
     delay(500);
     
-    for (byte command : UNLOCK_SEQUENCE)
-    {
-        Serial3.write(command);
-        delay(1);
-    } // may need delay(1)
+    // for (byte command : UNLOCK_SEQUENCE)
+    // {
+    //     Serial3.write(command);
+    //     delay(1);
+    // } // may need delay(1)
     
-    for (byte command : CONTINUOUS_RESPONSE)
-    {
-        Serial3.write(command);
-        delay(1);
-    } // may need delay(1)
+    // Serial.println("Starting Self-Calibration");
+    // Serial3.write(SELF_CALIB_START);
+    // delay(10000);
 
-    delay(10);
+    // for (byte command : CONTINUOUS_RESPONSE)
+    // {
+    //     Serial3.write(command);
+    //     delay(1);
+    // } // may need delay(1)
 
-    for (byte command : UNLOCK_SEQUENCE)
-    {
-        Serial3.write(command);
-        delay(1);
-    } // may need delay(1)
+    // delay(10);
 
-    Serial3.write('S');
+    // for (byte command : UNLOCK_SEQUENCE)
+    // {
+    //     Serial3.write(command);
+    //     delay(1);
+    // } // may need delay(1)
 
-    delay(10);
+    // Serial3.write('S');
 
-    for (byte command : UNLOCK_SEQUENCE)
-    {
-        Serial3.write(command);
-        delay(1);
-    } // may need delay(1)
+    // delay(10);
 
-    Serial3.write('P');
+    // for (byte command : UNLOCK_SEQUENCE)
+    // {
+    //     Serial3.write(command);
+    //     delay(1);
+    // } // may need delay(1)
 
-    delay(10);
+    // Serial3.write('P');
 
-    for (byte command : UNLOCK_SEQUENCE)
-    {
-        Serial3.write(command);
-        delay(1);
-    } // may need delay(1)
+    // delay(10);
 
-    Serial3.write(SAVE_CONFIG);
+    // for (byte command : UNLOCK_SEQUENCE)
+    // {
+    //     Serial3.write(command);
+    //     delay(1);
+    // } // may need delay(1)
+
+    // Serial3.write(SAVE_CONFIG);
 
     // for (byte command : UNLOCK_SEQUENCE)
     // {
@@ -91,7 +95,53 @@ void loop()
 //             Serial.println(Serial3.read(), HEX);
 //         }
 //    }
-    if (Serial3.available()) {
-        Serial.println(Serial3.read(), HEX);
+    
+    
+    // Serial3.write(0xCD); delay(1);  // unlock sequence, delay is from datasheet. "Delay between each byte sent during programming must be a least 1 ms."
+    // Serial3.write(0xEF); delay(1);  
+    // Serial3.write(0x89); delay(1);  
+    // Serial3.write(0xAB); delay(1); 
+    // Serial3.write('P');
+    // Serial.println("Sending P on the liner");
+
+    // for (byte command : UNLOCK_SEQUENCE)
+    // {
+    //     Serial3.write(command); delay(1);
+    // } // may need delay(1)
+    
+    // Serial3.write(0x64);
+    // Serial.println("Sending Position on the liner");
+
+    // if (Serial3.available()) {
+    //     Serial.println(Serial3.read(), HEX);
+    // }
+
+    
+    // for (byte command : UNLOCK_SEQUENCE)
+    // {
+    //     Serial3.write(command); delay(1);
+    //     if (Serial3.available())
+    //     {
+    //         Serial.println(Serial3.read(),HEX);
+    //     }
+    // } // may need delay(1)
+    
+
+    Serial3.write(0x64); delay(1);
+    Serial.println("Sending Position on the liner");
+
+    bool read = false;
+
+    while (!read)
+    {
+        if (Serial3.available() > 3) {
+            Serial.println(Serial3.read(), HEX);
+            Serial.println(Serial3.read(), HEX);
+            Serial.println(Serial3.read(), HEX);
+            Serial.println(Serial3.read(), HEX);
+            read = true;
+        }
     }
+
+    delay(1000);
 }
