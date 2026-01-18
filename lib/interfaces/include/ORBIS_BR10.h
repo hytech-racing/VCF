@@ -3,6 +3,9 @@
 
 #include <Arduino.h>
 #include "SteeringEncoderInterface.h"
+#include <ORBIS_BR10.h>
+#include <etl/singleton.h>
+
 
 // Basic Commands
 //  Position offset setting: 'Z' (0x5A)
@@ -26,6 +29,24 @@ const uint16_t ORBIS_BR_BITMASK_DETAILED_SPEED_HIGH       = (0b1 << 4);     // 0
 const uint16_t ORBIS_BR_BITMASK_DETAILED_TEMP_RANGE       = (0b1 << 5);     // 0b00100000, errors if high
 const uint16_t ORBIS_BR_BITMASK_DETAILED_DIST_FAR         = (0b1 << 6);     // 0b01000000, errors if high
 const uint16_t ORBIS_BR_BITMASK_DETAILED_DIST_NEAR        = (0b1 << 7);     // 0b10000000, errors if high
+
+const byte FACTORY_RESET                = 0x72;
+
+const byte ENCODER_OFFSET               = 0x00;
+// const byte CONTINUOUS_RESPONSE[5]       = {0x54, 0x01, 0x64, 0x00, 0xFA};  // autostart
+const byte CONTINUOUS_RESPONSE[5]       = {0x54, 0x00, 0x64, 0x00, 0xFA};  // no autostart
+const byte CONTINUOUS_RESPONSE_START    = 0x53;
+const byte UNLOCK_SEQUENCE[4]           = {0xCD, 0xEF, 0x89, 0xAB}; 
+const byte SELF_CALIB_START             = 0x41;
+const byte SELF_CALIB_STATUS            = 0x69;
+const byte START_OFFSET                 = 0x5A;
+const byte SAVE_CONFIG                  = 0x63;
+const byte DETAILED_POS_REQUEST         = 0x64;
+const byte DECODE_GEN_ERRORS            = 0x03;
+const int POS_DATA_MASK1                = 8;
+const int POS_DATA_MASK2                = 2;
+const float BIT_ANGLE_CONVERSION        = 8192.0f;
+const float CLIP_PREVENT                = 180.0f;
 
 class OrbisBR10 : public SteeringEncoderInterface
 {
@@ -58,5 +79,7 @@ private:
     bool _isCalibrated = false;
     bool _isOffsetSet = false;
 };
+
+using OrbisBRInstance = etl::singleton<OrbisBR10>;
 
 #endif /* ORBIS_BR10_H */

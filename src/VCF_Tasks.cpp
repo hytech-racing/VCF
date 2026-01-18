@@ -591,7 +591,6 @@ void setup_all_interfaces() {
     // Create Digital Steering Sensor singleton
     OrbisBRInstance::create(&Serial3, 115200); // pass in two different params
 
-    
     // Create dashboard singleton
     DashboardGPIOs_s dashboard_gpios = {
         .DIM_BUTTON = VCFInterfaceConstants::BTN_DIM_READ,

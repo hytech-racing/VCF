@@ -2,6 +2,9 @@
 #define __UPPERSTEERINGSENSOR_H__
 
 #include <Arduino.h>
+// #include <ORBIS_BR10.h>
+// #include <etl/singleton.h>
+
 
 enum class SteeringEncoderStatus_e
 {
@@ -42,6 +45,5 @@ public:
     /// @return Calculated steering angle in degrees, upperSteeringStatus_s
     virtual SteeringEncoderConversion_s convert() = 0;
 };
-
 
 #endif /* __UPPERSTEERINGSENSOR_H__ */
