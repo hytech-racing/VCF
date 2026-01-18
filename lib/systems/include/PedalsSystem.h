@@ -146,7 +146,7 @@ public:
         min_observed_brake_2 = std::min(min_observed_brake_2, curr_values.brake_2);
         max_observed_brake_2 = std::max(max_observed_brake_2, curr_values.brake_2);
     }
-    uint32_t min_observed_accel_1 = 4096;
+    uint32_t min_observed_accel_1 = 4095;
     uint32_t max_observed_accel_1 = 0;
     uint32_t min_observed_accel_2 = 4095;
     uint32_t max_observed_accel_2 = 0;
