@@ -14,10 +14,9 @@ void setup()
 {
     Serial.begin(BAUD_RATE);
 
-    // OrbisBRInstance::create(&Serial3, BAUD_RATE);
+    OrbisBRInstance::create(&Serial3, BAUD_RATE);
 
     // OrbisBRInstance::instance().init();
-    Serial3.begin(BAUD_RATE, SERIAL_8N1);
     delay(500);
     
     // for (byte command : UNLOCK_SEQUENCE)
@@ -79,23 +78,35 @@ void setup()
 
 void loop()
 {
-//    if (millis() - lastPrintTime >= 500)
-//    {
-//         lastPrintTime = millis();
-//         // OrbisBRInstance::instance().sample();
-//         // // SteeringEncoderConversion_s data = OrbisBRInstance::instance().position();
+   if (millis() - lastPrintTime >= 500)
+   {
+        lastPrintTime = millis();
+        OrbisBRInstance::instance().sample();
+        
+        // bool read = false;
+        
+        // while (!read)
+        // {
+        //     if (Serial3.available() > 3) {
+        //         Serial.println(Serial3.read(), HEX);
+        //         Serial.println(Serial3.read(), HEX);
+        //         Serial.println(Serial3.read(), HEX);
+        //         Serial.println(Serial3.read(), HEX);
+        //         read = true;
+        //     }
+        // }
+        // SteeringEncoderConversion_s data = OrbisBRInstance::instance().position();
 
         
-//         // Serial.print("Raw: ");
-//         // Serial.println(OrbisBRInstance::instance().position().raw);
-//         // Serial.print("Angle: ");
-//         // Serial.println(OrbisBRInstance::instance().position().angle);
-//         // Serial.print("\n\n");
-//         if (Serial3.available()) {
-//             Serial.println(Serial3.read(), HEX);
-//         }
-//    }
-    
+        // Serial.print("Raw: ");
+        // Serial.println(OrbisBRInstance::instance().position().raw);
+        // Serial.print("Angle: ");
+        // Serial.println(OrbisBRInstance::instance().position().angle);
+        // Serial.print("\n\n");
+        // if (Serial3.available()) {
+        //     Serial.println(Serial3.read(), HEX);
+        }
+   }
     
     // Serial3.write(0xCD); delay(1);  // unlock sequence, delay is from datasheet. "Delay between each byte sent during programming must be a least 1 ms."
     // Serial3.write(0xEF); delay(1);  
@@ -127,21 +138,21 @@ void loop()
     // } // may need delay(1)
     
 
-    Serial3.write(0x64); delay(1);
-    Serial.println("Sending Position on the liner");
+    // Serial3.write(0x64); delay(1);
+    // Serial.println("Sending Position on the liner");
 
-    bool read = false;
+    // bool read = false;
 
-    while (!read)
-    {
-        if (Serial3.available() > 3) {
-            Serial.println(Serial3.read(), HEX);
-            Serial.println(Serial3.read(), HEX);
-            Serial.println(Serial3.read(), HEX);
-            Serial.println(Serial3.read(), HEX);
-            read = true;
-        }
-    }
+    // while (!read)
+    // {
+    //     if (Serial3.available() > 3) {
+    //         Serial.println(Serial3.read(), HEX);
+    //         Serial.println(Serial3.read(), HEX);
+    //         Serial.println(Serial3.read(), HEX);
+    //         Serial.println(Serial3.read(), HEX);
+    //         read = true;
+    //     }
+    // }
 
-    delay(1000);
-}
+    // delay(1000);
+// }

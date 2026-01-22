@@ -6,11 +6,12 @@ OrbisBR10::OrbisBR10(HardwareSerial* serial, int serialSpeed)
 , _serialSpeed(serialSpeed)
 {
    _lastConversion.status = SteeringEncoderStatus_e::STEERING_ENCODER_ERROR;
+   _serial->begin(_serialSpeed, SERIAL_8N1);
 }
 
 void OrbisBR10::init() // all initialization (calibration and configuration)
 {
-    _serial->begin(_serialSpeed);
+    // _serial->begin(_serialSpeed);
 
     // for (byte command : UNLOCK_SEQUENCE)
     // {
@@ -43,16 +44,16 @@ void OrbisBR10::init() // all initialization (calibration and configuration)
 
     // for (byte command : UNLOCK_SEQUENCE)
     // {
-    //     Serial3.write(command);
-    // } // may need delay(1)
+    //     Serial3.write(command); delay(1);
+    // } // may need delay(1), maybe make this private function
 
     // Serial3.write('r');
 
-    // bool _isCalibrated = false;
-    // while (!_isCalibrated)
-    // {
-    //     _isCalibrated = performSelfCalibration();
-    // }
+    bool _isCalibrated = false;
+    while (!_isCalibrated)
+    {
+        _isCalibrated = performSelfCalibration();
+    }
        
     // setEncoderOffset(ENCODER_OFFSET);
     // delay(10);
@@ -75,8 +76,8 @@ void OrbisBR10::init() // all initialization (calibration and configuration)
     //     _serial->write(command);
     // } // may need delay(1)
 
-    // saveConfiguration();
-    // delay(50);
+    saveConfiguration();
+    delay(10);
 
     //Continous-Response Start ('S')
     //_serial->write(CONTINUOUS_RESPONSE_START); delay(1); 
@@ -92,8 +93,8 @@ bool OrbisBR10::performSelfCalibration()
     // Unlock encoder sequence
     for (byte command : UNLOCK_SEQUENCE)
     {
-        _serial->write(command);
-    } // may need delay(1)
+        _serial->write(command); delay(1);
+    } 
 
 
     uint8_t previousCounter = 0;
@@ -107,11 +108,13 @@ bool OrbisBR10::performSelfCalibration()
         Serial.println(previousCounter);
     }
 
-    for (byte command : UNLOCK_SEQUENCE)
-    {
-        _serial->write(command);
-    } // may need delay(1)
+    // for (byte command : UNLOCK_SEQUENCE)
+    // {
+    //     _serial->write(command);
+    // } // may need delay(1)
 
+    _serial->write(SELF_CALIB_STATUS);      // self-calibration status request
+    
     _serial->write(SELF_CALIB_START);
     unsigned long myTime = millis();
 
@@ -214,13 +217,13 @@ void OrbisBR10::decodeErrors(uint8_t general, uint8_t detailed)
 // sample data function
 void OrbisBR10::sample()
 {
-    for (byte command : UNLOCK_SEQUENCE)
-    {
-        _serial->write(command);
-        delay(1);
-    } // may need delay(1)
+    // for (byte command : UNLOCK_SEQUENCE)
+    // {
+    //     _serial->write(command);
+    //     delay(1);
+    // } // may need delay(1)
 
-    _serial->write(DETAILED_POS_REQUEST); delay(5);   // position request + detailed status: 1 byte echo, 2 byte position, 1 byte detailed status
+    _serial->write(DETAILED_POS_REQUEST); delay(1);   // position request + detailed status: 1 byte echo, 2 byte position, 1 byte detailed status
     
     // if (_serial->available() < 4)     // check if received all 4 bytes
     // { 
@@ -229,7 +232,7 @@ void OrbisBR10::sample()
     //     return;
     // }   
 
-    Serial.println("sent commands.");
+    Serial.println("Sent position request on liner.");
 
     // Read reponse bytes
     uint8_t echo     = _serial->read();
@@ -250,11 +253,11 @@ void OrbisBR10::sample()
     }
     
     // Decode errors, general status bytes
-    uint8_t general = general1 & DECODE_GEN_ERRORS;
+    uint16_t general = general1 & DECODE_GEN_ERRORS; // fix this by casting
     decodeErrors(general, detailed); 
 
     // Extract 14-bit position data
-    uint16_t raw_position_data = ((uint16_t) general2 << POS_DATA_MASK1) | (uint16_t) general1;
+    uint16_t raw_position_data = (((uint16_t) general1) << POS_DATA_MASK1) | (uint16_t) general2;
     _position_data = raw_position_data >> POS_DATA_MASK2;
     
     // Convert position data to angle
@@ -263,6 +266,10 @@ void OrbisBR10::sample()
     _lastConversion.raw = _position_data;
     _lastConversion.angle = angle;
     
+    Serial.print("Raw ");
+    Serial.println(_lastConversion.raw);
+    Serial.print("Angle ");
+    Serial.println(_lastConversion.angle);
 
     // Decode errors, detailed status bytes
     bool anyError = 
