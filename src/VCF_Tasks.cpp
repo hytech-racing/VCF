@@ -23,6 +23,7 @@
 #include "WatchdogSystem.h"
 #include "Arduino.h"
 
+// TODO: Fix this method for the new sensors / rearranged adc channels
 HT_TASK::TaskResponse run_read_adc0_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
 {
     // Samples all eight channels.
@@ -57,6 +58,7 @@ HT_TASK::TaskResponse run_read_adc0_task(const unsigned long& sysMicros, const H
     return HT_TASK::TaskResponse::YIELD;
 }
 
+// TODO: Fix this method for the new sensors / rearranged adc channels
 HT_TASK::TaskResponse run_read_adc1_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
 {
     // Samples all eight channels.
@@ -415,6 +417,7 @@ namespace async_tasks
         return HT_TASK::TaskResponse::YIELD;
     }
 };
+
 HT_TASK::TaskResponse debug_print(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
 {
     // Serial.println("accel1 raw accel2 raw");
@@ -500,40 +503,58 @@ void setup_all_interfaces() {
         VCFInterfaceConstants::ADC1_CS
     },
     ADCChannels_s {
+        VCFInterfaceConstants::PEDAL_REF_2V5_CHANNEL,
         VCFInterfaceConstants::STEERING_1_CHANNEL,
         VCFInterfaceConstants::STEERING_2_CHANNEL,
-        VCFInterfaceConstants::FR_LOADCELL_CHANNEL,
-        VCFInterfaceConstants::FL_LOADCELL_CHANNEL,
-        VCFInterfaceConstants::FR_SUS_POT_CHANNEL,
-        VCFInterfaceConstants::FL_SUS_POT_CHANNEL,
         VCFInterfaceConstants::ACCEL_1_CHANNEL,
         VCFInterfaceConstants::ACCEL_2_CHANNEL,
         VCFInterfaceConstants::BRAKE_1_CHANNEL,
-        VCFInterfaceConstants::BRAKE_2_CHANNEL
+        VCFInterfaceConstants::BRAKE_2_CHANNEL,
+
+        VCFInterfaceConstants::SHDN_H_CHANNEL,
+        VCFInterfaceConstants::SHDN_D_CHANNEL,
+        VCFInterfaceConstants::FL_LOADCELL_CHANNEL,
+        VCFInterfaceConstants::FR_LOADCELL_CHANNEL,
+        VCFInterfaceConstants::FR_SUS_POT_CHANNEL,
+        VCFInterfaceConstants::FL_SUS_POT_CHANNEL,
+        VCFInterfaceConstants::BRAKE_PRESSURE_FRONT_CHANNEL,
+        VCFInterfaceConstants::BRAKE_PRESSURE_REAR_CHANNEL
     },
     ADCScales_s { 
-        VCFInterfaceConstants::STEERING_1_SCALE, 
-        VCFInterfaceConstants::STEERING_2_SCALE, 
-        VCFInterfaceConstants::FR_LOADCELL_SCALE,
+        VCFInterfaceConstants::PEDAL_REF_2V5_SCALE,
+        VCFInterfaceConstants::STEERING_1_SCALE,
+        VCFInterfaceConstants::STEERING_2_SCALE,
+        VCFInterfaceConstants::ACCEL_1_SCALE,
+        VCFInterfaceConstants::ACCEL_2_SCALE,
+        VCFInterfaceConstants::BRAKE_1_SCALE,
+        VCFInterfaceConstants::BRAKE_2_SCALE,
+
+        VCFInterfaceConstants::SHDN_H_SCALE,
+        VCFInterfaceConstants::SHDN_D_SCALE,
         VCFInterfaceConstants::FL_LOADCELL_SCALE,
+        VCFInterfaceConstants::FR_LOADCELL_SCALE,
         VCFInterfaceConstants::FR_SUS_POT_SCALE,
-        VCFInterfaceConstants::FL_SUS_POT_SCALE, 
-        VCFInterfaceConstants::ACCEL_1_SCALE, 
-        VCFInterfaceConstants::ACCEL_2_SCALE, 
-        VCFInterfaceConstants::BRAKE_1_SCALE, 
-        VCFInterfaceConstants::BRAKE_2_SCALE
+        VCFInterfaceConstants::FL_SUS_POT_SCALE,
+        VCFInterfaceConstants::BRAKE_PRESSURE_FRONT_SCALE,
+        VCFInterfaceConstants::BRAKE_PRESSURE_REAR_SCALE
     }, 
     ADCOffsets_s {
+        VCFInterfaceConstants::PEDAL_REF_2V5_OFFSET,
         VCFInterfaceConstants::STEERING_1_OFFSET,
         VCFInterfaceConstants::STEERING_2_OFFSET,
-        VCFInterfaceConstants::FR_LOADCELL_OFFSET,
-        VCFInterfaceConstants::FL_LOADCELL_OFFSET,
-        VCFInterfaceConstants::FR_SUS_POT_OFFSET,
-        VCFInterfaceConstants::FL_SUS_POT_OFFSET,
         VCFInterfaceConstants::ACCEL_1_OFFSET,
         VCFInterfaceConstants::ACCEL_2_OFFSET,
         VCFInterfaceConstants::BRAKE_1_OFFSET,
-        VCFInterfaceConstants::BRAKE_2_OFFSET
+        VCFInterfaceConstants::BRAKE_2_OFFSET,
+
+        VCFInterfaceConstants::SHDN_H_OFFSET,
+        VCFInterfaceConstants::SHDN_D_OFFSET,
+        VCFInterfaceConstants::FL_LOADCELL_OFFSET,
+        VCFInterfaceConstants::FR_LOADCELL_OFFSET,
+        VCFInterfaceConstants::FR_SUS_POT_OFFSET,
+        VCFInterfaceConstants::FL_SUS_POT_OFFSET,
+        VCFInterfaceConstants::BRAKE_PRESSURE_FRONT_OFFSET,
+        VCFInterfaceConstants::BRAKE_PRESSURE_REAR_OFFSET
     });
 
     EthernetIPDefsInstance::create();

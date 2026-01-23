@@ -4,10 +4,7 @@
 #include <stdint.h>
 
 // hardware connections constants
-namespace VCFInterfaceConstants { 
-    constexpr int ADC0_CS = 10; // MCP3208. ADC1 in VCF schematic. Used for steering, sus pots, and load cells.
-    constexpr int ADC1_CS = 38; // MCP3208. ADC2 in VCF schematic. Used for pedal position sensors.
-
+namespace VCFInterfaceConstants {
     //Teensy 4.1 GPIO pins  
     // constexpr int BTN_DIM_READ = 28;
     // constexpr int BTN_PRESET_READ = 31;
@@ -18,66 +15,86 @@ namespace VCFInterfaceConstants {
     constexpr int BUZZER_CONTROL_PIN = 32;
     constexpr int RIGHT_SHIFTER = 26;
     constexpr int LEFT_SHIFTER = 27;
-
+    
     constexpr int NEOPIXEL_CONTROL_PIN = 33;
     constexpr int NEOPIXEL_COUNT = 12; // 12 neopixeles on dashboard
-    //ADC Pins
-    /* Channels on ADC_1 */
-    constexpr int FR_LOADCELL_CHANNEL     = 0;
-    constexpr int FL_LOADCELL_CHANNEL     = 1;
-    constexpr int FL_SUS_POT_CHANNEL      = 2;
-    constexpr int FR_SUS_POT_CHANNEL      = 3;
-    constexpr int STEERING_2_CHANNEL      = 4;
-    constexpr int STEERING_1_CHANNEL      = 5;
-    // constexpr int UNUSED_CHANNEL       = 6;
-    // constexpr int UNUSED_CHANNEL       = 7;
-
-    /* Channels on ADC_2 */
-    // constexpr int UNUSED_CHANNEL       = 0;
-    // constexpr int UNUSED_CHANNEL       = 1;
-    constexpr int ACCEL_1_CHANNEL         = 2;
-    constexpr int ACCEL_2_CHANNEL         = 3;
-    constexpr int BRAKE_1_CHANNEL         = 4;
-    constexpr int BRAKE_2_CHANNEL         = 5;
-    // constexpr int UNUSED_CHANNEL       = 6;
-    // constexpr int UNUSED_CHANNEL       = 7;
-
+    
     // watchdog pins
     constexpr int WATCHDOG_PIN = 36;
     constexpr int SOFTWARE_OK_PIN = 37; // Watchdog's !MR pin
+    
+    // watchdog kick interval
+    constexpr unsigned long WATCHDOG_KICK_INTERVAL_MS = 10UL;
+    
+    //ADC Pins
+    constexpr int ADC0_CS = 10; // MCP3208. ADC1 in VCF schematic. Used for steering, sus pots, and load cells.
+    constexpr int ADC1_CS = 38; // MCP3208. ADC2 in VCF schematic. Used for pedal position sensors.
 
-        //ADC configs
+    /* Channels on ADC_0 */
+    // constexpr int UNUSED_CHANNEL         = 0;
+    constexpr int PEDAL_REF_2V5_CHANNEL     = 1;    // 2.5V reference used for improved pedal calibration
+    constexpr int STEERING_1_CHANNEL = 2;    // Analog steering sensor 1
+    constexpr int STEERING_2_CHANNEL = 3;    // Analog steering sensor 2
+    constexpr int ACCEL_1_CHANNEL           = 4;    // Accel pedal sensor 1
+    constexpr int ACCEL_2_CHANNEL           = 5;    // Accel pedal sensor 2
+    constexpr int BRAKE_1_CHANNEL           = 6;    // Brake pedal sensor 1
+    constexpr int BRAKE_2_CHANNEL           = 7;    // Brake pedal sensor 2
+
+    /* Channels on ADC_1 */
+    constexpr int SHDN_H_CHANNEL                = 0;    // SHDN_H sense
+    constexpr int SHDN_D_CHANNEL                = 1;    // SHDN_D sense
+    constexpr int FL_LOADCELL_CHANNEL           = 2;    // Front left load cell
+    constexpr int FR_LOADCELL_CHANNEL           = 3;    // Front right load cell
+    constexpr int FR_SUS_POT_CHANNEL            = 4;    // Front right suspension potentiometer
+    constexpr int FL_SUS_POT_CHANNEL            = 5;    // Front left suspension potentiometer
+    constexpr int BRAKE_PRESSURE_FRONT_CHANNEL  = 6;    // Front brake pressure sensor
+    constexpr int BRAKE_PRESSURE_REAR_CHANNEL   = 7;    // Rear brake pressure sensor
+
+    //ADC configs
     /* Scaling and offset */
-    constexpr float STEERING_1_SCALE = 1; // TODO: Figure out what these mean
+    constexpr float PEDAL_REF_2V5_SCALE = 1.0;
+    constexpr float PEDAL_REF_2V5_OFFSET = 0;
+
+    constexpr float STEERING_1_SCALE = 1.0; // TODO: Figure out what these mean
     constexpr float STEERING_1_OFFSET = 0;
-    constexpr float STEERING_2_SCALE = 1; // TODO: Figure out if steering 2 = steering 1
+    constexpr float STEERING_2_SCALE = 1.0; // TODO: Figure out if steering 2 = steering 1
     constexpr float STEERING_2_OFFSET = 0;
     // Scale for steering sensor = 0.02197265 . Offset has to be mechanically determined
 
-    // constexpr float FR_LOADCELL_SCALE = 0.81; //Values are from the old MCU rev15 // TODO: Calibrate load cells
-    // constexpr float FR_LOADCELL_OFFSET = 36.8;
+    constexpr float ACCEL_1_SCALE = 1.0; // TODO: Figure out what these should be
+    constexpr float ACCEL_1_OFFSET = 0;
+    constexpr float ACCEL_2_SCALE = 1.0;
+    constexpr float ACCEL_2_OFFSET = 0;
+
+    constexpr float BRAKE_1_SCALE = 1.0;
+    constexpr float BRAKE_1_OFFSET = 0;
+    constexpr float BRAKE_2_SCALE = 1.0;
+    constexpr float BRAKE_2_OFFSET = 0;
+
+    constexpr float SHDN_H_SCALE = 1.0;
+    constexpr float SHDN_H_OFFSET = 0;
+    constexpr float SHDN_D_SCALE = 1.0;
+    constexpr float SHDN_D_OFFSET = 0;
+
     // constexpr float FL_LOADCELL_SCALE = 0.63;
     // constexpr float FL_LOADCELL_OFFSET = -3.9;
+    // constexpr float FR_LOADCELL_SCALE = 0.81; //Values are from the old MCU rev15 // TODO: Calibrate load cells
+    // constexpr float FR_LOADCELL_OFFSET = 36.8;
 
-
-    constexpr float FR_LOADCELL_SCALE =  1.0; //Values 
-    constexpr float FR_LOADCELL_OFFSET = 0.0;
     constexpr float FL_LOADCELL_SCALE =  1.0; //Values 
     constexpr float FL_LOADCELL_OFFSET = 0.0;
+    constexpr float FR_LOADCELL_SCALE =  1.0; //Values 
+    constexpr float FR_LOADCELL_OFFSET = 0.0;
 
-    constexpr float FR_SUS_POT_SCALE = 1;
+    constexpr float FR_SUS_POT_SCALE = 1.0;
     constexpr float FR_SUS_POT_OFFSET = 0;
-    constexpr float FL_SUS_POT_SCALE = 1;
+    constexpr float FL_SUS_POT_SCALE = 1.0;
     constexpr float FL_SUS_POT_OFFSET = 0;
 
-    constexpr float ACCEL_1_SCALE = 1; // TODO: Figure out what these should be
-    constexpr float ACCEL_1_OFFSET = 0;
-    constexpr float ACCEL_2_SCALE = 1;
-    constexpr float ACCEL_2_OFFSET = 0;
-    constexpr float BRAKE_1_SCALE = 1;
-    constexpr float BRAKE_1_OFFSET = 0;
-    constexpr float BRAKE_2_SCALE = 1;
-    constexpr float BRAKE_2_OFFSET = 0;
+    constexpr float BRAKE_PRESSURE_FRONT_SCALE = 1.0;
+    constexpr float BRAKE_PRESSURE_FRONT_OFFSET = 0;
+    constexpr float BRAKE_PRESSURE_REAR_SCALE = 1.0;
+    constexpr float BRAKE_PRESSURE_REAR_OFFSET = 0;
 
     // EEPROM addresses for min and max calibration values
     constexpr uint32_t ACCEL_1_MIN_ADDR = 0;
@@ -103,8 +120,6 @@ namespace VCFInterfaceConstants {
     constexpr uint32_t BRAKE_MAX_SENSOR_PEDAL_2 = 4000;
     constexpr float BRAKE_DEADZONE_MARGIN = 0.04f;
     constexpr float BRAKE_MECHANICAL_ACTIVATION_PERCENTAGE = 0.5f;
-
-    constexpr unsigned long WATCHDOG_KICK_INTERVAL_MS = 10UL;
 }
 
 // calibration and processing constants

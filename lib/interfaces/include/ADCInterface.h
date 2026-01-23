@@ -16,50 +16,65 @@ struct ADCPinout_s {
 
 struct ADCChannels_s {
     /* ADC 0 */
+    int pedal_ref_channel;
     int steering_cw_channel;
     int steering_ccw_channel;
-    int fr_loadcell_channel;
-    int fl_loadcell_channel;
-    int fr_suspot_channel;
-    int fl_suspot_channel;
-
-    /* ADC 1 */
     int accel_1_channel;
     int accel_2_channel;
     int brake_1_channel;
     int brake_2_channel;
+    
+    /* ADC 1 */
+    int shdn_h_channel;
+    int shdn_d_channel;
+    int fl_loadcell_channel;
+    int fr_loadcell_channel;
+    int fr_suspot_channel;
+    int fl_suspot_channel;
+    int brake_pressure_front_channel;
+    int brake_pressure_rear_channel;
 };
 
 struct ADCScales_s {
     /* ADC 0 */
+    float pedal_ref_scale;
     float steering_cw_scale;
     float steering_ccw_scale;
-    float fr_loadcell_scale;
-    float fl_loadcell_scale;
-    float fr_suspot_scale;
-    float fl_suspot_scale;
-
-    /* ADC 1 */
     float accel_1_scale;
     float accel_2_scale;
     float brake_1_scale;
     float brake_2_scale;
+    
+    /* ADC 1 */
+    float shdn_h_scale;
+    float shdn_d_scale;
+    float fl_loadcell_scale;
+    float fr_loadcell_scale;
+    float fr_suspot_scale;
+    float fl_suspot_scale;
+    float brake_pressure_front_scale;
+    float brake_pressure_rear_scale;
 };
 
 struct ADCOffsets_s {
     /* ADC 0 */
+    float pedal_ref_offset;
     float steering_cw_offset;
     float steering_ccw_offset;
-    float fr_loadcell_offset;
-    float fl_loadcell_offset;
-    float fr_suspot_offset;
-    float fl_suspot_offset;
-
-    /* ADC 1 */
     float accel_1_offset;
     float accel_2_offset;
     float brake_1_offset;
     float brake_2_offset;
+    
+    /* ADC 1 */
+    float shdn_h_offset;
+    float shdn_d_offset;
+    float fl_loadcell_offset;
+    float fr_loadcell_offset;
+    float fr_suspot_offset;
+    float fl_suspot_offset;
+    float brake_pressure_front_offset;
+    float brake_pressure_rear_offset;
 };
 
 struct ADCInterfaceParams_s {
@@ -108,6 +123,11 @@ class ADCInterface
         /* ------ ADC 0 ------ */
         
         /**
+         * @return Pedal Reference Reading
+         */
+        AnalogConversion_s pedal_reference();
+
+        /**
          * @return Analog Steering Degrees [Steering 1]
          */
         AnalogConversion_s steering_degrees_cw();
@@ -117,28 +137,6 @@ class ADCInterface
          */
         AnalogConversion_s steering_degrees_ccw();
         
-        /**
-         * @return Front Left Cell
-         */
-        AnalogConversion_s FL_load_cell();
-        
-        /**
-         * @return Front Right Load Cell
-         */
-        AnalogConversion_s FR_load_cell();
-        
-        /**
-         * @return Front Left Suspension Potentiometer Reading 
-         */
-        AnalogConversion_s FL_sus_pot();
-        
-        /**
-         * @return Front Right Suspension Potentiometer Reading
-         */
-        AnalogConversion_s FR_sus_pot();
-
-        /* ------ ADC 1 ------ */
-
         /**
          * @return Acceleration Pedal 1
          */
@@ -159,6 +157,48 @@ class ADCInterface
          */
         AnalogConversion_s brake_2();
         
+        /* ------ ADC 1 ------ */
+        
+        /**
+         * @return SHDN H Voltage Sense
+         */
+        AnalogConversion_s shdn_h();
+
+        /**
+         * @return SHDN D Voltage Sense
+         */
+        AnalogConversion_s shdn_d();
+
+        /**
+         * @return Front Left Load Cell
+         */
+        AnalogConversion_s FL_load_cell();
+        
+        /**
+         * @return Front Right Load Cell
+         */
+        AnalogConversion_s FR_load_cell();
+        
+        /**
+         * @return Front Right Suspension Potentiometer Reading
+         */
+        AnalogConversion_s FR_sus_pot();
+        
+        /**
+         * @return Front Left Suspension Potentiometer Reading 
+         */
+        AnalogConversion_s FL_sus_pot();
+
+        /**
+         * @return Front Brake Pressure
+         */
+        AnalogConversion_s brake_pressure_front();
+
+        /**
+         * @return Rear Brake Pressure
+         */
+        AnalogConversion_s brake_pressure_rear();
+        
     /* ------ Private Functions ------ */
     private:
         std::array<float, adc_default_parameters::channels_within_mcp_adc> adc0_scales();
@@ -169,9 +209,9 @@ class ADCInterface
     /* ------ Private Data Members ------ */
     private:
         ADCInterfaceParams_s _adc_parameters = {};
-        // MCP3208. ADC0 in VCF schematic. Used for steering, load cells, and sus pots.
+        // MCP3208. ADC0 in VCF schematic. Used for steering, pedal reference, and pedal position sensors.
         MCP_ADC<adc_default_parameters::channels_within_mcp_adc> _adc0;
-        // MCP3208. ADC1 in VCF schematic. Used for pedal position sensors.
+        // MCP3208. ADC1 in VCF schematic. Used for SHDN senses, load cells, suspension potentiometers, and brake pressure sensors.
         MCP_ADC<adc_default_parameters::channels_within_mcp_adc> _adc1;
 
 };
