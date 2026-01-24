@@ -252,18 +252,20 @@ HT_TASK::TaskResponse enqueue_pedals_data(const unsigned long &sys_micros, const
 
 HT_TASK::TaskResponse run_dash_GPIOs_task(const unsigned long& sys_micros, const HT_TASK::TaskInfo& task_info)
 {
-    bool was_dim_btn_pressed = DashboardInterfaceInstance::instance().get_dashboard_outputs().dim_btn_is_pressed; //NOLINT (linter thinks variable uninitialized)
-    DashboardInterfaceInstance::instance().get_dashboard_outputs() = DashboardInterfaceInstance::instance().get_dashboard_outputs();
+    bool was_dim_btn_pressed = DashboardInterfaceInstance::instance().get_dashboard_stored_state().dim_btn_is_pressed; //NOLINT (linter thinks variable uninitialized)
+    DashInputState_s current_state = DashboardInterfaceInstance::instance().get_dashboard_outputs();
 
-    if (!DashboardInterfaceInstance::instance().get_dashboard_outputs().preset_btn_is_pressed)
+    if (!current_state.preset_btn_is_pressed)
     {
         VCRInterfaceInstance::instance().disable_calibration_state();
     }
 
-    if (was_dim_btn_pressed && !DashboardInterfaceInstance::instance().get_dashboard_outputs().dim_btn_is_pressed)
+    if (was_dim_btn_pressed && !current_state.dim_btn_is_pressed)
     {
         NeopixelControllerInstance::instance().dim_neopixels();
     }
+
+    DashboardInterfaceInstance::instance().sync_dashboard_stored_state();
 
     return HT_TASK::TaskResponse::YIELD;
 }

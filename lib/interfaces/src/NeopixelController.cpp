@@ -47,9 +47,13 @@ void NeopixelController::refresh_neopixels(const PedalsSystemData_s &pedals_data
 
     LED_color_e brake_light_color = LED_color_e::OFF;
     if (pedals_data.brake_is_pressed && !pedals_data.implausibility_has_exceeded_max_duration) {
+        Serial.print("pedals_data.brake_is_pressed && !pedals_data.implausibility_has_exceeded_max_duration");
         brake_light_color = LED_color_e::GREEN;
     } else if (pedals_data.implausibility_has_exceeded_max_duration) {
+        Serial.print("pedals_data.implausibility_has_exceeded_max_duration");
         brake_light_color = LED_color_e::RED;
+    } else {
+        Serial.print("NOT PRINTING ANYTHING");
     }
 
     LED_color_e pack_color = LED_color_e::OFF;

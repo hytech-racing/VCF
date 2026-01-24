@@ -48,6 +48,12 @@ class DashboardInterface
         // Reading gpios 
         DashInputState_s get_dashboard_outputs();
 
+        // Stores outputs
+        DashInputState_s DashboardInterface::get_dashboard_stored_state();
+        
+        // Syncs stored outputs with last read outputs
+        void DashboardInterface::sync_dashboard_stored_state();
+
         // Receiving
         void receive_ACU_OK(const CAN_message_t &can_msg);
 
@@ -60,6 +66,7 @@ class DashboardInterface
 
         DashboardGPIOs_s _dashboard_gpios;
         DashInputState_s _dashboard_outputs;
+        DashInputState_s _dashboard_stored_state;
 
         unsigned long _dash_created_millis;
 
