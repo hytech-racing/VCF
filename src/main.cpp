@@ -44,7 +44,7 @@ HT_TASK::Task CAN_send(HT_TASK::DUMMY_FUNCTION, &handle_CAN_send, VCFTaskConstan
 HT_TASK::Task dash_CAN_enqueue(HT_TASK::DUMMY_FUNCTION, &send_dash_data, VCFTaskConstants::DASH_SEND_PRIORITY, VCFTaskConstants::DASH_SEND_PERIOD);
 HT_TASK::Task pedals_message_enqueue(HT_TASK::DUMMY_FUNCTION, &enqueue_pedals_data, VCFTaskConstants::PEDALS_PRIORITY, VCFTaskConstants::PEDALS_SEND_PERIOD);
 HT_TASK::Task adc0_sample(HT_TASK::DUMMY_FUNCTION, &run_read_adc0_task, VCFTaskConstants::LOADCELL_SAMPLE_PRIORITY, VCFTaskConstants::LOADCELL_SAMPLE_PERIOD);
-HT_TASK::Task pedals_sample(HT_TASK::DUMMY_FUNCTION, &run_read_adc1_task, VCFTaskConstants::PEDALS_PRIORITY, VCFTaskConstants::PEDALS_SAMPLE_PERIOD);
+HT_TASK::Task adc1_sample(HT_TASK::DUMMY_FUNCTION, &run_read_adc1_task, VCFTaskConstants::PEDALS_PRIORITY, VCFTaskConstants::PEDALS_SAMPLE_PERIOD);
 HT_TASK::Task buzzer_control_task(&init_buzzer_control_task, &run_buzzer_control_task, VCFTaskConstants::BUZZER_PRIORITY, VCFTaskConstants::BUZZER_WRITE_PERIOD);
 HT_TASK::Task read_dash_GPIOs_task(HT_TASK::DUMMY_FUNCTION, &run_dash_GPIOs_task, VCFTaskConstants::DASH_SAMPLE_PRIORITY, VCFTaskConstants::DASH_SAMPLE_PERIOD);
 HT_TASK::Task read_ioexpander_task(&create_ioexpander, &read_ioexpander, VCFTaskConstants::DASH_SAMPLE_PRIORITY, VCFTaskConstants::DASH_SAMPLE_PERIOD);
@@ -72,7 +72,7 @@ void setup() {
     HT_SCHED::Scheduler::getInstance().schedule(buzzer_control_task);
     HT_SCHED::Scheduler::getInstance().schedule(pedals_message_enqueue);
     HT_SCHED::Scheduler::getInstance().schedule(adc0_sample);
-    HT_SCHED::Scheduler::getInstance().schedule(pedals_sample);
+    HT_SCHED::Scheduler::getInstance().schedule(adc1_sample);
     HT_SCHED::Scheduler::getInstance().schedule(read_dash_GPIOs_task);
     HT_SCHED::Scheduler::getInstance().schedule(read_ioexpander_task);
     HT_SCHED::Scheduler::getInstance().schedule(neopixels_task);

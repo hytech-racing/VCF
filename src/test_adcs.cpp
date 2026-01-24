@@ -79,24 +79,24 @@ void loop()
     if (millis() - DELAY > last) {
         ADCInterfaceInstance::instance().adc0_tick();
         Serial.print("\n===== ADC 0 =====\n");
-        Serial.printf("2V5 Pedal Reference Raw: %d\n", ADCInterfaceInstance::instance().pedal_reference().raw);
-        Serial.printf("Steering 1 (CW) Raw: %d\n", ADCInterfaceInstance::instance().steering_degrees_cw().raw);
-        Serial.printf("Steering 2 (CCW) Raw: %d\n", ADCInterfaceInstance::instance().steering_degrees_ccw().raw);
-        Serial.printf("Acceleration 1 Raw: %d\n", ADCInterfaceInstance::instance().acceleration_1().raw);
-        Serial.printf("Acceleration 2 Raw: %d\n", ADCInterfaceInstance::instance().acceleration_2().raw);
-        Serial.printf("Brake 1 Raw: %d\n", ADCInterfaceInstance::instance().brake_1().raw);
-        Serial.printf("Brake 2 Raw: %d\n", ADCInterfaceInstance::instance().brake_2().raw);
+        Serial.printf("2V5 Pedal Reference Raw:  %d\n", ADCInterfaceInstance::instance().pedal_reference().raw);
+        Serial.printf("Steering 1 (CW) Raw:      %d\n", ADCInterfaceInstance::instance().steering_degrees_cw().raw);
+        Serial.printf("Steering 2 (CCW) Raw:     %d\n", ADCInterfaceInstance::instance().steering_degrees_ccw().raw);
+        Serial.printf("Acceleration 1 Raw:       %d\n", ADCInterfaceInstance::instance().acceleration_1().raw);
+        Serial.printf("Acceleration 2 Raw:       %d\n", ADCInterfaceInstance::instance().acceleration_2().raw);
+        Serial.printf("Brake 1 Raw:              %d\n", ADCInterfaceInstance::instance().brake_1().raw);
+        Serial.printf("Brake 2 Raw:              %d\n", ADCInterfaceInstance::instance().brake_2().raw);
 
         ADCInterfaceInstance::instance().adc1_tick();
         Serial.printf("\n===== ADC 1 =====\n");
-        Serial.printf("SHDN H Raw: %d\n", ADCInterfaceInstance::instance().shdn_h().raw);
-        Serial.printf("SHDN D Raw: %d\n", ADCInterfaceInstance::instance().shdn_d().raw);
-        Serial.printf("FL Load Cell Raw: %d\n", ADCInterfaceInstance::instance().FL_load_cell().raw);
-        Serial.printf("FR Load Cell Raw: %d\n", ADCInterfaceInstance::instance().FR_load_cell().raw);
-        Serial.printf("FR Sus Pot Raw: %d\n", ADCInterfaceInstance::instance().FR_sus_pot().raw);
-        Serial.printf("FL Sus Pot Raw: %d\n", ADCInterfaceInstance::instance().FL_sus_pot().raw);
-        Serial.printf("Front Brake Pressure Raw: %d\n", ADCInterfaceInstance::instance().brake_pressure_front().raw);
-        Serial.printf("Rear Brake Pressure Raw: %d\n", ADCInterfaceInstance::instance().brake_pressure_rear().raw);
+        Serial.printf("SHDN H Raw:                %d\n", ADCInterfaceInstance::instance().shdn_h().raw);
+        Serial.printf("SHDN D Raw:                %d\n", ADCInterfaceInstance::instance().shdn_d().raw);
+        Serial.printf("FL Load Cell Raw:          %d\n", ADCInterfaceInstance::instance().FL_load_cell().raw);
+        Serial.printf("FR Load Cell Raw:          %d\n", ADCInterfaceInstance::instance().FR_load_cell().raw);
+        Serial.printf("FR Sus Pot Raw:            %d\n", ADCInterfaceInstance::instance().FR_sus_pot().raw);
+        Serial.printf("FL Sus Pot Raw:            %d\n", ADCInterfaceInstance::instance().FL_sus_pot().raw);
+        Serial.printf("Front Brake Pressure Raw:  %d\n", ADCInterfaceInstance::instance().brake_pressure_front().raw);
+        Serial.printf("Rear Brake Pressure Raw:   %d\n", ADCInterfaceInstance::instance().brake_pressure_rear().raw);
 
         last = millis();
     }
