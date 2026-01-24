@@ -396,75 +396,75 @@ namespace async_tasks
         return HT_TASK::TaskResponse::YIELD;
     }
 };
-HT_TASK::TaskResponse debug_print(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
-{
-    Serial.println("accel1 raw accel2 raw");
-    Serial.print(PedalsSystemInstance::instance().get_pedals_sensor_data().accel_1);
-    Serial.print("   ");
-    Serial.print(PedalsSystemInstance::instance().get_pedals_sensor_data().accel_2);
-    Serial.println();
-    Serial.println("brake1 raw brake2 raw");
-    Serial.print(PedalsSystemInstance::instance().get_pedals_sensor_data().brake_1);
-    Serial.print("   ");
-    Serial.print(PedalsSystemInstance::instance().get_pedals_sensor_data().brake_2);
-    Serial.println();
-    Serial.println("accel brake percents");
-    Serial.print(PedalsSystemInstance::instance().get_pedals_system_data().accel_percent);
-    Serial.print("   ");
-    Serial.print(PedalsSystemInstance::instance().get_pedals_system_data().brake_percent);
-    Serial.println();
-    Serial.print("implaus ");
-    Serial.println(PedalsSystemInstance::instance().get_pedals_system_data().implausibility_has_exceeded_max_duration);
+// HT_TASK::TaskResponse debug_print(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
+// {
+//     Serial.println("accel1 raw accel2 raw");
+//     Serial.print(PedalsSystemInstance::instance().get_pedals_sensor_data().accel_1);
+//     Serial.print("   ");
+//     Serial.print(PedalsSystemInstance::instance().get_pedals_sensor_data().accel_2);
+//     Serial.println();
+//     Serial.println("brake1 raw brake2 raw");
+//     Serial.print(PedalsSystemInstance::instance().get_pedals_sensor_data().brake_1);
+//     Serial.print("   ");
+//     Serial.print(PedalsSystemInstance::instance().get_pedals_sensor_data().brake_2);
+//     Serial.println();
+//     Serial.println("accel brake percents");
+//     Serial.print(PedalsSystemInstance::instance().get_pedals_system_data().accel_percent);
+//     Serial.print("   ");
+//     Serial.print(PedalsSystemInstance::instance().get_pedals_system_data().brake_percent);
+//     Serial.println();
+//     Serial.print("implaus ");
+//     Serial.println(PedalsSystemInstance::instance().get_pedals_system_data().implausibility_has_exceeded_max_duration);
 
-    Serial.println("accel 1 min/max");
-    Serial.print(PedalsSystemInstance::instance().get_accel_params().min_pedal_1);
-    Serial.print("   ");
-    Serial.print(PedalsSystemInstance::instance().get_accel_params().max_pedal_1);
-    Serial.println();
-    Serial.println("accel 2 min/max");
-    Serial.print(PedalsSystemInstance::instance().get_accel_params().min_pedal_2);
-    Serial.print("   ");
-    Serial.print(PedalsSystemInstance::instance().get_accel_params().max_pedal_2);
-    Serial.println();
-    Serial.println("brake 1 min/max");
-    Serial.print(PedalsSystemInstance::instance().get_brake_params().min_pedal_1);
-    Serial.print("   ");
-    Serial.print(PedalsSystemInstance::instance().get_brake_params().max_pedal_1);
-    Serial.println();
-    Serial.println("brake 2 min/max");
-    Serial.print(PedalsSystemInstance::instance().get_brake_params().min_pedal_2);
-    Serial.print("   ");
-    Serial.print(PedalsSystemInstance::instance().get_brake_params().max_pedal_2);
-    Serial.println();
-    Serial.println();
+//     Serial.println("accel 1 min/max");
+//     Serial.print(PedalsSystemInstance::instance().get_accel_params().min_pedal_1);
+//     Serial.print("   ");
+//     Serial.print(PedalsSystemInstance::instance().get_accel_params().max_pedal_1);
+//     Serial.println();
+//     Serial.println("accel 2 min/max");
+//     Serial.print(PedalsSystemInstance::instance().get_accel_params().min_pedal_2);
+//     Serial.print("   ");
+//     Serial.print(PedalsSystemInstance::instance().get_accel_params().max_pedal_2);
+//     Serial.println();
+//     Serial.println("brake 1 min/max");
+//     Serial.print(PedalsSystemInstance::instance().get_brake_params().min_pedal_1);
+//     Serial.print("   ");
+//     Serial.print(PedalsSystemInstance::instance().get_brake_params().max_pedal_1);
+//     Serial.println();
+//     Serial.println("brake 2 min/max");
+//     Serial.print(PedalsSystemInstance::instance().get_brake_params().min_pedal_2);
+//     Serial.print("   ");
+//     Serial.print(PedalsSystemInstance::instance().get_brake_params().max_pedal_2);
+//     Serial.println();
+//     Serial.println();
     
-    Serial.print("Load Cell FR:  ");
-    Serial.println(ADCInterfaceInstance::instance().get_filtered_FR_load_cell());
-    Serial.print("Load Cell FL:  ");
-    Serial.println(ADCInterfaceInstance::instance().get_filtered_FL_load_cell());
-    Serial.print("Suspot FR:  ");
-    Serial.println(ADCInterfaceInstance::instance().get_filtered_FR_sus_pot());
-    Serial.print("Suspot FL:  ");
-    Serial.println(ADCInterfaceInstance::instance().get_filtered_FL_sus_pot());
+//     Serial.print("Load Cell FR:  ");
+//     Serial.println(ADCInterfaceInstance::instance().get_filtered_FR_load_cell());
+//     Serial.print("Load Cell FL:  ");
+//     Serial.println(ADCInterfaceInstance::instance().get_filtered_FL_load_cell());
+//     Serial.print("Suspot FR:  ");
+//     Serial.println(ADCInterfaceInstance::instance().get_filtered_FR_sus_pot());
+//     Serial.print("Suspot FL:  ");
+//     Serial.println(ADCInterfaceInstance::instance().get_filtered_FL_sus_pot());
     
 
-    Serial.print("Dim button: ");
-    Serial.println(DashboardInterfaceInstance::instance().get_dashboard_outputs().dim_btn_is_pressed);
-    Serial.print("preset button: ");
-    Serial.println(DashboardInterfaceInstance::instance().get_dashboard_outputs().preset_btn_is_pressed);
-    Serial.print("mc reset button: ");
-    Serial.println(DashboardInterfaceInstance::instance().get_dashboard_outputs().mc_reset_btn_is_pressed);
-    Serial.print("mode button: ");
-    Serial.println(DashboardInterfaceInstance::instance().get_dashboard_outputs().mode_btn_is_pressed);
-    Serial.print("start button: ");
-    Serial.println(DashboardInterfaceInstance::instance().get_dashboard_outputs().start_btn_is_pressed);
-    Serial.print("data button: ");
-    Serial.println(DashboardInterfaceInstance::instance().get_dashboard_outputs().data_btn_is_pressed);
+//     Serial.print("Dim button: ");
+//     Serial.println(DashboardInterfaceInstance::instance().get_dashboard_outputs().dim_btn_is_pressed);
+//     Serial.print("preset button: ");
+//     Serial.println(DashboardInterfaceInstance::instance().get_dashboard_outputs().preset_btn_is_pressed);
+//     Serial.print("mc reset button: ");
+//     Serial.println(DashboardInterfaceInstance::instance().get_dashboard_outputs().mc_reset_btn_is_pressed);
+//     Serial.print("mode button: ");
+//     Serial.println(DashboardInterfaceInstance::instance().get_dashboard_outputs().mode_btn_is_pressed);
+//     Serial.print("start button: ");
+//     Serial.println(DashboardInterfaceInstance::instance().get_dashboard_outputs().start_btn_is_pressed);
+//     Serial.print("data button: ");
+//     Serial.println(DashboardInterfaceInstance::instance().get_dashboard_outputs().data_btn_is_pressed);
 
-    Serial.println("jkkjhhkjkjh");
+//     Serial.println("jkkjhhkjkjh");
 
-    return HT_TASK::TaskResponse::YIELD;
-}
+//     return HT_TASK::TaskResponse::YIELD;
+// }
 
 FlexCAN_T4<CAN1, RX_SIZE_256, TX_SIZE_16> VCFCANInterfaceImpl::main_can;
 
