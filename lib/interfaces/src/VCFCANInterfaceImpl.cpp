@@ -9,7 +9,7 @@ namespace VCFCANInterfaceImpl {
         VCFCANInterfaceObjectsInstance::instance().main_can_rx_buffer.push_back(buf, sizeof(CAN_message_t));
     }
 
-    void vcf_recv_switch(CANInterfaces &interfaces, const CAN_message_t &msg, unsigned long millis)
+    void vcf_recv_switch(CANInterfaces &interfaces, const CAN_message_t &msg, unsigned long millis, CANInterfaceType_e interface_type)
     {
         switch (msg.id) 
         {
