@@ -36,7 +36,7 @@ struct CANInterfaces {
 
 struct VCFCANInterfaceObjects {
 
-    VCFCANInterfaceObjects(etl::delegate<void(CANInterfaces &, const CAN_message_t &, unsigned long)> recv_switch, FlexCAN_T4_Base * main_can): MAIN_CAN(main_can),can_recv_switch(recv_switch) 
+    VCFCANInterfaceObjects(etl::delegate<void(CANInterfaces &, const CAN_message_t &, unsigned long, CANInterfaceType_e)> recv_switch, FlexCAN_T4_Base * main_can): MAIN_CAN(main_can),can_recv_switch(recv_switch) 
     {} 
 
     
@@ -44,13 +44,13 @@ struct VCFCANInterfaceObjects {
     // TODO fix this. needs to be a pointer to an in-main global created instance of CAN3. this also cannot be a base type.
     CANRXBufferType main_can_rx_buffer;
     CANTXBufferType main_can_tx_buffer;
-    etl::delegate<void(CANInterfaces &, const CAN_message_t &, unsigned long)> can_recv_switch;
+    etl::delegate<void(CANInterfaces &, const CAN_message_t &, unsigned long, CANInterfaceType_e)> can_recv_switch;
     
 };
 
 namespace VCFCANInterfaceImpl {
     void on_main_can_recv(const CAN_message_t &msg);
-    void vcf_recv_switch(CANInterfaces &interfaces, const CAN_message_t &msg, unsigned long millis);
+    void vcf_recv_switch(CANInterfaces &interfaces, const CAN_message_t &msg, unsigned long millis, CANInterfaceType_e interface_type);
     void send_all_CAN_msgs(CANTXBufferType &buffer, FlexCAN_T4_Base *can_interface);
 
     extern FlexCAN_T4<CAN1, RX_SIZE_256, TX_SIZE_16> main_can;
