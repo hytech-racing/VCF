@@ -40,21 +40,35 @@ bool OrbisBR10::performSelfCalibration()
     //     _serial->write(command); delay(1);
     // } 
 
+    delay(100);
+
     _serial->write(SELF_CALIB_STATUS);       
     // self-calibration status request, datasheet says to do status before self-calib start
     // 0x69 command (status) returns 2 bytes: First is the echo byte and the next is the status byte
-
+    
     uint8_t currentCounter = 0;
-    if (_serial->available())          
-    {
-        uint8_t echo = _serial->read();     // echo byte
-        uint8_t status = _serial->read();   // status byte
+    // if (_serial->available())          
+    // {
 
-        currentCounter = status & 0b00000011;  // counter bits are b1 and b0 of status byte
+    while (!_serial->available());
+
+        Serial.println("Available Bits: " + _serial->available());
+        uint8_t echo1 = _serial->read();     // echo byte
+        Serial.println("Available Bits: " + _serial->available());
+        uint8_t status1 = _serial->read();   // status byte
+
+        Serial.print("Echo 1: 0x");
+        Serial.println(echo1, HEX);
+        Serial.print("Status byte 1: 0x");
+        Serial.println(status1, HEX);
+
+        currentCounter = status1 & 0b00000011;  // counter bits are b1 and b0 of status byte
         Serial.print("Current Counter: ");
         Serial.println(currentCounter);
-    }
+    // }
     
+    delay(50);
+
     _serial->write(SELF_CALIB_START);
     // unsigned long myTime = millis(); 
 
@@ -63,6 +77,7 @@ bool OrbisBR10::performSelfCalibration()
 
     // Handling self-calib status info funtionality
     _serial->write(SELF_CALIB_STATUS);      // self-calibration status request again after, expect counter to change
+    delay(10);
 
     if (_serial->available() < 2) {
         Serial.println("ERROR: No response from sensor");
@@ -70,15 +85,19 @@ bool OrbisBR10::performSelfCalibration()
         return false;
     }
 
-    uint8_t echo = _serial->read();     // echo byte
-    uint8_t status = _serial->read();   // status byte
+    Serial.println("Available Bits: " + _serial->available());
+    uint8_t echo2 = _serial->read();     // echo byte
+    Serial.println("Available Bits: " + _serial->available());
+    uint8_t status2 = _serial->read();   // status byte
 
-    Serial.print("Status byte: 0x");
-    Serial.println(status, HEX);
+    Serial.print("Echo 2: 0x");
+    Serial.println(echo2, HEX);
+    Serial.print("Status byte 2: 0x");
+    Serial.println(status2, HEX);
     
-    uint8_t newCounter = status & 0b00000011;
-    bool timeoutError = status & 0b00000100;      // b2
-    bool parameterError = status & 0b00001000;    // b3
+    uint8_t newCounter = status2 & 0b00000011;
+    bool timeoutError = status2 & 0b00000100;      // b2
+    bool parameterError = status2 & 0b00001000;    // b3
     
     Serial.print("New counter: ");
     Serial.println(newCounter);
@@ -161,15 +180,24 @@ void OrbisBR10::sample()
     Serial.println("Sent position request on liner.");
 
     // Read reponse bytes
+    Serial.println("Available Bits: " + _serial->available());
     uint8_t echo     = _serial->read();
+    Serial.println("Available Bits: " + _serial->available());
     uint8_t general1 = _serial->read();
+    Serial.println("Available Bits: " + _serial->available());
     uint8_t general2 = _serial->read();
+    Serial.println("Available Bits: " + _serial->available());
     uint8_t detailed = _serial->read();
 
     Serial.println(echo, HEX);
     Serial.println(general1, HEX);
     Serial.println(general2, HEX);
     Serial.println(detailed, HEX);
+
+    // Serial.println(_serial->read(), HEX);
+    // Serial.println(_serial->read(), HEX);
+    // Serial.println(_serial->read(), HEX);
+    
 
     if (echo != DETAILED_POS_REQUEST)
     {

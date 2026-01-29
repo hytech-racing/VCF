@@ -15,6 +15,7 @@ void setup()
     Serial.begin(BAUD_RATE);
 
     while(!Serial);
+    
     OrbisBRInstance::create(&Serial3, BAUD_RATE);
 
     Serial.println("Calling init");
