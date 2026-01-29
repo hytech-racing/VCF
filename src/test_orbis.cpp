@@ -14,10 +14,21 @@ void setup()
 {
     Serial.begin(BAUD_RATE);
 
+    while(!Serial);
     OrbisBRInstance::create(&Serial3, BAUD_RATE);
 
-    // OrbisBRInstance::instance().init();
+    OrbisBRInstance::instance().init();
     delay(500);
+
+    // for (byte command : UNLOCK_SEQUENCE)
+    // {
+    //     Serial3.write(command);
+    //     delay(1);
+    // } 
+
+    // Serial3.write('r');
+    
+    // Serial.println("Factor Reset Done");
     
     // for (byte command : UNLOCK_SEQUENCE)
     // {
@@ -71,14 +82,13 @@ void setup()
     // } // may need delay(1)
 
     // Serial3.write('r');
-
-    while(!Serial);
     Serial.println("Serial Monitor connected.");
 }
 
 void loop()
 {
-   if (millis() - lastPrintTime >= 500)
+    Serial.println("HELLO");
+    if (millis() - lastPrintTime >= 500)
    {
         lastPrintTime = millis();
         OrbisBRInstance::instance().sample();

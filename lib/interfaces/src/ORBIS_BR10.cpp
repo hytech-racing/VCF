@@ -9,128 +9,68 @@ OrbisBR10::OrbisBR10(HardwareSerial* serial, int serialSpeed)
    _serial->begin(_serialSpeed, SERIAL_8N1);
 }
 
-void OrbisBR10::init() // all initialization (calibration and configuration)
+void OrbisBR10::init() // Function housing all initialization (calibration and configuration)
 {
-    // _serial->begin(_serialSpeed);
-
-    // for (byte command : UNLOCK_SEQUENCE)
-    // {
-    //     Serial3.write(command);
-    // } // may need delay(1)
     
-    // for (byte command : CONTINUOUS_RESPONSE)
+    Serial.println("Cont. Resp. Stop...");
+    _serial->write('P');
+
+    // bool _isCalibrated = false;   // Assume sensor not self-calibrated
+    // while (!_isCalibrated)
     // {
-    //     Serial3.write(command);
-    // } // may need delay(1)
-
-    // delay(10);
-
-    // for (byte command : UNLOCK_SEQUENCE)
-    // {
-    //     _serial->write(command);
-    //     delay(1);
-    // } // may need delay(1)
-
-    // _serial->write('P');
-
-    // delay(10);
-
-    // for (byte command : UNLOCK_SEQUENCE)
-    // {
-    //     Serial3.write(command);
-    // } // may need delay(1)
-
-    // Serial3.write(SAVE_CONFIG);
-
-    // for (byte command : UNLOCK_SEQUENCE)
-    // {
-    //     Serial3.write(command); delay(1);
-    // } // may need delay(1), maybe make this private function
-
-    // Serial3.write('r');
-
-    bool _isCalibrated = false;
-    while (!_isCalibrated)
-    {
-        _isCalibrated = performSelfCalibration();
-    }
+    //     _isCalibrated = performSelfCalibration();
+    // }
        
     // setEncoderOffset(ENCODER_OFFSET);
     // delay(10);
 
-    //Continous-Response Setting ('T')
-    // Using auto-start, and short position request, period = 1000 µs, should have delay(1)
-    // _serial->write(0x54);           // 'T' command
-    // _serial->write(0x01);           // Auto-start enabled after power-on
-    // _serial->write(0x64);           // position request + detailed status
-    // _serial->write(0x00);           // Period high byte (0x00)
-    // _serial->write(0xFA);           // Period low byte (0x3E8 = 1000 µs)
-    
-    // for (byte command : UNLOCK_SEQUENCE)
-    // {
-    //     _serial->write(command);
-    // } // may need delay(1)
-    
-    // for (byte command : CONTINUOUS_RESPONSE)
-    // {
-    //     _serial->write(command);
-    // } // may need delay(1)
-
-    saveConfiguration();
-    delay(10);
-
-    //Continous-Response Start ('S')
-    //_serial->write(CONTINUOUS_RESPONSE_START); delay(1); 
-    
-    //encoder should auto-start on future power-ups
+    //saveConfiguration();
+    // delay(10);
 }
 
 // Self-Calibration Function 
 bool OrbisBR10::performSelfCalibration()
 {
-    Serial.println("Starting self-calibration...");
+    Serial.println("Starting self-calibration..."); // Debug line
 
-    // Unlock encoder sequence
+    // Unlock Encoder Sequence
     for (byte command : UNLOCK_SEQUENCE)
     {
         _serial->write(command); delay(1);
     } 
 
+    _serial->write(SELF_CALIB_STATUS);       
+    // self-calibration status request, datasheet says to do status before self-calib start
+    // 0x69 command (status) returns 2 bytes: First is the echo byte and the next is the status byte
 
-    uint8_t previousCounter = 0;
-    if (_serial->available() >= 2)    // Calibration checker loop
+    uint8_t currentCounter = 0;
+    if (_serial->available() >= 2)          
     {
         uint8_t echo = _serial->read();     // echo byte
         uint8_t status = _serial->read();   // status byte
 
-        previousCounter = status & 0b00000011;
-        Serial.println("Previous counter: ");
-        Serial.println(previousCounter);
+        currentCounter = status & 0b00000011;  // counter bits are b1 and b0 of status byte
+        Serial.print("Current Counter: ");
+        Serial.println(currentCounter);
     }
-
-    // for (byte command : UNLOCK_SEQUENCE)
-    // {
-    //     _serial->write(command);
-    // } // may need delay(1)
-
-    _serial->write(SELF_CALIB_STATUS);      // self-calibration status request
     
     _serial->write(SELF_CALIB_START);
-    unsigned long myTime = millis();
+    // unsigned long myTime = millis(); 
 
     delay(10000); // max 10 seconds for self-calibration
 
-    _serial->write(SELF_CALIB_STATUS);      // self-calibration status request
 
+    // Handling self-calib status info funtionality
+    _serial->write(SELF_CALIB_STATUS);      // self-calibration status request again after, expect counter to change
 
     if (_serial->available() < 2) {
-        Serial.println("ERROR: No response from encoder");
+        Serial.println("ERROR: No response from sensor");
         _lastConversion.errors.noData = true;
         return false;
     }
 
     uint8_t echo = _serial->read();     // echo byte
-    uint8_t status = _serial->read();
+    uint8_t status = _serial->read();   // status byte
 
     Serial.print("Status byte: 0x");
     Serial.println(status, HEX);
@@ -146,7 +86,7 @@ bool OrbisBR10::performSelfCalibration()
     Serial.print("Parameter error: ");
     Serial.println(parameterError);
 
-    if (((previousCounter + 1) & 0b00000011) != newCounter) {
+    if (((currentCounter + 1) & 0b00000011) != newCounter) {
         Serial.println("ERROR: Calibration did not complete");
         //return false;
     }
@@ -158,16 +98,7 @@ bool OrbisBR10::performSelfCalibration()
         _lastConversion.errors.calibrationParameter = parameterError;
         return false;
     }
-    // else
-    // {
-    //     return true;
-    // }    
-    // } 
-    // else
-    // {
-    //     _lastConversion.errors.noData = true;  // no response
-    //     return false;
-    // }
+    
     Serial.println("Calibration successful!");
     return true;
 }
@@ -217,12 +148,6 @@ void OrbisBR10::decodeErrors(uint8_t general, uint8_t detailed)
 // sample data function
 void OrbisBR10::sample()
 {
-    // for (byte command : UNLOCK_SEQUENCE)
-    // {
-    //     _serial->write(command);
-    //     delay(1);
-    // } // may need delay(1)
-
     _serial->write(DETAILED_POS_REQUEST); delay(1);   // position request + detailed status: 1 byte echo, 2 byte position, 1 byte detailed status
     
     // if (_serial->available() < 4)     // check if received all 4 bytes
