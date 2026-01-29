@@ -12,14 +12,15 @@ OrbisBR10::OrbisBR10(HardwareSerial* serial, int serialSpeed)
 void OrbisBR10::init() // Function housing all initialization (calibration and configuration)
 {
     
-    Serial.println("Cont. Resp. Stop...");
-    _serial->write('P');
+    // Serial.println("Cont. Resp. Stop...");
+    //_serial->write('P');
 
-    // bool _isCalibrated = false;   // Assume sensor not self-calibrated
-    // while (!_isCalibrated)
-    // {
-    //     _isCalibrated = performSelfCalibration();
-    // }
+    Serial.println("HELLO CHUD");
+    bool _isCalibrated = false;   // Assume sensor not self-calibrated
+    while (!_isCalibrated)
+    {
+        _isCalibrated = performSelfCalibration();
+    }
        
     // setEncoderOffset(ENCODER_OFFSET);
     // delay(10);
@@ -33,18 +34,18 @@ bool OrbisBR10::performSelfCalibration()
 {
     Serial.println("Starting self-calibration..."); // Debug line
 
-    // Unlock Encoder Sequence
-    for (byte command : UNLOCK_SEQUENCE)
-    {
-        _serial->write(command); delay(1);
-    } 
+    // // Unlock Encoder Sequence
+    // for (byte command : UNLOCK_SEQUENCE)
+    // {
+    //     _serial->write(command); delay(1);
+    // } 
 
     _serial->write(SELF_CALIB_STATUS);       
     // self-calibration status request, datasheet says to do status before self-calib start
     // 0x69 command (status) returns 2 bytes: First is the echo byte and the next is the status byte
 
     uint8_t currentCounter = 0;
-    if (_serial->available() >= 2)          
+    if (_serial->available())          
     {
         uint8_t echo = _serial->read();     // echo byte
         uint8_t status = _serial->read();   // status byte
@@ -86,18 +87,18 @@ bool OrbisBR10::performSelfCalibration()
     Serial.print("Parameter error: ");
     Serial.println(parameterError);
 
-    if (((currentCounter + 1) & 0b00000011) != newCounter) {
-        Serial.println("ERROR: Calibration did not complete");
-        //return false;
-    }
+    // if (((currentCounter + 1) & 0b00000011) != newCounter) {
+    //     Serial.println("ERROR: Calibration did not complete");
+    //     //return false;
+    // }
     
-    if (timeoutError || parameterError)
-    {
-        Serial.println("ERROR: Calibration failed");
-        _lastConversion.errors.calibrationTimeout   = timeoutError;
-        _lastConversion.errors.calibrationParameter = parameterError;
-        return false;
-    }
+    // if (timeoutError || parameterError)
+    // {
+    //     Serial.println("ERROR: Calibration failed");
+    //     _lastConversion.errors.calibrationTimeout   = timeoutError;
+    //     _lastConversion.errors.calibrationParameter = parameterError;
+    //     return false;
+    // }
     
     Serial.println("Calibration successful!");
     return true;
