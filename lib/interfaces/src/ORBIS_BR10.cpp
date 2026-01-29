@@ -52,9 +52,9 @@ bool OrbisBR10::performSelfCalibration()
 
     while (!_serial->available());
 
-        Serial.println("Available Bits: " + _serial->available());
+        Serial.printf("Available Bytes: %d\n", _serial->available());
         uint8_t echo1 = _serial->read();     // echo byte
-        Serial.println("Available Bits: " + _serial->available());
+        Serial.printf("Available Bytes: %d\n", _serial->available());
         uint8_t status1 = _serial->read();   // status byte
 
         Serial.print("Echo 1: 0x");
@@ -85,9 +85,9 @@ bool OrbisBR10::performSelfCalibration()
         return false;
     }
 
-    Serial.println("Available Bits: " + _serial->available());
+    Serial.printf("Available Bytes: %d\n", _serial->available());
     uint8_t echo2 = _serial->read();     // echo byte
-    Serial.println("Available Bits: " + _serial->available());
+    Serial.printf("Available Bytes: %d\n", _serial->available());
     uint8_t status2 = _serial->read();   // status byte
 
     Serial.print("Echo 2: 0x");
@@ -180,13 +180,13 @@ void OrbisBR10::sample()
     Serial.println("Sent position request on liner.");
 
     // Read reponse bytes
-    Serial.println("Available Bits: " + _serial->available());
+    Serial.printf("Available Bits: %d\n", _serial->available());
     uint8_t echo     = _serial->read();
-    Serial.println("Available Bits: " + _serial->available());
+    Serial.printf("Available Bytes: %d\n", _serial->available());
     uint8_t general1 = _serial->read();
-    Serial.println("Available Bits: " + _serial->available());
+    Serial.printf("Available Bytes: %d\n", _serial->available());
     uint8_t general2 = _serial->read();
-    Serial.println("Available Bits: " + _serial->available());
+    Serial.printf("Available Bytes: %d\n", _serial->available());
     uint8_t detailed = _serial->read();
 
     Serial.println(echo, HEX);
