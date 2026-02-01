@@ -15,95 +15,49 @@ void setup()
     Serial.begin(BAUD_RATE);
 
     while(!Serial);
-    
+
     OrbisBRInstance::create(&Serial3, BAUD_RATE);
 
     Serial.println("Calling init");
     OrbisBRInstance::instance().init();
-    delay(500);
+    delay(1000);
 
+    /* --- Factory Reset Functionality */
     // for (byte command : UNLOCK_SEQUENCE)
     // {
-    //     Serial3.write(command);
-    //     delay(1);
+    //      Serial3.write(command); delay(1);
     // } 
 
+    // while (!Serial3.available());
+    // Serial.println(Serial3.read(), HEX);
+    // while (!Serial3.available());
+    // Serial.println(Serial3.read(), HEX);
+    // while (!Serial3.available());
+    // Serial.println(Serial3.read(), HEX);
+    // while (!Serial3.available());
+    // Serial.println(Serial3.read(), HEX);
+
     // Serial3.write('r');
-    
+    // while (!Serial3.available());
+    // Serial.println(Serial3.read(), HEX);
     // Serial.println("Factor Reset Done");
     
-    // for (byte command : UNLOCK_SEQUENCE)
-    // {
-    //     Serial3.write(command);
-    //     delay(1);
-    // } // may need delay(1)
+    Serial.println("Serial Monitor connected.");        // Debug line
     
-    // Serial.println("Starting Self-Calibration");
-    // Serial3.write(SELF_CALIB_START);
-    // delay(10000);
-
-    // for (byte command : CONTINUOUS_RESPONSE)
-    // {
-    //     Serial3.write(command);
-    //     delay(1);
-    // } // may need delay(1)
-
-    // delay(10);
-
-    // for (byte command : UNLOCK_SEQUENCE)
-    // {
-    //     Serial3.write(command);
-    //     delay(1);
-    // } // may need delay(1)
-
-    // Serial3.write('S');
-
-    // delay(10);
-
-    // for (byte command : UNLOCK_SEQUENCE)
-    // {
-    //     Serial3.write(command);
-    //     delay(1);
-    // } // may need delay(1)
-
-    // Serial3.write('P');
-
-    // delay(10);
-
-    // for (byte command : UNLOCK_SEQUENCE)
-    // {
-    //     Serial3.write(command);
-    //     delay(1);
-    // } // may need delay(1)
-
-    // Serial3.write(SAVE_CONFIG);
-
-    // for (byte command : UNLOCK_SEQUENCE)
-    // {
-    //     Serial3.write(command);
-    // } // may need delay(1)
-
-    // Serial3.write('r');
-    Serial.println("Serial Monitor connected.");
+    /* --- Block For Debugging --- */
     OrbisBRInstance::instance().sample();
-    Serial.print("Raw: ");
-    Serial.println(OrbisBRInstance::instance().position().raw);
-    Serial.print("Angle: ");
-    Serial.println(OrbisBRInstance::instance().position().angle);
     Serial.print("\n\n");
 }
 
 void loop()
 {
-    //Serial.println("HELLO");
     if (millis() - lastPrintTime >= 500)
     {
         lastPrintTime = millis();
-        // OrbisBRInstance::instance().sample();
-        // Serial.println("In Loop");
+        
+        //OrbisBRInstance::instance().sample();
 
         // bool read = false;
-        
         // while (!read)
         // {
         //     if (Serial3.available() > 3) {
