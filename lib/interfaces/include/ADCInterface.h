@@ -137,15 +137,28 @@ class ADCInterface
          */
         AnalogConversion_s FR_sus_pot();
 
-        // Getters for filtered load cells and sus pots
+        /**
+         * @return Filtered Front Left Load Cell
+         */
         float get_filtered_FL_load_cell();
-        
+        /**
+         * @return Filtered Front Right Load Cell
+         */
         float get_filtered_FR_load_cell();
 
+        /**
+         * @return Filtered Front Left Sus Pot
+         */
         float get_filtered_FL_sus_pot();
 
+        /**
+         * @return Filtered Front Right Sus Pot
+         */
         float get_filtered_FR_sus_pot();
 
+        /**
+         * Update the filtered values for the load cells and sus pots
+         */
         void update_filtered_values(float alpha);
 
         /* ------ ADC 1 ------ */

@@ -260,6 +260,7 @@ HT_TASK::TaskResponse run_dash_GPIOs_task(const unsigned long& sys_micros, const
         VCRInterfaceInstance::instance().disable_calibration_state();
     }
 
+    // Checks if dim btn has been clicked (falling edge)
     if (was_dim_btn_pressed && !current_state.dim_btn_is_pressed)
     {
         NeopixelControllerInstance::instance().dim_neopixels();

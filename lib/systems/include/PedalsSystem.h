@@ -71,8 +71,6 @@ public:
         _systemData.accel_percent = pedal_data.accel_percent;
         _systemData.brake_percent = pedal_data.brake_percent;
         _systemData.regen_percent = pedal_data.regen_percent;
-
-        // _systemData = pedal_data;
     }
 
     void set_pedals_sensor_data(const PedalSensorData_s &pedal_data)
