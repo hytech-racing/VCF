@@ -89,6 +89,7 @@ HT_TASK::TaskResponse run_handle_send_vcf_ethernet_data(const unsigned long& sys
  *
  */
 HT_TASK::TaskResponse init_handle_receive_vcr_ethernet_data(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
+
 HT_TASK::TaskResponse run_handle_receive_vcr_ethernet_data(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
 
 HT_TASK::TaskResponse send_dash_data(const unsigned long &sysMicros, const HT_TASK::TaskInfo &taskInfo);
