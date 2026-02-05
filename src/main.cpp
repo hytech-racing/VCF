@@ -43,8 +43,8 @@ HT_TASK::Task async_main(HT_TASK::DUMMY_FUNCTION, &async_tasks::handle_async_mai
 HT_TASK::Task CAN_send(HT_TASK::DUMMY_FUNCTION, &handle_CAN_send, VCFTaskConstants::CAN_SEND_PRIORITY, VCFTaskConstants::CAN_SEND_PERIOD);
 HT_TASK::Task dash_CAN_enqueue(HT_TASK::DUMMY_FUNCTION, &send_dash_data, VCFTaskConstants::DASH_SEND_PRIORITY, VCFTaskConstants::DASH_SEND_PERIOD);
 HT_TASK::Task pedals_message_enqueue(HT_TASK::DUMMY_FUNCTION, &enqueue_pedals_data, VCFTaskConstants::PEDALS_PRIORITY, VCFTaskConstants::PEDALS_SEND_PERIOD);
-HT_TASK::Task adc0_sample(HT_TASK::DUMMY_FUNCTION, &run_read_adc0_task, VCFTaskConstants::LOADCELL_SAMPLE_PRIORITY, VCFTaskConstants::LOADCELL_SAMPLE_PERIOD);
-HT_TASK::Task pedals_sample(HT_TASK::DUMMY_FUNCTION, &run_read_adc1_task, VCFTaskConstants::PEDALS_PRIORITY, VCFTaskConstants::PEDALS_SAMPLE_PERIOD);
+HT_TASK::Task adc1_sample(HT_TASK::DUMMY_FUNCTION, &run_read_adc1_task, VCFTaskConstants::LOADCELL_SAMPLE_PRIORITY, VCFTaskConstants::LOADCELL_SAMPLE_PERIOD);
+HT_TASK::Task pedals_sample(HT_TASK::DUMMY_FUNCTION, &run_read_adc2_task, VCFTaskConstants::PEDALS_PRIORITY, VCFTaskConstants::PEDALS_SAMPLE_PERIOD);
 HT_TASK::Task buzzer_control_task(&init_buzzer_control_task, &run_buzzer_control_task, VCFTaskConstants::BUZZER_PRIORITY, VCFTaskConstants::BUZZER_WRITE_PERIOD);
 HT_TASK::Task read_dash_GPIOs_task(HT_TASK::DUMMY_FUNCTION, &run_dash_GPIOs_task, VCFTaskConstants::DASH_SAMPLE_PRIORITY, VCFTaskConstants::DASH_SAMPLE_PERIOD);
 HT_TASK::Task read_ioexpander_task(&create_ioexpander, &read_ioexpander, VCFTaskConstants::DASH_SAMPLE_PRIORITY, VCFTaskConstants::DASH_SAMPLE_PERIOD);
@@ -56,7 +56,7 @@ HT_TASK::Task front_suspension_message_enqueue(HT_TASK::DUMMY_FUNCTION, &enqueue
 HT_TASK::Task kick_watchdog_task(&init_kick_watchdog, &run_kick_watchdog, VCFTaskConstants::WATCHDOG_PRIORITY, VCFTaskConstants::WATCHDOG_KICK_PERIOD); 
 HT_TASK::Task pedals_calibration_task(HT_TASK::DUMMY_FUNCTION, &update_pedals_calibration_task, VCFTaskConstants::PEDALS_RECALIBRATION_PRIORITY, VCFTaskConstants::PEDALS_RECALIBRATION_PERIOD); 
 
-//HT_TASK::Task debug_state_print_task(HT_TASK::DUMMY_FUNCTION, &debug_print, VCFTaskConstants::DEBUG_PRIORITY, VCFTaskConstants::DEBUG_PERIOD);
+HT_TASK::Task debug_state_print_task(HT_TASK::DUMMY_FUNCTION, &debug_print, VCFTaskConstants::DEBUG_PRIORITY, VCFTaskConstants::DEBUG_PERIOD);
 
 void setup() {
     setup_all_interfaces(); //must be first (if we ever have a setup systems)
@@ -71,17 +71,16 @@ void setup() {
     HT_SCHED::Scheduler::getInstance().schedule(dash_CAN_enqueue);
     HT_SCHED::Scheduler::getInstance().schedule(buzzer_control_task);
     HT_SCHED::Scheduler::getInstance().schedule(pedals_message_enqueue);
-    HT_SCHED::Scheduler::getInstance().schedule(adc0_sample);
+    HT_SCHED::Scheduler::getInstance().schedule(adc1_sample);
     HT_SCHED::Scheduler::getInstance().schedule(pedals_sample);
     HT_SCHED::Scheduler::getInstance().schedule(read_dash_GPIOs_task);
     HT_SCHED::Scheduler::getInstance().schedule(read_ioexpander_task);
     HT_SCHED::Scheduler::getInstance().schedule(neopixels_task);
     HT_SCHED::Scheduler::getInstance().schedule(steering_message_enqueue);
     HT_SCHED::Scheduler::getInstance().schedule(front_suspension_message_enqueue);
+    HT_SCHED::Scheduler::getInstance().schedule(debug_state_print_task);
     HT_SCHED::Scheduler::getInstance().schedule(pedals_calibration_task);
     HT_SCHED::Scheduler::getInstance().schedule(ethernet_send_task);
-
-    // HT_SCHED::Scheduler::getInstance().schedule(debug_state_print_task);
 }
 
 void loop() {

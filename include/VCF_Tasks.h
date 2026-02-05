@@ -43,12 +43,12 @@
 #include "ADCInterface.h"
 
 /**
- * The read_adc0 task will command adc0 to sample all eight channels, convert
+ * The read_adc1 task will command adc1 to sample all eight channels, convert
  * the outputs, and store them in structs defined in shared_firmware_types. This
  * function relies on adc_1 being defined in VCFGlobals.h.
  */
 // HT_TASK::TaskResponse init_adc_task();
-HT_TASK::TaskResponse run_read_adc0_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
+HT_TASK::TaskResponse run_read_adc1_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
 
 HT_TASK::TaskResponse run_kick_watchdog(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
 
@@ -58,11 +58,11 @@ HT_TASK::TaskResponse update_pedals_calibration_task(const unsigned long& sysMic
  * NOTE: These channels are UNUSED BY DEFAULT and exist ONLY FOR TESTING. You
  * may edit this manually to add sensors.
  *
- * The read_adc1 task will command adc1 to sample all eight channels, convert
+ * The read_adc2 task will command adc2 to sample all eight channels, convert
  * the outputs, and store them in a struct defined in shared_firmware_types.
  * This function relies on adc_2 being defined in VCFGlobals.h.
  */
-HT_TASK::TaskResponse run_read_adc1_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
+HT_TASK::TaskResponse run_read_adc2_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
 
 /**
  * The buzzer_control task will control the buzzer control pin. This function
