@@ -1,8 +1,6 @@
 #include "VCF_Globals.h"
 #include "VCF_Constants.h"
 
-/* From shared-firmware-interfaces */
-
 /* From shared-firmware-types */
 #include "SharedFirmwareTypes.h"
 
