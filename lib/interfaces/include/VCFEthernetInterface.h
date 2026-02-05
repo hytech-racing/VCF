@@ -3,9 +3,6 @@
 
 #include "hytech_msgs.pb.h"
 #include "SharedFirmwareTypes.h"
-#include "ADCInterface.h"
-#include "DashboardInterface.h"
-#include "PedalsSystem.h"
 
 namespace VCFEthernetInterface 
 {
@@ -15,8 +12,7 @@ namespace VCFEthernetInterface
      * @param shared_state The current VCF state, which includes both interface and system data.
      * @return A populated instance of the outgoing protoc struct.
      */
-    // hytech_msgs_VCFData_s make_vcf_data_msg(VCFData_s &shared_state);
-    hytech_msgs_VCFData_s make_vcf_data_msg(ADCInterface &ADCInterfaceInstance, DashboardInterface &dashInstance, PedalsSystem &pedalsInstance);
+    hytech_msgs_VCFData_s make_vcf_data_msg(VCFData_s &shared_state);
 
     /**
      * Function to take a populated protoc struct from VCR and update the VCF state. This is ONLY critical

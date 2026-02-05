@@ -2,7 +2,6 @@
 #include "PedalsSystem.h"
 // #include <stdio.h>
 // #include <iostream>
-
 float PedalsSystem::_pedal_percentage(float scaled_pedal_1, float scaled_pedal_2, const PedalsParams& params)
 {
     const float divider = 2.0;

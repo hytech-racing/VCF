@@ -6,11 +6,10 @@
 /* Button reads */
 DashInputState_s DashboardInterface::get_dashboard_outputs() 
 {
-
     // _dashboard_outputs.dim_btn_is_pressed = !digitalRead(_dashboard_gpios.DIM_BUTTON);
     _dashboard_outputs.dim_btn_is_pressed = 0;
 
-    _dashboard_outputs.preset_btn_is_pressed = !digitalRead(_dashboard_gpios.PRESET_BUTTON);
+    _dashboard_outputs.preset_btn_is_pressed= !digitalRead(_dashboard_gpios.PRESET_BUTTON);
     _dashboard_outputs.mc_reset_btn_is_pressed = !digitalRead(_dashboard_gpios.MC_CYCLE_BUTTON);
     // _dashboard_outputs.mode_btn_is_pressed = !digitalRead(_dashboard_gpios.MODE_BUTTON);
     _dashboard_outputs.dim_btn_is_pressed = 0;
@@ -31,18 +30,4 @@ void DashboardInterface::receive_ACU_OK(const CAN_message_t &can_msg)
     
     bms_ok = unpacked_msg.bms_ok;
     imd_ok = unpacked_msg.imd_ok;
-}
-
-void DashboardInterface::set_dial_state(ControllerMode_e mode) {
-    _dashboard_outputs.dial_state = mode;
-}
-
-DashInputState_s DashboardInterface::get_dashboard_stored_state()
-{
-    return _dashboard_stored_state;
-}
-
-void DashboardInterface::sync_dashboard_stored_state()
-{
-    _dashboard_stored_state = _dashboard_outputs;
 }
