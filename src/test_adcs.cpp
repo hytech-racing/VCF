@@ -12,8 +12,8 @@ void setup()
     SPI.begin();
     ADCInterfaceInstance::create(
         ADCPinout_s {
-            VCFInterfaceConstants::ADC1_CS,
-            VCFInterfaceConstants::ADC2_CS
+            VCFInterfaceConstants::ADC0_CS,
+            VCFInterfaceConstants::ADC1_CS
         },
         ADCChannels_s {
             VCFInterfaceConstants::STEERING_1_CHANNEL,
@@ -57,20 +57,20 @@ void setup()
 void loop()
 {
     if (millis() - DELAY > last) {
-        ADCInterfaceInstance::instance().adc1_tick();
-        hal_printf("ADC1 Front Right Load Cell Raw: %d\n", ADCInterfaceInstance::instance().FR_load_cell().raw);
-        hal_printf("ADC1 Front Left Load Cell Raw:  %d\n", ADCInterfaceInstance::instance().FL_load_cell().raw);
-        hal_printf("ADC1 Front Right Sus Pot Raw:   %d\n", ADCInterfaceInstance::instance().FR_sus_pot().raw);
-        hal_printf("ADC1 Front Left Sus Pot Raw:    %d\n", ADCInterfaceInstance::instance().FL_sus_pot().raw);
-        hal_printf("ADC1 Steering Degrees CCW Raw:  %d\n", ADCInterfaceInstance::instance().steering_degrees_ccw().raw);
-        hal_printf("ADC1 Steering Degrees CW Raw:   %d\n", ADCInterfaceInstance::instance().steering_degrees_cw().raw);
+        ADCInterfaceInstance::instance().adc0_tick();
+        hal_printf("ADC0 Front Right Load Cell Raw: %d\n", ADCInterfaceInstance::instance().FR_load_cell().raw);
+        hal_printf("ADC0 Front Left Load Cell Raw:  %d\n", ADCInterfaceInstance::instance().FL_load_cell().raw);
+        hal_printf("ADC0 Front Right Sus Pot Raw:   %d\n", ADCInterfaceInstance::instance().FR_sus_pot().raw);
+        hal_printf("ADC0 Front Left Sus Pot Raw:    %d\n", ADCInterfaceInstance::instance().FL_sus_pot().raw);
+        hal_printf("ADC0 Steering Degrees CCW Raw:  %d\n", ADCInterfaceInstance::instance().steering_degrees_ccw().raw);
+        hal_printf("ADC0 Steering Degrees CW Raw:   %d\n", ADCInterfaceInstance::instance().steering_degrees_cw().raw);
         hal_printf("\n\n");
 
-        ADCInterfaceInstance::instance().adc2_tick();
-        hal_printf("ADC2 Acceleration 1 Raw: %d\n", ADCInterfaceInstance::instance().acceleration_1().raw);
-        hal_printf("ADC2 Acceleration 2 Raw: %d\n", ADCInterfaceInstance::instance().acceleration_2().raw);
-        hal_printf("ADC2 Brake 1 Raw:        %d\n", ADCInterfaceInstance::instance().brake_1().raw);
-        hal_printf("ADC2 Brake 2 Raw:        %d\n", ADCInterfaceInstance::instance().brake_2().raw);
+        ADCInterfaceInstance::instance().adc1_tick();
+        hal_printf("ADC1 Acceleration 1 Raw: %d\n", ADCInterfaceInstance::instance().acceleration_1().raw);
+        hal_printf("ADC1 Acceleration 2 Raw: %d\n", ADCInterfaceInstance::instance().acceleration_2().raw);
+        hal_printf("ADC1 Brake 1 Raw:        %d\n", ADCInterfaceInstance::instance().brake_1().raw);
+        hal_printf("ADC1 Brake 2 Raw:        %d\n", ADCInterfaceInstance::instance().brake_2().raw);
         hal_printf("\n\n");
         last = millis();
     }

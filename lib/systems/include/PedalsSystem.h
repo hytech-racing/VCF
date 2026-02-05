@@ -59,9 +59,39 @@ public:
         
     }
 
+    void set_pedals_system_data(const PedalsSystemData_s &pedal_data)
+    {
+        _systemData.accel_is_implausible = pedal_data.accel_is_implausible;
+        _systemData.brake_is_implausible = pedal_data.brake_is_implausible;
+        _systemData.brake_is_pressed = pedal_data.brake_is_pressed;
+        _systemData.accel_is_pressed = pedal_data.accel_is_pressed;
+        _systemData.mech_brake_is_active = pedal_data.mech_brake_is_active;
+        _systemData.brake_and_accel_pressed_implausibility_high = pedal_data.brake_and_accel_pressed_implausibility_high;
+        _systemData.implausibility_has_exceeded_max_duration = pedal_data.implausibility_has_exceeded_max_duration;
+        _systemData.accel_percent = pedal_data.accel_percent;
+        _systemData.brake_percent = pedal_data.brake_percent;
+        _systemData.regen_percent = pedal_data.regen_percent;
+
+        // _systemData = pedal_data;
+    }
+
+    void set_pedals_sensor_data(const PedalSensorData_s &pedal_data)
+    {
+        _sensorData.accel_1 = pedal_data.accel_1;
+        _sensorData.accel_2 = pedal_data.accel_2;
+        _sensorData.brake_1 = pedal_data.brake_1;
+        _sensorData.brake_2 = pedal_data.brake_2;
+        _sensorData.pedal_pressure = pedal_data.pedal_pressure;
+    }
+
     const PedalsSystemData_s &get_pedals_system_data()
     {
-        return _data;
+        return _systemData;
+    }
+
+    const PedalSensorData_s &get_pedals_sensor_data()
+    {
+        return _sensorData;
     }
 
     float get_mech_brake_activation_threshold()
@@ -81,7 +111,7 @@ public:
      * WARNING: This should only be called when driver holds the button!
      * WARNING: This requires both pedals to be near 0% travel!
      */
-    void recalibrate_min_max(PedalSensorData_s &curr_values)
+    void recalibrate_min_max(const PedalSensorData_s &curr_values)
     {
         // If pedal is near 0% travel and is closer to the observed max, then this sensor is a negative coefficient.
         bool accel_1_flipped = std::abs((int) curr_values.accel_1 - (int) max_observed_accel_1) < std::abs((int) curr_values.accel_1 - (int) min_observed_accel_1);
@@ -105,7 +135,7 @@ public:
      * to non-volatile memory (EEPROM). This should be called constantly to update the
      * observation.
      */
-    void update_observed_pedal_limits(PedalSensorData_s &curr_values)
+    void update_observed_pedal_limits(const PedalSensorData_s &curr_values)
     {
         min_observed_accel_1 = std::min(min_observed_accel_1, curr_values.accel_1);
         max_observed_accel_1 = std::max(max_observed_accel_1, curr_values.accel_1);
@@ -116,7 +146,7 @@ public:
         min_observed_brake_2 = std::min(min_observed_brake_2, curr_values.brake_2);
         max_observed_brake_2 = std::max(max_observed_brake_2, curr_values.brake_2);
     }
-    uint32_t min_observed_accel_1 = 4096;
+    uint32_t min_observed_accel_1 = 4095;
     uint32_t max_observed_accel_1 = 0;
     uint32_t min_observed_accel_2 = 4095;
     uint32_t max_observed_accel_2 = 0;
@@ -205,7 +235,8 @@ private:
     bool _pedal_is_active(float pedal1ConvertedData, float pedal2ConvertedData, const PedalsParams &params, bool check_mech_activation);
     
 private:
-    PedalsSystemData_s _data{};
+    PedalsSystemData_s _systemData{};
+    PedalSensorData_s _sensorData{};
     PedalsParams _accelParams{};
     PedalsParams _brakeParams{};
     bool _implaus_occured = false;

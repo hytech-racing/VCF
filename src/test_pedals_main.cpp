@@ -50,8 +50,8 @@ void setup(){
     PedalsSystemInstance::create(accel_params, brake_params); //pass in the two different params
     ADCInterfaceInstance::create(
         ADCPinout_s {
-            VCFInterfaceConstants::ADC1_CS,
-            VCFInterfaceConstants::ADC2_CS
+            VCFInterfaceConstants::ADC0_CS,
+            VCFInterfaceConstants::ADC1_CS
         },
         ADCChannels_s {
             VCFInterfaceConstants::STEERING_1_CHANNEL,
@@ -98,7 +98,7 @@ void setup(){
 
 void loop(){
 
-    ADCInterfaceInstance::instance().adc2_tick();
+    ADCInterfaceInstance::instance().adc1_tick();
     PedalSensorData_s pedal_sensor_data = {};
     
     pedal_sensor_data.accel_1 = ADCInterfaceInstance::instance().acceleration_1().conversion;
