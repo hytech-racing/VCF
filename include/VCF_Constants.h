@@ -33,8 +33,8 @@ namespace VCFInterfaceConstants {
     /* Channels on ADC_0 */
     // constexpr int UNUSED_CHANNEL         = 0;
     constexpr int PEDAL_REF_2V5_CHANNEL     = 1;    // 2.5V reference used for improved pedal calibration
-    constexpr int STEERING_1_CHANNEL = 2;    // Analog steering sensor 1
-    constexpr int STEERING_2_CHANNEL = 3;    // Analog steering sensor 2
+    constexpr int STEERING_1_CHANNEL        = 2;    // Analog steering sensor 1
+    constexpr int STEERING_2_CHANNEL        = 3;    // Analog steering sensor 2
     constexpr int ACCEL_1_CHANNEL           = 4;    // Accel pedal sensor 1
     constexpr int ACCEL_2_CHANNEL           = 5;    // Accel pedal sensor 2
     constexpr int BRAKE_1_CHANNEL           = 6;    // Brake pedal sensor 1

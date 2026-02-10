@@ -56,7 +56,7 @@ HT_TASK::Task front_suspension_message_enqueue(HT_TASK::DUMMY_FUNCTION, &enqueue
 HT_TASK::Task kick_watchdog_task(&init_kick_watchdog, &run_kick_watchdog, VCFTaskConstants::WATCHDOG_PRIORITY, VCFTaskConstants::WATCHDOG_KICK_PERIOD); 
 HT_TASK::Task pedals_calibration_task(HT_TASK::DUMMY_FUNCTION, &update_pedals_calibration_task, VCFTaskConstants::PEDALS_RECALIBRATION_PRIORITY, VCFTaskConstants::PEDALS_RECALIBRATION_PERIOD); 
 
-HT_TASK::Task debug_state_print_task(HT_TASK::DUMMY_FUNCTION, &debug_print, VCFTaskConstants::DEBUG_PRIORITY, VCFTaskConstants::DEBUG_PERIOD);
+//HT_TASK::Task debug_state_print_task(HT_TASK::DUMMY_FUNCTION, &debug_print, VCFTaskConstants::DEBUG_PRIORITY, VCFTaskConstants::DEBUG_PERIOD);
 
 void setup() {
     setup_all_interfaces(); //must be first (if we ever have a setup systems)
@@ -78,9 +78,10 @@ void setup() {
     HT_SCHED::Scheduler::getInstance().schedule(neopixels_task);
     HT_SCHED::Scheduler::getInstance().schedule(steering_message_enqueue);
     HT_SCHED::Scheduler::getInstance().schedule(front_suspension_message_enqueue);
-    HT_SCHED::Scheduler::getInstance().schedule(debug_state_print_task);
     HT_SCHED::Scheduler::getInstance().schedule(pedals_calibration_task);
     HT_SCHED::Scheduler::getInstance().schedule(ethernet_send_task);
+
+    // HT_SCHED::Scheduler::getInstance().schedule(debug_state_print_task);
 }
 
 void loop() {

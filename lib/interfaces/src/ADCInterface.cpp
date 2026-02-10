@@ -65,7 +65,28 @@ float ADCInterface::iir_filter(float alpha, float prev_value, float new_value)
     return (alpha * new_value) + (1 - alpha) * (prev_value);
 }
 
-
+void ADCInterface::update_filtered_values(float alpha) {
+    _FL_load_cell_filtered = iir_filter(
+        alpha,
+        _FL_load_cell_filtered,
+        FL_load_cell().conversion
+    );
+    _FR_load_cell_filtered = iir_filter(
+        alpha,
+        _FR_load_cell_filtered,
+        FR_load_cell().conversion
+    );
+    _FL_sus_pot_filtered = iir_filter(
+        alpha,
+        _FL_sus_pot_filtered,
+        static_cast<float>(FL_sus_pot().raw)
+    );
+    _FR_sus_pot_filtered = iir_filter(
+        alpha,
+        _FR_sus_pot_filtered,
+        static_cast<float>(FR_sus_pot().raw)
+    );
+}
 
 /* -------------------- ADC 0 Functions -------------------- */
 void ADCInterface::adc0_tick() {
@@ -113,20 +134,36 @@ AnalogConversion_s ADCInterface::shdn_d() {
     return _adc1.data.conversions[_adc_parameters.channels.shdn_d_channel];
 }
 
+AnalogConversion_s ADCInterface::FL_load_cell() {
+    return _adc0.data.conversions[_adc_parameters.channels.fl_loadcell_channel];
+}
+
+float ADCInterface::get_filtered_FL_load_cell() {
+    return _FL_load_cell_filtered;
+}
+
 AnalogConversion_s ADCInterface::FR_load_cell() {
     return _adc1.data.conversions[_adc_parameters.channels.fr_loadcell_channel];
 }
 
-AnalogConversion_s ADCInterface::FL_load_cell() {
-    return _adc1.data.conversions[_adc_parameters.channels.fl_loadcell_channel];
-}
-
-AnalogConversion_s ADCInterface::FL_sus_pot() {
-    return _adc1.data.conversions[_adc_parameters.channels.fl_suspot_channel];
+float ADCInterface::get_filtered_FR_load_cell() {
+    return _FR_load_cell_filtered;
 }
 
 AnalogConversion_s ADCInterface::FR_sus_pot() {
-    return _adc1.data.conversions[_adc_parameters.channels.fr_suspot_channel];
+    return _adc0.data.conversions[_adc_parameters.channels.fr_suspot_channel];
+}
+
+float ADCInterface::get_filtered_FR_sus_pot() {
+    return _FR_sus_pot_filtered;
+}
+
+AnalogConversion_s ADCInterface::FL_sus_pot() {
+    return _adc0.data.conversions[_adc_parameters.channels.fl_suspot_channel];
+}
+
+float ADCInterface::get_filtered_FL_sus_pot() {
+    return _FL_sus_pot_filtered;
 }
 
 AnalogConversion_s ADCInterface::brake_pressure_front() {
