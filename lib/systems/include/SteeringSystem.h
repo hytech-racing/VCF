@@ -65,7 +65,7 @@ public:
     // Other Functions
     void recalibrate_steering(const SteeringSensorData_s &current_steering_data);
 
-    
+    void evaluate_steering(const SteeringSensorData_s &current_steering_data);
     
     
     
@@ -96,9 +96,6 @@ private:
     
 
 /*
-
-
-
     int32_t _prev_raw_adc = -1;  // Initialize to -1 so we know it's the first run
     int32_t _rotation_count = 0; // Tracks full 360-degree turns (e.g., -1, 0, 1, 2)
 
