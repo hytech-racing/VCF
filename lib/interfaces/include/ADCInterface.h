@@ -218,10 +218,14 @@ class ADCInterface
         float get_filtered_FR_sus_pot();
 
         /**
-         * Update the filtered values for the load cells and sus pots
+         * Update the filtered values for the load cells and sus pots.
+         * Uses the iir_filter method to do so.
          */
         void update_filtered_values(float alpha);
 
+        /**
+         * @return updated filtered value based on given alpha, previous filtered value, and new measured value
+         */
         static float iir_filter(float alpha, float prev_value, float new_value);
         
     /* ------ Private Functions ------ */

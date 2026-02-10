@@ -32,7 +32,7 @@ HT_TASK::TaskResponse run_read_adc0_task(const unsigned long& sysMicros, const H
         .accel_2 = static_cast<uint32_t>(ADCInterfaceInstance::instance().acceleration_2().conversion),
         .brake_1 = static_cast<uint32_t>(ADCInterfaceInstance::instance().brake_1().conversion),
         .brake_2 = static_cast<uint32_t>(ADCInterfaceInstance::instance().brake_2().conversion),
-        .pedal_pressure = 0 // TODO: Needs change for both brake pressure sensors (front and rear)
+        .pedal_pressure = 0 // TODO: Need changes to support both brake pressure sensors
     });
     return HT_TASK::TaskResponse::YIELD;
 }

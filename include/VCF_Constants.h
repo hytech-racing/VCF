@@ -5,16 +5,21 @@
 
 // hardware connections constants
 namespace VCFInterfaceConstants {
-    //Teensy 4.1 GPIO pins  
+    /* Teensy 4.1 GPIO pins */
+    
+    /* Not on Schematic
     // constexpr int BTN_DIM_READ = 28;
     // constexpr int BTN_PRESET_READ = 31;
-    constexpr int BTN_MC_CYCLE_READ = 31; // MUST NOT BE MAPPED ANYMORE. USED TO BE 27.
     // constexpr int BTN_MODE_READ = 27; // USED TO BE 26.
-    constexpr int BTN_START_READ = 29;
-    constexpr int BTN_DATA_READ = 30;
+    */
+
+    constexpr int BTN_MC_CYCLE_READ = 31; // DB/MC_RESET on schematic
+    constexpr int BTN_START_READ = 29; // RTD on schematic
+    constexpr int BTN_DATA_READ = 30; // DATA_MARK on schematic
     constexpr int BUZZER_CONTROL_PIN = 32;
-    constexpr int RIGHT_SHIFTER = 26;
-    constexpr int LEFT_SHIFTER = 27;
+    constexpr int RIGHT_SHIFTER = 26; // BUTTON_1 on schematic
+    constexpr int LEFT_SHIFTER = 27; // BUTTON_2 on schematic
+    constexpr int BRIGHTNESS_CONTROL_PIN = 28; // Currently unused
     
     constexpr int NEOPIXEL_CONTROL_PIN = 33;
     constexpr int NEOPIXEL_COUNT = 12; // 12 neopixeles on dashboard
@@ -169,7 +174,6 @@ namespace VCFTaskConstants {
     constexpr unsigned long LOADCELL_SEND_PERIOD = 4000;          // 4 000 us = 250 Hz
     constexpr unsigned long LOADCELL_SEND_PRIORITY = 25;
 
-
     constexpr unsigned long PEDALS_RECALIBRATION_PRIORITY = 150;
     constexpr unsigned long PEDALS_RECALIBRATION_PERIOD = 100000; // 100 000 us = 10 Hz
     
@@ -178,7 +182,6 @@ namespace VCFTaskConstants {
 
     constexpr unsigned long WATCHDOG_PRIORITY = 1;
     constexpr unsigned long WATCHDOG_KICK_PERIOD = 1000;          // 1 000 us = 1000 Hz
-
 }
 
 #endif /* VCF_CONSTANTS */
