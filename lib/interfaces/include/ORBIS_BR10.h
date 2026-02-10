@@ -60,7 +60,7 @@ class OrbisBR10 : public SteeringEncoderInterface
 {
 public:
 // Constructors
-    OrbisBR10(HardwareSerial* serial, int serialSpeed);
+    OrbisBR10(HardwareSerial* serial);
 // Functions
     void sample();    
     void init() {}
@@ -68,13 +68,13 @@ public:
     bool performSelfCalibration();
     void setEncoderOffset();
     void saveConfiguration();
+    void factoryReset();
 
 private:
 // Data
 
     SteeringEncoderConversion_s convert() {}
 
-    void factoryReset();
     void decodeErrors(uint8_t general, uint8_t detailed);
 
     HardwareSerial* _serial;

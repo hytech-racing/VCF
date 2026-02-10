@@ -2,9 +2,9 @@
 #include "ORBIS_BR10.h"
 #include <Arduino.h>
 
-OrbisBR10::OrbisBR10(HardwareSerial* serial, int serialSpeed)
+OrbisBR10::OrbisBR10(HardwareSerial* serial)
 : _serial(serial)
-, _serialSpeed(serialSpeed)
+, _serialSpeed(OrbisDefaultParams::ORBIS_BR_DEFAULT_BAUD_RATE)
 {
    _lastConversion.status = SteeringEncoderStatus_e::STEERING_ENCODER_ERROR;
    _serial->begin(_serialSpeed, SERIAL_8N1);
@@ -15,8 +15,6 @@ OrbisBR10::OrbisBR10(HardwareSerial* serial, int serialSpeed)
 bool OrbisBR10::performSelfCalibration()
 {
     // Serial.println("Starting self-calibration..."); // Debug line
-
-
 
     /* ----- SELF CALIBRATION STATUS 1 ----- */
     
@@ -129,9 +127,9 @@ void OrbisBR10::setEncoderOffset()
     
     _serial->write(OrbisCommands::SHORT_POS_REQUEST); delay(1);
 
-    while (!_serial->available());
+    while (!_serial->available());  //wait until bytes are available
     uint8_t position_1 = _serial->read(); 
-    while (!_serial->available());
+    while (!_serial->available());  //wait until bytes are available
     uint8_t position_2 = _serial->read();
     
     // Serial.println("Position for Offset: ");     // Debug line
@@ -141,14 +139,13 @@ void OrbisBR10::setEncoderOffset()
 
     uint16_t position_data = ((((uint16_t) position_1) << OrbisDefaultParams::POS_DATA_MASK1) | (uint16_t) position_2) >> OrbisDefaultParams::POS_DATA_MASK2;
 
-    byte position1 = (position_data >> 8) & 0xFF;      // b15 - b8 (See Encoder Packet Structure page 16)
+    byte position1 = (position_data >> OrbisDefaultParams::POS_DATA_MASK1) & 0xFF;      // b15 - b8 (See Encoder Packet Structure page 16)
     byte position2 = position_data & 0xFF;             // b7 - b0
 
     for (byte b : OrbisCommands::UNLOCK_SEQUENCE) 
     {
         _serial->write(b); delay(1);
         _serial->read();
-
     }
 
     // while (_serial->available()) {

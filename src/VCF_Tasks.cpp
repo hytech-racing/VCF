@@ -589,7 +589,7 @@ void setup_all_interfaces() {
     PedalsSystemInstance::create(accel_params, brake_params); //pass in the two different params
     
     // Create Digital Steering Sensor singleton
-    OrbisBRInstance::create(&Serial3, 115200); // pass in two different params
+    OrbisBRInstance::create(&Serial3); // pass in two different params
 
     // Create dashboard singleton
     DashboardGPIOs_s dashboard_gpios = {
