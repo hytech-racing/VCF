@@ -31,6 +31,7 @@ struct SteeringSystemData_s
 {
     float analog_steering_angle; //in degrees
     float digital_steering_angle; //in degrees
+    float output_steering_angle; // represents the better output of the two sensors or some combination of the values
 
     float steering_velocity_deg_s; //in degrees per second
 
