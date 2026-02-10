@@ -20,33 +20,41 @@
 
 
 /* --- Basic Definitions --- */ 
-const int      ORBIS_BR_DEFAULT_BAUD_RATE                 = 115200;
+namespace OrbisDefaultParams {
+    const int ORBIS_BR_DEFAULT_BAUD_RATE    = 115200;
+    const int POS_DATA_MASK1                = 8;
+    const int POS_DATA_MASK2                = 2;
+    const float ENCODER_RESOLUTION          = 16384.0f;
+    const float DEGREES_PER_REVOLUTION      = 360.0f;
+}
 
 /* --- Error Definitions --- */ 
 // Based on encoder packet structure (page 16 of datasheet)
-const uint16_t ORBIS_BR_BITMASK_GENERAL_WARNING           = (0b1 << 0);     // 0b00000001, error if low, position data is valid, but some operating conditions are close to limits
-const uint16_t ORBIS_BR_BITMASK_GENERAL_ERROR             = (0b1 << 1);     // 0b00000010, error if low, position data is not valid 
+// General errors are included in the first byte of the detailed position request response. While the detailed errors are from the fourth byte.
+namespace OrbisGeneralErrorMasks {
+    const uint16_t ORBIS_BR_BITMASK_GENERAL_WARNING           = (0b1 << 0);     // 0b00000001, error if low, position data is valid, but some operating conditions are close to limits
+    const uint16_t ORBIS_BR_BITMASK_GENERAL_ERROR             = (0b1 << 1);     // 0b00000010, error if low, position data is not valid 
+}
+namespace OrbisDetailedErrorMasks {
+    const uint16_t ORBIS_BR_BITMASK_DETAILED_COUNTER_ERROR    = (0b1 << 3);     // 0b00001000, errors if high
+    const uint16_t ORBIS_BR_BITMASK_DETAILED_SPEED_HIGH       = (0b1 << 4);     // 0b00010000, errors if high
+    const uint16_t ORBIS_BR_BITMASK_DETAILED_TEMP_RANGE       = (0b1 << 5);     // 0b00100000, errors if high
+    const uint16_t ORBIS_BR_BITMASK_DETAILED_DIST_FAR         = (0b1 << 6);     // 0b01000000, errors if high
+    const uint16_t ORBIS_BR_BITMASK_DETAILED_DIST_NEAR        = (0b1 << 7);     // 0b10000000, errors if high
+}
 
-const uint16_t ORBIS_BR_BITMASK_DETAILED_COUNTER_ERROR    = (0b1 << 3);     // 0b00001000, errors if high
-const uint16_t ORBIS_BR_BITMASK_DETAILED_SPEED_HIGH       = (0b1 << 4);     // 0b00010000, errors if high
-const uint16_t ORBIS_BR_BITMASK_DETAILED_TEMP_RANGE       = (0b1 << 5);     // 0b00100000, errors if high
-const uint16_t ORBIS_BR_BITMASK_DETAILED_DIST_FAR         = (0b1 << 6);     // 0b01000000, errors if high
-const uint16_t ORBIS_BR_BITMASK_DETAILED_DIST_NEAR        = (0b1 << 7);     // 0b10000000, errors if high
 
 /* --- Commands --- */ 
-const byte UNLOCK_SEQUENCE[4]           = {0xCD, 0xEF, 0x89, 0xAB}; 
-const byte FACTORY_RESET                = 0x72;
-const byte SELF_CALIB_START             = 0x41;
-const byte SELF_CALIB_STATUS            = 0x69;
-const byte POSITION_OFFSET              = 0x5A; // requires unlock sequence
-const byte SAVE_CONFIGURATION           = 0x63; // requires unlock sequence
-const byte SHORT_POS_REQUEST            = 0x33;
-const byte DETAILED_POS_REQUEST         = 0x64;
-const byte DECODE_GENERAL_ERRORS        = 0x03;
-const int POS_DATA_MASK1                = 8;
-const int POS_DATA_MASK2                = 2;
-const float BIT_ANGLE_CONVERSION        = 8192.0f;
-const float CLIP_PREVENTION                = 180.0f;
+namespace OrbisCommands {
+    const byte UNLOCK_SEQUENCE[4]           = {0xCD, 0xEF, 0x89, 0xAB}; 
+    const byte FACTORY_RESET                = 0x72;
+    const byte SELF_CALIB_START             = 0x41; // requires unlock sequence
+    const byte SELF_CALIB_STATUS            = 0x69;
+    const byte POSITION_OFFSET              = 0x5A; // requires unlock sequence
+    const byte SAVE_CONFIGURATION           = 0x63; // requires unlock sequence
+    const byte SHORT_POS_REQUEST            = 0x33;
+    const byte DETAILED_POS_REQUEST         = 0x64;
+}
 
 class OrbisBR10 : public SteeringEncoderInterface
 {
@@ -55,27 +63,24 @@ public:
     OrbisBR10(HardwareSerial* serial, int serialSpeed);
 // Functions
     void sample();    
-    void init();
+    void init() {}
     SteeringEncoderConversion_s position();
-    void setOffset(float newOffset);
+    bool performSelfCalibration();
+    void setEncoderOffset();
+    void saveConfiguration();
 
 private:
 // Data
 
     SteeringEncoderConversion_s convert() {}
 
-    bool performSelfCalibration();
-    uint16_t offsetPosition();
-    void setEncoderOffset(uint16_t _position_data);
-    void saveConfiguration();
+    void factoryReset();
     void decodeErrors(uint8_t general, uint8_t detailed);
 
     HardwareSerial* _serial;
     int _serialSpeed;
 
-    uint16_t _position_data;
     SteeringEncoderConversion_s _lastConversion;
-    float _angleOffset = 0.0f;
 
     bool _isCalibrated = false;
     bool _isOffsetSet = false;
