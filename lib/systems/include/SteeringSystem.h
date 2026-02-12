@@ -45,15 +45,24 @@ struct SteeringSystemData_s
 class SteeringSystem 
 {
 public:
-    SteeringSystem(const SteeringParams &steeringParams) : _steeringParams(steeringParams)
+    SteeringSystem(const SteeringParams_s &steeringParams) : _steeringParams(steeringParams)
     {}
 
     // Setters
-    void set_steering_params(const SteeringParams &steeringParams);
+    void set_steering_params(const SteeringParams_s &steeringParams)
+    {
+//parameters
+    }
+
 
     void set_steering_system_data(const SteeringSystemData_s &steeringSystemData);
+    {
+
+        //output that comes once we've calibrated everything, we output this data
+    }
 
     void set_steering_sensor_data(const SteeringSensorData_s &steeringSensorData);
+    //get the current value from the sensor
 
 
     // Getters
@@ -65,6 +74,12 @@ public:
 
     // Other Functions
     void recalibrate_steering(const SteeringSensorData_s &current_steering_data);
+    {
+        uint32_t analog_raw_value = static_cast<uint32_t>(current_steering_data.analog_raw);
+        uint32_t digital_raw_value = static_cast<uint32_t>(current_steering_data.digital_raw);
+        bool steering_flipped = 
+
+    }
 
     void evaluate_steering(const SteeringSensorData_s &current_steering_data);
     
@@ -74,7 +89,7 @@ public:
 private:
    
     float _convert_digital_sensor(const SteeringSensorData_s &current_steering_data);
-    
+        
     float _convert_analog_sensor(const SteeringSensorData_s &current_steering_data);
 
 
