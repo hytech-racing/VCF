@@ -13,10 +13,10 @@ struct SteeringParams_s {
     uint32_t max_steering_signal_digital; //Raw ADC value from digital sensor at maximum (right) steering angle
 
     
-    uint32_t min_steering_analog; //minimum sensor output *analog 
-    uint32_t max_steering_analog; //maximimum sensor output *analog
-    uint32_t min_steering_digital; // maximum sensor output *digital
-    uint32_t max_steering_digital; //maximum sensor output *digital
+    uint32_t min_steering_analog; //minimum sensor output *analog 0
+    uint32_t max_steering_analog; //maximimum sensor output *analog 4095
+    uint32_t min_steering_digital; // maximum sensor output *digital 4095
+    uint32_t max_steering_digital; //maximum sensor output *digital0
 
     float deg_per_count; //degrees of steering angle per count of the sensor 
 
@@ -107,9 +107,10 @@ private:
     In order to check current total number of rotations (analog goes from max value back down to 0), we need to see if we exceeded a limit between readings
     leaving this commented for now because this conflicts with one of the implausibility checks (max change in angle per reading) and we can revisit this if we find a solution
 */
-    SteeringSensorData_s _steeringSensorData;
-    SteeringSystemData_s _steeringSystemData;
-    SteeringParams_s _steeringParams;
+    SteeringSensorData_s _steeringSensorData{};
+    SteeringSystemData_s _steeringSystemData{};
+    SteeringParams_s _steeringParams{};
+    bool _implaus
 };
 
 
