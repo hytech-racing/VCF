@@ -1,10 +1,7 @@
-#ifndef __UPPERSTEERINGSENSOR_H__
-#define __UPPERSTEERINGSENSOR_H__
+#ifndef STEERING_ENCODER_INTERFACE_H
+#define STEERING_ENCODER_INTERFACE_H
 
 #include <Arduino.h>
-// #include <ORBIS_BR10.h>
-// #include <etl/singleton.h>
-
 
 enum class SteeringEncoderStatus_e
 {
@@ -26,7 +23,7 @@ struct EncoderErrorFlags_s
     bool noData                   = false;  // No data received
 };
 
-struct SteeringEncoderConversion_s // what's seen in foxglove?
+struct SteeringEncoderConversion_s  // This is the final struct I would like to send across the car. What's seen in foxglove?
 {
     float angle = 0.0f;
     int raw = 0;
@@ -46,4 +43,4 @@ public:
     virtual SteeringEncoderConversion_s convert() = 0;
 };
 
-#endif /* __UPPERSTEERINGSENSOR_H__ */
+#endif /* STEERING_ENCODER_INTERFACE_H */

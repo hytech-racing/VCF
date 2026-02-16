@@ -19,7 +19,7 @@
 #include "ACUInterface.h"
 #include <EEPROM.h>
 #include "FlexCAN_T4.h"
-#include "ORBIS_BR10.h"
+#include "Orbis_BR.h"
 
 #include "WatchdogSystem.h"
 #include "Arduino.h"
@@ -73,9 +73,9 @@ HT_TASK::TaskResponse run_read_digital_steering_sensor(const unsigned long& sysM
 {
     OrbisBRInstance::instance().sample();
 
-    SteeringEncoderConversion_s data = OrbisBRInstance::instance().position();
+    SteeringEncoderConversion_s data = OrbisBRInstance::instance().convert();
 
-    Serial.println("RAW: " + data.raw);
+    Serial.printf("RAW: %s\n", data.raw);
     // Serial.println("ANGLE: " + data.angle);
     Serial.printf("ANGLE: %.2f\n", data.angle);
     // Serial.println("STATUS: "); 

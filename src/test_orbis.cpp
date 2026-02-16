@@ -1,46 +1,39 @@
-#include "Arduino.h"
-#include "ORBIS_BR10.h"
+#include <Arduino.h>
 #include "SteeringEncoderInterface.h"
+#include "Orbis_BR.h"
 
-const int BAUD_RATE = 115200;
+constexpr int SAMPLE_RATE = 5000;
 
 // Globals
-//OrbisBR10 encoder(&Serial3, BAUD_RATE);
 unsigned long lastPrintTime = 0;
 
 
 void setup()
 {
-    Serial.begin(BAUD_RATE);
+    Serial.begin(ORBIS_BR_DEFAULT_BAUD_RATE);
 
     while(!Serial);
+    Serial.println("Serial Monitor connected.");        // Debug line
 
-    OrbisBRInstance::create(&Serial3, BAUD_RATE);
+    OrbisBRInstance::create(&Serial3, ORBIS_BR_DEFAULT_BAUD_RATE);
 
     
-    // Serial.println("Calling init");                  // Debug line
-    // bool _isCalibrated = false;    // Assume sensor is not calibrated
-    // while (!_isCalibrated)
-    // {
-    //     _isCalibrated = OrbisBRInstance::instance().performSelfCalibration();
-    // }
+    Serial.println("Calling Self-Calib");                  // Debug line
     
-    OrbisBRInstance::instance().sample(); delay(10);
+    OrbisBRInstance::instance().sample();
+    
+    OrbisBRInstance::instance().factoryReset();
+
+    bool _isCalibrated = false;    // Assume sensor is not calibrated
+    while (!_isCalibrated) //NOLINT
+    {
+        _isCalibrated = OrbisBRInstance::instance().performSelfCalibration(); 
+    }
     
     OrbisBRInstance::instance().setEncoderOffset();
 
     // OrbisBRInstance::instance().saveConfiguration(); delay(100);
 
-
-    delay(1000);
-
-    OrbisBRInstance::instance().sample(); delay(10);
-
-    // OrbisBRInstance::instance().setEncoderOffset();
-    // OrbisBRInstance::instance().sample(); delay(10);
-    
-    Serial.println("Serial Monitor connected.");        // Debug line
-    
     /* --- Block For Debugging --- */
     // OrbisBRInstance::instance().sample();
     // Serial.print("\n\n");
@@ -48,12 +41,11 @@ void setup()
 
 void loop()
 {
-    if (millis() - lastPrintTime >= 5000)
+    if (millis() - lastPrintTime >= SAMPLE_RATE) 
     {
         lastPrintTime = millis();
         
-        OrbisBRInstance::instance().sample(); delay(10);
+        OrbisBRInstance::instance().sample();
 
     }
-
 }

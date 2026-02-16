@@ -1,8 +1,8 @@
 /* Library Includes */
-#include "ORBIS_BR10.h"
+#include "Orbis_BR.h"
 #include <Arduino.h>
 
-OrbisBR10::OrbisBR10(HardwareSerial* serial, int serialSpeed)
+OrbisBR::OrbisBR(HardwareSerial* serial, int serialSpeed)
 : _serial(serial)
 , _serialSpeed(serialSpeed)
 {
@@ -11,12 +11,12 @@ OrbisBR10::OrbisBR10(HardwareSerial* serial, int serialSpeed)
 }
 
 
-/* -------------------- Initialization Functions -------------------- */
-bool OrbisBR10::performSelfCalibration()
+/* -------------------- Initialization Methods -------------------- */
+// Is there a point in having a separate method for off car set-up? The only thing in that method wold likely 
+
+bool OrbisBR::performSelfCalibration()
 {
-    // Serial.println("Starting self-calibration..."); // Debug line
-
-
+    //Serial.println("Starting self-calibration..."); // Debug line
 
     /* ----- SELF CALIBRATION STATUS 1 ----- */
     
@@ -38,10 +38,10 @@ bool OrbisBR10::performSelfCalibration()
     // Serial.print("Status byte 1: 0x");   // Debug line
     // Serial.println(status_1, HEX);       // Debug line
 
-    uint8_t current_counter = 0;             // global, and have it be checked so that you don't calibrate multiple times
-    current_counter = status_1 & 0b00000011;  // Counter bits are b1 and b0 of status byte
-    // Serial.print("Current Counter: ");        // Debug line
-    // Serial.println(current_counter);          // Debug line
+    uint8_t current_counter = 0;                    // global, and have it be checked so that you don't calibrate multiple times
+    current_counter = status_1 & SELF_CALIBRATION_STATUS_MASK;   // Counter bits are b1 and b0 of status byte
+    // Serial.print("Current Counter: ");           // Debug line
+    // Serial.println(current_counter);             // Debug line
 
     /* ----- SELF CALIBRATION START ----- */
     
@@ -65,15 +65,13 @@ bool OrbisBR10::performSelfCalibration()
     
     Serial.println("ROTATE NOW");                       // Debug line
 
-    delay(10000); // Max time for a self-calibration is 10 seconds. 
+    delay(SELF_CALIBRATION_MAX_TIME); // Max time for a self-calibration is 10 seconds. 
                                                         
     
 
     /* ----- SELF CALIBRATION STATUS 2 ----- */
     // self-calibration status request again after, expect counter to change
     _serial->write(OrbisCommands::SELF_CALIB_STATUS); delay(1);
-
-    delay(50);
 
     if (_serial->available() < 2) { //while loop?
         Serial.println("ERROR: No Response From Sensor"); // Debug line
@@ -91,9 +89,9 @@ bool OrbisBR10::performSelfCalibration()
     // Serial.print("Status byte 2: 0x");       // Debug line
     // Serial.println(status_2, HEX);           // Debug line
     
-    uint8_t new_counter = status_2 & 0b00000011;
-    bool timeout_error = status_2 & 0b00000100;      // b2
-    bool parameter_error = status_2 & 0b00001000;    // b3
+    uint8_t new_counter = status_2 & SELF_CALIBRATION_NEW_COUNTER_MASK;
+    bool timeout_error = status_2 & SELF_CALIBRATION_TIMEOUT_ERROR_MASK;       // b2
+    bool parameter_error = status_2 & SELF_CALIRATION_PARAMETER_ERROR_MASK;    // b3
     
     // Serial.print("New counter: ");           // Debug line
     // Serial.println(new_counter);             // Debug line
@@ -102,7 +100,7 @@ bool OrbisBR10::performSelfCalibration()
     // Serial.print("Parameter error: ");       // Debug line
     // Serial.println(parameter_error);         // Debug line
 
-    if (((current_counter + 1) & 0b00000011) != new_counter) {
+    if (((current_counter + 1) & SELF_CALIBRATION_COUNTER_CHECK_MASK) != new_counter) {
         Serial.println("ERROR: Calibration Did Not Complete");
         return false;
     }
@@ -112,7 +110,7 @@ bool OrbisBR10::performSelfCalibration()
         Serial.println("ERROR: Calibration Failed");
         _lastConversion.errors.calibrationTimeout   = timeout_error;
         Serial.println(_lastConversion.errors.calibrationTimeout);
-        _lastConversion.errors.calibrationParameter = parameter_error>>3;
+        _lastConversion.errors.calibrationParameter = parameter_error; // do I need to shift 3?? 
         return false;
     }
     
@@ -120,13 +118,13 @@ bool OrbisBR10::performSelfCalibration()
     return true;
 }
 
-
-void OrbisBR10::setEncoderOffset()
+void OrbisBR::setEncoderOffset()
 {
     while (_serial->available()) {  // Clear everything off the line. Check if this is necessary?
         _serial->read();
     }
-    
+
+
     _serial->write(OrbisCommands::SHORT_POS_REQUEST); delay(1);
 
     while (!_serial->available());
@@ -134,15 +132,16 @@ void OrbisBR10::setEncoderOffset()
     while (!_serial->available());
     uint8_t position_2 = _serial->read();
     
-    // Serial.println("Position for Offset: ");     // Debug line
-    // Serial.println(position_1, HEX);             // Debug line
-    // Serial.println(position_2, HEX);             // Debug line
-    // Serial.println();                            // Debug ling
+    Serial.println("Position for Offset: ");     // Debug line
+    Serial.println(position_1, HEX);             // Debug line
+    Serial.println(position_2, HEX);             // Debug line
+    Serial.println();                            // Debug ling
 
-    uint16_t position_data = ((((uint16_t) position_1) << OrbisDefaultParams::POS_DATA_MASK1) | (uint16_t) position_2) >> OrbisDefaultParams::POS_DATA_MASK2;
+    uint16_t position_data = ((((uint16_t) position_1) << POSITION_DATA_MASK_1) | (uint16_t) position_2) >> POSITION_DATA_MASK_2;
 
-    byte position1 = (position_data >> 8) & 0xFF;      // b15 - b8 (See Encoder Packet Structure page 16)
-    byte position2 = position_data & 0xFF;             // b7 - b0
+    //The purpose of these two lines is to break the 16 bit integer into two 8 bit ones.
+    byte position1 = (position_data >> OFFSET_SHORT_POSITION_RECOMBINING_SHIFT) & OFFSET_SHORT_POSITION_RECOMBINING_MASK;   // b15 - b8. 
+    byte position2 = position_data & OFFSET_SHORT_POSITION_RECOMBINING_MASK;                                                // b7 - b0
 
     for (byte b : OrbisCommands::UNLOCK_SEQUENCE) 
     {
@@ -171,11 +170,11 @@ void OrbisBR10::setEncoderOffset()
         // Serial.println(response_bytes, HEX);     // Debug line: expect 0x5A, 0x00, 0x00, then the same bytes from the short position
     }
 
+    //saveConfiguration();
     Serial.println("Offset command done"); // Debug line
 }
 
-
-void OrbisBR10::saveConfiguration()
+void OrbisBR::saveConfiguration()
 {
     for (byte command : OrbisCommands::UNLOCK_SEQUENCE)
     {
@@ -183,8 +182,6 @@ void OrbisBR10::saveConfiguration()
     } 
 
     _serial->write(OrbisCommands::SAVE_CONFIGURATION); delay(1);  
-
-    delay(100);
 
     while (_serial->available()) {
         // Serial.print("Response Bytes: 0x");      // Debug line
@@ -196,7 +193,8 @@ void OrbisBR10::saveConfiguration()
 
 
 
-void OrbisBR10::sample()
+/* -------------------- Sample/Data Methods -------------------- */
+void OrbisBR::sample()
 {
     while (_serial->available()) {  // Clear everything off the line. Check if this is necessary?
         _serial->read();
@@ -262,17 +260,18 @@ void OrbisBR10::sample()
          : SteeringEncoderStatus_e::STEERING_ENCODER_NOMINAL;
 
     // Extract 14-bit position data
-    uint16_t raw_position_data = (((uint16_t) general1) << OrbisDefaultParams::POS_DATA_MASK1) | (uint16_t) general2;
-    uint16_t _position_data = raw_position_data >> OrbisDefaultParams::POS_DATA_MASK2;
+    uint16_t raw_position_data = (((uint16_t) general1) << POSITION_DATA_MASK_1) | (uint16_t) general2;
+    uint16_t _position_data = raw_position_data >> POSITION_DATA_MASK_2;
     
     // Convert Position Data to Angle
-    float angle = ((float)_position_data / OrbisDefaultParams::ENCODER_RESOLUTION) * OrbisDefaultParams::DEGREES_PER_REVOLUTION;
     _lastConversion.raw = _position_data;
-    _lastConversion.angle = angle;
-
-    if (angle > 180.0f) {   // fix this math lol
-        angle -= 360.0f;
+    
+    float angle = ((float)_position_data / ENCODER_RESOLUTION ) * DEGREES_PER_REVOLUTION ;
+    if (angle > ANGLE_CONVERSION_MARKER) {   
+        angle -= ANGLE_CONVERSION;
     }
+    
+    _lastConversion.angle = angle;
     
     Serial.print("Raw ");
     Serial.println(_lastConversion.raw, HEX);
@@ -281,18 +280,20 @@ void OrbisBR10::sample()
  
 }
 
-SteeringEncoderConversion_s OrbisBR10::position()
+SteeringEncoderConversion_s OrbisBR::convert()
 {
     return _lastConversion;
 }
 
-
-
 /* -------------------- Error Flagging -------------------- */
-void OrbisBR10::decodeErrors(uint8_t general, uint8_t detailed)
+void OrbisBR::decodeErrors(uint8_t general, uint8_t detailed)
 {
+    general = 0b00000000;
     // General bits error low (0)
     _lastConversion.errors.generalError     = !(general & OrbisGeneralErrorMasks::ORBIS_BR_BITMASK_GENERAL_ERROR);
+    if (_lastConversion.errors.generalError) {
+        Serial.println("HARDCODED ERROR CHECK! BOOM!");
+    }
     _lastConversion.errors.generalWarning   = !(general & OrbisGeneralErrorMasks::ORBIS_BR_BITMASK_GENERAL_WARNING);
 
     // Detailed bits are error high (1)
@@ -306,7 +307,7 @@ void OrbisBR10::decodeErrors(uint8_t general, uint8_t detailed)
 
 
 /* -------------------- Additional Functionalities -------------------- */
-void OrbisBR10::factoryReset()
+void OrbisBR::factoryReset()
 {
     for (byte command : OrbisCommands::UNLOCK_SEQUENCE)
     {
@@ -319,7 +320,7 @@ void OrbisBR10::factoryReset()
         Serial.println(unlock_echo, HEX);
     }
 
-    Serial3.write('r');
+    Serial3.write(OrbisCommands::FACTORY_RESET);
     
     while (!Serial3.available());
     uint8_t response_byte = Serial3.read();
