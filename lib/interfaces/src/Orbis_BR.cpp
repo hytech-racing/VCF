@@ -4,7 +4,7 @@
 
 OrbisBR::OrbisBR(HardwareSerial* serial, int serialSpeed)
 : _serial(serial)
-, _serialSpeed(serialSpeed)
+, _serialSpeed(OrbisDefaultParams::ORBIS_BR_DEFAULT_BAUD_RATE)
 {
    _lastConversion.status = SteeringEncoderStatus_e::STEERING_ENCODER_ERROR;
    _serial->begin(_serialSpeed, SERIAL_8N1);
@@ -127,9 +127,9 @@ void OrbisBR::setEncoderOffset()
 
     _serial->write(OrbisCommands::SHORT_POS_REQUEST); delay(1);
 
-    while (!_serial->available());
+    while (!_serial->available());  //wait until bytes are available
     uint8_t position_1 = _serial->read(); 
-    while (!_serial->available());
+    while (!_serial->available());  //wait until bytes are available
     uint8_t position_2 = _serial->read();
     
     Serial.println("Position for Offset: ");     // Debug line
@@ -147,7 +147,6 @@ void OrbisBR::setEncoderOffset()
     {
         _serial->write(b); delay(1);
         _serial->read();
-
     }
 
     // while (_serial->available()) {

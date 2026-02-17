@@ -14,6 +14,7 @@ void setup()
 
     while(!Serial);
     Serial.println("Serial Monitor connected.");        // Debug line
+    Serial.println("Serial Monitor connected.");        // Debug line
 
     OrbisBRInstance::create(&Serial3, ORBIS_BR_DEFAULT_BAUD_RATE);
 
@@ -29,6 +30,8 @@ void setup()
     {
         _isCalibrated = OrbisBRInstance::instance().performSelfCalibration(); 
     }
+    
+    OrbisBRInstance::instance().sample(); delay(10);
     
     OrbisBRInstance::instance().setEncoderOffset();
 
@@ -47,5 +50,9 @@ void loop()
         
         OrbisBRInstance::instance().sample();
 
+        // Serial.println("\nShort Pos Req");
+        // Serial3.write(OrbisCommands::SHORT_POS_REQUEST); delay(1);
+        // Serial.println(Serial3.read(), HEX);
+        // Serial.println(Serial3.read(), HEX);
     }
 }
