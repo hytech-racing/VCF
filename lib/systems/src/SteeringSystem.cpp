@@ -54,9 +54,7 @@ bool SteeringSystem::_evaluate_steering_oor_analog(uint32_t steering_analog)
             return (steering_analog < min_ok || steering_analog > max_ok);
         }
 
-bool SteeringSystem::_evaluate_steering_oor_digital(uint32_t steering_digital,
-        int min_sensor_value_digital,
-        int max_sensor_value_digital)
+bool SteeringSystem::_evaluate_steering_oor_digital(uint32_t steering_digital)
         {
         //check if the digital value is within bounds +- error
         

@@ -39,7 +39,7 @@ struct SteeringSystemData_s
     bool sensor_difference_implausibility;
     bool digital_oor_implausibility;
     bool analog_oor_implausibility;
-}
+};
 
 
 class SteeringSystem 
@@ -73,15 +73,9 @@ public:
     const SteeringSensorData_s &get_steering_sensor_data() const;
 
     // Other Functions
-    void recalibrate_steering(const SteeringSensorData_s &current_steering_data);
-    {
-        uint32_t analog_raw_value = static_cast<uint32_t>(current_steering_data.analog_raw);
-        uint32_t digital_raw_value = static_cast<uint32_t>(current_steering_data.digital_raw);
-        bool steering_flipped = 
+    void recalibrate_steering(const SteeringSensorData_s &current_steering_data, bool calibration_is_on);
 
-    }
-
-    void evaluate_steering(const SteeringSensorData_s &current_steering_data);
+    SteeringSystemData_s evaluate_steering(const SteeringSensorData_s &current_steering_data, uint32_t current_millis);
     
     
     
@@ -95,14 +89,10 @@ private:
 
     
     //returns true if steering_analog is outside of the range defined by min and max sensor values
-    bool _evaluate_steering_oor_analog(int steering_analog,
-        int min_sensor_value_analog,
-        int max_sensor_value_analog);
+    bool _evaluate_steering_oor_analog(uint32_t steering_analog);
         
     //returns true if steering_digital is outside the range defined by min and max sensor values    
-    bool _evaluate_steering_oor_digital(int steering_digital,
-        int min_sensor_value_digital,
-        int max_sensor_value_digital);
+    bool _evaluate_steering_oor_digital(uint32_t steering_digital);
 
     //returns true if change in angle exceeds maximum change per reading ( max_dtheta_threshold )
     bool _evaluate_steering_dtheta_exceeded(int steering_analog,
