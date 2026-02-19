@@ -190,7 +190,8 @@ SteeringSystemData_s SteeringSystem::evaluate_steering(const SteeringSensorData_
 }
 
 void SteeringSystem::update_steering_system() {
-    _steeringSystemData = evaluate_steering(/* */);
+    
+    _steeringSystemData = evaluate_steering(/* real current_steering_data location*/);
 }
 
 
