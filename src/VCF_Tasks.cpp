@@ -189,7 +189,7 @@ HT_TASK::TaskResponse enqueue_steering_data(const unsigned long& sysMicros, cons
 {
     STEERING_DATA_t msg_out;
 
-    msg_out.steering_analog_raw = ADCInterfaceInstance::instance().steering_degrees_cw().conversion;
+    msg_out.steering_analog_raw = ADCInterfaceInstance::instance().steering_degrees_cw().raw;
     msg_out.steering_digital_raw = 0; //NOLINT VCFData_sInstance::instance().interface_data.steering_data.digital_steering_analog;
 
     CAN_util::enqueue_msg(&msg_out, &Pack_STEERING_DATA_hytech, VCFCANInterfaceImpl::VCFCANInterfaceObjectsInstance::instance().main_can_tx_buffer);
