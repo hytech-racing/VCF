@@ -16,15 +16,20 @@ struct SteeringParams_s {
     uint32_t min_steering_signal_digital; //Raw ADC value from digital sensor at minimum (left) steering angle
     uint32_t max_steering_signal_digital; //Raw ADC value from digital sensor at maximum (right) steering angle
 
+    uint32_t _min_observed_analog; //These are class members so they persist during calibration
+    uint32_t _max_observed_analog;
+    uint32_t _min_observed_digital;
+    uint32_t _max_observed_digital;
     
-    uint32_t min_steering_analog = 0; //minimum sensor output *analog 0
+    uint32_t min_steering_analog = 0; //minimum sensor output *analog 0 clarify on the steering turn, associating 0
     uint32_t max_steering_analog = 4096; //maximimum sensor output *analog 4095
-    uint32_t min_steering_digital = 0; // maximum sensor output *digital 4095
-    uint32_t max_steering_digital = 4096; //maximum sensor output *digital0
+    uint32_t min_steering_digital; // maximum sensor output *digital 4095
+    uint32_t max_steering_digital; //maximum sensor output *digital0
 
-    float deg_per_count; //degrees of steering angle per count of the sensor 
-    float analog_tol_deg = 0.005f; //+- 0.5%
-    float digital_tol_deg = 0.2f; // +- 0.2 degrees
+    float deg_per_count_analog = 0.0439f; //hard coded for analog
+    float deg_per_count_digital; //based on digital readings
+    float analog_tol_deg = 0.005f; //+- 0.5% error
+    float digital_tol_deg = 0.2f; // +- 0.2 degrees error
 
 
     float max_dtheta_threshold; //maximum change in angle since last reading to consider the reading valid
@@ -42,7 +47,6 @@ struct SteeringSystemData_s
     float analog_steering_velocity_deg_s; //in degrees per second
     float digital_steering_velocity_deg_s;
 
-    bool digital_sensor_error;
     bool sensor_difference_implausibility;
     bool digital_oor_implausibility;
     bool analog_oor_implausibility;
@@ -84,7 +88,7 @@ public:
     }
 
     // Other Functions
-    void recalibrate_steering(const SteeringSensorData_s &current_steering_data, bool calibration_is_on);
+    void recalibrate_steering_digital(const SteeringSensorData_s &current_steering_data, bool calibration_is_on);
 
     //must have an input that says recalibration is on, then collect the abs min and max value 
     //from both sensors to establish a universal min & max
@@ -103,10 +107,7 @@ private:
     bool _calibrating = false;
     bool _first_run = true; // skip dTheta check on the very first tick
    
-    uint32_t _min_observed_analog; //These are class members so they persist during calibration
-    uint32_t _max_observed_analog;
-    uint32_t _min_observed_digital;
-    uint32_t _max_observed_digital;
+    
 
 
 
@@ -117,10 +118,10 @@ private:
 
     
     //returns true if steering_analog is outside of the range defined by min and max sensor values
-    bool _evaluate_steering_oor_analog(int steering_analog);
+    bool _evaluate_steering_oor_analog(uint32_t steering_analog);
     
     //returns true if steering_digital is outside the range defined by min and max sensor values    
-    bool _evaluate_steering_oor_digital(int steering_digital);
+    bool _evaluate_steering_oor_digital(uint32_t steering_digital);
 
 
     //returns true if change in angle exceeds maximum change per reading ( max_dtheta_threshold )
