@@ -9,14 +9,14 @@ void SteeringSystem::recalibrate_steering_digital(const SteeringSensorData_s &cu
     //button just pressed ->recalibration window
     if (calibration_is_on && !_calibrating){
         _calibrating = true;
-        _steeringParams._min_observed_digital = 4096;
+        _steeringParams._min_observed_digital = 10000000; //establishes a big number that will be greater than the readings
         _steeringParams._max_observed_digital = 0;
     }
     
     //update relative extremeties
     if (calibration_is_on){
-        _steeringParams.min_observed_digital = std::min(_min_observed_digital, curr_digital_raw);
-        _steeringParams._max_observed_digital = std::max(_max_observed_digital, curr_digital_raw);
+        _steeringParams._min_observed_digital = std::min(_steeringParams._min_observed_digital, curr_digital_raw);
+        _steeringParams._max_observed_digital = std::max(_steeringParams._max_observed_digital, curr_digital_raw);
         return;
     }
     //button released ->commit the values
@@ -24,14 +24,15 @@ void SteeringSystem::recalibrate_steering_digital(const SteeringSensorData_s &cu
         _calibrating = false;
         _steeringParams.min_steering_signal_digital = _steeringParams._min_observed_digital;
         _steeringParams.max_steering_signal_digital = _steeringParams._max_observed_digital;
+        return;
     }
-        // swaps  min & max in the params if sensor is negative
-    if (_steeringParams.min_steering_signal_analog > _steeringParams.max_steering_signal_analog) {
-        std::swap(_steeringParams.min_steering_signal_analog, _steeringParams.max_steering_signal_analog);
-    }
+        // swaps  min & max in the params if sensor is flipped
+
+    
     if (_steeringParams.min_steering_signal_digital > _steeringParams.max_steering_signal_digital)
     {
         std::swap(_steeringParams.min_steering_signal_digital,_steeringParams.max_steering_signal_digital);
+        return;
     }
 
     
@@ -50,7 +51,7 @@ bool SteeringSystem::_evaluate_steering_oor_digital(uint32_t steering_digital)
         {
         //check if the digital value is within bounds +- error
         
-            const uint32_t digital_margin_counts = static_cast<uint32_t>(_steeringParams.digital_tol_deg / _steeringParams.deg_per_count);
+            const uint32_t digital_margin_counts = static_cast<uint32_t>(_steeringParams.digital_tol_deg);
             const uint32_t min_ok = _steeringParams.min_steering_signal_digital - digital_margin_counts;
             const uint32_t max_ok = _steeringParams.max_steering_signal_digital + digital_margin_counts;
             return (steering_digital < min_ok || steering_digital > max_ok);
@@ -68,29 +69,39 @@ bool SteeringSystem::_evaluate_steering_dtheta_exceeded(float dtheta){
 float SteeringSystem::_convert_analog_sensor(const SteeringSensorData_s &current_steering_data)
 {
     // Get the raw value
-    uint32_t raw_val = current_steering_data.analog_steering_degrees;
+    const uint32_t raw_val = current_steering_data.analog_steering_degrees; //is this adc input value?
+
+    constexpr float kMindeg = -90.0f;
 
     //  Calculate how far we are from the minimum raw count delta
-    uint32_t count_delta = (int32_t)raw_val - (int32_t)_steeringParams.min_steering_signal_analog;
+    const uint32_t count_delta = (int32_t)raw_val - (int32_t)_steeringParams.min_steering_signal_analog;
 
     //  Convert that delta into degrees
-    float degrees_delta = (float)count_delta * _steeringParams.deg_per_count;
+    const float degrees_delta = count_delta * _steeringParams.deg_per_count_analog;
 
     // Add to the starting minimum angle to get absolute position
-    return (float)_steeringParams.min_steering_analog + degrees_delta;
+    return kMindeg + degrees_delta;
 }
 
 
 float SteeringSystem::_convert_digital_sensor(const SteeringSensorData_s &current_steering_data)
 {
     // Same logic for digital
-    uint32_t raw_val = current_steering_data.digital_steering_analog; 
+    const uint32_t raw_val = current_steering_data.digital_steering_analog; //adc value
+    //create a span for the digital sensor
+    const uint32_t span_digital = static_cast<uint32_t>(_steeringParams.max_steering_digital) - static_cast<uint32_t>(_steeringParams.min_steering_digital);
 
-    int32_t count_delta = (int32_t)raw_val - (int32_t)_steeringParams.min_steering_signal_digital;
+    //degree span we are assuming:
+    constexpr float kMindeg = -90.0f;
+    constexpr float kSpan = 180.0f;
 
-    float degrees_delta = (float)count_delta * _steeringParams.deg_per_count;
+    _steeringParams.deg_per_count_digital = kSpan/(float)span_digital;
 
-    return (float)_steeringParams.min_steering_digital + degrees_delta;
+    const int32_t count_delta = (int32_t)raw_val - (int32_t)_steeringParams.min_steering_signal_digital;
+
+    float degrees_delta = (float)count_delta * _steeringParams.deg_per_count_digital;
+    //output in degreees_delta
+    return kMindeg + degrees_delta;
 }
 
 SteeringSystemData_s SteeringSystem::evaluate_steering(const SteeringSensorData_s &current_steering_data, uint32_t current_millis){
