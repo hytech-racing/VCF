@@ -32,8 +32,8 @@ namespace VCFInterfaceConstants {
     constexpr unsigned long WATCHDOG_KICK_INTERVAL_MS = 10UL;
     
     //ADC Pins
-    constexpr int ADC0_CS = 10; // MCP3208. ADC1 in VCF schematic. Used for steering, sus pots, and load cells.
-    constexpr int ADC1_CS = 38; // MCP3208. ADC2 in VCF schematic. Used for pedal position sensors.
+    constexpr int ADC0_CS = 10; // MCP3208. ADC0 in VCF schematic. Used for steering, sus pots, and load cells.
+    constexpr int ADC1_CS = 38; // MCP3208. ADC1 in VCF schematic. Used for pedal position sensors.
 
     /* Channels on ADC_0 */
     // constexpr int UNUSED_CHANNEL         = 0;

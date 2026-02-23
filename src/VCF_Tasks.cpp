@@ -153,15 +153,15 @@ HT_TASK::TaskResponse send_dash_data(const unsigned long& sysMicros, const HT_TA
 
     DASH_INPUT_t msg_out;
 
-    // msg_out.start_button = dash_outputs.start_btn_is_pressed;
-    msg_out.preset_button = dash_outputs.preset_btn_is_pressed;
+    msg_out.preset_button = 0; // dont exist but i dont wanna bother changing can msgs
+    msg_out.mode_button = 0; // dont exist but i dont wanna bother changing can msgs
+
     msg_out.motor_controller_cycle_button = dash_outputs.mc_reset_btn_is_pressed;
-    msg_out.mode_button = dash_outputs.mode_btn_is_pressed;
     msg_out.start_button = dash_outputs.start_btn_is_pressed;
     msg_out.data_button_is_pressed = dash_outputs.data_btn_is_pressed;
     msg_out.left_shifter_button = dash_outputs.left_paddle_is_pressed;
     msg_out.right_shifter_button = dash_outputs.right_paddle_is_pressed;   
-    msg_out.led_dimmer_button = dash_outputs.dim_btn_is_pressed; 
+    msg_out.led_dimmer_button = dash_outputs.brightness_ctrl_btn_is_pressed; 
     msg_out.dash_dial_mode = static_cast<int>(DashboardInterfaceInstance::instance().get_dashboard_outputs().dial_state);
 
 //    Serial.printf("%d %d %d %d %d %d %d %d\n", msg_out.preset_button, msg_out.motor_controller_cycle_button, msg_out.mode_button, msg_out.start_button, msg_out.data_button_is_pressed, msg_out.left_shifter_button, msg_out.right_shifter_button, msg_out.led_dimmer_button);
@@ -204,7 +204,6 @@ HT_TASK::TaskResponse init_handle_send_vcf_ethernet_data(const unsigned long& sy
 }
 
 HT_TASK::TaskResponse run_handle_send_vcf_ethernet_data(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo) {
-    // hytech_msgs_VCFData_s msg = VCFEthernetInterface::make_vcf_data_msg(VCFData_sInstance::instance());
     hytech_msgs_VCFData_s msg = VCFEthernetInterface::make_vcf_data_msg(ADCInterfaceInstance::instance(), DashboardInterfaceInstance::instance(), PedalsSystemInstance::instance());
     if(handle_ethernet_socket_send_pb<hytech_msgs_VCFData_s_size, hytech_msgs_VCFData_s>
             (EthernetIPDefsInstance::instance().drivebrain_ip,
@@ -252,16 +251,16 @@ HT_TASK::TaskResponse enqueue_pedals_data(const unsigned long &sys_micros, const
 
 HT_TASK::TaskResponse run_dash_GPIOs_task(const unsigned long& sys_micros, const HT_TASK::TaskInfo& task_info)
 {
-    bool was_dim_btn_pressed = DashboardInterfaceInstance::instance().get_dashboard_stored_state().dim_btn_is_pressed; //NOLINT (linter thinks variable uninitialized)
+    bool was_dim_btn_pressed = DashboardInterfaceInstance::instance().get_dashboard_stored_state().brightness_ctrl_btn_is_pressed; //NOLINT (linter thinks variable uninitialized)
     DashInputState_s current_state = DashboardInterfaceInstance::instance().get_dashboard_outputs();
 
-    if (!current_state.preset_btn_is_pressed)
+    if (true) // !current_state.preset_btn_is_pressed //preset_btn_is_pressed doesnt exist anymore
     {
         VCRInterfaceInstance::instance().disable_calibration_state();
     }
 
     // Checks if dim btn has been clicked (falling edge)
-    if (was_dim_btn_pressed && !current_state.dim_btn_is_pressed)
+    if (was_dim_btn_pressed && !current_state.brightness_ctrl_btn_is_pressed)
     {
         NeopixelControllerInstance::instance().dim_neopixels();
     }
@@ -300,6 +299,13 @@ HT_TASK::TaskResponse read_ioexpander(const unsigned long& sys_micros, const HT_
     // Serial.println("");
 
     // Yes, I know there are magic numbers here. I just trial-and-errored it from the dash connector pinning.
+    
+    /////////////////////////////////////////////////////////////
+    //                                                         //
+    //      YOU BETTER PRAY TO GOD THAT THIS DIDN'T CHANGE     //
+    //                                                         //
+    /////////////////////////////////////////////////////////////
+
     if (IOExpanderUtils::getBit(in, 1, 2)) {
         DashboardInterfaceInstance::instance().set_dial_state(ControllerMode_e::MODE_0);
     } else if (IOExpanderUtils::getBit(in, 1, 1)) {
@@ -388,7 +394,6 @@ namespace async_tasks
     HT_TASK::TaskResponse handle_async_main(const unsigned long& sys_micros, const HT_TASK::TaskInfo& task_info)
     {
         handle_async_recvs();
-        // Serial.println("test");
         PedalsSystemInstance::instance().set_pedals_system_data(PedalsSystemInstance::instance().evaluate_pedals(
             PedalsSystemInstance::instance().get_pedals_sensor_data(),
             sys_time::hal_millis()
@@ -398,8 +403,8 @@ namespace async_tasks
     }
 };
 
-// HT_TASK::TaskResponse debug_print(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
-// {
+HT_TASK::TaskResponse debug_print(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
+{
 //     Serial.println("accel1 raw accel2 raw");
 //     Serial.print(PedalsSystemInstance::instance().get_pedals_sensor_data().accel_1);
 //     Serial.print("   ");
@@ -466,7 +471,7 @@ namespace async_tasks
 //     Serial.println("jkkjhhkjkjh");
 
 //     return HT_TASK::TaskResponse::YIELD;
-// }
+}
 
 FlexCAN_T4<CAN1, RX_SIZE_256, TX_SIZE_16> VCFCANInterfaceImpl::main_can;
 
@@ -574,23 +579,21 @@ void setup_all_interfaces() {
     
     // Create dashboard singleton
     DashboardGPIOs_s dashboard_gpios = {
-        // .DIM_BUTTON = VCFInterfaceConstants::BTN_DIM_READ,
-        // .PRESET_BUTTON = VCFInterfaceConstants::BTN_PRESET_READ,
+        .BRIGHTNESS_CONTROL_PIN = VCFInterfaceConstants::BRIGHTNESS_CONTROL_PIN,
         .MC_CYCLE_BUTTON = VCFInterfaceConstants::BTN_MC_CYCLE_READ,
-        // .MODE_BUTTON = VCFInterfaceConstants::BTN_MODE_READ,
         .START_BUTTON = VCFInterfaceConstants::BTN_START_READ,
         .DATA_BUTTON = VCFInterfaceConstants::BTN_DATA_READ,
         .LEFT_SHIFTER_BUTTON = VCFInterfaceConstants::LEFT_SHIFTER,
         .RIGHT_SHIFTER_BUTTON = VCFInterfaceConstants::RIGHT_SHIFTER,
     };
 
-    DashboardInterfaceInstance::create(dashboard_gpios); //NOLINT (linter things dashboard_gpios is not initialized)
+    DashboardInterfaceInstance::create(dashboard_gpios);
     ACUInterfaceInstance::create();
     VCRInterfaceInstance::create();
     // Create can singletons
     VCFCANInterfaceImpl::CANInterfacesInstance::create(DashboardInterfaceInstance::instance(), ACUInterfaceInstance::instance(), VCRInterfaceInstance::instance()); 
     auto main_can_recv = etl::delegate<void(CANInterfaces &, const CAN_message_t &, unsigned long, CANInterfaceType_e)>::create<VCFCANInterfaceImpl::vcf_recv_switch>();
-    VCFCANInterfaceImpl::VCFCANInterfaceObjectsInstance::create(main_can_recv, &VCFCANInterfaceImpl::main_can); // NOLINT (Not sure why it's uninitialized. I think it is.)
+    VCFCANInterfaceImpl::VCFCANInterfaceObjectsInstance::create(main_can_recv, &VCFCANInterfaceImpl::main_can);
 
     const uint32_t CAN_baudrate = 1000000;
     handle_CAN_setup(VCFCANInterfaceImpl::main_can, CAN_baudrate, &VCFCANInterfaceImpl::on_main_can_recv);
