@@ -584,7 +584,7 @@ void setup_all_interfaces() {
         .START_BUTTON = VCFInterfaceConstants::BTN_START_READ,
         .DATA_BUTTON = VCFInterfaceConstants::BTN_DATA_READ,
         .LEFT_SHIFTER_BUTTON = VCFInterfaceConstants::LEFT_SHIFTER,
-        .RIGHT_SHIFTER_BUTTON = VCFInterfaceConstants::RIGHT_SHIFTER,
+        .RIGHT_SHIFTER_BUTTON = VCFInterfaceConstants::RIGHT_SHIFTER
     };
 
     DashboardInterfaceInstance::create(dashboard_gpios);
