@@ -12,24 +12,18 @@
 
 struct SteeringParams_s {
     //raw ADC input signals
-    uint32_t min_steering_signal_analog; //Raw ADC value from analog sensor at minimum (left) steering angle (calibration)
-    uint32_t max_steering_signal_analog; //Raw ADC value from analog sensor at maximum (right) steering angle
+    uint32_t min_steering_signal_analog = 0; //Raw ADC value from analog sensor at minimum (left) steering angle (calibration)
+    uint32_t max_steering_signal_analog = 4096; //Raw ADC value from analog sensor at maximum (right) steering angle
     uint32_t min_steering_signal_digital; //Raw ADC value from digital sensor at minimum (left) steering angle
     uint32_t max_steering_signal_digital; //Raw ADC value from digital sensor at maximum (right) steering angle
-
+    
     //calibration limits: only digital is recalibrated
     uint32_t _min_observed_digital;
     uint32_t _max_observed_digital;
 
-    //driving limits: post calibration
-    uint32_t min_steering_analog = 0; //minimum sensor output *analog 0 clarify on the steering turn, associating 0
-    uint32_t max_steering_analog = 4096; //maximimum sensor output *analog 4095
-    uint32_t min_steering_digital; // maximum sensor output *digital 4095
-    uint32_t max_steering_digital; //maximum sensor output *digital0
-
     //conversion rates
     float deg_per_count_analog = 0.0439f; //hard coded for analog
-    float deg_per_count_digital; //based on digital readings
+    float deg_per_count_digital = 0.021973997f; //based on digital readings
 
     //implausability values
     float analog_tol_deg = 0.005f; //+- 0.5% error
@@ -100,9 +94,6 @@ public:
     //from both sensors to establish a universal min & max
     
     SteeringSystemData_s evaluate_steering(const SteeringSensorData_s &current_steering_data, uint32_t current_millis);
-    
-    void update_steering_system();
-    
 
 private:
 
