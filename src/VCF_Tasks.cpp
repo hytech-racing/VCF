@@ -587,7 +587,7 @@ void setup_all_interfaces() {
         .RIGHT_SHIFTER_BUTTON = VCFInterfaceConstants::RIGHT_SHIFTER
     };
 
-    DashboardInterfaceInstance::create(dashboard_gpios);
+    DashboardInterfaceInstance::create(dashboard_gpios); //NOLINT
     ACUInterfaceInstance::create();
     VCRInterfaceInstance::create();
     // Create can singletons
