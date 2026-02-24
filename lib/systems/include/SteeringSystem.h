@@ -18,7 +18,7 @@
 struct SteeringParams_s {
     //raw ADC input signals
     uint32_t min_steering_signal_analog = 0; //Raw ADC value from analog sensor at minimum (left) steering angle (calibration)
-    uint32_t max_steering_signal_analog = 4096; //Raw ADC value from analog sensor at maximum (right) steering angle
+    uint32_t max_steering_signal_analog = 4095; //Raw ADC value from analog sensor at maximum (right) steering angle
     uint32_t min_steering_signal_digital; //Raw ADC value from digital sensor at minimum (left) steering angle
     uint32_t max_steering_signal_digital; //Raw ADC value from digital sensor at maximum (right) steering angle
     uint32_t span_signal_analog = 4096;
@@ -26,8 +26,8 @@ struct SteeringParams_s {
 
 
     //calibration limits: only digital is recalibrated
-    uint32_t _min_observed_digital;
-    uint32_t _max_observed_digital;
+    uint32_t min_observed_digital;
+    uint32_t max_observed_digital;
 
 
     //conversion rates
@@ -66,11 +66,11 @@ struct SteeringSystemData_s
 
     bool digital_oor_implausibility;
     bool analog_oor_implausibility;
-
+    bool sensor_disagreement_implausibility;
 
     bool dtheta_exceeded_analog;
     bool dtheta_exceeded_digital;
-    bool analog_digital_disagreement;
+    bool both_sensors_fail;
 };
 
 
@@ -137,7 +137,7 @@ private:
 
 
 
-
+    void update_observed_steering_limits(const SteeringSensorData_s &current_steering_data);
 
     float _convert_digital_sensor(const SteeringSensorData_s &current_steering_data);
    
