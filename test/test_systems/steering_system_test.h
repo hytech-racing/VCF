@@ -11,11 +11,17 @@ SteeringParams_s gen_default_params(){
     SteeringParams_s params;
     //hard code the parmas for sensors
     params.min_steering_signal_analog = 0;
-    params.max_steering_signal_analog = 4096;//actual hard coded
+    params.max_steering_signal_analog = 4095;//actual hard coded
     
     params.min_steering_signal_digital = 0;
     params.max_steering_signal_digital = 8000; //testing values
 
+    params.span_signal_analog = 4095;
+    params.span_signal_digital 8000;
+
+    params.min_observed_digital = 2000;
+    params.max_observed_digital = 6000;
+    
     params.deg_per_count_analog = 0.087890625f;
     params.deg_per_count_digital = 0.02197265625f;
 
@@ -34,9 +40,9 @@ void debug_print_steering(const SteeringSystemData_s& data){
     std::cout<<"analog_steering_angle: "<<data.analog_steering_angle<<" deg\n";
     std::cout<<"digital_steering_angle: "<<data.digital_steering_angle<<" deg\n";
     std::cout<<"output_steering_angle: "<<data.output_steering_angle<<" deg\n";
-    std::cout<<"analog_oor_implausability: "<<data.analog_oor_implausability<<"\n";
-    std::cout<<"digital_oor_implausability: "<<data.digital_oor_implausability<<"\n";
-    std::cout<<"sensor_disagreement_implausability: "<<data.sensor_disagreement_implausability<<"\n";
+    std::cout<<"analog_oor_implausibility: "<<data.analog_oor_implausibility<<"\n";
+    std::cout<<"digital_oor_implausibility: "<<data.digital_oor_implausibility<<"\n";
+    std::cout<<"sensor_disagreement_implausibility: "<<data.sensor_disagreement_implausibility<<"\n";
     std::cout<<"dtheta_exceeded_analog: "<<data.dtheta_exceeded_analog<<"\n";
     std::cout<<"dtheta_exceeded_digital: "<<data.dtheta_exceeded_digital<<"\n";
     
@@ -185,7 +191,7 @@ TEST(SteeringSystemTesting, test_sensor_disagreement)
     disagree.digital_steering_analog = 7000; //large offset from analog
 
     auto data = steering.evaluate_steering(disagree, 1100);
-    EXPECT_TRUE(data.sensor_diagreement_implausibility);
+    EXPECT_TRUE(data.sensor_disagreement_implausibility);
 } 
 
 
@@ -203,7 +209,7 @@ TEST(SteeringSystemTesting,test_sensor_output_logic){
 
     //When both valid but disagreeing, we default to digital
     SteeringSensorData_s both_valid_disagree = {2048, 7000};
-    auto data = steering.evaluate_steering(both_valid_disagree, 1010);
+    data = steering.evaluate_steering(both_valid_disagree, 1010);
 
     EXPECT_TRUE(data.sensor_disagreement_implausibility);
     EXPECT_FALSE(data.analog_oor_implausibility);
@@ -226,7 +232,7 @@ TEST(SteeringSystemTesting,test_sensor_output_logic){
 
     //When both bad, we flagging that error
     SteeringSensorData_s both_bad = {5000, 9000};
-    auto data = steering.evaluate_steering(both_bad, 1040);
+    data = steering.evaluate_steering(both_bad, 1040);
     EXPECT_TRUE(data.analog_oor_implausibility);
     EXPECT_TRUE(data.digital_oor_implausibility);
     EXPECT_TRUE(data.both_sensors_fail);
