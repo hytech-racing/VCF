@@ -17,11 +17,11 @@ SteeringParams_s gen_default_params(){
     params.max_steering_signal_digital = 8000; //testing values
 
     params.span_signal_analog = 4095;
-    params.span_signal_digital 8000;
+    params.span_signal_digital = 8000;
 
     params.min_observed_digital = 2000;
     params.max_observed_digital = 6000;
-    
+
     params.deg_per_count_analog = 0.087890625f;
     params.deg_per_count_digital = 0.02197265625f;
 
@@ -32,9 +32,6 @@ SteeringParams_s gen_default_params(){
     params.error_between_sensors_tolerance = 0.31377778f;
     return params;
 }
-
-
-
 
 void debug_print_steering(const SteeringSystemData_s& data){
     std::cout<<"analog_steering_angle: "<<data.analog_steering_angle<<" deg\n";
@@ -137,7 +134,7 @@ TEST(SteeringSystemTesting, test_out_of_bounds_raw_signals){
     EXPECT_TRUE(data.digital_oor_implausibility);
 
     //OOR Low
-    SteeringSensorData_s low_val = {static_cast<uint32_t>(-1000), static_cast<uint32_t>(-1000)};
+    SteeringSensorData_s low_val = {static_cast<uint32_t>(0), static_cast<uint32_t>(0)};
     data = steering.evaluate_steering(low_val, 1020);
     EXPECT_TRUE(data.analog_oor_implausibility);
     EXPECT_TRUE(data.digital_oor_implausibility);
