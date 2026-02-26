@@ -85,7 +85,7 @@ TEST(SteeringSystemTesting, test_adc_to_degree_conversion)
     EXPECT_NEAR(data.digital_steering_angle, 0.0f, 0.001f);
 
     //min values
-    SteeringSensorData_s min_val {};
+    SteeringSensorData_s min_val{};
     min_val.analog_steering_degrees = params.min_steering_signal_analog;
     min_val.digital_steering_analog = params.min_steering_signal_digital;
     
@@ -205,6 +205,31 @@ TEST(SteeringSystemTesting,test_sensor_output_logic){
     SteeringSensorData_s both_valid_disagree = {2048, 7000};
     auto data = steering.evaluate_steering(both_valid_disagree, 1010);
 
+    EXPECT_TRUE(data.sensor_disagreement_implausibility);
+    EXPECT_FALSE(data.analog_oor_implausibility);
+    EXPECT_FALSE(data.digital_oor_implausibility);
+    EXPECT_NEAR(data.output_steering_angle, data.digital_steering_angle, 0.001f);
+
+    //When analog is good but digital is bad, we put analog
+    SteeringSensorData_s digital_bad = {2048, 9000};
+    data = steering.evaluate_steering(digital_bad, 1020);
+    EXPECT_TRUE(data.digital_oor_implausibility);
+    EXPECT_FALSE(data.analog_oor_implausibility);
+    EXPECT_NEAR(data.output_steering_angle, data.analog_steering_angle, 0.001f);
+
+    //When digital is good but analog is bad, we put digital
+    SteeringSensorData_s analog_bad = {5000, 4000};
+    data = steering.evaluate_steering(analog_bad, 1030);
+    EXPECT_TRUE(data.analog_oor_implausibility);
+    EXPECT_FALSE(data.digital_oor_implausibility);
+    EXPECT_NEAR(data.output_steering_angle, data.digital_steering_angle, 0.001f);
+
+    //When both bad, we flagging that error
+    SteeringSensorData_s both_bad = {5000, 9000};
+    auto data = steering.evaluate_steering(both_bad, 1040);
+    EXPECT_TRUE(data.analog_oor_implausibility);
+    EXPECT_TRUE(data.digital_oor_implausibility);
+    EXPECT_TRUE(data.both_sensors_fail);
 
     
 
