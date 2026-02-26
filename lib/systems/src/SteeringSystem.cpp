@@ -121,8 +121,8 @@ float SteeringSystem::_convert_digital_sensor(const SteeringSensorData_s &curren
 
 
 void SteeringSystem::update_observed_steering_limits(const SteeringSensorData_s &current_steering_data) {
-    _steeringParams.min_observed_digital = std::min(_steeringParams.min_observed_digital, current_steering_data.digital_steering_analog);
-    _steeringParams.max_observed_digital = std::max(_steeringParams.max_observed_digital, current_steering_data.digital_steering_analog);
+    _steeringParams.min_observed_digital = std::min(_steeringParams.min_observed_digital, static_cast<uint32_t>(current_steering_data.digital_steering_analog)); //NOLINT should both be uint32_t
+    _steeringParams.max_observed_digital = std::max(_steeringParams.max_observed_digital, static_cast<uint32_t>(current_steering_data.digital_steering_analog)); //NOLINT ^
 }
 
 SteeringSystemData_s SteeringSystem::evaluate_steering(const SteeringSensorData_s &current_steering_data, const uint32_t current_millis){

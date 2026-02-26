@@ -168,7 +168,7 @@ TEST(SteeringSystemTesting, test_detect_jumps_dtheta){
 }
 
 
-TEST(SteeringSystemTesting, test_sensor_disagreemnet)
+TEST(SteeringSystemTesting, test_sensor_disagreement)
 {
     auto params = gen_default_params();
     SteeringSystem steering(params);
