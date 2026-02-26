@@ -153,15 +153,15 @@ HT_TASK::TaskResponse send_dash_data(const unsigned long& sysMicros, const HT_TA
 
     DASH_INPUT_t msg_out;
 
-    msg_out.preset_button = 0; // dont exist but i dont wanna bother changing can msgs
+    msg_out.preset_button = dash_outputs.preset_btn_is_pressed;
     msg_out.mode_button = 0; // dont exist but i dont wanna bother changing can msgs
 
     msg_out.motor_controller_cycle_button = dash_outputs.mc_reset_btn_is_pressed;
     msg_out.start_button = dash_outputs.start_btn_is_pressed;
     msg_out.data_button_is_pressed = dash_outputs.data_btn_is_pressed;
-    msg_out.left_shifter_button = dash_outputs.left_paddle_is_pressed;
-    msg_out.right_shifter_button = dash_outputs.right_paddle_is_pressed;   
-    msg_out.led_dimmer_button = dash_outputs.brightness_ctrl_btn_is_pressed; 
+    msg_out.left_shifter_button = 0;
+    msg_out.right_shifter_button = dash_outputs.BUTTON_2;
+    msg_out.led_dimmer_button = dash_outputs.brightness_ctrl_btn_is_pressed;
     msg_out.dash_dial_mode = static_cast<int>(DashboardInterfaceInstance::instance().get_dashboard_outputs().dial_state);
 
 //    Serial.printf("%d %d %d %d %d %d %d %d\n", msg_out.preset_button, msg_out.motor_controller_cycle_button, msg_out.mode_button, msg_out.start_button, msg_out.data_button_is_pressed, msg_out.left_shifter_button, msg_out.right_shifter_button, msg_out.led_dimmer_button);
@@ -254,7 +254,7 @@ HT_TASK::TaskResponse run_dash_GPIOs_task(const unsigned long& sys_micros, const
     bool was_dim_btn_pressed = DashboardInterfaceInstance::instance().get_dashboard_stored_state().brightness_ctrl_btn_is_pressed; //NOLINT (linter thinks variable uninitialized)
     DashInputState_s current_state = DashboardInterfaceInstance::instance().get_dashboard_outputs();
 
-    if (true) // !current_state.preset_btn_is_pressed //preset_btn_is_pressed doesnt exist anymore
+    if (!current_state.preset_btn_is_pressed) //preset_btn_is_pressed doesnt exist anymore
     {
         VCRInterfaceInstance::instance().disable_calibration_state();
     }
@@ -298,25 +298,18 @@ HT_TASK::TaskResponse read_ioexpander(const unsigned long& sys_micros, const HT_
     // }
     // Serial.println("");
 
-    // Yes, I know there are magic numbers here. I just trial-and-errored it from the dash connector pinning.
-    
-    /////////////////////////////////////////////////////////////
-    //                                                         //
-    //      YOU BETTER PRAY TO GOD THAT THIS DIDN'T CHANGE     //
-    //                                                         //
-    /////////////////////////////////////////////////////////////
-
-    if (IOExpanderUtils::getBit(in, 1, 2)) {
+    //TODO: Double check the harnessing is not wrong this time
+    if (IOExpanderUtils::getBit(in, 1, 0)) {
         DashboardInterfaceInstance::instance().set_dial_state(ControllerMode_e::MODE_0);
     } else if (IOExpanderUtils::getBit(in, 1, 1)) {
         DashboardInterfaceInstance::instance().set_dial_state(ControllerMode_e::MODE_1);
-    } else if (IOExpanderUtils::getBit(in, 1, 0)) {
+    } else if (IOExpanderUtils::getBit(in, 1, 2)) {
         DashboardInterfaceInstance::instance().set_dial_state(ControllerMode_e::MODE_2);
-    } else if (IOExpanderUtils::getBit(in, 1, 5)) { // NOLINT (pin is magic number)
+    } else if (IOExpanderUtils::getBit(in, 1, 3)) { // NOLINT (pin is magic number)
         DashboardInterfaceInstance::instance().set_dial_state(ControllerMode_e::MODE_3);
     } else if (IOExpanderUtils::getBit(in, 1, 4)) { // NOLINT (pin is magic number)
         DashboardInterfaceInstance::instance().set_dial_state(ControllerMode_e::MODE_4);
-    } else if (IOExpanderUtils::getBit(in, 1, 3)) { // NOLINT (pin is magic number)
+    } else if (IOExpanderUtils::getBit(in, 1, 5)) { // NOLINT (pin is magic number)
         DashboardInterfaceInstance::instance().set_dial_state(ControllerMode_e::MODE_5);
     }
 
@@ -580,11 +573,11 @@ void setup_all_interfaces() {
     // Create dashboard singleton
     DashboardGPIOs_s dashboard_gpios = {
         .BRIGHTNESS_CONTROL_PIN = VCFInterfaceConstants::BRIGHTNESS_CONTROL_PIN,
+        .PRESET_BUTTON = VCFInterfaceConstants::BTN_PRESET_READ,
         .MC_CYCLE_BUTTON = VCFInterfaceConstants::BTN_MC_CYCLE_READ,
         .START_BUTTON = VCFInterfaceConstants::BTN_START_READ,
         .DATA_BUTTON = VCFInterfaceConstants::BTN_DATA_READ,
-        .LEFT_SHIFTER_BUTTON = VCFInterfaceConstants::LEFT_SHIFTER,
-        .RIGHT_SHIFTER_BUTTON = VCFInterfaceConstants::RIGHT_SHIFTER
+        .BUTTON_2 = VCFInterfaceConstants::BUTTON_2
     };
 
     DashboardInterfaceInstance::create(dashboard_gpios); //NOLINT

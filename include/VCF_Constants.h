@@ -17,8 +17,8 @@ namespace VCFInterfaceConstants {
     constexpr int BTN_START_READ = 29; // RTD on schematic
     constexpr int BTN_DATA_READ = 30; // DATA_MARK on schematic
     constexpr int BUZZER_CONTROL_PIN = 32;
-    constexpr int RIGHT_SHIFTER = 26; // BUTTON_1 on schematic
-    constexpr int LEFT_SHIFTER = 27; // BUTTON_2 on schematic
+    constexpr int BTN_PRESET_READ = 26; //BUTTON_1 on schematic
+    constexpr int BUTTON_2 = 27; // BUTTON_2 on schematic
     constexpr int BRIGHTNESS_CONTROL_PIN = 28; // Currently unused
     
     constexpr int NEOPIXEL_CONTROL_PIN = 33;
