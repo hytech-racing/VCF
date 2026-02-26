@@ -42,7 +42,7 @@ void debug_print_steering(const SteeringSystemData_s& data){
     
 
 }
-
+/* helper functions, however we are asserting the values in each function as variables
 static SteeringSensorData_s make_raw(uint32_t analog_adc, uint32_t digital_adc){
     SteeringSensorData_s raw{};
     raw.analog_steering_degrees = analog_adc;
@@ -65,29 +65,50 @@ static float expected_angle_from_midpoint(uint32_t raw, uint32_t min, uint32_t m
     return static_cast<float>(offset) * deg_per_count
 }
 
+*/
 
-/* commented out initial draft because too general
-TEST(SteeringSystemTesting, test_good_sensors)
+TEST(SteeringSystemTesting, test_adc_to_degree_conversion)
 {
     auto params = gen_default_params();
     SteeringSystem steering(params);
-    SteeringSensorData_s sensor{};
-    sensor.analog_steering_Degrees = 2048;
-    sensor.digital_steering_analog = 4000;
-
-    auto data = steering.evaluate_steering(sensor, 1000); //simulated timestamp for tests
-
-
-    EXPECT_FALSE(data.sensor_disagreement_implausibility);
-
-}
-*/
-TEST(SteeringSystemTesting, test_adc_to_degree_conversion)
-{
-    auto prams = gen_default_params();
-    SteeringSystem steering(params);
 
     uint32_t analog_mid = (params.min_steering_signal_analog + params.max_steering_signal_analog) / 2;
+    uint32_t digital_mid = (params.min_steering_signal_digital + params.max_steering_signal_digital) / 2;
+    
+    //midpoints
+    SteeringSensorData_s midpoint{};
+    midpoint.analog_steering_degrees = analog_mid;
+    midpoint.digital_steering_analog = digital_mid;
+    auto data = steering.evaluate_steering(midpoint, 1000);
+
+    EXPECT_NEAR(data.analog_steering_angle, 0.0f, 0.001f);
+    EXPECT_NEAR(data.digital_steering_angle, 0.0f, 0.001f);
+
+    //min values
+    SteeringSensorData_s min_val {};
+    min_val.analog_steering_degrees = params.min_steering_signal_analog;
+    min_val.digital_steering_analog = params.min_steering_signal_digital;
+    
+    data = steering.evaluate_steering(min_val, 1010);
+
+    float expected_analog_min = (static_cast<int32_t>(params.min_steering_signal_analog) - analog_mid) * params.deg_per_count_analog;
+    float expected_digital_min = (static_cast<int32_t>(params.min_steering_signal_digital) - digital_mid) * params.deg_per_count_digital;
+
+    EXPECT_NEAR(data.analog_steering_angle, expected_analog_min, 0.001f);
+    EXPECT_NEAR(data.digital_steering_angle, expected_digital_min, 0.001f);
+
+    //max values
+    SteeringSensorData_s max_val{};
+    max_val.analog_steering_degrees = params.max_steering_signal_analog;
+    max_val.digital_steering_analog = params.max_steering_signal_digital;
+
+    data = steering.evaluate_steering(max_val, 1020);
+    float expected_analog_max = (static_cast<int32_t>(params.max_steering_signal_analog) - analog_mid) * params.deg_per_count_analog;
+    float expected_digital_max = (static_cast<int32_t>(params.max_steering_signal_digital) - digital_mid) * params.deg_per_count_digital;
+
+    EXPECT_NEAR(data.analog_steering_angle, expected_analog_max, 0.001f);
+    EXPECT_NEAR(data.digital_steering_angle, expected_digital_max, 0.001f);
+    
 }
 
 TEST(SteeringSystemTesting, test_out_of_bounds_raw_signals){
@@ -95,26 +116,25 @@ TEST(SteeringSystemTesting, test_out_of_bounds_raw_signals){
     auto params = gen_default_params();
     SteeringSystem steering(params);
 
-
     //Check for a good value first
     SteeringSensorData_s good_val = {};
-    good_val.analog_steering_degrees = 2100;
-    good_val.digital_steering_analog = 4100;
+    good_val.analog_steering_degrees = 2048;
+    good_val.digital_steering_analog = 4000;
     auto data = steering.evaluate_steering(good_val, 1000);
-    EXPECT_FALSE(data.analog_oor_implausability);
-    EXPECT_FALSE(data.digital_oor_implausability);
+    EXPECT_FALSE(data.analog_oor_implausibility);
+    EXPECT_FALSE(data.digital_oor_implausibility);
 
     //OOR High
-    SteeringSensorData_s high_val = {5000,9000};
+    SteeringSensorData_s high_val = {5000, 9000};
     data = steering.evaluate_steering(high_val, 1010);
-    EXPECT_TRUE(data.analog_oor_implausability);
-    EXPECT_TRUE(data.digital_oor_implausability);
+    EXPECT_TRUE(data.analog_oor_implausibility);
+    EXPECT_TRUE(data.digital_oor_implausibility);
 
     //OOR Low
-    SteeringSensorData_s low_val = {0, 0};
+    SteeringSensorData_s low_val = {static_cast<uint32_t>(-1000), static_cast<uint32_t>(-1000)};
     data = steering.evaluate_steering(low_val, 1020);
-    EXPECT_TRUE(data.analog_oor_implausability);
-    EXPECT_TRUE(data.digital_oor_implausability);
+    EXPECT_TRUE(data.analog_oor_implausibility);
+    EXPECT_TRUE(data.digital_oor_implausibility);
 
 }
 
@@ -122,7 +142,7 @@ TEST(SteeringSystemTesting, test_detect_jumps_dtheta){
     auto params = gen_default_params();
     SteeringSystem steering(params);
 
-    SteeringSensorData_s baseline = {2100,4100};
+    SteeringSensorData_s baseline = {2048, 4000};
 
     //First run (just to verify that we don't get a dtheta exceeded on the first run since we have no previous data to compare to)
     auto data = steering.evaluate_steering(baseline, 1000);
@@ -130,13 +150,13 @@ TEST(SteeringSystemTesting, test_detect_jumps_dtheta){
     EXPECT_FALSE(data.dtheta_exceeded_digital);
     
     //Now verify again when dt is zero we don't get a dtheta exceeded since we can't divide by zero/
-    SteeringSensorData_s massive_jump = {4100,8100};
+    SteeringSensorData_s massive_jump = {4096, 8000};
     data = steering.evaluate_steering(massive_jump, 1000);
     EXPECT_FALSE(data.dtheta_exceeded_analog);
     EXPECT_FALSE(data.dtheta_exceeded_digital);
 
     //Small motion valid
-    SteeringSensorData_s small_motion = {2110,4110};
+    SteeringSensorData_s small_motion = {2060, 4050};
     data = steering.evaluate_steering(small_motion, 1010); //advance time by 10 ms
     EXPECT_FALSE(data.dtheta_exceeded_analog);
     EXPECT_FALSE(data.dtheta_exceeded_digital);
@@ -146,7 +166,6 @@ TEST(SteeringSystemTesting, test_detect_jumps_dtheta){
     EXPECT_TRUE(data.dtheta_exceeded_analog);
     EXPECT_TRUE(data.dtheta_exceeded_digital);
 }
-
 
 
 TEST(SteeringSystemTesting, test_sensor_disagreemnet)
@@ -176,9 +195,9 @@ TEST(SteeringSystemTesting,test_sensor_output_logic){
     SteeringSystem steering(params);
 
     //When both valid and agreeing, we default to digital
-    SteeringSensorData_s both_valid = {2100,4100};
+    SteeringSensorData_s both_valid = {2000,4000};
     auto data = steering.evaluate_steering(both_valid, 1000);
-    EXPECT_NEAR(data.output_steering)
+    EXPECT_NEAR(data.output_steering_angle,data);
     
 
 }
