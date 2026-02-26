@@ -1,17 +1,18 @@
 #include <cmath>
 #include "SteeringSystem.h"
+#include <cstdint>
 
 
 
 
 void SteeringSystem::recalibrate_steering_digital(const SteeringSensorData_s &current_steering_data, bool calibration_is_on) {
     //get current raw angles
-    const uint32_t curr_digital_raw = static_cast<uint32_t>(current_steering_data.digital_steering_analog);
+    const uint32_t curr_digital_raw = static_cast<uint32_t>(current_steering_data.digital_steering_analog); //NOLINT will eventually be uint32
    
     //button just pressed ->recalibration window
     if (calibration_is_on && !_calibrating){
         _calibrating = true;
-        _steeringParams.min_observed_digital = 10000000; //establishes a big number that will be greater than the readings
+        _steeringParams.min_observed_digital = UINT32_MAX; //establishes a big number that will be greater than the readings
         _steeringParams.max_observed_digital = 0;
     }
     
@@ -38,7 +39,7 @@ void SteeringSystem::recalibrate_steering_digital(const SteeringSensorData_s &cu
             std::swap(_steeringParams.min_steering_signal_digital,_steeringParams.max_steering_signal_digital);
         }
         _steeringParams.span_signal_digital = _steeringParams.max_steering_signal_digital-_steeringParams.min_steering_signal_digital;
-        _steeringParams.analog_tol_deg = _steeringParams.span_signal_analog * _steeringParams.analog_tol * _steeringParams.deg_per_count_analog;
+        _steeringParams.analog_tol_deg = static_cast<float>(_steeringParams.span_signal_analog) * _steeringParams.analog_tol * _steeringParams.deg_per_count_analog;
     } 
 }
 
@@ -147,8 +148,8 @@ SteeringSystemData_s SteeringSystem::evaluate_steering(const SteeringSensorData_
     if(!_first_run && dt > 0){ //check that we not on the first run which would mean no previous data
         float dtheta_analog = out.analog_steering_angle - _prev_analog_angle; //prev_angle established in last run
         float dtheta_digital = out.digital_steering_angle - _prev_digital_angle;
-        out.analog_steering_velocity_deg_s = (dtheta_analog / dt) * 1000.0f;
-        out.digital_steering_velocity_deg_s = (dtheta_digital / dt) * 1000.0f;
+        out.analog_steering_velocity_deg_s = (dtheta_analog / dt) * 1000.0f; //NOLINT ms to s
+        out.digital_steering_velocity_deg_s = (dtheta_digital / dt) * 1000.0f; //NOLINT ms to s
 
 
         //Check if either sensor moved too much in one tick
