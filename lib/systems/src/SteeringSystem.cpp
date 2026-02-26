@@ -158,8 +158,8 @@ SteeringSystemData_s SteeringSystem::evaluate_steering(const SteeringSensorData_
 
 
         //Check if either sensor is out of range (pass in raw)
-        out.analog_oor_implausibility = _evaluate_steering_oor_analog(current_steering_data.analog_steering_degrees);
-        out.digital_oor_implausibility = _evaluate_steering_oor_digital(current_steering_data.digital_steering_analog);
+        out.analog_oor_implausibility = _evaluate_steering_oor_analog(static_cast<uint32_t>(current_steering_data.analog_steering_degrees));
+        out.digital_oor_implausibility = _evaluate_steering_oor_digital(static_cast<uint32_t>(current_steering_data.digital_steering_analog));
 
         //Check if there is too much of a difference between sensor values
         float sensor_difference = std::fabs(out.analog_steering_angle - out.digital_steering_angle);

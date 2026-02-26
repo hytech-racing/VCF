@@ -191,13 +191,21 @@ TEST(SteeringSystemTesting, test_sensor_disagreement)
 
 TEST(SteeringSystemTesting,test_sensor_output_logic){
 
-    auto params = gen_standard_params();
+    auto params = gen_default_params();
     SteeringSystem steering(params);
 
     //When both valid and agreeing, we default to digital
-    SteeringSensorData_s both_valid = {2000,4000};
+    SteeringSensorData_s both_valid = {2048,4000};
     auto data = steering.evaluate_steering(both_valid, 1000);
-    EXPECT_NEAR(data.output_steering_angle,data);
+    EXPECT_NEAR(data.output_steering_angle, data.digital_steering_angle, 0.001f);
+    EXPECT_FALSE(data.both_sensors_fail);
+    EXPECT_FALSE(data.sensor_disagreement_implausibility);
+
+    //When both valid but disagreeing, we default to digital
+    SteeringSensorData_s both_valid_disagree = {2048, 7000};
+    auto data = steering.evaluate_steering(both_valid_disagree, 1010);
+
+
     
 
 }
