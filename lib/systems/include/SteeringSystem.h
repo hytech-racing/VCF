@@ -38,7 +38,6 @@ struct SteeringParams_s {
 
     // difference rating
     float error_between_sensors_tolerance; //maximum difference between digital and analog sensor allowed
-   
 };
 
 struct SteeringSystemData_s
