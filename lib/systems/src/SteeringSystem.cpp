@@ -155,3 +155,4 @@ bool SteeringSystem::_evaluate_steering_oor_digital(uint32_t steering_digital_ra
 bool SteeringSystem::_evaluate_steering_dtheta_exceeded(float dtheta){
     return (fabs(dtheta) > _steeringParams.max_dtheta_threshold);
 }
+

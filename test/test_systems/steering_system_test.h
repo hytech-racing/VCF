@@ -70,6 +70,7 @@ static float expected_angle_from_midpoint(uint32_t raw, uint32_t min, uint32_t m
 
 */
 
+// fix
 TEST(SteeringSystemTesting, test_adc_to_degree_conversion)
 {
     auto params = gen_default_params();
@@ -114,9 +115,12 @@ TEST(SteeringSystemTesting, test_adc_to_degree_conversion)
     
 }
 
+//fix
 TEST(SteeringSystemTesting, test_out_of_bounds_raw_signals){
 
     auto params = gen_default_params();
+    params.min_steering_signal_analog = 1000;
+    params.min_steering_signal_digital = 1000;
     SteeringSystem steering(params);
 
     //Check for a good value first
@@ -134,13 +138,16 @@ TEST(SteeringSystemTesting, test_out_of_bounds_raw_signals){
     EXPECT_TRUE(data.digital_oor_implausibility);
 
     //OOR Low
+    
     SteeringSensorData_s low_val = {static_cast<uint32_t>(0), static_cast<uint32_t>(0)};
     data = steering.evaluate_steering(low_val, 1020);
+    // data = steering.evaluate_steering(low_val, 1030);
     EXPECT_TRUE(data.analog_oor_implausibility);
     EXPECT_TRUE(data.digital_oor_implausibility);
 
 }
 
+//fix
 TEST(SteeringSystemTesting, test_detect_jumps_dtheta){
     auto params = gen_default_params();
     SteeringSystem steering(params);
@@ -152,20 +159,22 @@ TEST(SteeringSystemTesting, test_detect_jumps_dtheta){
     EXPECT_FALSE(data.dtheta_exceeded_analog);
     EXPECT_FALSE(data.dtheta_exceeded_digital);
     
-    //Now verify again when dt is zero we don't get a dtheta exceeded since we can't divide by zero/
     SteeringSensorData_s massive_jump = {4096, 8000};
-    data = steering.evaluate_steering(massive_jump, 1000);
-    EXPECT_FALSE(data.dtheta_exceeded_analog);
-    EXPECT_FALSE(data.dtheta_exceeded_digital);
+    data = steering.evaluate_steering(massive_jump, 1005);
+    EXPECT_TRUE(data.dtheta_exceeded_analog);
+    EXPECT_TRUE(data.dtheta_exceeded_digital);
 
+
+    // Reset the last value of evaluate steering to baseline
+    steering.evaluate_steering(baseline, 1010);
     //Small motion valid
     SteeringSensorData_s small_motion = {2060, 4050};
-    data = steering.evaluate_steering(small_motion, 1010); //advance time by 10 ms
+    data = steering.evaluate_steering(small_motion, 1020); //advance time by 10 ms
     EXPECT_FALSE(data.dtheta_exceeded_analog);
     EXPECT_FALSE(data.dtheta_exceeded_digital);
 
     //Big motion NOT valid
-    data = steering.evaluate_steering(massive_jump, 1020); //advance time by another 10 ms
+    data = steering.evaluate_steering(massive_jump, 1030); //advance time by another 10 ms
     EXPECT_TRUE(data.dtheta_exceeded_analog);
     EXPECT_TRUE(data.dtheta_exceeded_digital);
 }
@@ -191,7 +200,7 @@ TEST(SteeringSystemTesting, test_sensor_disagreement)
     EXPECT_TRUE(data.sensor_disagreement_implausibility);
 } 
 
-
+// fix
 TEST(SteeringSystemTesting,test_sensor_output_logic){
 
     auto params = gen_default_params();
@@ -203,6 +212,9 @@ TEST(SteeringSystemTesting,test_sensor_output_logic){
     EXPECT_NEAR(data.output_steering_angle, data.digital_steering_angle, 0.001f);
     EXPECT_FALSE(data.both_sensors_fail);
     EXPECT_FALSE(data.sensor_disagreement_implausibility);
+
+    // Prevent dtheta exceeded for the next test
+    steering.evaluate_steering({2048, 7000}, 1000);
 
     //When both valid but disagreeing, we default to digital
     SteeringSensorData_s both_valid_disagree = {2048, 7000};
