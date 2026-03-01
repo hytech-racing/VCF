@@ -14,8 +14,11 @@ struct SteeringParams_s {
     uint32_t max_steering_signal_analog = 4095; //Raw ADC value from analog sensor at maximum (right) steering angle
     uint32_t min_steering_signal_digital; //Raw ADC value from digital sensor at minimum (left) steering angle
     uint32_t max_steering_signal_digital; //Raw ADC value from digital sensor at maximum (right) steering angle
+
     uint32_t span_signal_analog = 4095;
     uint32_t span_signal_digital;
+    int32_t digital_midpoint;
+    int32_t analog_midpoint;
 
     // calibration limits
     uint32_t min_observed_digital;

@@ -38,6 +38,8 @@ void SteeringSystem::recalibrate_steering_digital(const SteeringSensorData_s &cu
         }
         _steeringParams.span_signal_digital = _steeringParams.max_steering_signal_digital-_steeringParams.min_steering_signal_digital;
         _steeringParams.analog_tol_deg = static_cast<float>(_steeringParams.span_signal_analog) * _steeringParams.analog_tol * _steeringParams.deg_per_count_analog;
+        _steeringParams.digital_midpoint = static_cast<int32_t>((_steeringParams.max_steering_signal_digital + _steeringParams.min_steering_signal_digital) / 2); //NOLINT
+        _steeringParams.analog_midpoint = static_cast<int32_t>((_steeringParams.max_steering_signal_analog + _steeringParams.min_steering_signal_analog) / 2); //NOLINT
     } 
 }
 
@@ -116,24 +118,14 @@ void SteeringSystem::update_observed_steering_limits(const SteeringSensorData_s 
 
 float SteeringSystem::_convert_digital_sensor(const SteeringSensorData_s &current_steering_data) {
     // Same logic for digital
-    const uint32_t curr_raw_digital = current_steering_data.digital_steering_analog; //NOLINT should be uint32_t later
-    const uint32_t digital_midpoint = ((_steeringParams.max_steering_signal_digital+_steeringParams.min_steering_signal_digital)/2);
-
-    const int32_t curr_digital_offset = static_cast<int32_t>(curr_raw_digital) - static_cast<int32_t>(digital_midpoint);
-    float curr_digital_degrees = (float)curr_digital_offset * _steeringParams.deg_per_count_digital;
-    return curr_digital_degrees;
+    const int32_t offset = static_cast<int32_t>(current_steering_data.digital_steering_analog) - _steeringParams.digital_midpoint; //NOLINT
+    return static_cast<float>(offset) * _steeringParams.deg_per_count_digital;
 }
 
 float SteeringSystem::_convert_analog_sensor(const SteeringSensorData_s &current_steering_data) {
     // Get the raw value
-    const uint32_t curr_raw_analog = current_steering_data.analog_steering_degrees; //NOLINT should be uint32_t later
-    const uint32_t analog_midpoint = (_steeringParams.max_steering_signal_analog + _steeringParams.min_steering_signal_analog) / 2;
-   
-    const int32_t curr_analog_offset = static_cast<int32_t>(curr_raw_analog) - static_cast<int32_t>(analog_midpoint);
-   
-    const float curr_analog_degrees = static_cast<float>(curr_analog_offset) * _steeringParams.deg_per_count_analog;
-
-    return curr_analog_degrees;
+    const int32_t offset = static_cast<int32_t>(current_steering_data.analog_steering_degrees) - _steeringParams.analog_midpoint; //NOLINT
+    return static_cast<float>(offset) * _steeringParams.deg_per_count_analog;
 }
 
 bool SteeringSystem::_evaluate_steering_oor_analog(uint32_t steering_analog_raw) { // RAW
