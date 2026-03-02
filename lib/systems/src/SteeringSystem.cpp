@@ -40,6 +40,12 @@ void SteeringSystem::recalibrate_steering_digital(const SteeringSensorData_s &cu
         _steeringParams.analog_tol_deg = static_cast<float>(_steeringParams.span_signal_analog) * _steeringParams.analog_tol * _steeringParams.deg_per_count_analog;
         _steeringParams.digital_midpoint = static_cast<int32_t>((_steeringParams.max_steering_signal_digital + _steeringParams.min_steering_signal_digital) / 2); //NOLINT
         _steeringParams.analog_midpoint = static_cast<int32_t>((_steeringParams.max_steering_signal_analog + _steeringParams.min_steering_signal_analog) / 2); //NOLINT
+        const int32_t analog_margin_counts = static_cast<int32_t>(_steeringParams.analog_tol * static_cast<float>(_steeringParams.span_signal_analog)); //NOLINT
+        const int32_t digital_margin_counts = static_cast<int32_t>(_steeringParams.digital_tol_deg /_steeringParams.deg_per_count_digital); //NOLINT
+        _steeringParams.analog_min_with_margins = static_cast<int32_t>(_steeringParams.min_steering_signal_analog) - analog_margin_counts;
+        _steeringParams.analog_max_with_margins = static_cast<int32_t>(_steeringParams.max_steering_signal_analog) + analog_margin_counts;
+        _steeringParams.digital_min_with_margins = static_cast<int32_t>(_steeringParams.min_steering_signal_digital) - digital_margin_counts;
+        _steeringParams.digital_max_with_margins = static_cast<int32_t>(_steeringParams.max_steering_signal_digital) + digital_margin_counts;
     } 
 }
 
@@ -129,19 +135,11 @@ float SteeringSystem::_convert_analog_sensor(const SteeringSensorData_s &current
 }
 
 bool SteeringSystem::_evaluate_steering_oor_analog(uint32_t steering_analog_raw) { // RAW
-    //check if the analog value is within bounds +- error
-    const int32_t analog_margin_counts = static_cast<int32_t>(_steeringParams.analog_tol * static_cast<float>(_steeringParams.span_signal_analog));
-    const int32_t min_ok = static_cast<int32_t>(_steeringParams.min_steering_signal_analog) - analog_margin_counts;
-    const int32_t max_ok = static_cast<int32_t>(_steeringParams.max_steering_signal_analog) + analog_margin_counts;
-    return (static_cast<int32_t>(steering_analog_raw) < min_ok || static_cast<int32_t>(steering_analog_raw) > max_ok);
+    return (static_cast<int32_t>(steering_analog_raw) < _steeringParams.analog_min_with_margins || static_cast<int32_t>(steering_analog_raw) > _steeringParams.analog_max_with_margins);
 }
 
 bool SteeringSystem::_evaluate_steering_oor_digital(uint32_t steering_digital_raw) {// RAW
-    //check if the digital value is within bounds +- error
-    const int32_t digital_margin_counts = static_cast<int32_t>(_steeringParams.digital_tol_deg /_steeringParams.deg_per_count_digital);
-    const int32_t min_ok = static_cast<int32_t>(_steeringParams.min_steering_signal_digital) - digital_margin_counts;
-    const int32_t max_ok = static_cast<int32_t>(_steeringParams.max_steering_signal_digital) + digital_margin_counts;
-    return (static_cast<int32_t>(steering_digital_raw) < min_ok || static_cast<int32_t>(steering_digital_raw) > max_ok);
+    return (static_cast<int32_t>(steering_digital_raw) < _steeringParams.digital_min_with_margins || static_cast<int32_t>(steering_digital_raw) > _steeringParams.digital_max_with_margins);
 }
 
 bool SteeringSystem::_evaluate_steering_dtheta_exceeded(float dtheta){
