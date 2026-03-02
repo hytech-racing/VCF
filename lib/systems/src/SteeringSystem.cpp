@@ -5,7 +5,7 @@
 void SteeringSystem::recalibrate_steering_digital(const SteeringSensorData_s &current_steering_data, bool calibration_is_on) {
     //get current raw angles
     const uint32_t curr_digital_raw = static_cast<uint32_t>(current_steering_data.digital_steering_analog); //NOLINT will eventually be uint32
-   
+    
     //button just pressed ->recalibration window
     if (calibration_is_on && !_calibrating){
         _calibrating = true;
@@ -46,6 +46,7 @@ void SteeringSystem::recalibrate_steering_digital(const SteeringSensorData_s &cu
         _steeringParams.analog_max_with_margins = static_cast<int32_t>(_steeringParams.max_steering_signal_analog) + analog_margin_counts;
         _steeringParams.digital_min_with_margins = static_cast<int32_t>(_steeringParams.min_steering_signal_digital) - digital_margin_counts;
         _steeringParams.digital_max_with_margins = static_cast<int32_t>(_steeringParams.max_steering_signal_digital) + digital_margin_counts;
+        _steeringParams.error_between_sensors_tolerance = _steeringParams.analog_tol_deg + _steeringParams.digital_tol_deg;
     } 
 }
 
@@ -80,9 +81,7 @@ void SteeringSystem::evaluate_steering(const SteeringSensorData_s &current_steer
 
         //Check if there is too much of a difference between sensor values
         float sensor_difference = std::fabs(_steeringSystemData.analog_steering_angle - _steeringSystemData.digital_steering_angle);
-        const float allowed_difference = _steeringParams.analog_tol_deg + _steeringParams.digital_tol_deg; //the allowed difference equals digital error+ analog error
-        //digital error is +- 0.2 degrees, constant regardless of angle, while analog depends on steering angle at 0.5%
-        bool sensors_agree = (sensor_difference <= allowed_difference); //steeringParams.error
+        bool sensors_agree = (sensor_difference <= _steeringParams.error_between_sensors_tolerance); //steeringParams.error
         _steeringSystemData.sensor_disagreement_implausibility = !sensors_agree;
 
         //create an algorithm/ checklist to determine which sensor we trust more,

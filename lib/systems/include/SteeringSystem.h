@@ -42,7 +42,7 @@ struct SteeringParams_s {
     float digital_tol_deg = 0.2f; // +- 0.2 degrees error
    
     // rate of angle change
-    float max_dtheta_threshold; //maximum change in angle since last reading to consider the reading valid
+    float max_dtheta_threshold = 5.0f; //maximum change in angle since last reading to consider the reading valid
 
     // difference rating
     float error_between_sensors_tolerance; //maximum difference between digital and analog sensor allowed

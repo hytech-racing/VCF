@@ -13,6 +13,7 @@
 #include "VCRInterface.h"
 #include "SystemTimeInterface.h"
 #include "PedalsSystem.h"
+#include "SteeringSystem.h"
 #include "WatchdogSystem.h"
 #include "DashboardInterface.h"
 #include "VCFEthernetInterface.h"
@@ -82,6 +83,20 @@ HT_TASK::TaskResponse update_pedals_calibration_task(const unsigned long& sysMic
     return HT_TASK::TaskResponse::YIELD;
 }
 
+HT_TASK::TaskResponse update_steering_calibration_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo) {
+    // If we have a button hold or something, maybe add something to only update_observed_steering limits when button held
+    SteeringSystemInstance::instance().update_observed_steering_limits(SteeringSystemInstance::instance().get_steering_sensor_data());
+
+    if (false /* TODO: IMPORTANT ADD SOMETHING FOR TRIGGERING CALIBRATION*/) {
+        SteeringSystemInstance::instance().recalibrate_steering_digital(SteeringSystemInstance::instance().get_steering_sensor_data(), false /* TODO: calibration trigger or something*/);
+        EEPROMUtilities::write_eeprom_32bit(VCFSystemConstants::MIN_STEERING_SIGNAL_DIGITAL_ADDR, SteeringSystemInstance::instance().get_steering_params.min_steering_signal_digital);
+        EEPROMUtilities::write_eeprom_32bit(VCFSystemConstants::MAX_STEERING_SIGNAL_DIGITAL_ADDR, SteeringSystemInstance::instance().get_steering_params.max_steering_signal_digital);
+        EEPROMUtilities::write_eeprom_32bit(VCFSystemConstants::ANALOG_MIN_WITH_MARGINS_ADDR, SteeringSystemInstance::instance().get_steering_params.analog_min_with_margins);
+        EEPROMUtilities::write_eeprom_32bit(VCFSystemConstants::ANALOG_MAX_WITH_MARGINS_ADDR, SteeringSystemInstance::instance().get_steering_params.analog_max_with_margins);
+        EEPROMUtilities::write_eeprom_32bit(VCFSystemConstants::DIGITAL_MIN_WITH_MARGINS_ADDR, SteeringSystemInstance::instance().get_steering_params.digital_min_with_margins);
+        EEPROMUtilities::write_eeprom_32bit(VCFSystemConstants::DIGITAL_MAX_WITH_MARGINS_ADDR, SteeringSystemInstance::instance().get_steering_params.digital_max_with_margins);
+    }
+}
 // bool init_read_gpio_task()
 // {
 //     // Setting digital/analog buttons D10-D6, A8 as inputs
@@ -185,6 +200,7 @@ HT_TASK::TaskResponse enqueue_front_suspension_data(const unsigned long& sysMicr
     return HT_TASK::TaskResponse::YIELD;
 }
 
+// TODO: update this and add any other sending data stuff
 HT_TASK::TaskResponse enqueue_steering_data(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo) 
 {
     STEERING_DATA_t msg_out;
@@ -393,6 +409,7 @@ namespace async_tasks
             PedalsSystemInstance::instance().get_pedals_sensor_data(),
             sys_time::hal_millis()
         ));
+        SteeringSystemInstance::instance().evaluate_steering(SteeringSystemInstance::instance().get_steering_sensor_data(), sys_time::hal_millis())
         // Serial.println(VCFData_sInstance::instance().system_data.pedals_system_data.accel_percent);
         return HT_TASK::TaskResponse::YIELD;
     }
@@ -553,6 +570,30 @@ void setup_all_interfaces() {
 
     PedalsSystemInstance::create(accel_params, brake_params); //pass in the two different params
     
+    SteeringParams_s steering_params = {
+        .min_steering_signal_analog = VCFSystemConstants::MIN_STEERING_SIGNAL_ANALOG,
+        .max_steering_signal_analog = VCFSystemConstants::MAX_STEERING_SIGNAL_ANALOG,
+        .min_steering_signal_digital = EEPROMUtilities::read_eeprom_32bit(),
+        .max_steering_signal_digital = EEPROMUtilities::read_eeprom_32bit(),
+        .analog_min_with_margins = EEPROMUtilities::read_eeprom_32bit(),
+        .analog_max_with_margins = EEPROMUtilities::read_eeprom_32bit(),
+        .digital_min_with_margins = EEPROMUtilities::read_eeprom_32bit(),
+        .digital_max_with_margins = EEPROMUtilities::read_eeprom_32bit(),
+        .span_signal_analog = VCFSystemConstants::SPAN_SIGNAL_ANALOG,
+        .analog_midpoint = VCFSystemConstants::ANALOG_MIDPOINT,
+        .deg_per_count_analog = VCFSystemConstants::DEG_PER_COUNT_ANALOG,
+        .deg_per_count_digital = VCFSystemConstants::DEG_PER_COUNT_DIGITAL,
+        .analog_tol = VCFSystemConstants::ANALOG_TOL,
+        .digital_tol_deg = VCFSystemConstants::DIGITAL_TOL_DEG,
+        .max_dtheta_threshold = VCFSystemConstants::MAX_DTHETA_THRESHOLD,
+    };
+    steering_params.span_signal_digital = steering_params.max_steering_signal_digital - steering_params.min_steering_signal_digital;
+    steering_params.digital_midpoint = (steering_params.min_steering_signal_digital + steering_params.max_steering_signal_digital) / 2;
+    steering_params.analog_tol_deg = static_cast<float>(steering_params.span_signal_analog) * steering_params.analog_tol * steering_params.deg_per_count_analog;
+    steering_params.error_between_sensors_tolerance = steering_params.analog_tol_deg + steering_params.digital_tol_deg;
+
+    SteeringSystemInstance::create(steering_params);
+
     // Create dashboard singleton
     DashboardGPIOs_s dashboard_gpios = {
         .DIM_BUTTON = VCFInterfaceConstants::BTN_DIM_READ,
