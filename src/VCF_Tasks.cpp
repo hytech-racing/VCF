@@ -387,10 +387,10 @@ namespace async_tasks
     HT_TASK::TaskResponse handle_async_main(const unsigned long& sys_micros, const HT_TASK::TaskInfo& task_info)
     {
         handle_async_recvs();
-        PedalsSystemInstance::instance().set_pedals_system_data(PedalsSystemInstance::instance().evaluate_pedals(
+        PedalsSystemInstance::instance().evaluate_pedals(
             PedalsSystemInstance::instance().get_pedals_sensor_data(),
             sys_time::hal_millis()
-        ));
+        );
         // Serial.println(VCFData_sInstance::instance().system_data.pedals_system_data.accel_percent);
         return HT_TASK::TaskResponse::YIELD;
     }
