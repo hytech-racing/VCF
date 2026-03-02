@@ -72,7 +72,7 @@ public:
     // Functions
     void recalibrate_steering_digital(const SteeringSensorData_s &current_steering_data, bool calibration_is_on);
     
-    SteeringSystemData_s evaluate_steering(const SteeringSensorData_s &current_steering_data, uint32_t current_millis);
+    void evaluate_steering(const SteeringSensorData_s &current_steering_data, uint32_t current_millis);
 
     // Getters
     const SteeringParams_s &get_steering_params() const {
