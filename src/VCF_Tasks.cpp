@@ -43,6 +43,10 @@ HT_TASK::TaskResponse run_read_adc1_task(const unsigned long& sysMicros, const H
         .brake_2 = static_cast<uint32_t>(ADCInterfaceInstance::instance().brake_2().conversion),
         .pedal_pressure = 0 // Currently an unused field
     });
+    SteeringSystemInstance::instance().set_steering_sensor_data(SteeringSensorData_s{
+        .analog_steering_degrees = static_cast<uint32_t>(ADCInterfaceInstance::instance().steering_degrees_cw().raw),
+        .digital_steering_analog = 0; /*TODO: Assign digital data*/
+    });
     return HT_TASK::TaskResponse::YIELD;
 }
 
@@ -55,7 +59,7 @@ HT_TASK::TaskResponse init_kick_watchdog(const unsigned long& sysMicros, const H
 }
 
 HT_TASK::TaskResponse run_kick_watchdog(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo) {
-    digitalWrite(VCFInterfaceConstants::SOFTWARE_OK_PIN , HIGH);
+    digitalWrite(VCFInterfaceConstants::SOFTWARE_OK_PIN, HIGH);
     digitalWrite(VCFInterfaceConstants::WATCHDOG_PIN, WatchdogInstance::instance().get_watchdog_state(sys_time::hal_millis()));
     return HT_TASK::TaskResponse::YIELD;
 }
@@ -573,12 +577,12 @@ void setup_all_interfaces() {
     SteeringParams_s steering_params = {
         .min_steering_signal_analog = VCFSystemConstants::MIN_STEERING_SIGNAL_ANALOG,
         .max_steering_signal_analog = VCFSystemConstants::MAX_STEERING_SIGNAL_ANALOG,
-        .min_steering_signal_digital = EEPROMUtilities::read_eeprom_32bit(),
-        .max_steering_signal_digital = EEPROMUtilities::read_eeprom_32bit(),
-        .analog_min_with_margins = EEPROMUtilities::read_eeprom_32bit(),
-        .analog_max_with_margins = EEPROMUtilities::read_eeprom_32bit(),
-        .digital_min_with_margins = EEPROMUtilities::read_eeprom_32bit(),
-        .digital_max_with_margins = EEPROMUtilities::read_eeprom_32bit(),
+        .min_steering_signal_digital = EEPROMUtilities::read_eeprom_32bit(VCFSystemConstants::MIN_STEERING_SIGNAL_DIGITAL_ADDR),
+        .max_steering_signal_digital = EEPROMUtilities::read_eeprom_32bit(VCFSystemConstants::MAX_STEERING_SIGNAL_DIGITAL_ADDR),
+        .analog_min_with_margins = EEPROMUtilities::read_eeprom_32bit(VCFSystemConstants::ANALOG_MIN_WITH_MARGINS_ADDR),
+        .analog_max_with_margins = EEPROMUtilities::read_eeprom_32bit(VCFSystemConstants::ANALOG_MAX_WITH_MARGINS_ADDR),
+        .digital_min_with_margins = EEPROMUtilities::read_eeprom_32bit(VCFSystemConstants::DIGITAL_MIN_WITH_MARGINS_ADDR),
+        .digital_max_with_margins = EEPROMUtilities::read_eeprom_32bit(VCFSystemConstants::DIGITAL_MAX_WITH_MARGINS_ADDR),
         .span_signal_analog = VCFSystemConstants::SPAN_SIGNAL_ANALOG,
         .analog_midpoint = VCFSystemConstants::ANALOG_MIDPOINT,
         .deg_per_count_analog = VCFSystemConstants::DEG_PER_COUNT_ANALOG,

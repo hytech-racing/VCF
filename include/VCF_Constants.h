@@ -185,6 +185,9 @@ namespace VCFTaskConstants {
     constexpr unsigned long PEDALS_RECALIBRATION_PRIORITY = 150;
     constexpr unsigned long PEDALS_RECALIBRATION_PERIOD = 100000; // 100 000 us = 10 Hz
     
+    constexpr unsigned long STEERING_RECALIBRATION_PRIORITY = 150; // TODO: Determine real values for these
+    constexpr unsigned long STEERING_RECALIBRATION_PERIOD = 100000;
+
     // IIR filter alphas
     constexpr float LOADCELL_IIR_FILTER_ALPHA = 0.01f;
 
