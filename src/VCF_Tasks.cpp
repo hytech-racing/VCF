@@ -208,9 +208,10 @@ HT_TASK::TaskResponse enqueue_front_suspension_data(const unsigned long& sysMicr
 HT_TASK::TaskResponse enqueue_steering_data(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo) 
 {
     STEERING_DATA_t msg_out;
-
-    msg_out.steering_analog_raw = ADCInterfaceInstance::instance().steering_degrees_cw().raw;
-    msg_out.steering_digital_raw = 0; //NOLINT VCFData_sInstance::instance().interface_data.steering_data.digital_steering_analog;
+    SteeringSystemData_s steering_system_data = SteeringSystemInstance::instance().get_steering_system_data();
+    /* TODO: Change steering_*_raw to new values we have to add to CAN library. Also add other msg_out variables for implausibilities*/
+    msg_out.steering_analog_raw = steering_system_data.analog_steering_angle;
+    msg_out.steering_digital_raw = steering_system_data.digital_steering_angle; //NOLINT VCFData_sInstance::instance().interface_data.steering_data.digital_steering_analog;
 
     CAN_util::enqueue_msg(&msg_out, &Pack_STEERING_DATA_hytech, VCFCANInterfaceImpl::VCFCANInterfaceObjectsInstance::instance().main_can_tx_buffer);
     return HT_TASK::TaskResponse::YIELD;

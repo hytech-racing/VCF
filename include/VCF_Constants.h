@@ -115,13 +115,13 @@ namespace VCFSystemConstants {
     // TODO: determine addresses
     constexpr uint32_t MIN_STEERING_SIGNAL_ANALOG = 0; //Raw ADC value from analog sensor at minimum (left) steering angle (calibration)
     constexpr uint32_t MAX_STEERING_SIGNAL_ANALOG = 4095; //Raw ADC value from analog sensor at maximum (right) steering angle
-    constexpr uint32_t MIN_STEERING_SIGNAL_DIGITAL_ADDR = 57; //Raw ADC value from digital sensor at minimum (left) steering angle
-    constexpr uint32_t MAX_STEERING_SIGNAL_DIGITAL_ADDR = 57; //Raw ADC value from digital sensor at maximum (right) steering angle
+    constexpr uint32_t MIN_STEERING_SIGNAL_DIGITAL_ADDR = 32; //Raw ADC value from digital sensor at minimum (left) steering angle
+    constexpr uint32_t MAX_STEERING_SIGNAL_DIGITAL_ADDR = 36; //Raw ADC value from digital sensor at maximum (right) steering angle
 
-    constexpr int32_t ANALOG_MIN_WITH_MARGINS_ADDR = 57;
-    constexpr int32_t ANALOG_MAX_WITH_MARGINS_ADDR = 57;
-    constexpr int32_t DIGITAL_MIN_WITH_MARGINS_ADDR = 57;
-    constexpr int32_t DIGITAL_MAX_WITH_MARGINS_ADDR = 57;
+    constexpr int32_t ANALOG_MIN_WITH_MARGINS_ADDR = 40;
+    constexpr int32_t ANALOG_MAX_WITH_MARGINS_ADDR = 44;
+    constexpr int32_t DIGITAL_MIN_WITH_MARGINS_ADDR = 48;
+    constexpr int32_t DIGITAL_MAX_WITH_MARGINS_ADDR = 52;
 
     constexpr uint32_t SPAN_SIGNAL_ANALOG = MAX_STEERING_SIGNAL_ANALOG - MIN_STEERING_SIGNAL_ANALOG;
     constexpr int32_t ANALOG_MIDPOINT = (MIN_STEERING_SIGNAL_ANALOG + MAX_STEERING_SIGNAL_ANALOG) / 2;

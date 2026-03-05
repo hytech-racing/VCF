@@ -149,7 +149,7 @@ TEST(SteeringSystemTesting, test_out_of_bounds_raw_signals){
     // data = steering.evaluate_steering(low_val, 1030);
     data = steering.get_steering_system_data();
     EXPECT_TRUE(data.analog_oor_implausibility);
-    EXPECT_TRUE(data.digital_oor_implausibility); //actual false, expected true
+    EXPECT_TRUE(data.digital_oor_implausibility); //actual false, expected true// check again if
 
 }
 
