@@ -573,7 +573,7 @@ void setup_all_interfaces() {
     SteeringParams_s steering_params = {
         .min_steering_signal_analog = VCFSystemConstants::MIN_STEERING_SIGNAL_ANALOG,
         .max_steering_signal_analog = VCFSystemConstants::MAX_STEERING_SIGNAL_ANALOG,
-        .min_steering_signal_digital = EEPROMUtilities::read_eeprom_32bit(),
+        .min_steering_signal_digital = EEPROMUtilities::read_eeprom_32bit(VCFSystemConstants::m),
         .max_steering_signal_digital = EEPROMUtilities::read_eeprom_32bit(),
         .analog_min_with_margins = EEPROMUtilities::read_eeprom_32bit(),
         .analog_max_with_margins = EEPROMUtilities::read_eeprom_32bit(),
