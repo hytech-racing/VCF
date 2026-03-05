@@ -10,8 +10,8 @@
 SteeringParams_s gen_default_params(){
     SteeringParams_s params;
     //hard code the parmas for sensors
-    params.min_steering_signal_analog = 25;
-    params.max_steering_signal_analog = 4095;//actual hard coded
+    params.min_steering_signal_analog = 1024;
+    params.max_steering_signal_analog = 3071;//actual hard coded
     
     params.min_steering_signal_digital = 25;
     params.max_steering_signal_digital = 8000; //testing values
@@ -25,11 +25,16 @@ SteeringParams_s gen_default_params(){
     params.deg_per_count_analog = 0.087890625f;
     params.deg_per_count_digital = 0.02197265625f;
 
+    params.analog_tol = 0.005f;
     params.analog_tol_deg = 0.11377778f;
     params.digital_tol_deg = 0.2f;
 
     params.max_dtheta_threshold = 5.0f;//change
     params.error_between_sensors_tolerance = 0.31377778f;
+
+    params.digital_midpoint = (params.min_steering_signal_digital + params.max_steering_signal_digital) / 2;
+    params.analog_midpoint = (params.min_steering_signal_analog + params.max_steering_signal_analog) / 2;
+
     return params;
 }
 
@@ -70,7 +75,7 @@ static float expected_angle_from_midpoint(uint32_t raw, uint32_t min, uint32_t m
 
 */
 
-//FAIL
+//FIXED
 TEST(SteeringSystemTesting, test_adc_to_degree_conversion)
 {
     auto params = gen_default_params();
@@ -85,8 +90,8 @@ TEST(SteeringSystemTesting, test_adc_to_degree_conversion)
     midpoint.digital_steering_analog = digital_mid;
     steering.evaluate_steering(midpoint, 1000);
     auto data = steering.get_steering_system_data();
-    EXPECT_NEAR(data.analog_steering_angle, 0.0f, 0.001f); //fail
-    EXPECT_NEAR(data.digital_steering_angle, 0.0f, 0.001f); //fail
+    EXPECT_NEAR(data.analog_steering_angle, 0.0f, 0.001f); 
+    EXPECT_NEAR(data.digital_steering_angle, 0.0f, 0.001f);
 
     //min values
     SteeringSensorData_s min_val{};
@@ -96,11 +101,11 @@ TEST(SteeringSystemTesting, test_adc_to_degree_conversion)
     steering.evaluate_steering(min_val, 1010);
     data = steering.get_steering_system_data();
 
-    float expected_analog_min = (static_cast<int32_t>(params.min_steering_signal_analog) - analog_mid) * params.deg_per_count_analog;
-    float expected_digital_min = (static_cast<int32_t>(params.min_steering_signal_digital) - digital_mid) * params.deg_per_count_digital;
+    float expected_analog_min = (static_cast<int32_t>(params.min_steering_signal_analog) - static_cast<int32_t>(analog_mid)) * params.deg_per_count_analog;
+    float expected_digital_min = (static_cast<int32_t>(params.min_steering_signal_digital) - static_cast<int32_t>(digital_mid)) * params.deg_per_count_digital;
 
-    EXPECT_NEAR(data.analog_steering_angle, expected_analog_min, 0.001f); //fail
-    EXPECT_NEAR(data.digital_steering_angle, expected_digital_min, 0.001f); //fail
+    EXPECT_NEAR(data.analog_steering_angle, expected_analog_min, 0.001f); 
+    EXPECT_NEAR(data.digital_steering_angle, expected_digital_min, 0.001f); 
 
     //max values
     SteeringSensorData_s max_val{};
@@ -109,11 +114,11 @@ TEST(SteeringSystemTesting, test_adc_to_degree_conversion)
 
     steering.evaluate_steering(max_val, 1020);
     data = steering.get_steering_system_data();
-    float expected_analog_max = (static_cast<int32_t>(params.max_steering_signal_analog) - analog_mid) * params.deg_per_count_analog;
-    float expected_digital_max = (static_cast<int32_t>(params.max_steering_signal_digital) - digital_mid) * params.deg_per_count_digital;
+    float expected_analog_max = (static_cast<int32_t>(params.max_steering_signal_analog) - static_cast<int32_t>(analog_mid)) * params.deg_per_count_analog;
+    float expected_digital_max = (static_cast<int32_t>(params.max_steering_signal_digital) - static_cast<int32_t>(digital_mid)) * params.deg_per_count_digital;
 
-    EXPECT_NEAR(data.analog_steering_angle, expected_analog_max, 0.001f); //fail
-    EXPECT_NEAR(data.digital_steering_angle, expected_digital_max, 0.001f); //fail
+    EXPECT_NEAR(data.analog_steering_angle, expected_analog_max, 0.001f); 
+    EXPECT_NEAR(data.digital_steering_angle, expected_digital_max, 0.001f); 
     
 }
 
@@ -130,7 +135,7 @@ TEST(SteeringSystemTesting, test_out_of_bounds_raw_signals){
     SteeringSensorData_s midpoint{};
     midpoint.analog_steering_degrees = analog_mid;
     midpoint.digital_steering_analog = digital_mid;
-    steering.evaluate_steering({midpoint}, 1000);
+    steering.evaluate_steering(midpoint, 1000);
     auto data = steering.get_steering_system_data();
     EXPECT_FALSE(data.analog_oor_implausibility);
     EXPECT_FALSE(data.digital_oor_implausibility);
@@ -149,7 +154,7 @@ TEST(SteeringSystemTesting, test_out_of_bounds_raw_signals){
     // data = steering.evaluate_steering(low_val, 1030);
     data = steering.get_steering_system_data();
     EXPECT_TRUE(data.analog_oor_implausibility);
-    EXPECT_TRUE(data.digital_oor_implausibility); //actual false, expected true// check again if
+    EXPECT_TRUE(data.digital_oor_implausibility); 
 
 }
 
@@ -212,55 +217,82 @@ TEST(SteeringSystemTesting, test_sensor_disagreement)
 
 // FAIL
 TEST(SteeringSystemTesting,test_sensor_output_logic){
-
     auto params = gen_default_params();
     SteeringSystem steering(params);
 
+    uint32_t analog_mid = (params.min_steering_signal_analog + params.max_steering_signal_analog) / 2;
+    uint32_t digital_mid = (params.min_steering_signal_digital + params.max_steering_signal_digital) / 2;
+        
+{
     //When both valid and agreeing, we default to digital
-    SteeringSensorData_s both_valid = {2048,4000};
+    SteeringSystem steering(params);
+    SteeringSensorData_s both_valid {};
+    both_valid.analog_steering_degrees = analog_mid;
+    both_valid.digital_steering_analog = digital_mid;
     steering.evaluate_steering(both_valid, 1000);
+    steering.evaluate_steering(both_valid, 1100);
+
     auto data = steering.get_steering_system_data();
     EXPECT_NEAR(data.output_steering_angle, data.digital_steering_angle, 0.001f); //probably same problem, recheck after fix
-    EXPECT_FALSE(data.both_sensors_fail);
+    EXPECT_FALSE(data.both_sensors_fail); 
     EXPECT_FALSE(data.sensor_disagreement_implausibility);
-
+}
     // Prevent dtheta exceeded for the next test
-    steering.evaluate_steering({2048, 7000}, 1000);
-
+    
+{
     //When both valid but disagreeing, we default to digital
-    SteeringSensorData_s both_valid_disagree = {2048, 7000};
-    steering.evaluate_steering(both_valid_disagree, 1010);
-    data = steering.get_steering_system_data();
+    SteeringSystem steering(params);
+    SteeringSensorData_s both_valid_disagree {};
+    both_valid_disagree.analog_steering_degrees = analog_mid;
+    both_valid_disagree.digital_steering_analog = digital_mid+3000; //large offset from analog
+    steering.evaluate_steering(both_valid_disagree, 1000);
+    steering.evaluate_steering(both_valid_disagree, 1100); 
+    auto data = steering.get_steering_system_data();
 
     EXPECT_TRUE(data.sensor_disagreement_implausibility);
     EXPECT_FALSE(data.analog_oor_implausibility); //actual true, expected false
     EXPECT_FALSE(data.digital_oor_implausibility); //actual true, expected false
     EXPECT_NEAR(data.output_steering_angle, data.digital_steering_angle, 0.001f); 
-
+}
+{
     //When analog is good but digital is bad, we put analog
-    SteeringSensorData_s digital_bad = {2048, 9000};
-    steering.evaluate_steering(digital_bad, 1020);
-    data = steering.get_steering_system_data();
+    SteeringSystem steering(params);
+    SteeringSensorData_s digital_bad {};
+    digital_bad.analog_steering_degrees = analog_mid;
+    digital_bad.digital_steering_analog = params.max_steering_signal_digital + 1000; //bad digital
+    steering.evaluate_steering(digital_bad, 1000);
+    steering.evaluate_steering(digital_bad, 1100);
+    auto data = steering.get_steering_system_data();
     EXPECT_TRUE(data.digital_oor_implausibility);
     EXPECT_FALSE(data.analog_oor_implausibility); //actual true, expected false 
     EXPECT_NEAR(data.output_steering_angle, data.analog_steering_angle, 0.001f); //propgated
-
+}
+{
     //When digital is good but analog is bad, we put digital
-    SteeringSensorData_s analog_bad = {5000, 4000};
-    steering.evaluate_steering(analog_bad, 1030);
-    data = steering.get_steering_system_data();
+    SteeringSystem steering(params);
+    SteeringSensorData_s analog_bad {};
+    analog_bad.analog_steering_degrees = params.max_steering_signal_analog + 1000;
+    analog_bad.digital_steering_analog = digital_mid;
+    steering.evaluate_steering(analog_bad, 1000);
+    steering.evaluate_steering(analog_bad, 1005);
+    auto data = steering.get_steering_system_data();
     EXPECT_TRUE(data.analog_oor_implausibility);
     EXPECT_FALSE(data.digital_oor_implausibility); //actual true, expected false
     EXPECT_NEAR(data.output_steering_angle, data.digital_steering_angle, 0.001f); //propagated from 253
-
+}
+{
     //When both bad, we flagging that error
-    SteeringSensorData_s both_bad = {5000, 9000};
-    steering.evaluate_steering(both_bad, 1040);
-    data = steering.get_steering_system_data();
+    SteeringSystem steering(params);
+    SteeringSensorData_s both_bad {};
+    both_bad.analog_steering_degrees = params.max_steering_signal_analog + 1000;
+    both_bad.digital_steering_analog = params.max_steering_signal_digital + 1000;
+    steering.evaluate_steering(both_bad, 1000);
+    steering.evaluate_steering(both_bad, 1005);
+    auto data = steering.get_steering_system_data();
     EXPECT_TRUE(data.analog_oor_implausibility);
     EXPECT_TRUE(data.digital_oor_implausibility);
     EXPECT_TRUE(data.both_sensors_fail);
-
+}
     
 
 }

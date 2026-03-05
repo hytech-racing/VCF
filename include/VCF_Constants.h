@@ -113,8 +113,8 @@ namespace VCFSystemConstants {
 
     // Steering System Constants
     // TODO: determine addresses
-    constexpr uint32_t MIN_STEERING_SIGNAL_ANALOG = 0; //Raw ADC value from analog sensor at minimum (left) steering angle (calibration)
-    constexpr uint32_t MAX_STEERING_SIGNAL_ANALOG = 4095; //Raw ADC value from analog sensor at maximum (right) steering angle
+    constexpr uint32_t MIN_STEERING_SIGNAL_ANALOG = 1024; //Raw ADC value from analog sensor at minimum (left) steering angle (calibration) TODO: test and find real values for min&max
+    constexpr uint32_t MAX_STEERING_SIGNAL_ANALOG = 3071; //Raw ADC value from analog sensor at maximum (right) steering angle
     constexpr uint32_t MIN_STEERING_SIGNAL_DIGITAL_ADDR = 32; //Raw ADC value from digital sensor at minimum (left) steering angle
     constexpr uint32_t MAX_STEERING_SIGNAL_DIGITAL_ADDR = 36; //Raw ADC value from digital sensor at maximum (right) steering angle
 
