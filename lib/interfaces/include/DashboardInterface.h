@@ -15,15 +15,12 @@
 struct DashboardGPIOs_s {
 
     // GPIO
-    uint8_t DIM_BUTTON; 
-    uint8_t PRESET_BUTTON; 
-    uint8_t MC_CYCLE_BUTTON; 
-    uint8_t MODE_BUTTON; 
-    uint8_t START_BUTTON; 
-    uint8_t DATA_BUTTON; 
-    uint8_t LEFT_SHIFTER_BUTTON; 
-    uint8_t RIGHT_SHIFTER_BUTTON; 
-
+    uint8_t BRIGHTNESS_CONTROL_PIN;
+    uint8_t PRESET_BUTTON;
+    uint8_t MC_CYCLE_BUTTON;
+    uint8_t START_BUTTON;
+    uint8_t DATA_BUTTON;
+    uint8_t BUTTON_2;
 };
 
 class DashboardInterface 
@@ -33,14 +30,12 @@ class DashboardInterface
 
         DashboardInterface(DashboardGPIOs_s gpios) : _dashboard_gpios(gpios) 
         {
-            pinMode(_dashboard_gpios.START_BUTTON, INPUT_PULLUP); 
+            pinMode(_dashboard_gpios.START_BUTTON, INPUT_PULLUP);
             pinMode(_dashboard_gpios.PRESET_BUTTON, INPUT_PULLUP); 
-            pinMode(_dashboard_gpios.MC_CYCLE_BUTTON, INPUT_PULLUP); 
-            pinMode(_dashboard_gpios.MODE_BUTTON, INPUT_PULLUP); 
-            pinMode(_dashboard_gpios.DIM_BUTTON, INPUT_PULLUP); 
+            pinMode(_dashboard_gpios.MC_CYCLE_BUTTON, INPUT_PULLUP);
+            pinMode(_dashboard_gpios.BRIGHTNESS_CONTROL_PIN, INPUT_PULLUP); 
             pinMode(_dashboard_gpios.DATA_BUTTON, INPUT_PULLUP); 
-            pinMode(_dashboard_gpios.LEFT_SHIFTER_BUTTON, INPUT_PULLUP); 
-            pinMode(_dashboard_gpios.RIGHT_SHIFTER_BUTTON, INPUT_PULLUP); 
+            pinMode(_dashboard_gpios.BUTTON_2, INPUT_PULLUP);
 
             _dash_created_millis = sys_time::hal_millis();
         }

@@ -106,7 +106,7 @@ void loop(){
     pedal_sensor_data.brake_1 = ADCInterfaceInstance::instance().brake_1().conversion;
     pedal_sensor_data.brake_2 = ADCInterfaceInstance::instance().brake_2().conversion;
     
-    PedalsSystemData_s data = PedalsSystemInstance::instance().evaluate_pedals(pedal_sensor_data, millis());
+    PedalsSystemInstance::instance().evaluate_pedals(pedal_sensor_data, millis());
 
     Serial.print("Accel 1: ");
     Serial.println(pedal_sensor_data.accel_1);
@@ -117,25 +117,25 @@ void loop(){
     Serial.print("Brake 2: ");
     Serial.println(pedal_sensor_data.brake_2);
     Serial.print("Accel Implausible: ");
-    Serial.println(data.accel_is_implausible);
+    Serial.println(PedalsSystemInstance::instance().get_pedals_system_data().accel_is_implausible);
     Serial.print("Brake Implausible: ");
-    Serial.println(data.brake_is_implausible);
+    Serial.println(PedalsSystemInstance::instance().get_pedals_system_data().brake_is_implausible);
     Serial.print("Brake Pressed: ");
-    Serial.println(data.brake_is_pressed);
+    Serial.println(PedalsSystemInstance::instance().get_pedals_system_data().brake_is_pressed);
     Serial.print("Accel Pressed: ");
-    Serial.println(data.accel_is_pressed);
+    Serial.println(PedalsSystemInstance::instance().get_pedals_system_data().accel_is_pressed);
     Serial.print("Mech Brake Active: ");
-    Serial.println(data.mech_brake_is_active);
+    Serial.println(PedalsSystemInstance::instance().get_pedals_system_data().mech_brake_is_active);
     Serial.print("Brake and Accel Implausibility High: ");
-    Serial.println(data.brake_and_accel_pressed_implausibility_high);
+    Serial.println(PedalsSystemInstance::instance().get_pedals_system_data().brake_and_accel_pressed_implausibility_high);
     Serial.print("Implausibility has exceeded max duration: ");
-    Serial.println(data.implausibility_has_exceeded_max_duration);
+    Serial.println(PedalsSystemInstance::instance().get_pedals_system_data().implausibility_has_exceeded_max_duration);
     Serial.print("Accel Percent: ");
-    Serial.println(data.accel_percent);
+    Serial.println(PedalsSystemInstance::instance().get_pedals_system_data().accel_percent);
     Serial.print("Brake Percent: ");
-    Serial.println(data.brake_percent);
+    Serial.println(PedalsSystemInstance::instance().get_pedals_system_data().brake_percent);
     Serial.print("Regen Percent: ");
-    Serial.println(data.regen_percent);    
+    Serial.println(PedalsSystemInstance::instance().get_pedals_system_data().regen_percent);    
     
     const int delay_time = 1000;
     delay(delay_time);

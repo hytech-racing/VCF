@@ -28,15 +28,16 @@ hytech_msgs_VCFData_s VCFEthernetInterface::make_vcf_data_msg(ADCInterface &ADCI
     out.steering_data.analog_steering_degrees = ADCInterfaceInstance.steering_degrees_cw().conversion;
     out.steering_data.digital_steering_analog = 0;
     
+    //TODO: MODIFY ETH STRUCT
     // Dash
-    out.dash_input_state.dim_btn_is_pressed = dashInstance.get_dashboard_outputs().dim_btn_is_pressed;
+    out.dash_input_state.dim_btn_is_pressed = dashInstance.get_dashboard_outputs().brightness_ctrl_btn_is_pressed;
     out.dash_input_state.preset_btn_is_pressed = dashInstance.get_dashboard_outputs().preset_btn_is_pressed;
     out.dash_input_state.mc_reset_btn_is_pressed = dashInstance.get_dashboard_outputs().mc_reset_btn_is_pressed;
-    out.dash_input_state.mode_btn_is_pressed = dashInstance.get_dashboard_outputs().mode_btn_is_pressed;
+    out.dash_input_state.mode_btn_is_pressed = 0;
     out.dash_input_state.start_btn_is_pressed = dashInstance.get_dashboard_outputs().start_btn_is_pressed;
     out.dash_input_state.data_btn_is_pressed = dashInstance.get_dashboard_outputs().data_btn_is_pressed;
-    out.dash_input_state.left_paddle_is_pressed = dashInstance.get_dashboard_outputs().left_paddle_is_pressed;
-    out.dash_input_state.right_paddle_is_pressed = dashInstance.get_dashboard_outputs().right_paddle_is_pressed;
+    out.dash_input_state.left_paddle_is_pressed = 0;
+    out.dash_input_state.right_paddle_is_pressed = dashInstance.get_dashboard_outputs().BUTTON_2;
     out.dash_input_state.dial_state = (hytech_msgs_ControllerMode_e) (dashInstance.get_dashboard_outputs().dial_state);
 
     // Ethernet link data
