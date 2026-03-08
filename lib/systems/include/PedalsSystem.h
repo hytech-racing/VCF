@@ -59,9 +59,23 @@ public:
         
     }
 
+    void set_pedals_sensor_data(const PedalSensorData_s &pedal_data)
+    {
+        _sensorData.accel_1 = pedal_data.accel_1;
+        _sensorData.accel_2 = pedal_data.accel_2;
+        _sensorData.brake_1 = pedal_data.brake_1;
+        _sensorData.brake_2 = pedal_data.brake_2;
+        _sensorData.pedal_pressure = pedal_data.pedal_pressure; //TODO: change this to use brake pressure front and rear
+    }
+
     const PedalsSystemData_s &get_pedals_system_data()
     {
-        return _data;
+        return _systemData;
+    }
+
+    const PedalSensorData_s &get_pedals_sensor_data()
+    {
+        return _sensorData;
     }
 
     float get_mech_brake_activation_threshold()
@@ -71,7 +85,7 @@ public:
 
     /// @brief Pedal evaluation function that takes in the direct analog values of the pedals and
     ///        returns all of the pedals system data.
-    PedalsSystemData_s evaluate_pedals(PedalSensorData_s pedal_data, unsigned long curr_millis);
+    void evaluate_pedals(PedalSensorData_s pedal_data, unsigned long curr_millis);
 
     PedalsParams get_accel_params() {return _accelParams;}
     PedalsParams get_brake_params() {return _brakeParams;}
@@ -81,7 +95,7 @@ public:
      * WARNING: This should only be called when driver holds the button!
      * WARNING: This requires both pedals to be near 0% travel!
      */
-    void recalibrate_min_max(PedalSensorData_s &curr_values)
+    void recalibrate_min_max(const PedalSensorData_s &curr_values)
     {
         // If pedal is near 0% travel and is closer to the observed max, then this sensor is a negative coefficient.
         bool accel_1_flipped = std::abs((int) curr_values.accel_1 - (int) max_observed_accel_1) < std::abs((int) curr_values.accel_1 - (int) min_observed_accel_1);
@@ -105,7 +119,7 @@ public:
      * to non-volatile memory (EEPROM). This should be called constantly to update the
      * observation.
      */
-    void update_observed_pedal_limits(PedalSensorData_s &curr_values)
+    void update_observed_pedal_limits(const PedalSensorData_s &curr_values)
     {
         min_observed_accel_1 = std::min(min_observed_accel_1, curr_values.accel_1);
         max_observed_accel_1 = std::max(max_observed_accel_1, curr_values.accel_1);
@@ -116,7 +130,7 @@ public:
         min_observed_brake_2 = std::min(min_observed_brake_2, curr_values.brake_2);
         max_observed_brake_2 = std::max(max_observed_brake_2, curr_values.brake_2);
     }
-    uint32_t min_observed_accel_1 = 4096;
+    uint32_t min_observed_accel_1 = 4095;
     uint32_t max_observed_accel_1 = 0;
     uint32_t min_observed_accel_2 = 4095;
     uint32_t max_observed_accel_2 = 0;
@@ -205,7 +219,8 @@ private:
     bool _pedal_is_active(float pedal1ConvertedData, float pedal2ConvertedData, const PedalsParams &params, bool check_mech_activation);
     
 private:
-    PedalsSystemData_s _data{};
+    PedalsSystemData_s _systemData{};
+    PedalSensorData_s _sensorData{};
     PedalsParams _accelParams{};
     PedalsParams _brakeParams{};
     bool _implaus_occured = false;
