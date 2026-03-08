@@ -5,7 +5,7 @@ std::array<float, adc_default_parameters::channels_within_mcp_adc> ADCInterface:
   std::array<float, adc_default_parameters::channels_within_mcp_adc> scales = {};
 
   scales[_adc_parameters.channels.steering_cw_channel]   = _adc_parameters.scales.steering_cw_scale; 
-  scales[_adc_parameters.channels.steering_ccw_channel]  = _adc_parameters.scales.steering_ccw_scale;
+  scales[_adc_parameters.channels.steering_ccw_channel]  = _adc_parameters.scales.steering_ccw_scale; //TODO: Why is there ccw?
   scales[_adc_parameters.channels.fr_loadcell_channel]   = _adc_parameters.scales.fr_loadcell_scale;
   scales[_adc_parameters.channels.fl_loadcell_channel]     = _adc_parameters.scales.fl_loadcell_scale;
   scales[_adc_parameters.channels.fr_suspot_channel]     = _adc_parameters.scales.fr_suspot_scale;

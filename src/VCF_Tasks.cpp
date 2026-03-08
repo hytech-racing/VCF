@@ -43,6 +43,10 @@ HT_TASK::TaskResponse run_read_adc1_task(const unsigned long& sysMicros, const H
         .brake_2 = static_cast<uint32_t>(ADCInterfaceInstance::instance().brake_2().conversion),
         .pedal_pressure = 0 // Currently an unused field
     });
+    SteeringSystemInstance::instance().set_steering_sensor_data(SteeringSensorData_s{
+        .analog_steering_degrees = static_cast<uint32_t>(ADCInterfaceInstance::instance().steering_degrees_cw().raw),
+        .digital_steering_analog = 0; /*TODO: Assign digital data*/
+    });
     return HT_TASK::TaskResponse::YIELD;
 }
 
@@ -55,7 +59,7 @@ HT_TASK::TaskResponse init_kick_watchdog(const unsigned long& sysMicros, const H
 }
 
 HT_TASK::TaskResponse run_kick_watchdog(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo) {
-    digitalWrite(VCFInterfaceConstants::SOFTWARE_OK_PIN , HIGH);
+    digitalWrite(VCFInterfaceConstants::SOFTWARE_OK_PIN, HIGH);
     digitalWrite(VCFInterfaceConstants::WATCHDOG_PIN, WatchdogInstance::instance().get_watchdog_state(sys_time::hal_millis()));
     return HT_TASK::TaskResponse::YIELD;
 }
@@ -204,9 +208,10 @@ HT_TASK::TaskResponse enqueue_front_suspension_data(const unsigned long& sysMicr
 HT_TASK::TaskResponse enqueue_steering_data(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo) 
 {
     STEERING_DATA_t msg_out;
-
-    msg_out.steering_analog_raw = ADCInterfaceInstance::instance().steering_degrees_cw().raw;
-    msg_out.steering_digital_raw = 0; //NOLINT VCFData_sInstance::instance().interface_data.steering_data.digital_steering_analog;
+    SteeringSystemData_s steering_system_data = SteeringSystemInstance::instance().get_steering_system_data();
+    /* TODO: Change steering_*_raw to new values we have to add to CAN library. Also add other msg_out variables for implausibilities*/
+    msg_out.steering_analog_raw = steering_system_data.analog_steering_angle;
+    msg_out.steering_digital_raw = steering_system_data.digital_steering_angle; //NOLINT VCFData_sInstance::instance().interface_data.steering_data.digital_steering_analog;
 
     CAN_util::enqueue_msg(&msg_out, &Pack_STEERING_DATA_hytech, VCFCANInterfaceImpl::VCFCANInterfaceObjectsInstance::instance().main_can_tx_buffer);
     return HT_TASK::TaskResponse::YIELD;
@@ -573,12 +578,21 @@ void setup_all_interfaces() {
     SteeringParams_s steering_params = {
         .min_steering_signal_analog = VCFSystemConstants::MIN_STEERING_SIGNAL_ANALOG,
         .max_steering_signal_analog = VCFSystemConstants::MAX_STEERING_SIGNAL_ANALOG,
+<<<<<<< HEAD
         .min_steering_signal_digital = EEPROMUtilities::read_eeprom_32bit(VCFSystemConstants::m),
         .max_steering_signal_digital = EEPROMUtilities::read_eeprom_32bit(),
         .analog_min_with_margins = EEPROMUtilities::read_eeprom_32bit(),
         .analog_max_with_margins = EEPROMUtilities::read_eeprom_32bit(),
         .digital_min_with_margins = EEPROMUtilities::read_eeprom_32bit(),
         .digital_max_with_margins = EEPROMUtilities::read_eeprom_32bit(),
+=======
+        .min_steering_signal_digital = EEPROMUtilities::read_eeprom_32bit(VCFSystemConstants::MIN_STEERING_SIGNAL_DIGITAL_ADDR),
+        .max_steering_signal_digital = EEPROMUtilities::read_eeprom_32bit(VCFSystemConstants::MAX_STEERING_SIGNAL_DIGITAL_ADDR),
+        .analog_min_with_margins = EEPROMUtilities::read_eeprom_32bit(VCFSystemConstants::ANALOG_MIN_WITH_MARGINS_ADDR),
+        .analog_max_with_margins = EEPROMUtilities::read_eeprom_32bit(VCFSystemConstants::ANALOG_MAX_WITH_MARGINS_ADDR),
+        .digital_min_with_margins = EEPROMUtilities::read_eeprom_32bit(VCFSystemConstants::DIGITAL_MIN_WITH_MARGINS_ADDR),
+        .digital_max_with_margins = EEPROMUtilities::read_eeprom_32bit(VCFSystemConstants::DIGITAL_MAX_WITH_MARGINS_ADDR),
+>>>>>>> 708563921b6480a26d8b016fa42691e6c1593cac
         .span_signal_analog = VCFSystemConstants::SPAN_SIGNAL_ANALOG,
         .analog_midpoint = VCFSystemConstants::ANALOG_MIDPOINT,
         .deg_per_count_analog = VCFSystemConstants::DEG_PER_COUNT_ANALOG,
