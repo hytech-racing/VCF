@@ -11,15 +11,8 @@ enum class SteeringEncoderStatus_e
 
 struct EncoderErrorFlags_s
 {
-    bool calibrationTimeout       = false;  // Ring did not make complete during 10 seconds
-    bool calibrationParameter     = false;  // Mechanical installation outside tolerance
     bool generalError             = false;  // Position data invalid (bit=0 means error)
     bool generalWarning           = false;  // Position data valid, operating conditons near limits (bit=0 means warning)
-    bool counterError             = false;  // Multiturn counter error (bit=1 means error)
-    bool speedHigh                = false;  // Speed too high (bit=1 means error)
-    bool tempRange                = false;  // Temperature out of range (bit=1 means error)
-    bool distFar                  = false;  // Dist b/w readhead and ring too far (bit=1 means error)
-    bool distNear                 = false;  // Dist b/w readhead and ring too close (bit=1 means error)
     bool noData                   = false;  // No data received
 };
 
@@ -35,11 +28,10 @@ class SteeringEncoderInterface
 {
 public:
 // Functions
-    virtual void init() = 0;
-    /// @brief Commands the underlying steering sensor to sample and hold the result
+    /// @brief Commands the underlying steering sensor to sample and hold the result.
     virtual void sample() = 0;
     /// @brief Calculate steering angle and whether result is in sensor's defined bounds. DOES NOT SAMPLE.
-    /// @return Calculated steering angle in degrees, upperSteeringStatus_s
+    /// @return Calculated steering angle in degrees.
     virtual SteeringEncoderConversion_s convert() = 0;
 };
 

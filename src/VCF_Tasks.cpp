@@ -69,20 +69,6 @@ HT_TASK::TaskResponse run_read_adc2_task(const unsigned long& sysMicros, const H
     return HT_TASK::TaskResponse::YIELD;
 }
 
-HT_TASK::TaskResponse run_read_digital_steering_sensor(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
-{
-    OrbisBRInstance::instance().sample();
-
-    SteeringEncoderConversion_s data = OrbisBRInstance::instance().convert();
-
-    Serial.printf("RAW: %s\n", data.raw);
-    // Serial.println("ANGLE: " + data.angle);
-    Serial.printf("ANGLE: %.2f\n", data.angle);
-    // Serial.println("STATUS: "); 
-    // Serial.println(static_cast<int>(data.status));
-    return HT_TASK::TaskResponse::YIELD;
-}
-
 HT_TASK::TaskResponse init_kick_watchdog(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
 {
     WatchdogInstance::create(VCFInterfaceConstants::WATCHDOG_KICK_INTERVAL_MS); // NOLINT

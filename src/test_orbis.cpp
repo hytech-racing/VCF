@@ -10,49 +10,64 @@ unsigned long lastPrintTime = 0;
 
 void setup()
 {
-    Serial.begin(ORBIS_BR_DEFAULT_BAUD_RATE);
+    Serial.begin(OrbisConstants::ORBIS_BR_DEFAULT_BAUD_RATE);
 
     while(!Serial);
     Serial.println("Serial Monitor connected.");        // Debug line
-    Serial.println("Serial Monitor connected.");        // Debug line
 
-    OrbisBRInstance::create(&Serial3, ORBIS_BR_DEFAULT_BAUD_RATE);
+    OrbisBRInstance::create(&Serial3);
 
-    
+
     Serial.println("Calling Self-Calib");                  // Debug line
-    
-    OrbisBRInstance::instance().sample();
-    
-    OrbisBRInstance::instance().factoryReset();
 
     bool _isCalibrated = false;    // Assume sensor is not calibrated
     while (!_isCalibrated) //NOLINT
     {
-        _isCalibrated = OrbisBRInstance::instance().performSelfCalibration(); 
+        _isCalibrated = OrbisBRInstance::instance().performSelfCalibration();
     }
-    
-    OrbisBRInstance::instance().sample(); delay(10);
-    
-    OrbisBRInstance::instance().setEncoderOffset();
 
-    // OrbisBRInstance::instance().saveConfiguration(); delay(100);
+    OrbisBRInstance::instance().setEncoderOffset();
 
     /* --- Block For Debugging --- */
     // OrbisBRInstance::instance().sample();
     // Serial.print("\n\n");
+
+    // SteeringEncoderConversion_s result = OrbisBRInstance::instance().convert();
+    //     if (result.errors.generalError)   { Serial.println("General error"); }
+    //     if (result.errors.generalWarning) { Serial.println("General warning"); }
+    //     if (result.errors.noData)         { Serial.println("No data"); }
+
+    //     OrbisErrorFlags_s orbisErrors = OrbisBRInstance::instance().getOrbisErrors();
+    //     if (orbisErrors.distFar)              { Serial.println("Readhead too far"); }
+    //     if (orbisErrors.distNear)             { Serial.println("Readhead too close"); }
+    //     if (orbisErrors.tempRange)            { Serial.println("Temperature out of range"); }
+    //     if (orbisErrors.speedHigh)            { Serial.println("Speed too high"); }
+    //     if (orbisErrors.counterError)         { Serial.println("Multiturn counter error"); }
+    //     if (orbisErrors.calibrationTimeout)   { Serial.println("Calibration timed out"); }
+    //     if (orbisErrors.calibrationParameter) { Serial.println("Calibration parameter error"); }
 }
 
 void loop()
 {
-    if (millis() - lastPrintTime >= SAMPLE_RATE) 
+    if (millis() - lastPrintTime >= SAMPLE_RATE)
     {
         lastPrintTime = millis();
-        
+
         OrbisBRInstance::instance().sample();
 
-        // Serial.println("\nShort Pos Req");
-        // Serial3.write(OrbisCommands::SHORT_POS_REQUEST); delay(1);
-        // Serial.println(Serial3.read(), HEX);
-        // Serial.println(Serial3.read(), HEX);
+        SteeringEncoderConversion_s result = OrbisBRInstance::instance().convert();
+        if (result.errors.generalError)   { Serial.println("General error"); }
+        if (result.errors.generalWarning) { Serial.println("General warning"); }
+        if (result.errors.noData)         { Serial.println("No data"); }
+
+        OrbisErrorFlags_s orbisErrors = OrbisBRInstance::instance().getOrbisErrors();
+        if (orbisErrors.distFar)              { Serial.println("Readhead too far"); }
+        if (orbisErrors.distNear)             { Serial.println("Readhead too close"); }
+        if (orbisErrors.tempRange)            { Serial.println("Temperature out of range"); }
+        if (orbisErrors.speedHigh)            { Serial.println("Speed too high"); }
+        if (orbisErrors.counterError)         { Serial.println("Multiturn counter error"); }
+        if (orbisErrors.calibrationTimeout)   { Serial.println("Calibration timed out"); }
+        if (orbisErrors.calibrationParameter) { Serial.println("Calibration parameter error"); }
+
     }
 }

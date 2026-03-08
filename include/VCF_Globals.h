@@ -6,10 +6,10 @@
 
 /* From shared-firmware-interfaces */
 #include "MCP_ADC.h"
-#include "Orbis_BR.h"
 
 /* From shared-firmware-interfaces */
 #include "EthernetAddressDefs.h"
+#include "Orbis_BR.h"
 
 /* From shared-firmware-types */
 #include "PedalsSystem.h"
