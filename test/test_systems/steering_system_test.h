@@ -8,7 +8,7 @@
 #include <iostream>
 
 SteeringParams_s gen_default_params(){
-    SteeringParams_s params;
+    SteeringParams_s params{};
     //hard code the parmas for sensors
     params.min_steering_signal_analog = 1024;
     params.max_steering_signal_analog = 3071;//actual hard coded
@@ -34,7 +34,15 @@ SteeringParams_s gen_default_params(){
 
     params.digital_midpoint = (params.min_steering_signal_digital + params.max_steering_signal_digital) / 2;
     params.analog_midpoint = (params.min_steering_signal_analog + params.max_steering_signal_analog) / 2;
-
+   
+    
+    const int32_t analog_margin_counts = static_cast<int32_t>(params.analog_tol * static_cast<float>(params.span_signal_analog));
+    const int32_t digital_margin_counts = static_cast<int32_t>(params.digital_tol_deg / params.deg_per_count_digital);
+    
+    params.analog_min_with_margins = static_cast<int32_t>(params.min_steering_signal_analog) - analog_margin_counts;
+    params.analog_max_with_margins = static_cast<int32_t>(params.max_steering_signal_analog) + analog_margin_counts;
+    params.digital_min_with_margins = static_cast<int32_t>(params.min_steering_signal_digital) - digital_margin_counts;
+    params.digital_max_with_margins = static_cast<int32_t>(params.max_steering_signal_digital) + digital_margin_counts;
     return params;
 }
 
@@ -149,9 +157,10 @@ TEST(SteeringSystemTesting, test_out_of_bounds_raw_signals){
 
     //OOR Low
     
-    SteeringSensorData_s low_val = {static_cast<uint32_t>(params.min_steering_signal_analog), static_cast<uint32_t>(params.max_steering_signal_analog)};
+    SteeringSensorData_s low_val = {static_cast<uint32_t>(params.min_steering_signal_analog)-50, static_cast<uint32_t>(params.min_steering_signal_digital)-10};
     steering.evaluate_steering(low_val, 1020);
-    // data = steering.evaluate_steering(low_val, 1030);
+    steering.evaluate_steering(low_val, 1030);
+    //data = steering.evaluate_steering(low_val, 1030);
     data = steering.get_steering_system_data();
     EXPECT_TRUE(data.analog_oor_implausibility);
     EXPECT_TRUE(data.digital_oor_implausibility); 
@@ -215,10 +224,9 @@ TEST(SteeringSystemTesting, test_sensor_disagreement)
     EXPECT_TRUE(data.sensor_disagreement_implausibility);
 } 
 
-// FAIL
 TEST(SteeringSystemTesting,test_sensor_output_logic){
     auto params = gen_default_params();
-    SteeringSystem steering(params);
+    
 
     uint32_t analog_mid = (params.min_steering_signal_analog + params.max_steering_signal_analog) / 2;
     uint32_t digital_mid = (params.min_steering_signal_digital + params.max_steering_signal_digital) / 2;
@@ -234,7 +242,7 @@ TEST(SteeringSystemTesting,test_sensor_output_logic){
 
     auto data = steering.get_steering_system_data();
     EXPECT_NEAR(data.output_steering_angle, data.digital_steering_angle, 0.001f); //probably same problem, recheck after fix
-    EXPECT_FALSE(data.both_sensors_fail); 
+    EXPECT_FALSE(data.both_sensors_fail); //fail
     EXPECT_FALSE(data.sensor_disagreement_implausibility);
 }
     // Prevent dtheta exceeded for the next test
@@ -296,3 +304,102 @@ TEST(SteeringSystemTesting,test_sensor_output_logic){
     
 
 }
+
+TEST(SteeringSystemTesting, test_recalibrate_steering_digital)
+{
+    auto params = gen_default_params();
+    SteeringSystem steering(params);
+
+    // Build calibration samples from the original digital range
+    const uint32_t original_digital_min = params.min_steering_signal_digital;
+    const uint32_t original_digital_max = params.max_steering_signal_digital;
+    const uint32_t original_digital_mid = params.digital_midpoint;
+
+    // Pick values inside the original range so calibration observes a new min/max
+    const uint32_t observed_low  = original_digital_min + (original_digital_mid - original_digital_min) / 2;
+    const uint32_t observed_high = original_digital_mid + (original_digital_max - original_digital_mid) / 2;
+
+    SteeringSensorData_s start_sample{};
+    start_sample.analog_steering_degrees = static_cast<uint32_t>(params.analog_midpoint);
+    start_sample.digital_steering_analog = observed_high;
+
+    SteeringSensorData_s low_sample{};
+    low_sample.analog_steering_degrees = static_cast<uint32_t>(params.analog_midpoint);
+    low_sample.digital_steering_analog = observed_low;
+
+    SteeringSensorData_s high_sample{};
+    high_sample.analog_steering_degrees = static_cast<uint32_t>(params.analog_midpoint);
+    high_sample.digital_steering_analog = observed_high;
+
+    // Start calibration: first sample should seed both observed min and max
+    steering.recalibrate_steering_digital(start_sample, true);
+    auto updated_params = steering.get_steering_params();
+
+    EXPECT_EQ(updated_params.min_observed_digital, observed_high);
+    EXPECT_EQ(updated_params.max_observed_digital, observed_high);
+
+    // Feed lower value -> updates min only
+    steering.recalibrate_steering_digital(low_sample, true);
+    updated_params = steering.get_steering_params();
+
+    EXPECT_EQ(updated_params.min_observed_digital, observed_low);
+    EXPECT_EQ(updated_params.max_observed_digital, observed_high);
+
+    // Feed high value again -> max remains high
+    steering.recalibrate_steering_digital(high_sample, true);
+    updated_params = steering.get_steering_params();
+
+    EXPECT_EQ(updated_params.min_observed_digital, observed_low);
+    EXPECT_EQ(updated_params.max_observed_digital, observed_high);
+
+    // End calibration and commit recalculated values
+    steering.recalibrate_steering_digital(high_sample, false);
+    updated_params = steering.get_steering_params();
+
+    // Expected committed digital range
+    const uint32_t expected_min_digital = observed_low;
+    const uint32_t expected_max_digital = observed_high;
+    const uint32_t expected_span_digital = expected_max_digital - expected_min_digital;
+    const int32_t expected_digital_midpoint = static_cast<int32_t>((expected_max_digital + expected_min_digital) / 2);
+
+    // Analog values should remain based on the original analog params
+    const uint32_t expected_span_analog = params.max_steering_signal_analog - params.min_steering_signal_analog;
+    const int32_t expected_analog_midpoint = static_cast<int32_t>((params.max_steering_signal_analog + params.min_steering_signal_analog) / 2);
+
+    const float expected_analog_tol_deg = static_cast<float>(params.span_signal_analog) *params.analog_tol *
+        params.deg_per_count_analog;
+
+    const int32_t expected_analog_margin_counts =
+        static_cast<int32_t>(params.analog_tol * static_cast<float>(params.span_signal_analog));
+
+    const int32_t expected_digital_margin_counts = static_cast<int32_t>(params.digital_tol_deg / params.deg_per_count_digital);
+
+    const int32_t expected_analog_min_with_margins = static_cast<int32_t>(params.min_steering_signal_analog) - expected_analog_margin_counts;
+    const int32_t expected_analog_max_with_margins = static_cast<int32_t>(params.max_steering_signal_analog) + expected_analog_margin_counts;
+
+    const int32_t expected_digital_min_with_margins =  static_cast<int32_t>(expected_min_digital) - expected_digital_margin_counts;
+    const int32_t expected_digital_max_with_margins = static_cast<int32_t>(expected_max_digital) + expected_digital_margin_counts;
+
+    const float expected_error_between_sensors_tolerance = expected_analog_tol_deg + params.digital_tol_deg;
+
+    // Check committed digital calibration
+    EXPECT_EQ(updated_params.min_steering_signal_digital, expected_min_digital);
+    EXPECT_EQ(updated_params.max_steering_signal_digital, expected_max_digital);
+    EXPECT_EQ(updated_params.span_signal_digital, expected_span_digital);
+    EXPECT_EQ(updated_params.digital_midpoint, expected_digital_midpoint);
+
+    // Check analog-derived values that get recomputed
+    EXPECT_EQ(updated_params.analog_midpoint, expected_analog_midpoint);
+    EXPECT_FLOAT_EQ(updated_params.analog_tol_deg, expected_analog_tol_deg);
+
+    // Check margins
+    EXPECT_EQ(updated_params.analog_min_with_margins, expected_analog_min_with_margins);
+    EXPECT_EQ(updated_params.analog_max_with_margins, expected_analog_max_with_margins);
+    EXPECT_EQ(updated_params.digital_min_with_margins, expected_digital_min_with_margins);
+    EXPECT_EQ(updated_params.digital_max_with_margins, expected_digital_max_with_margins);
+
+    // Check combined disagreement tolerance
+    EXPECT_FLOAT_EQ(updated_params.error_between_sensors_tolerance,
+    expected_error_between_sensors_tolerance);
+}
+
