@@ -101,6 +101,12 @@ namespace VCFInterfaceConstants {
     constexpr float BRAKE_PRESSURE_REAR_SCALE = 1.0;
     constexpr float BRAKE_PRESSURE_REAR_OFFSET = 0;
 
+}
+
+// calibration and processing constants
+namespace VCFSystemConstants { 
+    constexpr float LBS_TO_NEWTONS = 4.4482216153;
+
     // EEPROM addresses for min and max calibration values
     constexpr uint32_t ACCEL_1_MIN_ADDR = 0;
     constexpr uint32_t ACCEL_2_MIN_ADDR = 4;
@@ -113,7 +119,7 @@ namespace VCFInterfaceConstants {
     constexpr uint32_t ACCEL_MAX_SENSOR_PEDAL_2 = 4000;
     constexpr float ACCEL_DEADZONE_MARGIN = 0.03f;
     constexpr float ACCEL_MECHANICAL_ACTIVATION_PERCENTAGE = 0.05f;
-
+    
     constexpr uint32_t BRAKE_1_MIN_ADDR = 16;
     constexpr uint32_t BRAKE_2_MIN_ADDR = 20;
     constexpr uint32_t BRAKE_1_MAX_ADDR = 24;
@@ -125,11 +131,6 @@ namespace VCFInterfaceConstants {
     constexpr uint32_t BRAKE_MAX_SENSOR_PEDAL_2 = 4000;
     constexpr float BRAKE_DEADZONE_MARGIN = 0.04f;
     constexpr float BRAKE_MECHANICAL_ACTIVATION_PERCENTAGE = 0.5f;
-}
-
-// calibration and processing constants
-namespace VCFSystemConstants { 
-    constexpr float LBS_TO_NEWTONS = 4.4482216153;
 }
 
 // software configuration constants
