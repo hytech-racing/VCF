@@ -65,7 +65,8 @@ public:
         _sensorData.accel_2 = pedal_data.accel_2;
         _sensorData.brake_1 = pedal_data.brake_1;
         _sensorData.brake_2 = pedal_data.brake_2;
-        _sensorData.pedal_pressure = pedal_data.pedal_pressure; //TODO: change this to use brake pressure front and rear
+        _sensorData.brake_pressure_front = pedal_data.brake_pressure_front;
+        _sensorData.brake_pressure_rear = pedal_data.brake_pressure_rear;
     }
 
     const PedalsSystemData_s &get_pedals_system_data()

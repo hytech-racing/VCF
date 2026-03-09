@@ -55,9 +55,10 @@ void PedalsSystem::evaluate_pedals(PedalSensorData_s pedals_data, unsigned long 
     
     bool accel_pressed = accel_percent > _accelParams.activation_percentage;
     bool brake_pressed = brake_percent > _brakeParams.activation_percentage;
+    bool mech_brake_pressed = brake_percent >= _brakeParams.mechanical_activation_percentage;
     _systemData.accel_is_pressed = accel_pressed;
     _systemData.brake_is_pressed = brake_pressed;
-    bool mech_brake_pressed = brake_percent >= _brakeParams.mechanical_activation_percentage;
+    _systemData.mech_brake_is_active = mech_brake_pressed;
 
     _systemData.brake_and_accel_pressed_implausibility_high = accel_pressed && _systemData.brake_is_pressed;
 

@@ -32,7 +32,8 @@ HT_TASK::TaskResponse run_read_adc0_task(const unsigned long& sysMicros, const H
         .accel_2 = static_cast<uint32_t>(ADCInterfaceInstance::instance().acceleration_2().conversion),
         .brake_1 = static_cast<uint32_t>(ADCInterfaceInstance::instance().brake_1().conversion),
         .brake_2 = static_cast<uint32_t>(ADCInterfaceInstance::instance().brake_2().conversion),
-        .pedal_pressure = 0 // TODO: Need changes to support both brake pressure sensors
+        .brake_pressure_front = static_cast<uint32_t>(ADCInterfaceInstance::instance().brake_pressure_front().conversion),
+        .brake_pressure_rear = static_cast<uint32_t>(ADCInterfaceInstance::instance().brake_pressure_rear().conversion)
     });
     return HT_TASK::TaskResponse::YIELD;
 }
@@ -239,12 +240,13 @@ HT_TASK::TaskResponse enqueue_pedals_data(const unsigned long &sys_micros, const
     pedals_data.brake_pedal_active = PedalsSystemInstance::instance().get_pedals_system_data().brake_is_pressed;
     pedals_data.mechanical_brake_active = PedalsSystemInstance::instance().get_pedals_system_data().mech_brake_is_active;
     pedals_data.implaus_exceeded_max_duration = PedalsSystemInstance::instance().get_pedals_system_data().implausibility_has_exceeded_max_duration;
-
     
     pedals_data.accel_pedal_ro = HYTECH_accel_pedal_ro_toS(PedalsSystemInstance::instance().get_pedals_system_data().accel_percent);
     pedals_data.brake_pedal_ro = HYTECH_brake_pedal_ro_toS(PedalsSystemInstance::instance().get_pedals_system_data().brake_percent);
     // Serial.println(pedals_data.brake_pedal_ro);
     // Serial.println(pedals_data.accel_pedal_ro);
+
+    // TODO: Need to add brake pressure data to CAN msg
     CAN_util::enqueue_msg(&pedals_data, &Pack_PEDALS_SYSTEM_DATA_hytech, VCFCANInterfaceImpl::VCFCANInterfaceObjectsInstance::instance().main_can_tx_buffer);
     return HT_TASK::TaskResponse::YIELD;
 }
