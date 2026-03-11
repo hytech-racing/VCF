@@ -19,6 +19,7 @@
 #include "ACUInterface.h"
 #include <EEPROM.h>
 #include "FlexCAN_T4.h"
+#include "Orbis_BR.h"
 
 #include "WatchdogSystem.h"
 #include "Arduino.h"
@@ -566,6 +567,9 @@ void setup_all_interfaces() {
 
     PedalsSystemInstance::create(accel_params, brake_params); //pass in the two different params
     
+    // Create Digital Steering Sensor singleton
+    OrbisBRInstance::create(&Serial3); // pass in two different params
+
     // Create dashboard singleton
     DashboardGPIOs_s dashboard_gpios = {
         .BRIGHTNESS_CONTROL_PIN = VCFInterfaceConstants::BRIGHTNESS_CONTROL_PIN,
