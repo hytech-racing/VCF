@@ -20,6 +20,7 @@
 #include "ACUInterface.h"
 #include <EEPROM.h>
 #include "FlexCAN_T4.h"
+#include "Orbis_BR.h"
 
 #include "WatchdogSystem.h"
 #include "Arduino.h"
@@ -593,6 +594,7 @@ void setup_all_interfaces() {
 
     PedalsSystemInstance::create(accel_params, brake_params); //pass in the two different params
     
+<<<<<<< HEAD
     SteeringParams_s steering_params = {
         .min_steering_signal_analog = VCFSystemConstants::MIN_STEERING_SIGNAL_ANALOG,
         .max_steering_signal_analog = VCFSystemConstants::MAX_STEERING_SIGNAL_ANALOG,
@@ -616,6 +618,10 @@ void setup_all_interfaces() {
     steering_params.error_between_sensors_tolerance = steering_params.analog_tol_deg + steering_params.digital_tol_deg;
 
     SteeringSystemInstance::create(steering_params);
+=======
+    // Create Digital Steering Sensor singleton
+    OrbisBRInstance::create(&Serial3); // pass in two different params
+>>>>>>> origin/main
 
     // Create dashboard singleton
     DashboardGPIOs_s dashboard_gpios = {

@@ -29,7 +29,7 @@ namespace VCFInterfaceConstants {
     constexpr int SOFTWARE_OK_PIN = 37; // Watchdog's !MR pin
     
     // watchdog kick interval
-    constexpr unsigned long WATCHDOG_KICK_INTERVAL_MS = 10UL;
+    constexpr unsigned long WATCHDOG_KICK_INTERVAL_MS = 10UL; // 10 ms = 100 Hz
     
     //ADC Pins
     constexpr int ADC0_CS = 10; // MCP3208. ADC0 in VCF schematic. Used for steering, sus pots, and load cells.
@@ -211,7 +211,7 @@ namespace VCFTaskConstants {
     constexpr float LOADCELL_IIR_FILTER_ALPHA = 0.01f;
 
     constexpr unsigned long WATCHDOG_PRIORITY = 1;
-    constexpr unsigned long WATCHDOG_KICK_PERIOD = 1000;          // 1 000 us = 1000 Hz
+    constexpr unsigned long WATCHDOG_KICK_PERIOD = 10000;          // 10 000 us = 100 Hz
 }
 
 #endif /* VCF_CONSTANTS */
