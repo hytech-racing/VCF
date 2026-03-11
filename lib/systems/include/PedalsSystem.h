@@ -59,27 +59,13 @@ public:
         
     }
 
-    void set_pedals_system_data(const PedalsSystemData_s &pedal_data)
-    {
-        _systemData.accel_is_implausible = pedal_data.accel_is_implausible;
-        _systemData.brake_is_implausible = pedal_data.brake_is_implausible;
-        _systemData.brake_is_pressed = pedal_data.brake_is_pressed;
-        _systemData.accel_is_pressed = pedal_data.accel_is_pressed;
-        _systemData.mech_brake_is_active = pedal_data.mech_brake_is_active;
-        _systemData.brake_and_accel_pressed_implausibility_high = pedal_data.brake_and_accel_pressed_implausibility_high;
-        _systemData.implausibility_has_exceeded_max_duration = pedal_data.implausibility_has_exceeded_max_duration;
-        _systemData.accel_percent = pedal_data.accel_percent;
-        _systemData.brake_percent = pedal_data.brake_percent;
-        _systemData.regen_percent = pedal_data.regen_percent;
-    }
-
     void set_pedals_sensor_data(const PedalSensorData_s &pedal_data)
     {
         _sensorData.accel_1 = pedal_data.accel_1;
         _sensorData.accel_2 = pedal_data.accel_2;
         _sensorData.brake_1 = pedal_data.brake_1;
         _sensorData.brake_2 = pedal_data.brake_2;
-        _sensorData.pedal_pressure = pedal_data.pedal_pressure;
+        _sensorData.pedal_pressure = pedal_data.pedal_pressure; //TODO: change this to use brake pressure front and rear
     }
 
     const PedalsSystemData_s &get_pedals_system_data()
@@ -99,7 +85,7 @@ public:
 
     /// @brief Pedal evaluation function that takes in the direct analog values of the pedals and
     ///        returns all of the pedals system data.
-    PedalsSystemData_s evaluate_pedals(PedalSensorData_s pedal_data, unsigned long curr_millis);
+    void evaluate_pedals(PedalSensorData_s pedal_data, unsigned long curr_millis);
 
     PedalsParams get_accel_params() {return _accelParams;}
     PedalsParams get_brake_params() {return _brakeParams;}
