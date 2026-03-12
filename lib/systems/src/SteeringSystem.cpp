@@ -50,7 +50,7 @@ void SteeringSystem::recalibrate_steering_digital(const uint_32 analog_raw, cons
     } 
 }
 
-void SteeringSystem::evaluate_steering(const uint32_t analog_raw, const uint32_t digital_raw, const uint32_t current_millis){
+void SteeringSystem::evaluate_steering(const uint32_t analog_raw, const uint32_t digital_raw, const uint32_t current_millis) {
     // Reset flags
     _steeringSystemData.digital_oor_implausibility = false;
     _steeringSystemData.analog_oor_implausibility = false;
@@ -59,6 +59,8 @@ void SteeringSystem::evaluate_steering(const uint32_t analog_raw, const uint32_t
     _steeringSystemData.dtheta_exceeded_digital = false;
     _steeringSystemData.both_sensors_fail = false;
 
+    _steeringSystemData.analog_raw = analog_raw;
+    _steeringSystemData.digital_raw = digital_raw;
     //Conversion from raw ADC to degrees
     _steeringSystemData.analog_steering_angle = _convert_analog_sensor(analog_raw);
     _steeringSystemData.digital_steering_angle = _convert_digital_sensor(digital_raw);
