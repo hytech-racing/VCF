@@ -2,9 +2,9 @@
 #include <cstdint>
 #include "SteeringSystem.h"
 
-void SteeringSystem::recalibrate_steering_digital(const SteeringSensorData_s &current_steering_data, bool calibration_is_on) {
+void SteeringSystem::recalibrate_steering_digital(const uint_32 analog_raw, const uint32_t digital_raw, bool calibration_is_on) {
     //get current raw angles
-    const uint32_t curr_digital_raw = static_cast<uint32_t>(current_steering_data.digital_steering_analog); //NOLINT will eventually be uint32
+    const uint32_t curr_digital_raw = static_cast<uint32_t>(digital_raw); //NOLINT will eventually be uint32
     
     //button just pressed ->recalibration window
     if (calibration_is_on && !_calibrating){
@@ -14,7 +14,7 @@ void SteeringSystem::recalibrate_steering_digital(const SteeringSensorData_s &cu
     }
     
     if (calibration_is_on && _calibrating) {
-        update_observed_steering_limits(current_steering_data);
+        update_observed_steering_limits(analog_raw, digital_raw);
     }
 
     //update relative extremeties
@@ -50,7 +50,7 @@ void SteeringSystem::recalibrate_steering_digital(const SteeringSensorData_s &cu
     } 
 }
 
-void SteeringSystem::evaluate_steering(const SteeringSensorData_s &current_steering_data, const uint32_t current_millis){
+void SteeringSystem::evaluate_steering(const uint32_t analog_raw, const uint32_t digital_raw, const uint32_t current_millis){
     // Reset flags
     _steeringSystemData.digital_oor_implausibility = false;
     _steeringSystemData.analog_oor_implausibility = false;
@@ -60,8 +60,8 @@ void SteeringSystem::evaluate_steering(const SteeringSensorData_s &current_steer
     _steeringSystemData.both_sensors_fail = false;
 
     //Conversion from raw ADC to degrees
-    _steeringSystemData.analog_steering_angle = _convert_analog_sensor(current_steering_data);
-    _steeringSystemData.digital_steering_angle = _convert_digital_sensor(current_steering_data);
+    _steeringSystemData.analog_steering_angle = _convert_analog_sensor(analog_raw);
+    _steeringSystemData.digital_steering_angle = _convert_digital_sensor(digital_raw);
     
     uint32_t dt = current_millis - _prev_timestamp; //current_millis is seperate data input
 
@@ -76,8 +76,8 @@ void SteeringSystem::evaluate_steering(const SteeringSensorData_s &current_steer
         _steeringSystemData.dtheta_exceeded_digital = _evaluate_steering_dtheta_exceeded(dtheta_digital);
 
         //Check if either sensor is out of range (pass in raw)
-        _steeringSystemData.analog_oor_implausibility = _evaluate_steering_oor_analog(static_cast<uint32_t>(current_steering_data.analog_steering_degrees));
-        _steeringSystemData.digital_oor_implausibility = _evaluate_steering_oor_digital(static_cast<uint32_t>(current_steering_data.digital_steering_analog));
+        _steeringSystemData.analog_oor_implausibility = _evaluate_steering_oor_analog(static_cast<uint32_t>(analog_raw));
+        _steeringSystemData.digital_oor_implausibility = _evaluate_steering_oor_digital(static_cast<uint32_t>(digital_raw));
 
         //Check if there is too much of a difference between sensor values
         float sensor_difference = std::fabs(_steeringSystemData.analog_steering_angle - _steeringSystemData.digital_steering_angle);
@@ -112,28 +112,28 @@ void SteeringSystem::evaluate_steering(const SteeringSensorData_s &current_steer
     _first_run = false;
 }
 
-void SteeringSystem::update_observed_steering_limits(const SteeringSensorData_s &current_steering_data) {
-    _steeringParams.min_observed_digital = std::min(_steeringParams.min_observed_digital, static_cast<uint32_t>(current_steering_data.digital_steering_analog)); //NOLINT should both be uint32_t
-    _steeringParams.max_observed_digital = std::max(_steeringParams.max_observed_digital, static_cast<uint32_t>(current_steering_data.digital_steering_analog)); //NOLINT ^
+void SteeringSystem::update_observed_steering_limits(const uint32_t analog_raw, const uint32_t digital_raw) {
+    _steeringParams.min_observed_digital = std::min(_steeringParams.min_observed_digital, static_cast<uint32_t>(digital_raw)); //NOLINT should both be uint32_t
+    _steeringParams.max_observed_digital = std::max(_steeringParams.max_observed_digital, static_cast<uint32_t>(digital_raw)); //NOLINT ^
 }
 
-float SteeringSystem::_convert_digital_sensor(const SteeringSensorData_s &current_steering_data) {
+float SteeringSystem::_convert_digital_sensor(const uint32_t digital_raw) {
     // Same logic for digital
-    const int32_t offset = static_cast<int32_t>(current_steering_data.digital_steering_analog) - _steeringParams.digital_midpoint; //NOLINT
+    const int32_t offset = static_cast<int32_t>(digital_raw) - _steeringParams.digital_midpoint; //NOLINT
     return static_cast<float>(offset) * _steeringParams.deg_per_count_digital;
 }
 
-float SteeringSystem::_convert_analog_sensor(const SteeringSensorData_s &current_steering_data) {
+float SteeringSystem::_convert_analog_sensor(const uint32_t analog_raw) {
     // Get the raw value
-    const int32_t offset = static_cast<int32_t>(current_steering_data.analog_steering_degrees) - _steeringParams.analog_midpoint; //NOLINT
+    const int32_t offset = static_cast<int32_t>(analog_raw) - _steeringParams.analog_midpoint; //NOLINT
     return static_cast<float>(offset) * _steeringParams.deg_per_count_analog;
 }
 
-bool SteeringSystem::_evaluate_steering_oor_analog(uint32_t steering_analog_raw) { // RAW
+bool SteeringSystem::_evaluate_steering_oor_analog(const uint32_t steering_analog_raw) { // RAW
     return (static_cast<int32_t>(steering_analog_raw) < _steeringParams.analog_min_with_margins || static_cast<int32_t>(steering_analog_raw) > _steeringParams.analog_max_with_margins);
 }
 
-bool SteeringSystem::_evaluate_steering_oor_digital(uint32_t steering_digital_raw) {// RAW
+bool SteeringSystem::_evaluate_steering_oor_digital(const uint32_t steering_digital_raw) {// RAW
     return (static_cast<int32_t>(steering_digital_raw) < _steeringParams.digital_min_with_margins || static_cast<int32_t>(steering_digital_raw) > _steeringParams.digital_max_with_margins);
 }
 

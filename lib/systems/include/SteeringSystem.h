@@ -83,10 +83,6 @@ public:
         return _steeringSystemData;
     }
 
-    const SteeringSensorData_s &get_steering_sensor_data() const {
-        return _steeringSensorData;
-    }
-
     // Setters
     void set_steering_params(const SteeringParams_s &steeringParams) {
         _steeringParams = steeringParams;
@@ -94,10 +90,6 @@ public:
 
     void set_steering_system_data(const SteeringSystemData_s &steeringSystemData) {
         _steeringSystemData = steeringSystemData;
-    }
-
-    void set_steering_sensor_data(const SteeringSensorData_s &steeringSensorData) {
-        _steeringSensorData = steeringSensorData;
     }
     
 private:
@@ -116,7 +108,6 @@ private:
     //returns true if change in angle exceeds maximum change per reading ( max_dtheta_threshold )
     bool _evaluate_steering_dtheta_exceeded(float dtheta);
 
-    SteeringSensorData_s _steeringSensorData {};
     SteeringSystemData_s _steeringSystemData {};
     SteeringParams_s _steeringParams;
     //track the state of our system from the previous tick to compare against current state for implausibility checks
