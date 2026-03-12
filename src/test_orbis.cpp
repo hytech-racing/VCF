@@ -15,7 +15,7 @@ void setup()
     while(!Serial);
     Serial.println("Serial Monitor connected.");        // Debug line
 
-    OrbisBRInstance::create(&Serial3);
+    OrbisBRInstance::create(&Serial2);
 
 
     Serial.println("Calling Self-Calib");                  // Debug line

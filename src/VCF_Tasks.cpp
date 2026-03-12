@@ -92,7 +92,7 @@ HT_TASK::TaskResponse update_pedals_calibration_task(const unsigned long& sysMic
 //     pinMode(BTN_MODE_READ, INPUT);
 //     pinMode(BTN_START_READ, INPUT);
 //     pinMode(BTN_DATA_READ, INPUT);
-    
+
 //     return HT_TASK::TaskResponse::YIELD;
 // }
 // bool run_read_gpio_task()
@@ -104,7 +104,7 @@ HT_TASK::TaskResponse update_pedals_calibration_task(const unsigned long& sysMic
 //     int modeButton = digitalRead(BTN_MODE_READ);
 //     int startButton = digitalRead(BTN_START_READ);
 //     int dataButton = digitalRead(BTN_DATA_READ);
-    
+
 //     vcf_data.interface_data.dash_input_state.dim_btn_is_pressed = dimButton;
 //     vcf_data.interface_data.dash_input_state.preset_btn_is_pressed = presetButton;
 //     vcf_data.interface_data.dash_input_state.mc_reset_btn_is_pressed = mcCycleButton;
@@ -128,7 +128,7 @@ HT_TASK::TaskResponse run_buzzer_control_task(const unsigned long& sysMicros, co
     bool buzzer_is_active = BuzzerController::getInstance().buzzer_is_active(sys_time::hal_millis()); //NOLINT
 
     digitalWrite(VCFInterfaceConstants::BUZZER_CONTROL_PIN, buzzer_is_active);
-    
+
     return HT_TASK::TaskResponse::YIELD;
 }
 
@@ -142,14 +142,14 @@ HT_TASK::TaskResponse handle_CAN_send(const unsigned long& sysMicros, const HT_T
 HT_TASK::TaskResponse handle_CAN_receive(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
 {
     VCFCANInterfaceObjects& vcf_interface_objects = VCFCANInterfaceImpl::VCFCANInterfaceObjectsInstance::instance();
-    CANInterfaces& vcf_can_interfaces = VCFCANInterfaceImpl::CANInterfacesInstance::instance(); 
+    CANInterfaces& vcf_can_interfaces = VCFCANInterfaceImpl::CANInterfacesInstance::instance();
     process_ring_buffer(vcf_interface_objects.main_can_rx_buffer, vcf_can_interfaces, sys_time::hal_millis(), vcf_interface_objects.can_recv_switch, CANInterfaceType_e::TELEM);
     return HT_TASK::TaskResponse::YIELD;
 }
 
 HT_TASK::TaskResponse send_dash_data(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
-{   
-    CANInterfaces can_interfaces = VCFCANInterfaceImpl::CANInterfacesInstance::instance(); 
+{
+    CANInterfaces can_interfaces = VCFCANInterfaceImpl::CANInterfacesInstance::instance();
     DashInputState_s dash_outputs = can_interfaces.dash_interface.get_dashboard_outputs();
 
     DASH_INPUT_t msg_out;
@@ -166,13 +166,13 @@ HT_TASK::TaskResponse send_dash_data(const unsigned long& sysMicros, const HT_TA
     msg_out.dash_dial_mode = static_cast<int>(DashboardInterfaceInstance::instance().get_dashboard_outputs().dial_state);
 
 //    Serial.printf("%d %d %d %d %d %d %d %d\n", msg_out.preset_button, msg_out.motor_controller_cycle_button, msg_out.mode_button, msg_out.start_button, msg_out.data_button_is_pressed, msg_out.left_shifter_button, msg_out.right_shifter_button, msg_out.led_dimmer_button);
-    
+
     CAN_util::enqueue_msg(&msg_out, &Pack_DASH_INPUT_hytech, VCFCANInterfaceImpl::VCFCANInterfaceObjectsInstance::instance().main_can_tx_buffer);
-    
+
     return HT_TASK::TaskResponse::YIELD;
 }
 
-HT_TASK::TaskResponse enqueue_front_suspension_data(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo) 
+HT_TASK::TaskResponse enqueue_front_suspension_data(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
 {
     CANInterfaces can_interface = VCFCANInterfaceImpl::CANInterfacesInstance::instance();
     FRONT_SUSPENSION_t msg_out;
@@ -186,7 +186,7 @@ HT_TASK::TaskResponse enqueue_front_suspension_data(const unsigned long& sysMicr
     return HT_TASK::TaskResponse::YIELD;
 }
 
-HT_TASK::TaskResponse enqueue_steering_data(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo) 
+HT_TASK::TaskResponse enqueue_steering_data(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
 {
     STEERING_DATA_t msg_out;
 
@@ -213,7 +213,7 @@ HT_TASK::TaskResponse run_handle_send_vcf_ethernet_data(const unsigned long& sys
             msg,
             hytech_msgs_VCFData_s_fields)) {
     }
-    return HT_TASK::TaskResponse::YIELD;  
+    return HT_TASK::TaskResponse::YIELD;
 }
 
 // HT_TASK::TaskResponse init_handle_receive_vcr_ethernet_data() {
@@ -241,7 +241,7 @@ HT_TASK::TaskResponse enqueue_pedals_data(const unsigned long &sys_micros, const
     pedals_data.mechanical_brake_active = PedalsSystemInstance::instance().get_pedals_system_data().mech_brake_is_active;
     pedals_data.implaus_exceeded_max_duration = PedalsSystemInstance::instance().get_pedals_system_data().implausibility_has_exceeded_max_duration;
 
-    
+
     pedals_data.accel_pedal_ro = HYTECH_accel_pedal_ro_toS(PedalsSystemInstance::instance().get_pedals_system_data().accel_percent);
     pedals_data.brake_pedal_ro = HYTECH_brake_pedal_ro_toS(PedalsSystemInstance::instance().get_pedals_system_data().brake_percent);
     // Serial.println(pedals_data.brake_pedal_ro);
@@ -280,7 +280,7 @@ HT_TASK::TaskResponse create_ioexpander(const unsigned long& sys_micros, const H
     IOExpanderInstance::instance().portMode(MCP23017Port::A, 0b00000000);
     IOExpanderInstance::instance().portMode(MCP23017Port::B, 0b01111111);
 
-    // IOExpanderInstance::instance().writeRegister(MCP23017Register::GPIO_A, 0x00);  //Reset port A 
+    // IOExpanderInstance::instance().writeRegister(MCP23017Register::GPIO_A, 0x00);  //Reset port A
     // IOExpanderInstance::instance().writeRegister(MCP23017Register::GPIO_B, 0x00);  //Reset port B
 
     IOExpanderInstance::instance().writeRegister(MCP23017Register::GPPU_B, 0xFF);  //Internal pull-ups
@@ -369,20 +369,20 @@ HT_TASK::TaskResponse run_update_neopixels_task(const unsigned long& sys_micros,
     return HT_TASK::TaskResponse::YIELD;
 }
 
-namespace async_tasks 
+namespace async_tasks
 {
     // these are async tasks. we want these to run as fast as possible p much
     void handle_async_CAN_receive() //NOLINT caps for CAN
     {
         VCFCANInterfaceObjects& vcf_interface_objects = VCFCANInterfaceImpl::VCFCANInterfaceObjectsInstance::instance();
-        CANInterfaces& vcf_can_interfaces = VCFCANInterfaceImpl::CANInterfacesInstance::instance(); 
+        CANInterfaces& vcf_can_interfaces = VCFCANInterfaceImpl::CANInterfacesInstance::instance();
         process_ring_buffer(vcf_interface_objects.main_can_rx_buffer, vcf_can_interfaces, sys_time::hal_millis(), vcf_interface_objects.can_recv_switch, CANInterfaceType_e::TELEM);
     }
 
     void handle_async_recvs()
     {
         // ethernet, etc...
-        
+
         handle_async_CAN_receive();
     }
     HT_TASK::TaskResponse handle_async_main(const unsigned long& sys_micros, const HT_TASK::TaskInfo& task_info)
@@ -438,7 +438,7 @@ HT_TASK::TaskResponse debug_print(const unsigned long& sysMicros, const HT_TASK:
     // Serial.print(PedalsSystemInstance::instance().get_brake_params().max_pedal_2);
     // Serial.println();
     // Serial.println();
-    
+
     // Serial.print("Load Cell FR:  ");
     // Serial.println(ADCInterfaceInstance::instance().get_filtered_FR_load_cell());
     // Serial.print("Load Cell FL:  ");
@@ -447,7 +447,7 @@ HT_TASK::TaskResponse debug_print(const unsigned long& sysMicros, const HT_TASK:
     // Serial.println(ADCInterfaceInstance::instance().get_filtered_FR_sus_pot());
     // Serial.print("Suspot FL:  ");
     // Serial.println(ADCInterfaceInstance::instance().get_filtered_FL_sus_pot());
-    
+
 
     // Serial.print("preset button: ");
     // Serial.println(DashboardInterfaceInstance::instance().get_dashboard_outputs().preset_btn_is_pressed);
@@ -495,7 +495,7 @@ void setup_all_interfaces() {
         VCFInterfaceConstants::BRAKE_PRESSURE_FRONT_CHANNEL,
         VCFInterfaceConstants::BRAKE_PRESSURE_REAR_CHANNEL
     },
-    ADCScales_s { 
+    ADCScales_s {
         VCFInterfaceConstants::PEDAL_REF_2V5_SCALE,
         VCFInterfaceConstants::STEERING_1_SCALE,
         VCFInterfaceConstants::STEERING_2_SCALE,
@@ -512,7 +512,7 @@ void setup_all_interfaces() {
         VCFInterfaceConstants::FL_SUS_POT_SCALE,
         VCFInterfaceConstants::BRAKE_PRESSURE_FRONT_SCALE,
         VCFInterfaceConstants::BRAKE_PRESSURE_REAR_SCALE
-    }, 
+    },
     ADCOffsets_s {
         VCFInterfaceConstants::PEDAL_REF_2V5_OFFSET,
         VCFInterfaceConstants::STEERING_1_OFFSET,
@@ -549,7 +549,7 @@ void setup_all_interfaces() {
         .implausibility_margin = IMPLAUSIBILITY_PERCENT,
         .mechanical_activation_percentage = VCFInterfaceConstants::ACCEL_MECHANICAL_ACTIVATION_PERCENTAGE
     };
-    
+
     PedalsParams brake_params = {
         .min_pedal_1 = EEPROMUtilities::read_eeprom_32bit(VCFInterfaceConstants::BRAKE_1_MIN_ADDR),
         .min_pedal_2 = EEPROMUtilities::read_eeprom_32bit(VCFInterfaceConstants::BRAKE_2_MIN_ADDR),
@@ -566,9 +566,9 @@ void setup_all_interfaces() {
     };
 
     PedalsSystemInstance::create(accel_params, brake_params); //pass in the two different params
-    
+
     // Create Digital Steering Sensor singleton
-    OrbisBRInstance::create(&Serial3); // pass in two different params
+    OrbisBRInstance::create(&Serial2); // pass in two different params
 
     // Create dashboard singleton
     DashboardGPIOs_s dashboard_gpios = {
@@ -584,7 +584,7 @@ void setup_all_interfaces() {
     ACUInterfaceInstance::create();
     VCRInterfaceInstance::create();
     // Create can singletons
-    VCFCANInterfaceImpl::CANInterfacesInstance::create(DashboardInterfaceInstance::instance(), ACUInterfaceInstance::instance(), VCRInterfaceInstance::instance()); 
+    VCFCANInterfaceImpl::CANInterfacesInstance::create(DashboardInterfaceInstance::instance(), ACUInterfaceInstance::instance(), VCRInterfaceInstance::instance());
     auto main_can_recv = etl::delegate<void(CANInterfaces &, const CAN_message_t &, unsigned long, CANInterfaceType_e)>::create<VCFCANInterfaceImpl::vcf_recv_switch>();
     VCFCANInterfaceImpl::VCFCANInterfaceObjectsInstance::create(main_can_recv, &VCFCANInterfaceImpl::main_can);
 
