@@ -9,7 +9,7 @@
 
 
 #include "SharedFirmwareTypes.h"
-
+#include "SteeringEncoderInterface.h"
 
 struct SteeringParams_s {
     // raw ADC input signals
@@ -89,7 +89,7 @@ public:
     // Functions
     void recalibrate_steering_digital(const uint32_t analog_raw, const uint32_t digital_raw, bool calibration_is_on);
    
-    void evaluate_steering(const uint32_t analog_raw, const uint32_t digital_raw, const uint32_t current_millis);
+    void evaluate_steering(const uint32_t analog_raw, const SteeringEncoderConversion_s digital_data, const uint32_t current_millis);
 
 
     // Getters

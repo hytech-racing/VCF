@@ -1,8 +1,9 @@
 #include <cmath>
 #include <cstdint>
 #include "SteeringSystem.h"
+#include "SteeringEncoderInterface.h"
 
-void SteeringSystem::recalibrate_steering_digital(const uint_32 analog_raw, const uint32_t digital_raw, bool calibration_is_on) {
+void SteeringSystem::recalibrate_steering_digital(const uint32_t analog_raw, const uint32_t digital_raw, bool calibration_is_on) {
     //get current raw angles
     const uint32_t curr_digital_raw = static_cast<uint32_t>(digital_raw); //NOLINT will eventually be uint32
     
@@ -50,7 +51,7 @@ void SteeringSystem::recalibrate_steering_digital(const uint_32 analog_raw, cons
     } 
 }
 
-void SteeringSystem::evaluate_steering(const uint32_t analog_raw, const uint32_t digital_raw, const uint32_t current_millis) {
+void SteeringSystem::evaluate_steering(const uint32_t analog_raw, const SteeringEncoderConversion_s digital_data, const uint32_t current_millis) {
     // Reset flags
     _steeringSystemData.digital_oor_implausibility = false;
     _steeringSystemData.analog_oor_implausibility = false;
@@ -58,6 +59,10 @@ void SteeringSystem::evaluate_steering(const uint32_t analog_raw, const uint32_t
     _steeringSystemData.dtheta_exceeded_analog = false;
     _steeringSystemData.dtheta_exceeded_digital = false;
     _steeringSystemData.both_sensors_fail = false;
+
+    const uint32_t digital_raw = digital_data.raw;
+    SteeringEncoderStatus_e digital_status = digital_data.status;
+    EncoderErrorFlags_s digital_errors = digital_data.errors;;
 
     _steeringSystemData.analog_raw = analog_raw;
     _steeringSystemData.digital_raw = digital_raw;

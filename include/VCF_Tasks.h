@@ -43,6 +43,7 @@
 #include "WatchdogSystem.h"
 #include "ADCInterface.h"
 #include "CANInterface.h"
+#include "SteeringEncoderInterface.h"
 
 /**
  * The read_adc0 task will command the ADCInterface to sample, convert, and store 

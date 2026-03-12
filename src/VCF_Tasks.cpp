@@ -21,6 +21,7 @@
 #include <EEPROM.h>
 #include "FlexCAN_T4.h"
 #include "Orbis_BR.h"
+#include "SteeringEncoderInterface.h"
 
 #include "WatchdogSystem.h"
 #include "Arduino.h"
@@ -438,11 +439,11 @@ namespace async_tasks
     {
         handle_async_recvs();
         OrbisBRInstance::instance().sample();
-        const uint32_t digital_raw = static_cast<uint32_t>(OrbisBRInstance::instance().convert().raw);
+        const SteeringEncoderConversion_s digital_data = static_cast<uint32_t>(OrbisBRInstance::instance().convert());
         const uint32_t analog_raw = static_cast<uint32_t>(ADCInterfaceInstance::instance().steering_degrees_cw().raw);
         SteeringSystemInstance::instance().evaluate_steering(
             analog_raw,
-            digital_raw,
+            digital_data,
             sys_time::hal_millis()
         );
 
