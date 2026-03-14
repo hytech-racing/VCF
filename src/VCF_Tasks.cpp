@@ -400,30 +400,28 @@ namespace async_tasks
 HT_TASK::TaskResponse debug_print(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
 {
     Serial.println();
-    Serial.println("accel percent: ");
-    Serial.print(PedalsSystemInstance::instance().get_pedals_system_data().accel_percent);
-    Serial.println("brake percent: ");
-    Serial.print(PedalsSystemInstance::instance().get_pedals_system_data().brake_percent);
+    Serial.print("Accel percent: "); Serial.println(PedalsSystemInstance::instance().get_pedals_system_data().accel_percent);
+    Serial.print("Brake percent: "); Serial.println(PedalsSystemInstance::instance().get_pedals_system_data().brake_percent);
     Serial.println();
-    Serial.print("implaus: ");
-    Serial.println(PedalsSystemInstance::instance().get_pedals_system_data().implausibility_has_exceeded_max_duration);
+    Serial.print("Implaus: "); Serial.println(PedalsSystemInstance::instance().get_pedals_system_data().implausibility_has_exceeded_max_duration);
+    Serial.print("Brake is pressed: "); Serial.println(PedalsSystemInstance::instance().get_pedals_system_data().brake_is_pressed);
 
-    Serial.println("accel 1 min/max eeprom | current: ");
+    Serial.println("accel 1 min/max: ");
     Serial.print(PedalsSystemInstance::instance().get_accel_params().min_pedal_1);
     Serial.print("   ");
     Serial.print(PedalsSystemInstance::instance().get_accel_params().max_pedal_1);
     Serial.println();
-    Serial.println("accel 2 min/max eeprom | current: ");
+    Serial.println("accel 2 min/max: ");
     Serial.print(PedalsSystemInstance::instance().get_accel_params().min_pedal_2);
     Serial.print("   ");
     Serial.print(PedalsSystemInstance::instance().get_accel_params().max_pedal_2);
     Serial.println();
-    Serial.println("brake 1 min/max eeprom | current: ");
+    Serial.println("brake 1 min/max: ");
     Serial.print(PedalsSystemInstance::instance().get_brake_params().min_pedal_1);
     Serial.print("   ");
     Serial.print(PedalsSystemInstance::instance().get_brake_params().max_pedal_1);
     Serial.println();
-    Serial.println("brake 2 min/max eeprom | current: ");
+    Serial.println("brake 2 min/max: ");
     Serial.print(PedalsSystemInstance::instance().get_brake_params().min_pedal_2);
     Serial.print("   ");
     Serial.print(PedalsSystemInstance::instance().get_brake_params().max_pedal_2);
@@ -461,6 +459,8 @@ HT_TASK::TaskResponse debug_print(const unsigned long& sysMicros, const HT_TASK:
     Serial.println(DashboardInterfaceInstance::instance().get_dashboard_outputs().start_btn_is_pressed);
     Serial.print("data button: ");
     Serial.println(DashboardInterfaceInstance::instance().get_dashboard_outputs().data_btn_is_pressed);
+
+    Serial.print("Buzzer: "); Serial.println(BuzzerController::getInstance().buzzer_is_active(sys_time::hal_millis()));
 
     // Serial.println("jkkjhhkjkjh");
 
