@@ -125,18 +125,17 @@ void NeopixelController::refresh_neopixels(const PedalsSystemData_s &pedals_data
 
     constexpr float glv_critical_voltage = 22.0f;
 
-    set_neopixel_color(LED_ID_e::BRAKE, brake_light_color);
-    set_neopixel_color(LED_ID_e::LAUNCH_CTRL, pack_color); // Unused for now
+    set_neopixel_color(LED_ID_e::BRAKE, LED_color_e::OFF);
+    set_neopixel_color(LED_ID_e::LAUNCH_CTRL, LED_color_e::OFF); // Unused for now
     set_neopixel_color(LED_ID_e::CRIT_CHARGE, LED_color_e::OFF); // Unused for now
     set_neopixel_color(LED_ID_e::INERTIA, LED_color_e::OFF); // Unused for now
     set_neopixel_color(LED_ID_e::COCKPIT_BRB, LED_color_e::OFF); // Unused for now
     set_neopixel_color(LED_ID_e::BOTS, LED_color_e::OFF); // Unused for now
-    set_neopixel_color(LED_ID_e::IMD, interfaces.dash_interface.imd_ok ? LED_color_e::GREEN : LED_color_e::RED);
-    set_neopixel_color(LED_ID_e::BMS, interfaces.dash_interface.bms_ok ? LED_color_e::GREEN : LED_color_e::RED);
-    set_neopixel_color(LED_ID_e::MC_ERR, interfaces.vcr_interface.get_inverter_error() ? LED_color_e::RED : LED_color_e::GREEN);
+    set_neopixel_color(LED_ID_e::IMD, LED_color_e::OFF);
+    set_neopixel_color(LED_ID_e::BMS, LED_color_e::OFF);
     set_neopixel_color(LED_ID_e::RDY_DRIVE, ready_drive_color);
     set_neopixel_color(LED_ID_e::GLV, LED_color_e::OFF); // No sensor there yet
-    set_neopixel_color(LED_ID_e::TORQUE_MODE, torque_mode_color);
+    set_neopixel_color(LED_ID_e::TORQUE_MODE, LED_color_e::OFF);
 
     _neopixels.show();
 
