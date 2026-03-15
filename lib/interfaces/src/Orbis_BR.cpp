@@ -52,9 +52,8 @@ bool OrbisBR::performSelfCalibration()
     // self-calibration status request again after, expect counter to change
     _serial->write(OrbisCommands::SELF_CALIB_STATUS); delay(1);
 
-    if (_serial->available() < 2) {
-        //Serial.println("ERROR: No Response From Sensor");
-        _lastConversion.errors.noData = true;
+    unsigned long startTime = millis();
+    while (_serial->available() < 2 && (millis() - startTime >= 10)) {
         return false;
     }
 
@@ -148,16 +147,14 @@ void OrbisBR::sample()
     _serial->write(OrbisCommands::DETAILED_POS_REQUEST); delay(1);
     // Detailed Position Request:  1 byte echo, 2 byte position, 1 byte detailed status
 
-    while (_serial->available() < 4);
-
-    if (_serial->available() < 4)     // check if received all 4 bytes
-    {
+    unsigned long startTime = millis();
+    while (_serial->available() < 4 && (millis() - startTime >= 10)) {
         _lastConversion.errors.noData = true;
         _lastConversion.status = SteeringEncoderStatus_e::STEERING_ENCODER_ERROR;
         return;
     }
 
-    uint8_t echo     = _serial->read();
+    uint8_t echo = _serial->read();
 
     if (echo != OrbisCommands::DETAILED_POS_REQUEST)
     {
@@ -176,23 +173,8 @@ void OrbisBR::sample()
     // Decode errors using the extracted general status bits
     _decodeErrors(general_status, detailed);
 
-    // Decode errors, detailed status bytes
-    bool anyError =
-     (
-        _lastConversion.errors.generalError   ||
-        _lastConversion.errors.noData         ||
-        _orbisErrors.counterError             ||
-        _orbisErrors.speedHigh                ||
-        _orbisErrors.tempRange                ||
-        _orbisErrors.distFar                  ||
-        _orbisErrors.distNear
-     );
-
-    _lastConversion.status = anyError ? SteeringEncoderStatus_e::STEERING_ENCODER_ERROR : SteeringEncoderStatus_e::STEERING_ENCODER_NOMINAL;
-
     // Extract 14-bit position data
-    uint16_t raw_position_data = (((uint16_t) general1) << OrbisConstants::POSITION_DATA_MASK_1) | (uint16_t) general2;
-    uint16_t _position_data = raw_position_data >> OrbisConstants::POSITION_DATA_MASK_2;
+    uint16_t _position_data = ((((uint16_t) general1) << OrbisConstants::POSITION_DATA_MASK_1) | (uint16_t) general2) >> OrbisConstants::POSITION_DATA_MASK_2;
 
     // Convert Position Data to Angle
     _lastConversion.raw = _position_data;
@@ -232,6 +214,20 @@ void OrbisBR::_decodeErrors(uint8_t general, uint8_t detailed)
     _orbisErrors.tempRange        = detailed & OrbisErrorMasks::ORBIS_BR_BITMASK_DETAILED_TEMP_RANGE;
     _orbisErrors.distFar          = detailed & OrbisErrorMasks::ORBIS_BR_BITMASK_DETAILED_DIST_FAR;
     _orbisErrors.distNear         = detailed & OrbisErrorMasks::ORBIS_BR_BITMASK_DETAILED_DIST_NEAR;
+
+    // Decode errors, detailed status bytes
+    bool anyError =
+    (
+        _lastConversion.errors.generalError   ||
+        _lastConversion.errors.noData         ||
+        _orbisErrors.counterError             ||
+        _orbisErrors.speedHigh                ||
+        _orbisErrors.tempRange                ||
+        _orbisErrors.distFar                  ||
+        _orbisErrors.distNear
+    );
+
+    _lastConversion.status = anyError ? SteeringEncoderStatus_e::STEERING_ENCODER_ERROR : SteeringEncoderStatus_e::STEERING_ENCODER_NOMINAL;
 }
 
 
