@@ -523,6 +523,17 @@ HT_TASK::TaskResponse debug_print(const unsigned long& sysMicros, const HT_TASK:
 
     // Serial.println("jkkjhhkjkjh");
 
+    Serial.println("Steering Sensor Data: ");
+    Serial.print("analog: ");
+    Serial.print(SteeringSystemInstance::instance().get_steering_system_data().analog_raw);
+    Serial.print("|");
+    Serial.println(SteeringSystemInstance::instance().get_steering_system_data().analog_steering_angle);
+    Serial.print("digital: ");
+    Serial.print(SteeringSystemInstance::instance().get_steering_system_data().digital_raw);
+    Serial.print("|");
+    Serial.println(SteeringSystemInstance::instance().get_steering_system_data().digital_steering_angle);
+
+
 
     return HT_TASK::TaskResponse::YIELD;
 }
