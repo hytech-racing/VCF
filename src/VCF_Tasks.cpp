@@ -459,23 +459,23 @@ namespace async_tasks
 
 HT_TASK::TaskResponse debug_print(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
 {
-    // Serial.println("accel1 raw accel2 raw");
-    // Serial.print(PedalsSystemInstance::instance().get_pedals_sensor_data().accel_1);
-    // Serial.print("   ");
-    // Serial.print(PedalsSystemInstance::instance().get_pedals_sensor_data().accel_2);
-    // Serial.println();
-    // Serial.println("brake1 raw brake2 raw");
-    // Serial.print(PedalsSystemInstance::instance().get_pedals_sensor_data().brake_1);
-    // Serial.print("   ");
-    // Serial.print(PedalsSystemInstance::instance().get_pedals_sensor_data().brake_2);
-    // Serial.println();
-    // Serial.println("accel brake percents");
-    // Serial.print(PedalsSystemInstance::instance().get_pedals_system_data().accel_percent);
-    // Serial.print("   ");
-    // Serial.print(PedalsSystemInstance::instance().get_pedals_system_data().brake_percent);
-    // Serial.println();
-    // Serial.print("implaus ");
-    // Serial.println(PedalsSystemInstance::instance().get_pedals_system_data().implausibility_has_exceeded_max_duration);
+    Serial.println("accel1 raw accel2 raw");
+    Serial.print(PedalsSystemInstance::instance().get_pedals_sensor_data().accel_1);
+    Serial.print("   ");
+    Serial.print(PedalsSystemInstance::instance().get_pedals_sensor_data().accel_2);
+    Serial.println();
+    Serial.println("brake1 raw brake2 raw");
+    Serial.print(PedalsSystemInstance::instance().get_pedals_sensor_data().brake_1);
+    Serial.print("   ");
+    Serial.print(PedalsSystemInstance::instance().get_pedals_sensor_data().brake_2);
+    Serial.println();
+    Serial.println("accel brake percents");
+    Serial.print(PedalsSystemInstance::instance().get_pedals_system_data().accel_percent);
+    Serial.print("   ");
+    Serial.print(PedalsSystemInstance::instance().get_pedals_system_data().brake_percent);
+    Serial.println();
+    Serial.print("implaus ");
+    Serial.println(PedalsSystemInstance::instance().get_pedals_system_data().implausibility_has_exceeded_max_duration);
 
 
     // Serial.println("accel 1 min/max");
@@ -651,7 +651,7 @@ void setup_all_interfaces() {
 
 
     PedalsSystemInstance::create(accel_params, brake_params); //pass in the two different params
-   
+
     SteeringParams_s steering_params = {
         .min_steering_signal_analog = VCFSystemConstants::MIN_STEERING_SIGNAL_ANALOG,
         .max_steering_signal_analog = VCFSystemConstants::MAX_STEERING_SIGNAL_ANALOG,
@@ -677,11 +677,12 @@ void setup_all_interfaces() {
 
     SteeringSystemInstance::create(steering_params);
 
-
-   
+    Serial.println("fff");
+    
     // Create Digital Steering Sensor singleton
-    OrbisBRInstance::create(&Serial3); // pass in two different params
-
+    OrbisBRInstance::create(&Serial2); // pass in two different params
+    
+    Serial.println("fff2");
 
     // Create dashboard singleton
     DashboardGPIOs_s dashboard_gpios = {
