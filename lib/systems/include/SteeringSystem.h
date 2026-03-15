@@ -113,8 +113,8 @@ public:
         _steeringSystemData = steeringSystemData;
     }
    
-private:
     void update_observed_steering_limits(const uint32_t analog_raw, const uint32_t digital_raw);
+private:
 
     float _convert_digital_sensor(const uint32_t digital_raw);
    
