@@ -64,6 +64,19 @@ void SteeringSystem::evaluate_steering(const uint32_t analog_raw, const Steering
     
     uint32_t dt = current_millis - _prev_timestamp; //current_millis is seperate data input
 
+    const uint32_t digital_raw = digital_data.raw;
+    SteeringEncoderStatus_e digital_status = digital_data.status;
+    EncoderErrorFlags_s digital_errors = digital_data.errors;
+    bool digital_fault = (digital_status == SteeringEncoderStatus_e::STEERING_ENCODER_ERROR);
+
+
+
+    _steeringSystemData.digital_raw = digital_fault ? 0U : digital_raw;
+//     //Conversion from raw ADC to degrees
+//     _steeringSystemData.analog_steering_angle = _convert_analog_sensor(analog_raw);
+//     _steeringSystemData.digital_steering_angle = digital_fault ? 0.0f : _convert_digital_sensor(digital_raw);    
+//     uint32_t dt = current_millis - _prev_timestamp; //current_millis is seperate data input
+
     if (!_first_run && dt > 0) { //check that we not on the first run which would mean no previous data
         float dtheta_analog = _steeringSystemData.analog_steering_angle - _prev_analog_angle; //prev_angle established in last run
         float dtheta_digital = _steeringSystemData.digital_steering_angle - _prev_digital_angle;
