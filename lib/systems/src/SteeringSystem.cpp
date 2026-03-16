@@ -18,17 +18,9 @@ void SteeringSystem::recalibrate_steering_digital(const uint32_t analog_raw, con
         update_observed_steering_limits(analog_raw, digital_raw);
     }
 
-    //update relative extremeties
-    // assigning min and max observed during calibration only vs. constantly?
-    // if (calibration_is_on){
-    //     _steeringParams.min_observed_digital = std::min(_steeringParams.min_observed_digital, curr_digital_raw);
-    //     _steeringParams.max_observed_digital = std::max(_steeringParams.max_observed_digital, curr_digital_raw);
-    //     return;
-    // }
 
     //button released -> commit the values
     if (!calibration_is_on && _calibrating) {
-
         _calibrating = false;
         _steeringParams.min_steering_signal_digital = _steeringParams.min_observed_digital;
         _steeringParams.max_steering_signal_digital = _steeringParams.max_observed_digital;

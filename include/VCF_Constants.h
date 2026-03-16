@@ -148,8 +148,8 @@ namespace VCFSystemConstants {
 
     // conversion rates
     // float deg_per_count_analog = 0.0439f; //hard coded for analog (180)
-    constexpr float DEG_PER_COUNT_ANALOG = 360.0f / 4095.0f;
-    constexpr float DEG_PER_COUNT_DIGITAL = 360.0f / 16383.0f; // Assuming 14 bit resolution
+    constexpr float DEG_PER_COUNT_ANALOG = 360.0f / 4096.0f;
+    constexpr float DEG_PER_COUNT_DIGITAL = 360.0f / 16384.0f; // Assuming 14 bit resolution
 
     // implausibility values
     constexpr float ANALOG_TOL = 0.005f; //+- 0.5% error
