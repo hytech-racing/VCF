@@ -107,6 +107,8 @@ HT_TASK::TaskResponse update_steering_calibration_task(const unsigned long& sysM
         EEPROMUtilities::write_eeprom_32bit(VCFSystemConstants::DIGITAL_MIN_WITH_MARGINS_ADDR, SteeringSystemInstance::instance().get_steering_params().digital_min_with_margins);
         EEPROMUtilities::write_eeprom_32bit(VCFSystemConstants::DIGITAL_MAX_WITH_MARGINS_ADDR, SteeringSystemInstance::instance().get_steering_params().digital_max_with_margins);
     }
+
+    return HT_TASK::TaskResponse::YIELD;
 }
 // bool init_read_gpio_task()
 // {
@@ -459,23 +461,23 @@ namespace async_tasks
 
 HT_TASK::TaskResponse debug_print(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
 {
-    Serial.println("accel1 raw accel2 raw");
-    Serial.print(PedalsSystemInstance::instance().get_pedals_sensor_data().accel_1);
-    Serial.print("   ");
-    Serial.print(PedalsSystemInstance::instance().get_pedals_sensor_data().accel_2);
-    Serial.println();
-    Serial.println("brake1 raw brake2 raw");
-    Serial.print(PedalsSystemInstance::instance().get_pedals_sensor_data().brake_1);
-    Serial.print("   ");
-    Serial.print(PedalsSystemInstance::instance().get_pedals_sensor_data().brake_2);
-    Serial.println();
-    Serial.println("accel brake percents");
-    Serial.print(PedalsSystemInstance::instance().get_pedals_system_data().accel_percent);
-    Serial.print("   ");
-    Serial.print(PedalsSystemInstance::instance().get_pedals_system_data().brake_percent);
-    Serial.println();
-    Serial.print("implaus ");
-    Serial.println(PedalsSystemInstance::instance().get_pedals_system_data().implausibility_has_exceeded_max_duration);
+    // Serial.println("accel1 raw accel2 raw");
+    // Serial.print(PedalsSystemInstance::instance().get_pedals_sensor_data().accel_1);
+    // Serial.print("   ");
+    // Serial.print(PedalsSystemInstance::instance().get_pedals_sensor_data().accel_2);
+    // Serial.println();
+    // Serial.println("brake1 raw brake2 raw");
+    // Serial.print(PedalsSystemInstance::instance().get_pedals_sensor_data().brake_1);
+    // Serial.print("   ");
+    // Serial.print(PedalsSystemInstance::instance().get_pedals_sensor_data().brake_2);
+    // Serial.println();
+    // Serial.println("accel brake percents");
+    // Serial.print(PedalsSystemInstance::instance().get_pedals_system_data().accel_percent);
+    // Serial.print("   ");
+    // Serial.print(PedalsSystemInstance::instance().get_pedals_system_data().brake_percent);
+    // Serial.println();
+    // Serial.print("implaus ");
+    // Serial.println(PedalsSystemInstance::instance().get_pedals_system_data().implausibility_has_exceeded_max_duration);
 
 
     // Serial.println("accel 1 min/max");
@@ -522,6 +524,8 @@ HT_TASK::TaskResponse debug_print(const unsigned long& sysMicros, const HT_TASK:
 
 
     // Serial.println("jkkjhhkjkjh");
+
+    Serial.println("Running");
 
     Serial.println("Steering Sensor Data: ");
     Serial.print("analog: ");
