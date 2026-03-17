@@ -135,7 +135,7 @@ AnalogConversion_s ADCInterface::shdn_d() {
 }
 
 AnalogConversion_s ADCInterface::FL_load_cell() {
-    return _adc0.data.conversions[_adc_parameters.channels.fl_loadcell_channel];
+    return _adc1.data.conversions[_adc_parameters.channels.fl_loadcell_channel];
 }
 
 float ADCInterface::get_filtered_FL_load_cell() {
@@ -151,7 +151,7 @@ float ADCInterface::get_filtered_FR_load_cell() {
 }
 
 AnalogConversion_s ADCInterface::FR_sus_pot() {
-    return _adc0.data.conversions[_adc_parameters.channels.fr_suspot_channel];
+    return _adc1.data.conversions[_adc_parameters.channels.fr_suspot_channel];
 }
 
 float ADCInterface::get_filtered_FR_sus_pot() {
@@ -159,7 +159,7 @@ float ADCInterface::get_filtered_FR_sus_pot() {
 }
 
 AnalogConversion_s ADCInterface::FL_sus_pot() {
-    return _adc0.data.conversions[_adc_parameters.channels.fl_suspot_channel];
+    return _adc1.data.conversions[_adc_parameters.channels.fl_suspot_channel];
 }
 
 float ADCInterface::get_filtered_FL_sus_pot() {
