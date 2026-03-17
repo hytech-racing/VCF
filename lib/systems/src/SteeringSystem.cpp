@@ -53,23 +53,19 @@ void SteeringSystem::evaluate_steering(const uint32_t analog_raw, const Steering
     _steeringSystemData.both_sensors_fail = false;
 
     const uint32_t digital_raw = digital_data.raw;
+
     SteeringEncoderStatus_e digital_status = digital_data.status;
-    EncoderErrorFlags_s digital_errors = digital_data.errors;;
+    bool digital_fault = (digital_status == SteeringEncoderStatus_e::STEERING_ENCODER_ERROR);
+    _steeringSystemData.digital_raw = digital_fault ? 0U : digital_raw;
+
 
     _steeringSystemData.analog_raw = analog_raw;
-    _steeringSystemData.digital_raw = digital_raw;
+
     //Conversion from raw ADC to degrees
     _steeringSystemData.analog_steering_angle = _convert_analog_sensor(analog_raw);
-    _steeringSystemData.digital_steering_angle = _convert_digital_sensor(digital_raw);
+    _steeringSystemData.digital_steering_angle = digital_fault ? 0.0f : _convert_digital_sensor(digital_raw);
     
     uint32_t dt = current_millis - _prev_timestamp; //current_millis is seperate data input
-
-    const uint32_t digital_raw = digital_data.raw;
-    SteeringEncoderStatus_e digital_status = digital_data.status;
-    EncoderErrorFlags_s digital_errors = digital_data.errors;
-    bool digital_fault = (digital_status == SteeringEncoderStatus_e::STEERING_ENCODER_ERROR);
-
-
 
     _steeringSystemData.digital_raw = digital_fault ? 0U : digital_raw;
 //     //Conversion from raw ADC to degrees
@@ -89,7 +85,7 @@ void SteeringSystem::evaluate_steering(const uint32_t analog_raw, const Steering
 
         //Check if either sensor is out of range (pass in raw)
         _steeringSystemData.analog_oor_implausibility = _evaluate_steering_oor_analog(static_cast<uint32_t>(analog_raw));
-        _steeringSystemData.digital_oor_implausibility = _evaluate_steering_oor_digital(static_cast<uint32_t>(digital_raw));
+        _steeringSystemData.digital_oor_implausibility = _evaluate_steering_oor_digital(static_cast<uint32_t>(digital_raw)) || digital_fault;
 
         //Check if there is too much of a difference between sensor values
         float sensor_difference = std::fabs(_steeringSystemData.analog_steering_angle - _steeringSystemData.digital_steering_angle);
@@ -99,7 +95,7 @@ void SteeringSystem::evaluate_steering(const uint32_t analog_raw, const Steering
         //create an algorithm/ checklist to determine which sensor we trust more,
         //or, if we should have an algorithm to have a weighted calculation based on both values
         bool analog_valid = !_steeringSystemData.analog_oor_implausibility && !_steeringSystemData.dtheta_exceeded_analog;
-        bool digital_valid = !_steeringSystemData.digital_oor_implausibility && !_steeringSystemData.dtheta_exceeded_digital;
+        bool digital_valid = !_steeringSystemData.digital_oor_implausibility && !_steeringSystemData.dtheta_exceeded_digital && !digital_fault;
 
         if (analog_valid && digital_valid) {
             //if sensors have acceptable difference, use digital as steering angle
