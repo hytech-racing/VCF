@@ -181,7 +181,7 @@ namespace VCFTaskConstants {
     constexpr float LOADCELL_IIR_FILTER_ALPHA = 0.01f;
 
     constexpr unsigned long WATCHDOG_PRIORITY = 1;
-    constexpr unsigned long WATCHDOG_KICK_PERIOD = 10000;          // 10 000 us = 100 Hz
+    constexpr unsigned long WATCHDOG_KICK_PERIOD = 1000;          // 1 000 us = 1000 Hz
 }
 
 #endif /* VCF_CONSTANTS */

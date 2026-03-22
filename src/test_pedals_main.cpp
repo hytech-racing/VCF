@@ -114,10 +114,10 @@ void setup(){
     SPI.begin();
     // init_adc_task();
     //observed values from 3/14 to init eeprom
-    EEPROMUtilities::write_eeprom_32bit(VCFInterfaceConstants::ACCEL_1_MIN_ADDR, 1995);
-    EEPROMUtilities::write_eeprom_32bit(VCFInterfaceConstants::ACCEL_1_MAX_ADDR, 2556);
-    EEPROMUtilities::write_eeprom_32bit(VCFInterfaceConstants::ACCEL_2_MIN_ADDR, 1738);
-    EEPROMUtilities::write_eeprom_32bit(VCFInterfaceConstants::ACCEL_2_MAX_ADDR, 1165);
+    EEPROMUtilities::write_eeprom_32bit(VCFInterfaceConstants::ACCEL_1_MIN_ADDR, 2020);
+    EEPROMUtilities::write_eeprom_32bit(VCFInterfaceConstants::ACCEL_1_MAX_ADDR, 2584);
+    EEPROMUtilities::write_eeprom_32bit(VCFInterfaceConstants::ACCEL_2_MIN_ADDR, 1750);
+    EEPROMUtilities::write_eeprom_32bit(VCFInterfaceConstants::ACCEL_2_MAX_ADDR, 1180);
     EEPROMUtilities::write_eeprom_32bit(VCFInterfaceConstants::BRAKE_2_MIN_ADDR, 2844);
     EEPROMUtilities::write_eeprom_32bit(VCFInterfaceConstants::BRAKE_2_MAX_ADDR, 1379);
     EEPROMUtilities::write_eeprom_32bit(VCFInterfaceConstants::BRAKE_1_MIN_ADDR, 899);

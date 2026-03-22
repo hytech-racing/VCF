@@ -392,7 +392,6 @@ namespace async_tasks
             PedalsSystemInstance::instance().get_pedals_sensor_data(),
             sys_time::hal_millis()
         );
-        // Serial.println(VCFData_sInstance::instance().system_data.pedals_system_data.accel_percent);
         return HT_TASK::TaskResponse::YIELD;
     }
 };
@@ -406,33 +405,33 @@ HT_TASK::TaskResponse debug_print(const unsigned long& sysMicros, const HT_TASK:
     Serial.print("Implaus: "); Serial.println(PedalsSystemInstance::instance().get_pedals_system_data().implausibility_has_exceeded_max_duration);
     Serial.print("Brake is pressed: "); Serial.println(PedalsSystemInstance::instance().get_pedals_system_data().brake_is_pressed);
 
-    Serial.println("accel 1 min/max: ");
+    Serial.print("accel 1 min/max: ");
     Serial.print(PedalsSystemInstance::instance().get_accel_params().min_pedal_1);
     Serial.print("   ");
     Serial.print(PedalsSystemInstance::instance().get_accel_params().max_pedal_1);
     Serial.println();
-    Serial.println("accel 2 min/max: ");
+    Serial.print("accel 2 min/max: ");
     Serial.print(PedalsSystemInstance::instance().get_accel_params().min_pedal_2);
     Serial.print("   ");
     Serial.print(PedalsSystemInstance::instance().get_accel_params().max_pedal_2);
     Serial.println();
-    Serial.println("brake 1 min/max: ");
+    Serial.print("brake 1 min/max: ");
     Serial.print(PedalsSystemInstance::instance().get_brake_params().min_pedal_1);
     Serial.print("   ");
     Serial.print(PedalsSystemInstance::instance().get_brake_params().max_pedal_1);
     Serial.println();
-    Serial.println("brake 2 min/max: ");
+    Serial.print("brake 2 min/max: ");
     Serial.print(PedalsSystemInstance::instance().get_brake_params().min_pedal_2);
     Serial.print("   ");
     Serial.print(PedalsSystemInstance::instance().get_brake_params().max_pedal_2);
     Serial.println();
     Serial.println();
 
-    Serial.println(" ADC Vals: ");
-    Serial.print("Accel 1: "); Serial.println(ADCInterfaceInstance::instance().acceleration_1().raw);
-    Serial.print("Accel 2: "); Serial.println(ADCInterfaceInstance::instance().acceleration_2().raw);
-    Serial.print("Brake 1: "); Serial.println(ADCInterfaceInstance::instance().brake_1().raw);
-    Serial.print("Brake 2: "); Serial.println(ADCInterfaceInstance::instance().brake_2().raw);
+    // Serial.println(" ADC Vals: ");
+    // Serial.print("Accel 1: "); Serial.println(ADCInterfaceInstance::instance().acceleration_1().raw);
+    // Serial.print("Accel 2: "); Serial.println(ADCInterfaceInstance::instance().acceleration_2().raw);
+    // Serial.print("Brake 1: "); Serial.println(ADCInterfaceInstance::instance().brake_1().raw);
+    // Serial.print("Brake 2: "); Serial.println(ADCInterfaceInstance::instance().brake_2().raw);
 
     Serial.println(" Pedal Sensor Data: ");
     Serial.print("Accel 1: "); Serial.println(PedalsSystemInstance::instance().get_pedals_sensor_data().accel_1);
@@ -461,8 +460,6 @@ HT_TASK::TaskResponse debug_print(const unsigned long& sysMicros, const HT_TASK:
     Serial.println(DashboardInterfaceInstance::instance().get_dashboard_outputs().data_btn_is_pressed);
 
     Serial.print("Buzzer: "); Serial.println(BuzzerController::getInstance().buzzer_is_active(sys_time::hal_millis()));
-
-    // Serial.println("jkkjhhkjkjh");
 
     return HT_TASK::TaskResponse::YIELD;
 }
