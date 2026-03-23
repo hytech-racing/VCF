@@ -128,12 +128,12 @@ class ADCInterface
         /**
          * @return Analog Steering Degrees [Steering 1]
          */
-        AnalogConversion_s steering_degrees_cw();
+        AnalogConversion_s get_steering_degrees_cw();
         
         /**
          * @return Analog Steering Degrees [Steering 2]
          */
-        AnalogConversion_s steering_degrees_ccw();
+        AnalogConversion_s get_steering_degrees_ccw();
         
         /**
          * @return Acceleration Pedal 1

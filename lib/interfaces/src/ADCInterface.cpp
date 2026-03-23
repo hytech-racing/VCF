@@ -97,11 +97,11 @@ AnalogConversion_s ADCInterface::pedal_reference() {
     return _adc0.data.conversions[_adc_parameters.channels.pedal_ref_channel];
 }
 
-AnalogConversion_s ADCInterface::steering_degrees_cw() {
+AnalogConversion_s ADCInterface::get_steering_degrees_cw() {
     return _adc0.data.conversions[_adc_parameters.channels.steering_cw_channel];
 }
 
-AnalogConversion_s ADCInterface::steering_degrees_ccw() {
+AnalogConversion_s ADCInterface::get_steering_degrees_ccw() {
     return _adc0.data.conversions[_adc_parameters.channels.steering_ccw_channel];
 }
 

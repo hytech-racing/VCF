@@ -164,8 +164,6 @@ HT_TASK::TaskResponse send_dash_data(const unsigned long& sysMicros, const HT_TA
     msg_out.right_shifter_button = dash_outputs.BUTTON_2;
     msg_out.led_dimmer_button = dash_outputs.brightness_ctrl_btn_is_pressed;
     msg_out.dash_dial_mode = static_cast<int>(DashboardInterfaceInstance::instance().get_dashboard_outputs().dial_state);
-
-//    Serial.printf("%d %d %d %d %d %d %d %d\n", msg_out.preset_button, msg_out.motor_controller_cycle_button, msg_out.mode_button, msg_out.start_button, msg_out.data_button_is_pressed, msg_out.left_shifter_button, msg_out.right_shifter_button, msg_out.led_dimmer_button);
     
     CAN_util::enqueue_msg(&msg_out, &Pack_DASH_INPUT_hytech, VCFCANInterfaceImpl::VCFCANInterfaceObjectsInstance::instance().main_can_tx_buffer);
     
@@ -188,10 +186,10 @@ HT_TASK::TaskResponse enqueue_front_suspension_data(const unsigned long& sysMicr
 
 HT_TASK::TaskResponse enqueue_steering_data(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo) 
 {
-    STEERING_DATA_t msg_out;
+    STEERING_DATA_t msg_out = {};
 
-    msg_out.steering_analog_raw = ADCInterfaceInstance::instance().steering_degrees_cw().conversion;
-    msg_out.steering_digital_raw = ADCInterfaceInstance::instance().steering_degrees_ccw().conversion; //NOLINT TODO: once digital steering sensor works, this needs to be changed accordingly
+    msg_out.steering_analog_raw = ADCInterfaceInstance::instance().get_steering_degrees_cw().raw;
+    msg_out.steering_digital_raw = ADCInterfaceInstance::instance().get_steering_degrees_ccw().raw; //NOLINT TODO: once digital steering sensor works, this needs to be changed accordingly
 
     CAN_util::enqueue_msg(&msg_out, &Pack_STEERING_DATA_hytech, VCFCANInterfaceImpl::VCFCANInterfaceObjectsInstance::instance().main_can_tx_buffer);
     return HT_TASK::TaskResponse::YIELD;
@@ -427,11 +425,13 @@ HT_TASK::TaskResponse debug_print(const unsigned long& sysMicros, const HT_TASK:
     Serial.println();
     Serial.println();
 
-    // Serial.println(" ADC Vals: ");
+    Serial.println(" ADC Vals: ");
     // Serial.print("Accel 1: "); Serial.println(ADCInterfaceInstance::instance().acceleration_1().raw);
     // Serial.print("Accel 2: "); Serial.println(ADCInterfaceInstance::instance().acceleration_2().raw);
     // Serial.print("Brake 1: "); Serial.println(ADCInterfaceInstance::instance().brake_1().raw);
     // Serial.print("Brake 2: "); Serial.println(ADCInterfaceInstance::instance().brake_2().raw);
+    Serial.print("ANALOG STEERING CW: "); Serial.println(ADCInterfaceInstance::instance().get_steering_degrees_cw().conversion);
+    Serial.print("ANALOG STEERING CCW: "); Serial.println(ADCInterfaceInstance::instance().get_steering_degrees_ccw().conversion);
 
     Serial.println(" Pedal Sensor Data: ");
     Serial.print("Accel 1: "); Serial.println(PedalsSystemInstance::instance().get_pedals_sensor_data().accel_1);
