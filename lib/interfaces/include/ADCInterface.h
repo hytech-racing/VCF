@@ -190,12 +190,12 @@ class ADCInterface
         /**
          * @return Front Brake Pressure
          */
-        AnalogConversion_s brake_pressure_front();
+        AnalogConversion_s get_brake_pressure_front();
 
         /**
          * @return Rear Brake Pressure
          */
-        AnalogConversion_s brake_pressure_rear();
+        AnalogConversion_s get_brake_pressure_rear();
         
         /**
          * @return Filtered Front Left Load Cell

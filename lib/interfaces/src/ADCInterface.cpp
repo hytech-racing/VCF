@@ -166,10 +166,10 @@ float ADCInterface::get_filtered_FL_sus_pot() {
     return _FL_sus_pot_filtered;
 }
 
-AnalogConversion_s ADCInterface::brake_pressure_front() {
+AnalogConversion_s ADCInterface::get_brake_pressure_front() {
     return _adc1.data.conversions[_adc_parameters.channels.brake_pressure_front_channel];
 }
 
-AnalogConversion_s ADCInterface::brake_pressure_rear() {
+AnalogConversion_s ADCInterface::get_brake_pressure_rear() {
     return _adc1.data.conversions[_adc_parameters.channels.brake_pressure_rear_channel];
 }
