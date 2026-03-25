@@ -18,23 +18,6 @@
 #include "etl/singleton.h"
 #include "VCFCANInterfaceImpl.h"
 
-
-// enum LED_ID_e
-// {
-//     BRAKE = 0,
-//     COCKPIT_BRB = 1,
-//     BOTS = 2,
-//     INERTIA = 3,
-//     LAUNCH_CTRL = 4,
-//     TORQUE_MODE = 5,
-//     CRIT_CHARGE = 6,
-//     GLV = 7,
-//     RDY_DRIVE = 8,
-//     MC_ERR = 9,
-//     IMD = 10,
-//     BMS = 11
-// };
-
 enum LED_ID_e
 {
     SHUTDOWN = 0,
