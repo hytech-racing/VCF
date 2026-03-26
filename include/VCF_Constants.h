@@ -17,9 +17,9 @@ namespace VCFInterfaceConstants {
     constexpr int BTN_START_READ = 29; // RTD on schematic
     constexpr int BTN_DATA_READ = 30; // DATA_MARK on schematic
     constexpr int BUZZER_CONTROL_PIN = 32;
-    constexpr int BTN_PRESET_READ = 26; //BUTTON_1 on schematic
+    constexpr int BRIGHTNESS_CONTROL_PIN = 26; //BUTTON_1 on schematic
     constexpr int BUTTON_2 = 27; // BUTTON_2 on schematic
-    constexpr int BRIGHTNESS_CONTROL_PIN = 28; // Currently unused
+    constexpr int BTN_PRESET_READ = 28; // Pedals recal button (brightness control on schematic)
     
     constexpr int NEOPIXEL_CONTROL_PIN = 33;
     constexpr int NEOPIXEL_COUNT = 12; // 12 neopixeles on dashboard
@@ -181,7 +181,7 @@ namespace VCFTaskConstants {
     constexpr float LOADCELL_IIR_FILTER_ALPHA = 0.01f;
 
     constexpr unsigned long WATCHDOG_PRIORITY = 1;
-    constexpr unsigned long WATCHDOG_KICK_PERIOD = 10000;          // 10 000 us = 100 Hz
+    constexpr unsigned long WATCHDOG_KICK_PERIOD = 1000;          // 1 000 us = 1000 Hz
 }
 
 #endif /* VCF_CONSTANTS */

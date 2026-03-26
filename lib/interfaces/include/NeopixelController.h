@@ -18,21 +18,20 @@
 #include "etl/singleton.h"
 #include "VCFCANInterfaceImpl.h"
 
-
 enum LED_ID_e
 {
-    BRAKE = 0,
-    COCKPIT_BRB = 1,
-    BOTS = 2,
-    INERTIA = 3,
-    LAUNCH_CTRL = 4,
-    TORQUE_MODE = 5,
-    CRIT_CHARGE = 6,
-    GLV = 7,
-    RDY_DRIVE = 8,
-    MC_ERR = 9,
-    IMD = 10,
-    BMS = 11
+    SHUTDOWN = 0,
+    INVERTER_ERR = 1,
+    TORQUE_MODE = 2,
+    BRAKE = 3,
+    BMS = 4,
+    GLV = 5,
+    PACK = 6,
+    IMD = 7,
+    IMPLAUSE = 8,
+    RDY_DRIVE = 9,
+    LATCH = 10,
+    CRIT_CHARGE = 11
 };
 
 enum class LED_color_e
