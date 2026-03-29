@@ -53,27 +53,27 @@ void NeopixelController::refresh_neopixels(const PedalsSystemData_s &pedals_data
     }
 
     LED_color_e pack_color = LED_color_e::OFF;
-    if (interfaces.acu_interface.get_cell_voltage() > 4.1) //NOLINT 4.1 is near max voltage
+    if (interfaces.acu_interface.get_cell_voltage() > _min_cell_thresholds.max_level)
     {
         pack_color = LED_color_e::PURPLE;
     }
-    else if (interfaces.acu_interface.get_cell_voltage() > 3.8) //NOLINT 3.8 is second from max voltage
+    else if (interfaces.acu_interface.get_cell_voltage() > _min_cell_thresholds.second_level)
     {
         pack_color = LED_color_e::BLUE;
     }
-    else if (interfaces.acu_interface.get_cell_voltage() > 3.6) //NOLINT volts
+    else if (interfaces.acu_interface.get_cell_voltage() > _min_cell_thresholds.third_level)
     {
         pack_color = LED_color_e::GREEN;
     }
-    else if (interfaces.acu_interface.get_cell_voltage() > 3.5) //NOLINT volts
+    else if (interfaces.acu_interface.get_cell_voltage() > _min_cell_thresholds.fourth_level)
     {
         pack_color = LED_color_e::YELLOW;
     }
-    else if (interfaces.acu_interface.get_cell_voltage() > 3.4) //NOLINT volts
+    else if (interfaces.acu_interface.get_cell_voltage() > _min_cell_thresholds.fifth_level)
     {
         pack_color = LED_color_e::ORANGE;
     }
-    else if (interfaces.acu_interface.get_cell_voltage() < 3.4) //NOLINT volts
+    else if (interfaces.acu_interface.get_cell_voltage() < _min_cell_thresholds.critical_charge_level)
     {
         pack_color = LED_color_e::RED;
     }
@@ -123,10 +123,10 @@ void NeopixelController::refresh_neopixels(const PedalsSystemData_s &pedals_data
         }
     }
 
-    bool hv_present = interfaces.vcr_interface.get_dc_bus_voltage().voltage.FL > 60 ||
-                      interfaces.vcr_interface.get_dc_bus_voltage().voltage.FR > 60 || 
-                      interfaces.vcr_interface.get_dc_bus_voltage().voltage.RL > 60 ||
-                      interfaces.vcr_interface.get_dc_bus_voltage().voltage.RR > 60;
+    bool hv_present = interfaces.vcr_interface.get_dc_bus_voltage().voltage.FL > _hv_threshold_voltage ||
+                      interfaces.vcr_interface.get_dc_bus_voltage().voltage.FR > _hv_threshold_voltage || 
+                      interfaces.vcr_interface.get_dc_bus_voltage().voltage.RL > _hv_threshold_voltage ||
+                      interfaces.vcr_interface.get_dc_bus_voltage().voltage.RR > _hv_threshold_voltage;
 
     constexpr float glv_critical_voltage = 22.0f;
 

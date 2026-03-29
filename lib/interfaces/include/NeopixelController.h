@@ -18,6 +18,17 @@
 #include "etl/singleton.h"
 #include "VCFCANInterfaceImpl.h"
 
+
+struct MinCellMonitoringThresholds_s
+{
+    float max_level = 3.8;
+    float second_level = 3.7;
+    float third_level = 3.6;
+    float fourth_level = 3.5;
+    float fifth_level = 3.45;
+    float critical_charge_level = 3.4;
+};
+
 enum LED_ID_e
 {
     SHUTDOWN = 0,
@@ -69,7 +80,8 @@ class NeopixelController
     Adafruit_NeoPixel _neopixels;
     uint8_t _current_brightness;
     uint8_t _neopixel_count;
-
+    const int _hv_threshold_voltage;
+    MinCellMonitoringThresholds_s _min_cell_thresholds;
 };
 
 using NeopixelControllerInstance = etl::singleton<NeopixelController>;

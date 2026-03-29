@@ -130,6 +130,7 @@ namespace VCFInterfaceConstants {
 // calibration and processing constants
 namespace VCFSystemConstants { 
     constexpr float LBS_TO_NEWTONS = 4.4482216153;
+    constexpr int HV_VOLTAGE_THRESHOLD = 60;
 }
 
 // software configuration constants
