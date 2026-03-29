@@ -125,12 +125,13 @@ namespace VCFInterfaceConstants {
     constexpr uint32_t BRAKE_MAX_SENSOR_PEDAL_2 = 4000;
     constexpr float BRAKE_DEADZONE_MARGIN = 0.04f;
     constexpr float BRAKE_MECHANICAL_ACTIVATION_PERCENTAGE = 0.5f;
+
+    constexpr int HV_VOLTAGE_THRESHOLD = 60;
 }
 
 // calibration and processing constants
 namespace VCFSystemConstants { 
     constexpr float LBS_TO_NEWTONS = 4.4482216153;
-    constexpr int HV_VOLTAGE_THRESHOLD = 60;
 }
 
 // software configuration constants
