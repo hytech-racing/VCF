@@ -76,9 +76,9 @@ namespace VCFInterfaceConstants {
     constexpr float BRAKE_2_SCALE = 1.0;
     constexpr float BRAKE_2_OFFSET = 0;
 
-    constexpr float SHDN_H_SCALE = 1.0;
+    constexpr float SHDN_H_SCALE = 0.00697841165926; // Conversion from ADC read to shutdown voltage based on schematic - maps reading of 3439 to 24V
     constexpr float SHDN_H_OFFSET = 0;
-    constexpr float SHDN_D_SCALE = 1.0;
+    constexpr float SHDN_D_SCALE = 0.00697841165926; // Conversion from ADC read to shutdown voltage based on schematic - maps reading of 3439 to 24V
     constexpr float SHDN_D_OFFSET = 0;
 
     // constexpr float FL_LOADCELL_SCALE = 0.63;
@@ -181,7 +181,7 @@ namespace VCFTaskConstants {
     constexpr float LOADCELL_IIR_FILTER_ALPHA = 0.01f;
 
     constexpr unsigned long WATCHDOG_PRIORITY = 1;
-    constexpr unsigned long WATCHDOG_KICK_PERIOD = 1000;          // 1 000 us = 1000 Hz
+    constexpr unsigned long WATCHDOG_KICK_PERIOD = 10000;          // 10 000 us = 100 Hz
 }
 
 #endif /* VCF_CONSTANTS */
