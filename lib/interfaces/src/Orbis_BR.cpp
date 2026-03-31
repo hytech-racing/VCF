@@ -49,7 +49,7 @@ bool OrbisBR::performSelfCalibration()
 
     unsigned long startTime = millis();
     while (_serial->available() < 2) {
-        if (millis() - startTime >= 10) { // NOLINT
+        if (millis() - startTime >= OrbisConstants::TIMEOUT) { // NOLINT
             return false;  // timeout
         }
     }
@@ -137,7 +137,7 @@ void OrbisBR::sample()
 
     unsigned long startTime = millis();
     while (_serial->available() < 4) {
-        if (millis() - startTime >= 10 ) { // NOLINT
+        if (millis() - startTime >= OrbisConstants::TIMEOUT ) { // NOLINT
             _lastReading.errors.noData = true;
             _lastReading.status = SteeringEncoderStatus_e::ERROR;
             return;

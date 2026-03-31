@@ -8,6 +8,8 @@
 
 /* --- Constants --- */
 namespace OrbisConstants {
+    const uint8_t TIMEOUT                              = 10; // ms
+
     const uint32_t ORBIS_BR_DEFAULT_BAUD_RATE          = 115200;
     const uint8_t FACTORY_RESET_DELAY_MS               = 200;
     const uint8_t SAVE_CONFIG_DELAY_MS                 = 200;
@@ -78,9 +80,11 @@ class OrbisBR : public SteeringEncoderInterface
 public:
 // Constructors
     OrbisBR(HardwareSerial* serial);
+
 //Fields
     SteeringEncoderReading_s getLastReading() override; // Override a virtual function from the base class.
     OrbisErrorFlags_s getOrbisDetailedErrors() const { return _orbisErrors; }
+
 // Functions
     bool performSelfCalibration();
     void setEncoderOffset();
