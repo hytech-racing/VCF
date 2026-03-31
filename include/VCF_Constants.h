@@ -17,9 +17,9 @@ namespace VCFInterfaceConstants {
     constexpr int BTN_START_READ = 29; // RTD on schematic
     constexpr int BTN_DATA_READ = 30; // DATA_MARK on schematic
     constexpr int BUZZER_CONTROL_PIN = 32;
-    constexpr int BTN_PRESET_READ = 26; //BUTTON_1 on schematic
+    constexpr int BRIGHTNESS_CONTROL_PIN = 26; //BUTTON_1 on schematic
     constexpr int BUTTON_2 = 27; // BUTTON_2 on schematic
-    constexpr int BRIGHTNESS_CONTROL_PIN = 28; // Currently unused
+    constexpr int BTN_PRESET_READ = 28; // Pedals recal button (brightness control on schematic)
     
     constexpr int NEOPIXEL_CONTROL_PIN = 33;
     constexpr int NEOPIXEL_COUNT = 12; // 12 neopixeles on dashboard
@@ -29,7 +29,7 @@ namespace VCFInterfaceConstants {
     constexpr int SOFTWARE_OK_PIN = 37; // Watchdog's !MR pin
     
     // watchdog kick interval
-    constexpr unsigned long WATCHDOG_KICK_INTERVAL_MS = 10UL;
+    constexpr unsigned long WATCHDOG_KICK_INTERVAL_MS = 10UL; // 10 ms = 100 Hz
     
     //ADC Pins
     constexpr int ADC0_CS = 10; // MCP3208. ADC0 in VCF schematic. Used for steering, sus pots, and load cells.

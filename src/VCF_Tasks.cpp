@@ -164,9 +164,7 @@ HT_TASK::TaskResponse send_dash_data(const unsigned long& sysMicros, const HT_TA
     msg_out.right_shifter_button = dash_outputs.BUTTON_2;
     msg_out.led_dimmer_button = dash_outputs.brightness_ctrl_btn_is_pressed;
     msg_out.dash_dial_mode = static_cast<int>(DashboardInterfaceInstance::instance().get_dashboard_outputs().dial_state);
-
-//    Serial.printf("%d %d %d %d %d %d %d %d\n", msg_out.preset_button, msg_out.motor_controller_cycle_button, msg_out.mode_button, msg_out.start_button, msg_out.data_button_is_pressed, msg_out.left_shifter_button, msg_out.right_shifter_button, msg_out.led_dimmer_button);
-
+    
     CAN_util::enqueue_msg(&msg_out, &Pack_DASH_INPUT_hytech, VCFCANInterfaceImpl::VCFCANInterfaceObjectsInstance::instance().main_can_tx_buffer);
 
     return HT_TASK::TaskResponse::YIELD;
@@ -179,8 +177,8 @@ HT_TASK::TaskResponse enqueue_front_suspension_data(const unsigned long& sysMicr
 
     msg_out.fr_load_cell = ADCInterfaceInstance::instance().get_filtered_FR_load_cell();
     msg_out.fl_load_cell = ADCInterfaceInstance::instance().get_filtered_FL_load_cell();
-    msg_out.fr_shock_pot = ADCInterfaceInstance::instance().get_filtered_FR_sus_pot();
-    msg_out.fl_shock_pot = ADCInterfaceInstance::instance().get_filtered_FL_sus_pot();
+    msg_out.fr_shock_pot = ADCInterfaceInstance::instance().get_brake_pressure_front().conversion; //.filtered_FR_sus_pot();
+    msg_out.fl_shock_pot = ADCInterfaceInstance::instance().get_brake_pressure_rear().conversion;//get_filtered_FL_sus_pot();
 
     CAN_util::enqueue_msg(&msg_out, &Pack_FRONT_SUSPENSION_hytech, VCFCANInterfaceImpl::VCFCANInterfaceObjectsInstance::instance().main_can_tx_buffer);
     return HT_TASK::TaskResponse::YIELD;
@@ -188,10 +186,10 @@ HT_TASK::TaskResponse enqueue_front_suspension_data(const unsigned long& sysMicr
 
 HT_TASK::TaskResponse enqueue_steering_data(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
 {
-    STEERING_DATA_t msg_out;
+    STEERING_DATA_t msg_out = {};
 
-    msg_out.steering_analog_raw = ADCInterfaceInstance::instance().steering_degrees_cw().conversion;
-    msg_out.steering_digital_raw = 0; //NOLINT TODO: once digital steering sensor works, this needs to be changed accordingly
+    msg_out.steering_analog_raw = ADCInterfaceInstance::instance().get_steering_degrees_cw().raw;
+    msg_out.steering_digital_raw = ADCInterfaceInstance::instance().get_steering_degrees_ccw().raw; //NOLINT TODO: once digital steering sensor works, this needs to be changed accordingly
 
     CAN_util::enqueue_msg(&msg_out, &Pack_STEERING_DATA_hytech, VCFCANInterfaceImpl::VCFCANInterfaceObjectsInstance::instance().main_can_tx_buffer);
     return HT_TASK::TaskResponse::YIELD;
@@ -392,53 +390,56 @@ namespace async_tasks
             PedalsSystemInstance::instance().get_pedals_sensor_data(),
             sys_time::hal_millis()
         );
-        // Serial.println(VCFData_sInstance::instance().system_data.pedals_system_data.accel_percent);
         return HT_TASK::TaskResponse::YIELD;
     }
 };
 
 HT_TASK::TaskResponse debug_print(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
 {
-    // Serial.println("accel1 raw accel2 raw");
-    // Serial.print(PedalsSystemInstance::instance().get_pedals_sensor_data().accel_1);
-    // Serial.print("   ");
-    // Serial.print(PedalsSystemInstance::instance().get_pedals_sensor_data().accel_2);
-    // Serial.println();
-    // Serial.println("brake1 raw brake2 raw");
-    // Serial.print(PedalsSystemInstance::instance().get_pedals_sensor_data().brake_1);
-    // Serial.print("   ");
-    // Serial.print(PedalsSystemInstance::instance().get_pedals_sensor_data().brake_2);
-    // Serial.println();
-    // Serial.println("accel brake percents");
-    // Serial.print(PedalsSystemInstance::instance().get_pedals_system_data().accel_percent);
-    // Serial.print("   ");
-    // Serial.print(PedalsSystemInstance::instance().get_pedals_system_data().brake_percent);
-    // Serial.println();
-    // Serial.print("implaus ");
-    // Serial.println(PedalsSystemInstance::instance().get_pedals_system_data().implausibility_has_exceeded_max_duration);
+    Serial.println();
+    Serial.print("Accel percent: "); Serial.println(PedalsSystemInstance::instance().get_pedals_system_data().accel_percent);
+    Serial.print("Brake percent: "); Serial.println(PedalsSystemInstance::instance().get_pedals_system_data().brake_percent);
+    Serial.println();
+    Serial.print("Implaus: "); Serial.println(PedalsSystemInstance::instance().get_pedals_system_data().implausibility_has_exceeded_max_duration);
+    Serial.print("Brake is pressed: "); Serial.println(PedalsSystemInstance::instance().get_pedals_system_data().brake_is_pressed);
 
-    // Serial.println("accel 1 min/max");
-    // Serial.print(PedalsSystemInstance::instance().get_accel_params().min_pedal_1);
-    // Serial.print("   ");
-    // Serial.print(PedalsSystemInstance::instance().get_accel_params().max_pedal_1);
-    // Serial.println();
-    // Serial.println("accel 2 min/max");
-    // Serial.print(PedalsSystemInstance::instance().get_accel_params().min_pedal_2);
-    // Serial.print("   ");
-    // Serial.print(PedalsSystemInstance::instance().get_accel_params().max_pedal_2);
-    // Serial.println();
-    // Serial.println("brake 1 min/max");
-    // Serial.print(PedalsSystemInstance::instance().get_brake_params().min_pedal_1);
-    // Serial.print("   ");
-    // Serial.print(PedalsSystemInstance::instance().get_brake_params().max_pedal_1);
-    // Serial.println();
-    // Serial.println("brake 2 min/max");
-    // Serial.print(PedalsSystemInstance::instance().get_brake_params().min_pedal_2);
-    // Serial.print("   ");
-    // Serial.print(PedalsSystemInstance::instance().get_brake_params().max_pedal_2);
-    // Serial.println();
-    // Serial.println();
+    Serial.print("accel 1 min/max: ");
+    Serial.print(PedalsSystemInstance::instance().get_accel_params().min_pedal_1);
+    Serial.print("   ");
+    Serial.print(PedalsSystemInstance::instance().get_accel_params().max_pedal_1);
+    Serial.println();
+    Serial.print("accel 2 min/max: ");
+    Serial.print(PedalsSystemInstance::instance().get_accel_params().min_pedal_2);
+    Serial.print("   ");
+    Serial.print(PedalsSystemInstance::instance().get_accel_params().max_pedal_2);
+    Serial.println();
+    Serial.print("brake 1 min/max: ");
+    Serial.print(PedalsSystemInstance::instance().get_brake_params().min_pedal_1);
+    Serial.print("   ");
+    Serial.print(PedalsSystemInstance::instance().get_brake_params().max_pedal_1);
+    Serial.println();
+    Serial.print("brake 2 min/max: ");
+    Serial.print(PedalsSystemInstance::instance().get_brake_params().min_pedal_2);
+    Serial.print("   ");
+    Serial.print(PedalsSystemInstance::instance().get_brake_params().max_pedal_2);
+    Serial.println();
+    Serial.println();
 
+    Serial.println(" ADC Vals: ");
+    // Serial.print("Accel 1: "); Serial.println(ADCInterfaceInstance::instance().acceleration_1().raw);
+    // Serial.print("Accel 2: "); Serial.println(ADCInterfaceInstance::instance().acceleration_2().raw);
+    // Serial.print("Brake 1: "); Serial.println(ADCInterfaceInstance::instance().brake_1().raw);
+    // Serial.print("Brake 2: "); Serial.println(ADCInterfaceInstance::instance().brake_2().raw);
+    Serial.print("ANALOG STEERING CW: "); Serial.println(ADCInterfaceInstance::instance().get_steering_degrees_cw().conversion);
+    Serial.print("ANALOG STEERING CCW: "); Serial.println(ADCInterfaceInstance::instance().get_steering_degrees_ccw().conversion);
+
+    Serial.println(" Pedal Sensor Data: ");
+    Serial.print("Accel 1: "); Serial.println(PedalsSystemInstance::instance().get_pedals_sensor_data().accel_1);
+    Serial.print("Accel 2: "); Serial.println(PedalsSystemInstance::instance().get_pedals_sensor_data().accel_2);
+    Serial.print("Brake 1: "); Serial.println(PedalsSystemInstance::instance().get_pedals_sensor_data().brake_1);
+    Serial.print("Brake 2: "); Serial.println(PedalsSystemInstance::instance().get_pedals_sensor_data().brake_2);
+    
+    
     // Serial.print("Load Cell FR:  ");
     // Serial.println(ADCInterfaceInstance::instance().get_filtered_FR_load_cell());
     // Serial.print("Load Cell FL:  ");
@@ -449,16 +450,16 @@ HT_TASK::TaskResponse debug_print(const unsigned long& sysMicros, const HT_TASK:
     // Serial.println(ADCInterfaceInstance::instance().get_filtered_FL_sus_pot());
 
 
-    // Serial.print("preset button: ");
-    // Serial.println(DashboardInterfaceInstance::instance().get_dashboard_outputs().preset_btn_is_pressed);
-    // Serial.print("mc reset button: ");
-    // Serial.println(DashboardInterfaceInstance::instance().get_dashboard_outputs().mc_reset_btn_is_pressed);
-    // Serial.print("start button: ");
-    // Serial.println(DashboardInterfaceInstance::instance().get_dashboard_outputs().start_btn_is_pressed);
-    // Serial.print("data button: ");
-    // Serial.println(DashboardInterfaceInstance::instance().get_dashboard_outputs().data_btn_is_pressed);
+    Serial.print("preset button: ");
+    Serial.println(DashboardInterfaceInstance::instance().get_dashboard_outputs().preset_btn_is_pressed);
+    Serial.print("mc reset button: ");
+    Serial.println(DashboardInterfaceInstance::instance().get_dashboard_outputs().mc_reset_btn_is_pressed);
+    Serial.print("start button: ");
+    Serial.println(DashboardInterfaceInstance::instance().get_dashboard_outputs().start_btn_is_pressed);
+    Serial.print("data button: ");
+    Serial.println(DashboardInterfaceInstance::instance().get_dashboard_outputs().data_btn_is_pressed);
 
-    // Serial.println("jkkjhhkjkjh");
+    Serial.print("Buzzer: "); Serial.println(BuzzerController::getInstance().buzzer_is_active(sys_time::hal_millis()));
 
     return HT_TASK::TaskResponse::YIELD;
 }

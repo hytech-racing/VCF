@@ -25,8 +25,8 @@ hytech_msgs_VCFData_s VCFEthernetInterface::make_vcf_data_msg(ADCInterface &ADCI
     out.front_suspot_data.FR_sus_pot_analog = static_cast<uint32_t>(ADCInterfaceInstance.get_filtered_FR_sus_pot());
 
     // Steering
-    out.steering_data.analog_steering_degrees = ADCInterfaceInstance.steering_degrees_cw().conversion;
-    out.steering_data.digital_steering_analog = 0;
+    out.steering_data.analog_steering_degrees = ADCInterfaceInstance.get_steering_degrees_cw().conversion;
+    out.steering_data.digital_steering_analog = ADCInterfaceInstance.get_steering_degrees_ccw().conversion;
     
     //TODO: MODIFY ETH STRUCT
     // Dash

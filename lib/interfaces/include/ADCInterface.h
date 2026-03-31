@@ -128,12 +128,12 @@ class ADCInterface
         /**
          * @return Analog Steering Degrees [Steering 1]
          */
-        AnalogConversion_s steering_degrees_cw();
+        AnalogConversion_s get_steering_degrees_cw();
         
         /**
          * @return Analog Steering Degrees [Steering 2]
          */
-        AnalogConversion_s steering_degrees_ccw();
+        AnalogConversion_s get_steering_degrees_ccw();
         
         /**
          * @return Acceleration Pedal 1
@@ -190,12 +190,12 @@ class ADCInterface
         /**
          * @return Front Brake Pressure
          */
-        AnalogConversion_s brake_pressure_front();
+        AnalogConversion_s get_brake_pressure_front();
 
         /**
          * @return Rear Brake Pressure
          */
-        AnalogConversion_s brake_pressure_rear();
+        AnalogConversion_s get_brake_pressure_rear();
         
         /**
          * @return Filtered Front Left Load Cell
