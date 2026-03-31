@@ -5,22 +5,26 @@
 
 enum class SteeringEncoderStatus_e
 {
-    STEERING_ENCODER_NOMINAL = 0,
-    STEERING_ENCODER_ERROR = 1,
+    NOMINAL = 0,
+    ERROR = 1,
 };
 
+/// @brief Error and warning flags from the encoder.
+/// @note Specific encoders may populate only a subset of these flags.
 struct EncoderErrorFlags_s
 {
-    bool generalError             = false;  // Position data invalid (bit=0 means error)
-    bool generalWarning           = false;  // Position data valid, operating conditons near limits (bit=0 means warning)
-    bool noData                   = false;  // No data received
+    bool dataInvalid              = false;
+    bool operatingLimit           = false;
+    bool noData                   = false;
 };
 
-struct SteeringEncoderConversion_s  // This is the final struct I would like to send across the car. What's seen in foxglove?
+/// @brief Complete steering angle measurement with status and error flags.
+/// @note This struct is transmitted across the CAN bus to other vehicle systems.
+struct SteeringEncoderReading_s
 {
     float angle = 0.0f;
-    int raw = 0;
-    SteeringEncoderStatus_e status = SteeringEncoderStatus_e::STEERING_ENCODER_NOMINAL;
+    int rawValue = 0;
+    SteeringEncoderStatus_e status = SteeringEncoderStatus_e::NOMINAL;
     EncoderErrorFlags_s errors;
 };
 
@@ -28,11 +32,12 @@ class SteeringEncoderInterface
 {
 public:
 // Functions
-    /// @brief Commands the underlying steering sensor to sample and hold the result.
+    /// @brief Reads current position from the physical sensor and stores the result.
     virtual void sample() = 0;
-    /// @brief Calculate steering angle and whether result is in sensor's defined bounds. DOES NOT SAMPLE.
-    /// @return Calculated steering angle in degrees.
-    virtual SteeringEncoderConversion_s convert() = 0;
+    /// @brief Returns the most recently stored reading.
+    /// @note DOES NOT SAMPLE/COMMUNICATE WITH SENSOR
+    /// @return Struct containing angle, raw value, status, and error flags
+    virtual SteeringEncoderReading_s getLastReading() = 0;
 };
 
 #endif /* STEERING_ENCODER_INTERFACE_H */
