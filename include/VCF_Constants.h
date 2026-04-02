@@ -144,18 +144,21 @@ namespace VCFTaskConstants {
     constexpr unsigned long CAN_SEND_PRIORITY = 10;
     constexpr unsigned long CAN_SEND_PERIOD = 2000;               // 2 000 us = 500 Hz
 
+    constexpr unsigned long PEDALS_PRIORITY = 5;
     constexpr unsigned long PEDALS_SEND_PERIOD = 4000;            // 4 000 us = 250 Hz
     constexpr unsigned long PEDALS_SAMPLE_PERIOD = 500;           // 500 us = 2 kHz
-    constexpr unsigned long PEDALS_PRIORITY = 5;
 
-    constexpr unsigned long BUZZER_WRITE_PERIOD = 100000;         // 100 000 us = 10 Hz
+    constexpr unsigned long PEDALS_RECALIBRATION_PRIORITY = 150;
+    constexpr unsigned long PEDALS_RECALIBRATION_PERIOD = 100000; // 100 000 us = 10 Hz
+
     constexpr unsigned long BUZZER_PRIORITY = 20;
+    constexpr unsigned long BUZZER_WRITE_PERIOD = 100000;         // 100 000 us = 10 Hz
 
-    constexpr unsigned long DASH_SAMPLE_PERIOD = 100000;          // 100 000 us = 10 Hz
     constexpr unsigned long DASH_SAMPLE_PRIORITY = 21;
+    constexpr unsigned long DASH_SAMPLE_PERIOD = 100000;          // 100 000 us = 10 Hz
 
-    constexpr unsigned long DASH_SEND_PERIOD = 100000;            // 100 000 us = 10 Hz
     constexpr unsigned long DASH_SEND_PRIORITY = 7;
+    constexpr unsigned long DASH_SEND_PERIOD = 100000;            // 100 000 us = 10 Hz
 
     constexpr unsigned long DEBUG_PRIORITY = 100;
     constexpr unsigned long DEBUG_PERIOD = 10000;                 // 10 000 us = 2 Hz
@@ -163,20 +166,17 @@ namespace VCFTaskConstants {
     constexpr unsigned long NEOPIXEL_UPDATE_PRIORITY = 90;
     constexpr unsigned long NEOPIXEL_UPDATE_PERIOD = 100000;      // 100 000 us = 10 Hz
 
-    constexpr unsigned long STEERING_SEND_PERIOD = 4000;          // 4 000 us = 250 Hz
     constexpr unsigned long STEERING_SEND_PRIORITY = 25;
+    constexpr unsigned long STEERING_SEND_PERIOD = 4000;          // 4 000 us = 250 Hz
 
-    constexpr unsigned long LOADCELL_SAMPLE_PERIOD = 250;         // 250 us = 4 kHz
     constexpr unsigned long LOADCELL_SAMPLE_PRIORITY = 24;
+    constexpr unsigned long LOADCELL_SAMPLE_PERIOD = 250;         // 250 us = 4 kHz
 
-    constexpr unsigned long ETHERNET_SEND_PERIOD = 100000;        // 100 000 us = 10Hz
     constexpr unsigned long ETHERNET_SEND_PRIORITY = 20;
+    constexpr unsigned long ETHERNET_SEND_PERIOD = 100000;        // 100 000 us = 10Hz
 
-    constexpr unsigned long LOADCELL_SEND_PERIOD = 4000;          // 4 000 us = 250 Hz
     constexpr unsigned long LOADCELL_SEND_PRIORITY = 25;
-
-    constexpr unsigned long PEDALS_RECALIBRATION_PRIORITY = 150;
-    constexpr unsigned long PEDALS_RECALIBRATION_PERIOD = 100000; // 100 000 us = 10 Hz
+    constexpr unsigned long LOADCELL_SEND_PERIOD = 4000;          // 4 000 us = 250 Hz
     
     // IIR filter alphas
     constexpr float LOADCELL_IIR_FILTER_ALPHA = 0.01f;

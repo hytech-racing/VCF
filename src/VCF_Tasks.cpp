@@ -32,9 +32,7 @@ HT_TASK::TaskResponse run_read_adc0_task(const unsigned long& sysMicros, const H
         .accel_1 = static_cast<uint32_t>(ADCInterfaceInstance::instance().acceleration_1().conversion),
         .accel_2 = static_cast<uint32_t>(ADCInterfaceInstance::instance().acceleration_2().conversion),
         .brake_1 = static_cast<uint32_t>(ADCInterfaceInstance::instance().brake_1().conversion),
-        .brake_2 = static_cast<uint32_t>(ADCInterfaceInstance::instance().brake_2().conversion),
-        .brake_pressure_front = static_cast<uint32_t>(ADCInterfaceInstance::instance().brake_pressure_front().conversion),
-        .brake_pressure_rear = static_cast<uint32_t>(ADCInterfaceInstance::instance().brake_pressure_rear().conversion)
+        .brake_2 = static_cast<uint32_t>(ADCInterfaceInstance::instance().brake_2().conversion)
     });
     return HT_TASK::TaskResponse::YIELD;
 }
