@@ -17,9 +17,9 @@ namespace VCFInterfaceConstants {
     constexpr int BTN_START_READ = 29; // RTD on schematic
     constexpr int BTN_DATA_READ = 30; // DATA_MARK on schematic
     constexpr int BUZZER_CONTROL_PIN = 32;
-    constexpr int BTN_PRESET_READ = 26; //BUTTON_1 on schematic
+    constexpr int BRIGHTNESS_CONTROL_PIN = 26; //BUTTON_1 on schematic
     constexpr int BUTTON_2 = 27; // BUTTON_2 on schematic
-    constexpr int BRIGHTNESS_CONTROL_PIN = 28; // Currently unused
+    constexpr int BTN_PRESET_READ = 28; // Pedals recal button (brightness control on schematic)
     
     constexpr int NEOPIXEL_CONTROL_PIN = 33;
     constexpr int NEOPIXEL_COUNT = 12; // 12 neopixeles on dashboard
@@ -76,9 +76,9 @@ namespace VCFInterfaceConstants {
     constexpr float BRAKE_2_SCALE = 1.0;
     constexpr float BRAKE_2_OFFSET = 0;
 
-    constexpr float SHDN_H_SCALE = 1.0;
+    constexpr float SHDN_H_SCALE = 0.00697841165926; // Conversion from ADC read to shutdown voltage based on schematic - maps reading of 3439 to 24V
     constexpr float SHDN_H_OFFSET = 0;
-    constexpr float SHDN_D_SCALE = 1.0;
+    constexpr float SHDN_D_SCALE = 0.00697841165926; // Conversion from ADC read to shutdown voltage based on schematic - maps reading of 3439 to 24V
     constexpr float SHDN_D_OFFSET = 0;
 
     // constexpr float FL_LOADCELL_SCALE = 0.63;

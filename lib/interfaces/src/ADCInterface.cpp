@@ -97,11 +97,11 @@ AnalogConversion_s ADCInterface::pedal_reference() {
     return _adc0.data.conversions[_adc_parameters.channels.pedal_ref_channel];
 }
 
-AnalogConversion_s ADCInterface::steering_degrees_cw() {
+AnalogConversion_s ADCInterface::get_steering_degrees_cw() {
     return _adc0.data.conversions[_adc_parameters.channels.steering_cw_channel];
 }
 
-AnalogConversion_s ADCInterface::steering_degrees_ccw() {
+AnalogConversion_s ADCInterface::get_steering_degrees_ccw() {
     return _adc0.data.conversions[_adc_parameters.channels.steering_ccw_channel];
 }
 
@@ -135,7 +135,7 @@ AnalogConversion_s ADCInterface::shdn_d() {
 }
 
 AnalogConversion_s ADCInterface::FL_load_cell() {
-    return _adc0.data.conversions[_adc_parameters.channels.fl_loadcell_channel];
+    return _adc1.data.conversions[_adc_parameters.channels.fl_loadcell_channel];
 }
 
 float ADCInterface::get_filtered_FL_load_cell() {
@@ -151,7 +151,7 @@ float ADCInterface::get_filtered_FR_load_cell() {
 }
 
 AnalogConversion_s ADCInterface::FR_sus_pot() {
-    return _adc0.data.conversions[_adc_parameters.channels.fr_suspot_channel];
+    return _adc1.data.conversions[_adc_parameters.channels.fr_suspot_channel];
 }
 
 float ADCInterface::get_filtered_FR_sus_pot() {
@@ -159,17 +159,17 @@ float ADCInterface::get_filtered_FR_sus_pot() {
 }
 
 AnalogConversion_s ADCInterface::FL_sus_pot() {
-    return _adc0.data.conversions[_adc_parameters.channels.fl_suspot_channel];
+    return _adc1.data.conversions[_adc_parameters.channels.fl_suspot_channel];
 }
 
 float ADCInterface::get_filtered_FL_sus_pot() {
     return _FL_sus_pot_filtered;
 }
 
-AnalogConversion_s ADCInterface::brake_pressure_front() {
+AnalogConversion_s ADCInterface::get_brake_pressure_front() {
     return _adc1.data.conversions[_adc_parameters.channels.brake_pressure_front_channel];
 }
 
-AnalogConversion_s ADCInterface::brake_pressure_rear() {
+AnalogConversion_s ADCInterface::get_brake_pressure_rear() {
     return _adc1.data.conversions[_adc_parameters.channels.brake_pressure_rear_channel];
 }

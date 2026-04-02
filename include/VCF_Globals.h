@@ -9,6 +9,7 @@
 
 /* From shared-firmware-interfaces */
 #include "EthernetAddressDefs.h"
+#include "Orbis_BR.h"
 
 /* From shared-firmware-types */
 #include "PedalsSystem.h"
@@ -32,6 +33,9 @@
 
 /* IOExpander setup */
 using IOExpanderInstance = etl::singleton<MCP23017>;
+
+/* Digital Steering Setup */
+using OrbisBRInstance = etl::singleton<OrbisBR>;
 
 /* Ethernet sockets */
 extern qindesign::network::EthernetUDP VCF_socket;
