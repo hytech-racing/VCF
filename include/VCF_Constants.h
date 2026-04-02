@@ -90,11 +90,11 @@ namespace VCFInterfaceConstants {
     constexpr float FL_LOADCELL_OFFSET = 0.0;
     constexpr float FR_LOADCELL_SCALE =  1.0; //Values 
     constexpr float FR_LOADCELL_OFFSET = 0.0;
-
-    constexpr float FR_SUS_POT_SCALE = 1.0;
-    constexpr float FR_SUS_POT_OFFSET = 0;
-    constexpr float FL_SUS_POT_SCALE = 1.0;
-    constexpr float FL_SUS_POT_OFFSET = 0;
+    
+    constexpr float FR_SUS_POT_SCALE = 0.01396; // Calibrated for mm between mounting bolts
+    constexpr float FR_SUS_POT_OFFSET = 150.8; // Can change offset once car is on ground to center at zero
+    constexpr float FL_SUS_POT_SCALE = 0.01396; // Same as FR
+    constexpr float FL_SUS_POT_OFFSET = 150.8;
 
     constexpr float BRAKE_PRESSURE_FRONT_SCALE = 1.0;
     constexpr float BRAKE_PRESSURE_FRONT_OFFSET = 0;
