@@ -7,7 +7,6 @@
 #include <cmath>
 #include <cstdint>
 
-
 #include "SharedFirmwareTypes.h"
 #include "SteeringEncoderInterface.h"
 
@@ -67,10 +66,8 @@ struct SteeringSystemData_s
     float digital_steering_angle; //in degrees
     float output_steering_angle; // represents the better output of the two sensors or some combination of the values
 
-
     float analog_steering_velocity_deg_s; //in degrees per second
     float digital_steering_velocity_deg_s;
-
 
     bool digital_oor_implausibility;
     bool analog_oor_implausibility;
@@ -78,6 +75,7 @@ struct SteeringSystemData_s
     bool dtheta_exceeded_analog;
     bool dtheta_exceeded_digital;
     bool both_sensors_fail;
+    bool interface_sensor_error;
 };
 
 
@@ -85,29 +83,24 @@ class SteeringSystem {
 public:
     SteeringSystem(const SteeringParams_s &steeringParams) : _steeringParams(steeringParams) {}
 
-
     // Functions
     void recalibrate_steering_digital(const uint32_t analog_raw, const uint32_t digital_raw, bool calibration_is_on);
    
     void evaluate_steering(const uint32_t analog_raw, const SteeringEncoderConversion_s digital_data, const uint32_t current_millis);
-
 
     // Getters
     const SteeringParams_s &get_steering_params() const {
         return _steeringParams;
     }
 
-
     const SteeringSystemData_s &get_steering_system_data() const {
         return _steeringSystemData;
     }
-
 
     // Setters
     void set_steering_params(const SteeringParams_s &steeringParams) {
         _steeringParams = steeringParams;
     }
-
 
     void set_steering_system_data(const SteeringSystemData_s &steeringSystemData) {
         _steeringSystemData = steeringSystemData;
@@ -126,10 +119,8 @@ private:
     //returns true if steering_digital is outside the range defined by min and max sensor values    
     bool _evaluate_steering_oor_digital(const uint32_t steering_digital);
 
-
     //returns true if change in angle exceeds maximum change per reading ( max_dtheta_threshold )
     bool _evaluate_steering_dtheta_exceeded(float dtheta);
-
 
     SteeringSystemData_s _steeringSystemData {};
     SteeringParams_s _steeringParams;

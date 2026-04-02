@@ -18,7 +18,6 @@ void SteeringSystem::recalibrate_steering_digital(const uint32_t analog_raw, con
         update_observed_steering_limits(analog_raw, digital_raw);
     }
 
-
     //button released -> commit the values
     if (!calibration_is_on && _calibrating) {
         _calibrating = false;
@@ -56,8 +55,8 @@ void SteeringSystem::evaluate_steering(const uint32_t analog_raw, const Steering
 
     SteeringEncoderStatus_e digital_status = digital_data.status;
     bool digital_fault = (digital_status == SteeringEncoderStatus_e::STEERING_ENCODER_ERROR);
+    _steeringSystemData.interface_sensor_error = digital_fault;
     _steeringSystemData.digital_raw = digital_fault ? 0U : digital_raw;
-
 
     _steeringSystemData.analog_raw = analog_raw;
 
@@ -67,7 +66,6 @@ void SteeringSystem::evaluate_steering(const uint32_t analog_raw, const Steering
     
     uint32_t dt = current_millis - _prev_timestamp; //current_millis is seperate data input
 
-    _steeringSystemData.digital_raw = digital_fault ? 0U : digital_raw;
 //     //Conversion from raw ADC to degrees
 //     _steeringSystemData.analog_steering_angle = _convert_analog_sensor(analog_raw);
 //     _steeringSystemData.digital_steering_angle = digital_fault ? 0.0f : _convert_digital_sensor(digital_raw);    
