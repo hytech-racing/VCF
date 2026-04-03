@@ -447,7 +447,7 @@ namespace async_tasks
         handle_async_recvs();
         OrbisBRInstance::instance().sample();
         const uint32_t analog_raw = static_cast<uint32_t>(ADCInterfaceInstance::instance().steering_degrees_cw().raw);
-        const SteeringEncoderConversion_s digital_data = OrbisBRInstance::instance().convert();
+        const SteeringEncoderReading_s digital_data = OrbisBRInstance::instance().convert();
         SteeringSystemInstance::instance().evaluate_steering(
             analog_raw,
             digital_data,

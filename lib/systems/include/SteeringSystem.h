@@ -17,23 +17,20 @@ struct SteeringParams_s {
     uint32_t min_steering_signal_digital; //Raw ADC value from digital sensor at minimum (left) steering angle
     uint32_t max_steering_signal_digital; //Raw ADC value from digital sensor at maximum (right) steering angle
 
-
     int32_t analog_min_with_margins;
     int32_t analog_max_with_margins;
     int32_t digital_min_with_margins;
     int32_t digital_max_with_margins;
-
 
     uint32_t span_signal_analog;
     uint32_t span_signal_digital;
     int32_t digital_midpoint;
     int32_t analog_midpoint;
 
-
     // calibration limits
     uint32_t min_observed_digital;
     uint32_t max_observed_digital;
-    uint32_t min_observed_analog; // do we need to do min/max calibration for analog?
+    uint32_t min_observed_analog;
     uint32_t max_observed_analog;
 
 
@@ -41,7 +38,6 @@ struct SteeringParams_s {
     // float deg_per_count_analog = 0.0439f; //hard coded for analog (180)
     float deg_per_count_analog;
     float deg_per_count_digital; //based on digital readings
-
 
     // implausibility values
     float analog_tol; //+- 0.5% error
@@ -51,11 +47,9 @@ struct SteeringParams_s {
     // rate of angle change
     float max_dtheta_threshold; //maximum change in angle since last reading to consider the reading valid
 
-
     // difference rating
     float error_between_sensors_tolerance; //maximum difference between digital and analog sensor allowed
 };
-
 
 struct SteeringSystemData_s
 {
@@ -78,7 +72,6 @@ struct SteeringSystemData_s
     bool interface_sensor_error;
 };
 
-
 class SteeringSystem {
 public:
     SteeringSystem(const SteeringParams_s &steeringParams) : _steeringParams(steeringParams) {}
@@ -86,7 +79,7 @@ public:
     // Functions
     void recalibrate_steering_digital(const uint32_t analog_raw, const uint32_t digital_raw, bool calibration_is_on);
    
-    void evaluate_steering(const uint32_t analog_raw, const SteeringEncoderConversion_s digital_data, const uint32_t current_millis);
+    void evaluate_steering(const uint32_t analog_raw, const SteeringEncoderReading_s digital_data, const uint32_t current_millis);
 
     // Getters
     const SteeringParams_s &get_steering_params() const {
@@ -132,8 +125,6 @@ private:
     bool _first_run = true; // skip dTheta check on the very first tick
 };
 
-
 using SteeringSystemInstance = etl::singleton<SteeringSystem>;
-
 
 #endif

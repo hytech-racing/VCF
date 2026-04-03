@@ -12,6 +12,8 @@ void SteeringSystem::recalibrate_steering_digital(const uint32_t analog_raw, con
         _calibrating = true;
         _steeringParams.min_observed_digital = UINT32_MAX; //establishes a big number that will be greater than the readings
         _steeringParams.max_observed_digital = 0;
+        _steeringParams.min_observed_analog = UINT32_MAX;
+        _steeringParams.max_observed_analog = 0;
     }
     
     if (calibration_is_on && _calibrating) {
@@ -21,12 +23,16 @@ void SteeringSystem::recalibrate_steering_digital(const uint32_t analog_raw, con
     //button released -> commit the values
     if (!calibration_is_on && _calibrating) {
         _calibrating = false;
+        _steeringParams.min_steering_signal_analog = _steeringParams.min_observed_analog;
+        _steeringParams.max_steering_signal_analog = _steeringParams.max_observed_analog;
         _steeringParams.min_steering_signal_digital = _steeringParams.min_observed_digital;
         _steeringParams.max_steering_signal_digital = _steeringParams.max_observed_digital;
         // swaps  min & max in the params if sensor is flipped
-        if (_steeringParams.min_steering_signal_digital > _steeringParams.max_steering_signal_digital)
-        {
-            std::swap(_steeringParams.min_steering_signal_digital,_steeringParams.max_steering_signal_digital);
+        if (_steeringParams.min_steering_signal_digital > _steeringParams.max_steering_signal_digital) {
+            std::swap(_steeringParams.min_steering_signal_digital, _steeringParams.max_steering_signal_digital);
+        }
+        if (_steeringParams.min_steering_signal_analog > _steeringParams.max_steering_signal_analog) {
+            std::swap(_steeringParams.min_steering_signal_analog, _steeringParams.max_steering_signal_analog);
         }
         _steeringParams.span_signal_digital = _steeringParams.max_steering_signal_digital-_steeringParams.min_steering_signal_digital;
         _steeringParams.analog_tol_deg = static_cast<float>(_steeringParams.span_signal_analog) * _steeringParams.analog_tol * _steeringParams.deg_per_count_analog;
@@ -42,7 +48,7 @@ void SteeringSystem::recalibrate_steering_digital(const uint32_t analog_raw, con
     } 
 }
 
-void SteeringSystem::evaluate_steering(const uint32_t analog_raw, const SteeringEncoderConversion_s digital_data, const uint32_t current_millis) {
+void SteeringSystem::evaluate_steering(const uint32_t analog_raw, const SteeringEncoderReading_s digital_data, const uint32_t current_millis) {
     // Reset flags
     _steeringSystemData.digital_oor_implausibility = false;
     _steeringSystemData.analog_oor_implausibility = false;
@@ -51,10 +57,10 @@ void SteeringSystem::evaluate_steering(const uint32_t analog_raw, const Steering
     _steeringSystemData.dtheta_exceeded_digital = false;
     _steeringSystemData.both_sensors_fail = false;
 
-    const uint32_t digital_raw = digital_data.raw;
+    const uint32_t digital_raw = digital_data.rawValue;
 
     SteeringEncoderStatus_e digital_status = digital_data.status;
-    bool digital_fault = (digital_status == SteeringEncoderStatus_e::STEERING_ENCODER_ERROR);
+    bool digital_fault = (digital_status == SteeringEncoderStatus_e::ERROR);
     _steeringSystemData.interface_sensor_error = digital_fault;
     _steeringSystemData.digital_raw = digital_fault ? 0U : digital_raw;
 
@@ -119,6 +125,8 @@ void SteeringSystem::evaluate_steering(const uint32_t analog_raw, const Steering
 }
 
 void SteeringSystem::update_observed_steering_limits(const uint32_t analog_raw, const uint32_t digital_raw) {
+    _steeringParams.min_observed_analog = std::min(_steeringParams.min_observed_analog, static_cast<uint32_t>(analog_raw));
+    _steeringParams.max_observed_analog = std::max(_steeringParams.max_observed_analog, static_cast<uint32_t>(analog_raw));
     _steeringParams.min_observed_digital = std::min(_steeringParams.min_observed_digital, static_cast<uint32_t>(digital_raw)); //NOLINT should both be uint32_t
     _steeringParams.max_observed_digital = std::max(_steeringParams.max_observed_digital, static_cast<uint32_t>(digital_raw)); //NOLINT ^
 }
