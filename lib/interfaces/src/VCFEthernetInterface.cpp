@@ -15,6 +15,7 @@ hytech_msgs_VCFData_s VCFEthernetInterface::make_vcf_data_msg(ADCInterface &ADCI
     out.has_pedals_system_data = true;
     out.has_steering_data = true;
     out.has_vcf_ethernet_link_data = true;
+    out.has_vcf_shutdown_data = true;
 
     // Load cells
     out.front_loadcell_data.FL_loadcell_analog = static_cast<uint32_t>(ADCInterfaceInstance.get_filtered_FL_load_cell());
@@ -25,8 +26,8 @@ hytech_msgs_VCFData_s VCFEthernetInterface::make_vcf_data_msg(ADCInterface &ADCI
     out.front_suspot_data.FR_sus_pot_analog = static_cast<uint32_t>(ADCInterfaceInstance.get_filtered_FR_sus_pot());
 
     // Steering
-    out.steering_data.analog_steering_degrees = ADCInterfaceInstance.steering_degrees_cw().conversion;
-    out.steering_data.digital_steering_analog = 0;
+    out.steering_data.analog_steering_degrees = ADCInterfaceInstance.get_steering_degrees_cw().conversion;
+    out.steering_data.digital_steering_analog = ADCInterfaceInstance.get_steering_degrees_ccw().conversion;
     
     //TODO: MODIFY ETH STRUCT
     // Dash
@@ -58,6 +59,12 @@ hytech_msgs_VCFData_s VCFEthernetInterface::make_vcf_data_msg(ADCInterface &ADCI
     out.pedals_system_data.brake_percent = pedalsInstance.get_pedals_system_data().brake_percent;
     out.pedals_system_data.regen_percent = pedalsInstance.get_pedals_system_data().regen_percent;
 
+    // Shutdown Senses
+    out.vcf_shutdown_data.d_inertia_switch_out_read = ADCInterfaceInstance.shdn_d().conversion;
+    out.vcf_shutdown_data.d_inertia_switch = ADCInterfaceInstance.shdn_d().conversion > SHDN_HIGH_THRESHOLD ? true : false;
+    out.vcf_shutdown_data.h_driver_brb_out_read = ADCInterfaceInstance.shdn_h().conversion;
+    out.vcf_shutdown_data.h_driver_brb = ADCInterfaceInstance.shdn_h().conversion > SHDN_HIGH_THRESHOLD ? true : false;
+
     /* Firmware Version */
     out.has_firmware_version_info = true;
     out.firmware_version_info.project_is_dirty = device_status_t::project_is_dirty;
@@ -66,8 +73,14 @@ hytech_msgs_VCFData_s VCFEthernetInterface::make_vcf_data_msg(ADCInterface &ADCI
     std::copy(ver_hash.begin(), ver_hash.end(), std::begin(out.firmware_version_info.git_hash));
     out.has_msg_versions = true;
     out.msg_versions.ht_can_version = HT_CAN_LIB_VERSION;
-    std::copy(version, version + std::min(strlen(version), sizeof(out.msg_versions.ht_proto_version) - 1), out.msg_versions.ht_proto_version);   // NOLINT 
-    out.msg_versions.ht_proto_version[sizeof(out.msg_versions.ht_proto_version) - 1] = '\0';
+
+    // working with bytes in nanopb
+    std::string_view version_view(version);
+    const size_t version_len = [&]() -> size_t {
+        return std::min(version_view.size(), sizeof(out.msg_versions.ht_proto_version.bytes));
+    }();
+    out.msg_versions.ht_proto_version.size = version_len;
+    std::copy(version_view.begin(), version_view.begin() + version_len, std::begin(out.msg_versions.ht_proto_version.bytes));
 
     return out;
 }

@@ -68,7 +68,7 @@ void setup() {
 
     // Schedule Tasks
     HT_SCHED::Scheduler::getInstance().schedule(kick_watchdog_task);
-    HT_SCHED::Scheduler::getInstance().schedule(async_main); 
+    HT_SCHED::Scheduler::getInstance().schedule(async_main);
     HT_SCHED::Scheduler::getInstance().schedule(CAN_send);
     HT_SCHED::Scheduler::getInstance().schedule(dash_CAN_enqueue);
     HT_SCHED::Scheduler::getInstance().schedule(buzzer_control_task);

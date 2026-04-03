@@ -34,6 +34,7 @@ class VCRInterface
         void receive_inverter_status_4(const CAN_message_t &can_msg);
 
         VehicleState_e get_vehicle_state() {return _vehicle_state_value;}
+        DrivetrainState_e get_drivetrain_state() {return _drivetrain_state_value;}
         bool get_db_in_ctrl() {return _is_db_in_ctrl;}
         bool get_inverter_error();
 
