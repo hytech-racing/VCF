@@ -92,11 +92,14 @@ HT_TASK::TaskResponse update_pedals_calibration_task(const unsigned long& sysMic
     return HT_TASK::TaskResponse::YIELD;
 }
 
+unsigned long ftime;
+
 HT_TASK::TaskResponse update_steering_calibration_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo) {
     const uint32_t analog_raw = SteeringSystemInstance::instance().get_steering_system_data().analog_raw;
     const uint32_t digital_raw = SteeringSystemInstance::instance().get_steering_system_data().digital_raw;
 
     SteeringSystemInstance::instance().update_observed_steering_limits(analog_raw, digital_raw);
+
 
     if (VCFInterfaceInstance::instance().is_in_pedals_calibration_state() && !SteeringSystemInstance::instance().is_finished_calibrating()) {
         SteeringSystemInstance::instance().begin_calibrating();
@@ -575,6 +578,7 @@ void setup_all_interfaces() {
     SPI.begin();
     Serial.begin(VCFTaskConstants::SERIAL_BAUDRATE); // NOLINT
 
+    ftime = millis();
 
     // Initialize all singletons
 
