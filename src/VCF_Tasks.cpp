@@ -93,11 +93,11 @@ HT_TASK::TaskResponse update_pedals_calibration_task(const unsigned long& sysMic
 }
 
 HT_TASK::TaskResponse update_steering_calibration_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo) {
-    // If we have a button hold or something, maybe add something to only update_observed_steering limits when button held
     const uint32_t analog_raw = SteeringSystemInstance::instance().get_steering_system_data().analog_raw;
     const uint32_t digital_raw = SteeringSystemInstance::instance().get_steering_system_data().digital_raw;
 
     SteeringSystemInstance::instance().update_observed_steering_limits(analog_raw, digital_raw);
+    
     if (false /* TODO: IMPORTANT ADD SOMETHING FOR TRIGGERING CALIBRATION*/) {
         SteeringSystemInstance::instance().recalibrate_steering_digital(analog_raw, digital_raw, false /* TODO: calibration trigger or something*/);
         // EEPROMUtilities::write_eeprom_32bit(VCFSystemConstants::MIN_STEERING_SIGNAL_DIGITAL_ADDR, SteeringSystemInstance::instance().get_steering_params().min_steering_signal_digital);
