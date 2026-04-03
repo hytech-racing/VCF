@@ -72,12 +72,14 @@ public:
     // Functions
     void recalibrate_steering_digital(const uint32_t analog_raw, const uint32_t digital_raw);
 
-    void begin_calibration_state();
+    void begin_calibrating();
 
-    void end_calibration_state();
+    void end_calibrating();
 
     bool is_calibrating();
-   
+
+    bool is_finished_calibrating();
+
     void evaluate_steering(const uint32_t analog_raw, const SteeringEncoderReading_s digital_data, const uint32_t current_millis);
 
     // Getters
@@ -121,6 +123,7 @@ private:
     float _prev_digital_angle = 0.0f;
     uint32_t _prev_timestamp = 0;
     bool _calibrating = false;
+    bool _finished_calibrating = false;
     bool _first_run = true; // skip dTheta check on the very first tick
 
     uint32_t min_observed_digital = UINT32_MAX;

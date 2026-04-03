@@ -98,6 +98,10 @@ HT_TASK::TaskResponse update_steering_calibration_task(const unsigned long& sysM
 
     SteeringSystemInstance::instance().update_observed_steering_limits(analog_raw, digital_raw);
 
+    if (VCFInterfaceInstance::instance().is_in_pedals_calibration_state() && !SteeringSystemInstance::instance().is_finished_calibrating()) {
+        SteeringSystemInstance::instance().begin_calibrating();
+    }
+
     if (SteeringSystemInstance::instance().is_calibrating()) {
         SteeringSystemInstance::instance().recalibrate_steering_digital(analog_raw, digital_raw);
         EEPROMUtilities::write_eeprom_32bit(VCFSystemConstants::MIN_STEERING_SIGNAL_DIGITAL_ADDR, SteeringSystemInstance::instance().get_steering_params().min_steering_signal_digital);
@@ -114,6 +118,8 @@ HT_TASK::TaskResponse update_steering_calibration_task(const unsigned long& sysM
         // EEPROMUtilities::write_eeprom_32bit(VCFSystemConstants::ANALOG_MAX_WITH_MARGINS_ADDR, 4095);
         // EEPROMUtilities::write_eeprom_32bit(VCFSystemConstants::DIGITAL_MIN_WITH_MARGINS_ADDR, -9);
         // EEPROMUtilities::write_eeprom_32bit(VCFSystemConstants::DIGITAL_MAX_WITH_MARGINS_ADDR, 16392);
+
+        SteeringSystemInstance::instance().end_calibrating();
     }
 
     return HT_TASK::TaskResponse::YIELD;

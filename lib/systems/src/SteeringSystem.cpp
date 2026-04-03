@@ -30,8 +30,6 @@ void SteeringSystem::recalibrate_steering_digital(const uint32_t analog_raw, con
     _steeringParams.digital_max_with_margins = static_cast<int32_t>(_steeringParams.max_steering_signal_digital) + digital_margin_counts;
     _steeringParams.error_between_sensors_tolerance = _steeringParams.analog_tol_deg + _steeringParams.digital_tol_deg;
 
-    _calibrating = false; //TODO: this and end_calibration_state likely redundant, either use this or have button call end_calibration_state
-
     // Reset observed values
     min_observed_digital = UINT32_MAX;
     max_observed_digital = 0;
@@ -39,16 +37,21 @@ void SteeringSystem::recalibrate_steering_digital(const uint32_t analog_raw, con
     max_observed_analog = 0;
 }
 
-void SteeringSystem::begin_calibration_state() {
+void SteeringSystem::begin_calibrating() {
     _calibrating = true;
 }
 
-void SteeringSystem::end_calibration_state() {
+void SteeringSystem::end_calibrating() {
     _calibrating = false;
+    _finished_calibrating = true;
 }
 
 bool SteeringSystem::is_calibrating() {
     return _calibrating;
+}
+
+bool SteeringSystem::is_finished_calibrating() {
+    return _finished_calibrating;
 }
 
 void SteeringSystem::evaluate_steering(const uint32_t analog_raw, const SteeringEncoderReading_s digital_data, const uint32_t current_millis) {
