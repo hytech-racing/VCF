@@ -27,13 +27,6 @@ struct SteeringParams_s {
     int32_t digital_midpoint;
     int32_t analog_midpoint;
 
-    // calibration limits
-    uint32_t min_observed_digital;
-    uint32_t max_observed_digital;
-    uint32_t min_observed_analog;
-    uint32_t max_observed_analog;
-
-
     // conversion rates
     // float deg_per_count_analog = 0.0439f; //hard coded for analog (180)
     float deg_per_count_analog;
@@ -77,7 +70,13 @@ public:
     SteeringSystem(const SteeringParams_s &steeringParams) : _steeringParams(steeringParams) {}
 
     // Functions
-    void recalibrate_steering_digital(const uint32_t analog_raw, const uint32_t digital_raw, bool calibration_is_on);
+    void recalibrate_steering_digital(const uint32_t analog_raw, const uint32_t digital_raw);
+
+    void begin_calibration_state();
+
+    void end_calibration_state();
+
+    bool is_calibrating();
    
     void evaluate_steering(const uint32_t analog_raw, const SteeringEncoderReading_s digital_data, const uint32_t current_millis);
 
@@ -123,6 +122,11 @@ private:
     uint32_t _prev_timestamp = 0;
     bool _calibrating = false;
     bool _first_run = true; // skip dTheta check on the very first tick
+
+    uint32_t min_observed_digital = UINT32_MAX;
+    uint32_t max_observed_digital = 0;
+    uint32_t min_observed_analog = UINT32_MAX;
+    uint32_t max_observed_analog = 0;
 };
 
 using SteeringSystemInstance = etl::singleton<SteeringSystem>;
