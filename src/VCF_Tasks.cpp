@@ -736,14 +736,14 @@ void setup_all_interfaces() {
         .analog_tol = VCFSystemConstants::ANALOG_TOL,
         .digital_tol_deg = VCFSystemConstants::DIGITAL_TOL_DEG,
         .max_dtheta_threshold = VCFSystemConstants::MAX_DTHETA_THRESHOLD,
+        .deg_per_count_analog = VCFSystemConstants::DEG_PER_COUNT_ANALOG,
+        .deg_per_count_digital = VCFSystemConstants::DEG_PER_COUNT_DIGITAL
     };
     steering_params.span_signal_analog = steering_params.max_steering_signal_analog - steering_params.min_steering_signal_analog;
     steering_params.analog_midpoint = (steering_params.max_steering_signal_analog + steering_params.min_steering_signal_analog) / 2;
     steering_params.span_signal_digital = steering_params.max_steering_signal_digital - steering_params.min_steering_signal_digital;
     steering_params.digital_midpoint = (steering_params.min_steering_signal_digital + steering_params.max_steering_signal_digital) / 2;
     steering_params.error_between_sensors_tolerance = steering_params.analog_tol_deg + steering_params.digital_tol_deg;
-    steering_params.deg_per_count_analog = 360.0f / steering_params.span_signal_analog;
-    steering_params.deg_per_count_digital = 360.0f / steering_params.span_signal_digital;
 
     SteeringSystemInstance::create(steering_params);
 

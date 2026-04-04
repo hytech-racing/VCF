@@ -149,6 +149,10 @@ namespace VCFSystemConstants {
    
     // rate of angle change
     constexpr float MAX_DTHETA_THRESHOLD = 5.0f; //maximum change in angle since last reading to consider the reading valid
+
+    // degrees per bit
+    constexpr float DEG_PER_COUNT_DIGITAL = 360.0f / 16384.0f;
+    constexpr float DEG_PER_COUNT_ANALOG = 360.0f / 4096.0f;
 }
 
 // software configuration constants
