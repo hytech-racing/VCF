@@ -48,6 +48,13 @@ HT_TASK::TaskResponse run_read_adc1_task(const unsigned long& sysMicros, const H
     return HT_TASK::TaskResponse::YIELD;
 }
 
+HT_TASK::TaskResponse run_read_digital_steering_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
+{
+    // sample the sensor
+    OrbisBRInstance::instance().sample();
+    return HT_TASK::TaskResponse::YIELD;
+}
+
 HT_TASK::TaskResponse init_kick_watchdog(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
 {
     WatchdogInstance::create(VCFInterfaceConstants::WATCHDOG_KICK_INTERVAL_MS); // NOLINT
@@ -733,11 +740,11 @@ void setup_all_interfaces() {
         .analog_max_with_margins = EEPROMUtilities::read_eeprom_32bit(VCFSystemConstants::ANALOG_MAX_WITH_MARGINS_ADDR),
         .digital_min_with_margins = EEPROMUtilities::read_eeprom_32bit(VCFSystemConstants::DIGITAL_MIN_WITH_MARGINS_ADDR),
         .digital_max_with_margins = EEPROMUtilities::read_eeprom_32bit(VCFSystemConstants::DIGITAL_MAX_WITH_MARGINS_ADDR),
+        .deg_per_count_analog = VCFSystemConstants::DEG_PER_COUNT_ANALOG,
+        .deg_per_count_digital = VCFSystemConstants::DEG_PER_COUNT_DIGITAL,
         .analog_tol = VCFSystemConstants::ANALOG_TOL,
         .digital_tol_deg = VCFSystemConstants::DIGITAL_TOL_DEG,
-        .max_dtheta_threshold = VCFSystemConstants::MAX_DTHETA_THRESHOLD,
-        .deg_per_count_analog = VCFSystemConstants::DEG_PER_COUNT_ANALOG,
-        .deg_per_count_digital = VCFSystemConstants::DEG_PER_COUNT_DIGITAL
+        .max_dtheta_threshold = VCFSystemConstants::MAX_DTHETA_THRESHOLD
     };
     steering_params.span_signal_analog = steering_params.max_steering_signal_analog - steering_params.min_steering_signal_analog;
     steering_params.analog_midpoint = (steering_params.max_steering_signal_analog + steering_params.min_steering_signal_analog) / 2;
@@ -750,7 +757,7 @@ void setup_all_interfaces() {
     Serial.println("fff");
     
     // Create Digital Steering Sensor singleton
-    OrbisBRInstance::create(&Serial2); // pass in two different params
+    OrbisBRInstance::create(&Serial2);
     
     Serial.println("fff2");
 

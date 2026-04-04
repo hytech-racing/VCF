@@ -187,6 +187,8 @@ namespace VCFTaskConstants {
 
     constexpr unsigned long STEERING_SEND_PERIOD = 4000;          // 4 000 us = 250 Hz
     constexpr unsigned long STEERING_SEND_PRIORITY = 25;
+    constexpr unsigned long STEERING_SAMPLE_PERIOD = 1000;         // 2000 us = 500 Hz
+    constexpr unsigned long STEERING_SAMPLE_PRIORITY = 10;
 
     constexpr unsigned long LOADCELL_SAMPLE_PERIOD = 250;         // 250 us = 4 kHz
     constexpr unsigned long LOADCELL_SAMPLE_PRIORITY = 24;
