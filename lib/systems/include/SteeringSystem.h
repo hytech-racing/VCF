@@ -70,7 +70,7 @@ public:
     SteeringSystem(const SteeringParams_s &steeringParams) : _steeringParams(steeringParams) {}
 
     // Functions
-    void recalibrate_steering_digital(const uint32_t analog_raw, const uint32_t digital_raw);
+    void recalibrate_steering_digital();
 
     void begin_calibrating();
 

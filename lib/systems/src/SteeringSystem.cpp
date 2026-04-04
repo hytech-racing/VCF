@@ -3,10 +3,7 @@
 #include "SteeringSystem.h"
 #include "SteeringEncoderInterface.h"
 
-void SteeringSystem::recalibrate_steering_digital(const uint32_t analog_raw, const uint32_t digital_raw) {
-    //get current raw angles
-    const uint32_t curr_digital_raw = digital_raw;
-
+void SteeringSystem::recalibrate_steering_digital() {
     _steeringParams.min_steering_signal_analog = min_observed_analog;
     _steeringParams.max_steering_signal_analog = max_observed_analog;
     _steeringParams.min_steering_signal_digital = min_observed_digital;

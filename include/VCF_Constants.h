@@ -132,8 +132,8 @@ namespace VCFSystemConstants {
     constexpr float LBS_TO_NEWTONS = 4.4482216153;
 
     // Steering System Constants
-    constexpr uint32_t MIN_STEERING_SIGNAL_ANALOG = 1024; //Raw ADC value from analog sensor at minimum (left) steering angle (calibration) TODO: test and find real values for min&max
-    constexpr uint32_t MAX_STEERING_SIGNAL_ANALOG = 3071; //Raw ADC value from analog sensor at maximum (right) steering angle
+    constexpr uint32_t MIN_STEERING_SIGNAL_ANALOG_ADDR = 56; //Raw ADC value from analog sensor at minimum (left) steering angle (calibration) TODO: test and find real values for min&max
+    constexpr uint32_t MAX_STEERING_SIGNAL_ANALOG_ADDR = 60; //Raw ADC value from analog sensor at maximum (right) steering angle
     constexpr uint32_t MIN_STEERING_SIGNAL_DIGITAL_ADDR = 32; //Raw ADC value from digital sensor at minimum (left) steering angle
     constexpr uint32_t MAX_STEERING_SIGNAL_DIGITAL_ADDR = 36; //Raw ADC value from digital sensor at maximum (right) steering angle
 
@@ -142,16 +142,9 @@ namespace VCFSystemConstants {
     constexpr int32_t DIGITAL_MIN_WITH_MARGINS_ADDR = 48;
     constexpr int32_t DIGITAL_MAX_WITH_MARGINS_ADDR = 52;
 
-    constexpr uint32_t SPAN_SIGNAL_ANALOG = MAX_STEERING_SIGNAL_ANALOG - MIN_STEERING_SIGNAL_ANALOG;
-    constexpr int32_t ANALOG_MIDPOINT = (MIN_STEERING_SIGNAL_ANALOG + MAX_STEERING_SIGNAL_ANALOG) / 2;
-
-    // conversion rates
-    // float deg_per_count_analog = 0.0439f; //hard coded for analog (180)
-    constexpr float DEG_PER_COUNT_ANALOG = 360.0f / 4096.0f;
-    constexpr float DEG_PER_COUNT_DIGITAL = 360.0f / 16384.0f; // Assuming 14 bit resolution
 
     // implausibility values
-    constexpr float ANALOG_TOL = 0.005f; //+- 0.5% error
+    constexpr float ANALOG_TOL = 0.005f; //+- 0.5% error (analog sensor tolerance according to datasheet)
     constexpr float DIGITAL_TOL_DEG = 0.2f; // +- 0.2 degrees error
    
     // rate of angle change
