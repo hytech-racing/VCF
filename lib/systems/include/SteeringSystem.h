@@ -44,27 +44,6 @@ struct SteeringParams_s {
     float error_between_sensors_tolerance; //maximum difference between digital and analog sensor allowed
 };
 
-struct SteeringSystemData_s
-{
-    uint32_t analog_raw;
-    uint32_t digital_raw;
-
-    float analog_steering_angle; //in degrees
-    float digital_steering_angle; //in degrees
-    float output_steering_angle; // represents the better output of the two sensors or some combination of the values
-
-    float analog_steering_velocity_deg_s; //in degrees per second
-    float digital_steering_velocity_deg_s;
-
-    bool digital_oor_implausibility;
-    bool analog_oor_implausibility;
-    bool sensor_disagreement_implausibility;
-    bool dtheta_exceeded_analog;
-    bool dtheta_exceeded_digital;
-    bool both_sensors_fail;
-    bool interface_sensor_error;
-};
-
 class SteeringSystem {
 public:
     SteeringSystem(const SteeringParams_s &steeringParams) : _steeringParams(steeringParams) {}
