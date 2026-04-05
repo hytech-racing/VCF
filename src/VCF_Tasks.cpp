@@ -264,6 +264,14 @@ HT_TASK::TaskResponse enqueue_steering_data(const unsigned long& sysMicros, cons
     STEERING_DATA_t msg_out;
     SteeringSystemData_s steering_system_data = SteeringSystemInstance::instance().get_steering_system_data();
     /* TODO: Change steering_*_raw to new values we have to add to CAN library. Also add other msg_out variables for implausibilities*/
+    msg_out.steering_analog_oor = steering_system_data.analog_oor_implausibility;
+    msg_out.steering_both_sensors_fail = steering_system_data.both_sensors_fail;
+    msg_out.steering_digital_oor = steering_system_data.digital_oor_implausibility;
+    msg_out.steering_dtheta_exceeded_analog = steering_system_data.dtheta_exceeded_analog;
+    msg_out.steering_dtheta_exceeded_digital = steering_system_data.dtheta_exceeded_digital;
+    msg_out.steering_interface_sensor_error = steering_system_data.interface_sensor_error;
+    msg_out.steering_output_steering_angle_ro = HYTECH_steering_output_steering_angle_ro_toS(steering_system_data.output_steering_angle);
+    msg_out.steering_sensor_disagreement = steering_system_data.sensor_disagreement_implausibility;
     msg_out.steering_analog_raw = steering_system_data.analog_steering_angle;
     msg_out.steering_digital_raw = steering_system_data.digital_steering_angle;
 
