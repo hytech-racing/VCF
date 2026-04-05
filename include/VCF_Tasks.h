@@ -34,6 +34,7 @@
 #include "VCFCANInterfaceImpl.h"
 #include "VCFEthernetInterface.h"
 #include "PedalsSystem.h"
+#include "SteeringSystem.h"
 #include "ht_sched.hpp"
 #include "ht_task.hpp"
 #include "BuzzerController.h"
@@ -42,6 +43,7 @@
 #include "WatchdogSystem.h"
 #include "ADCInterface.h"
 #include "CANInterface.h"
+#include "SteeringEncoderInterface.h"
 
 /**
  * The read_adc0 task will command the ADCInterface to sample, convert, and store 
@@ -55,11 +57,17 @@ HT_TASK::TaskResponse run_read_adc0_task(const unsigned long& sysMicros, const H
  */
 HT_TASK::TaskResponse run_read_adc1_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
 
+/**
+ * This task will command the OrbisBRInterface to sample and store data from the digital steering sensor
+ */
+HT_TASK::TaskResponse run_read_digital_steering_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
+
 HT_TASK::TaskResponse init_kick_watchdog(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
 HT_TASK::TaskResponse run_kick_watchdog(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
 
 HT_TASK::TaskResponse update_pedals_calibration_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
 
+HT_TASK::TaskResponse update_steering_calibration_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
 /**
  * The buzzer_control task will control the buzzer control pin. This function
  * relies on the buzzer_control pin definition in VCF_Constants.h;

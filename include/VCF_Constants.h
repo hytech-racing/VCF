@@ -130,6 +130,29 @@ namespace VCFInterfaceConstants {
 // calibration and processing constants
 namespace VCFSystemConstants { 
     constexpr float LBS_TO_NEWTONS = 4.4482216153;
+
+    // Steering System Constants
+    constexpr uint32_t MIN_STEERING_SIGNAL_ANALOG_ADDR = 56; //Raw ADC value from analog sensor at minimum (left) steering angle (calibration) TODO: test and find real values for min&max
+    constexpr uint32_t MAX_STEERING_SIGNAL_ANALOG_ADDR = 60; //Raw ADC value from analog sensor at maximum (right) steering angle
+    constexpr uint32_t MIN_STEERING_SIGNAL_DIGITAL_ADDR = 32; //Raw ADC value from digital sensor at minimum (left) steering angle
+    constexpr uint32_t MAX_STEERING_SIGNAL_DIGITAL_ADDR = 36; //Raw ADC value from digital sensor at maximum (right) steering angle
+
+    constexpr int32_t ANALOG_MIN_WITH_MARGINS_ADDR = 40;
+    constexpr int32_t ANALOG_MAX_WITH_MARGINS_ADDR = 44;
+    constexpr int32_t DIGITAL_MIN_WITH_MARGINS_ADDR = 48;
+    constexpr int32_t DIGITAL_MAX_WITH_MARGINS_ADDR = 52;
+
+
+    // implausibility values
+    constexpr float ANALOG_TOL = 0.005f; //+- 0.5% error (analog sensor tolerance according to datasheet)
+    constexpr float DIGITAL_TOL_DEG = 0.2f; // +- 0.2 degrees error
+   
+    // rate of angle change
+    constexpr float MAX_DTHETA_THRESHOLD = 5.0f; //maximum change in angle since last reading to consider the reading valid
+
+    // degrees per bit
+    constexpr float DEG_PER_COUNT_DIGITAL = 360.0f / 16384.0f;
+    constexpr float DEG_PER_COUNT_ANALOG = 360.0f / 4096.0f;
 }
 
 // software configuration constants
@@ -164,6 +187,8 @@ namespace VCFTaskConstants {
 
     constexpr unsigned long STEERING_SEND_PERIOD = 4000;          // 4 000 us = 250 Hz
     constexpr unsigned long STEERING_SEND_PRIORITY = 25;
+    constexpr unsigned long STEERING_SAMPLE_PERIOD = 1000;         // 2000 us = 500 Hz
+    constexpr unsigned long STEERING_SAMPLE_PRIORITY = 10;
 
     constexpr unsigned long LOADCELL_SAMPLE_PERIOD = 250;         // 250 us = 4 kHz
     constexpr unsigned long LOADCELL_SAMPLE_PRIORITY = 24;
@@ -177,6 +202,9 @@ namespace VCFTaskConstants {
     constexpr unsigned long PEDALS_RECALIBRATION_PRIORITY = 150;
     constexpr unsigned long PEDALS_RECALIBRATION_PERIOD = 100000; // 100 000 us = 10 Hz
     
+    constexpr unsigned long STEERING_RECALIBRATION_PRIORITY = 150; // TODO: Determine real values for these
+    constexpr unsigned long STEERING_RECALIBRATION_PERIOD = 100000;
+
     // IIR filter alphas
     constexpr float LOADCELL_IIR_FILTER_ALPHA = 0.01f;
 
