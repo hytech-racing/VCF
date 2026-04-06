@@ -1,7 +1,6 @@
 #ifndef STEERING_SYSTEM_H
 #define STEERING_SYSTEM_H
 
-
 #include <etl/singleton.h>
 #include <algorithm>
 #include <cmath>
