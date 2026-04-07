@@ -101,7 +101,7 @@ HT_TASK::TaskResponse update_steering_calibration_task(const unsigned long& sysM
     SteeringSystemInstance::instance().update_observed_steering_limits(analog_raw, digital_raw);
 
 
-    if (VCRInterfaceInstance::instance().is_in_pedals_calibration_state() && !SteeringSystemInstance::instance().is_finished_calibrating()) {
+    if (VCRInterfaceInstance::instance().is_in_steering_calibration_state() && !SteeringSystemInstance::instance().is_finished_calibrating()) {
         SteeringSystemInstance::instance().begin_calibrating();
     }
 
@@ -152,7 +152,7 @@ HT_TASK::TaskResponse update_steering_calibration_task(const unsigned long& sysM
 // {
 //     // Doing digital read on all digital inputs
 //     int dimButton = digitalRead(BTN_DIM_READ);
-//     int presetButton = digitalRead(BTN_PRESET_READ);
+  //   int presetButton = digitalRead(BTN_PRESET_READ);
 //     int mcCycleButton = digitalRead(BTN_MC_CYCLE_READ);
 //     int modeButton = digitalRead(BTN_MODE_READ);
 //     int startButton = digitalRead(BTN_START_READ);
@@ -340,6 +340,7 @@ HT_TASK::TaskResponse run_dash_GPIOs_task(const unsigned long& sys_micros, const
     if (!current_state.preset_btn_is_pressed) //preset_btn_is_pressed doesnt exist anymore
     {
         VCRInterfaceInstance::instance().disable_calibration_state();
+        VCRInterfaceInstance::instance().disable_steering_calibration_state(); //link to new button eventually
     }
 
     // Checks if dim btn has been clicked (falling edge)
