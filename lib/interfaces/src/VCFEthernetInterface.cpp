@@ -4,7 +4,7 @@
 #include "hytech_msgs_version.h"
 #include "device_fw_version.h"
 
-hytech_msgs_VCFData_s VCFEthernetInterface::make_vcf_data_msg(ADCInterface &ADCInterfaceInstance, DashboardInterface &dashInstance, PedalsSystem &pedalsInstance)
+hytech_msgs_VCFData_s VCFEthernetInterface::make_vcf_data_msg(ADCInterface &ADCInterfaceInstance, DashboardInterface &dashInstance, PedalsSystem &pedalsInstance, SteeringSystem &steeringInstance)
 {
 	hytech_msgs_VCFData_s out;
 
@@ -28,6 +28,18 @@ hytech_msgs_VCFData_s VCFEthernetInterface::make_vcf_data_msg(ADCInterface &ADCI
     // Steering
     out.steering_data.analog_steering_degrees = ADCInterfaceInstance.get_steering_degrees_cw().conversion;
     out.steering_data.digital_steering_analog = ADCInterfaceInstance.get_steering_degrees_ccw().conversion;
+    
+    //SteeringSystem
+    out.steering_system_data.analog_oor = steeringInstance.get_steering_system_data().analog_oor_implausibility;
+    out.steering_system_data.both_sensors_fail = steeringInstance.get_steering_system_data().both_sensors_fail;
+    out.steering_system_data.digital_oor = steeringInstance.get_steering_system_data().digital_oor_implausibility;
+    out.steering_system_data.dtheta_exceeded_analog = steeringInstance.get_steering_system_data().dtheta_exceeded_analog;
+    out.steering_system_data.dtheta_exceeded_digital = steeringInstance.get_steering_system_data().dtheta_exceeded_digital;
+    out.steering_system_data.interface_sensor_error = steeringInstance.get_steering_system_data().interface_sensor_error;
+    out.steering_system_data.output_steering_angle_ro = HYTECH_steering_output_steering_angle_ro_toS(steeringInstance.get_steering_system_data().output_steering_angle);
+    out.steering_system_data.sensor_disagreement = steeringInstance.get_steering_system_data().sensor_disagreement_implausibility;
+    out.steering_system_data.analog_raw = steeringInstance.get_steering_system_data().analog_steering_angle;
+    out.steering_system_data.digital_raw = steeringInstance.get_steering_system_data().digital_steering_angle;
     
     //TODO: MODIFY ETH STRUCT
     // Dash
