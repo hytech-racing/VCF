@@ -15,6 +15,7 @@
 struct DashboardGPIOs_s {
 
     // GPIO
+    uint8_t BTN_DIM_READ;
     uint8_t BRIGHTNESS_CONTROL_PIN;
     uint8_t PRESET_BUTTON;
     uint8_t MC_CYCLE_BUTTON;
@@ -30,6 +31,7 @@ class DashboardInterface
 
         DashboardInterface(DashboardGPIOs_s gpios) : _dashboard_gpios(gpios) 
         {
+            pinMode(_dashboard_gpios.BTN_DIM_READ, INPUT_PULLUP); //TODO: verify pullup
             pinMode(_dashboard_gpios.START_BUTTON, INPUT_PULLUP);
             pinMode(_dashboard_gpios.PRESET_BUTTON, INPUT_PULLUP); 
             pinMode(_dashboard_gpios.MC_CYCLE_BUTTON, INPUT_PULLUP);

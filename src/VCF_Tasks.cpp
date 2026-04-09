@@ -204,10 +204,9 @@ HT_TASK::TaskResponse send_dash_data(const unsigned long& sysMicros, const HT_TA
     DashInputState_s dash_outputs = can_interfaces.dash_interface.get_dashboard_outputs();
 
     DASH_INPUT_t msg_out;
-
+    //for this, add a message for the new button when its here, for now, steering system linked to preset_button. 
     msg_out.preset_button = dash_outputs.preset_btn_is_pressed;
     msg_out.mode_button = 0; // dont exist but i dont wanna bother changing can msgs
-
     msg_out.motor_controller_cycle_button = dash_outputs.mc_reset_btn_is_pressed;
     msg_out.start_button = dash_outputs.start_btn_is_pressed;
     msg_out.data_button_is_pressed = dash_outputs.data_btn_is_pressed;
