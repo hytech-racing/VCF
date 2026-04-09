@@ -34,23 +34,6 @@ void SteeringSystem::recalibrate_steering_digital() {
     max_observed_analog = 0;
 }
 
-void SteeringSystem::begin_calibrating() {
-    _calibrating = true;
-}
-
-void SteeringSystem::end_calibrating() {
-    _calibrating = false;
-    _finished_calibrating = true;
-}
-
-bool SteeringSystem::is_calibrating() {
-    return _calibrating;
-}
-
-bool SteeringSystem::is_finished_calibrating() {
-    return _finished_calibrating;
-}
-
 void SteeringSystem::evaluate_steering(const uint32_t analog_raw, const SteeringEncoderReading_s digital_data, const uint32_t current_millis) {
     // Reset flags
     _steeringSystemData.digital_oor_implausibility = false;

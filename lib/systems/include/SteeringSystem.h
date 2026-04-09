@@ -50,14 +50,6 @@ public:
     // Functions
     void recalibrate_steering_digital();
 
-    void begin_calibrating();
-
-    void end_calibrating();
-
-    bool is_calibrating();
-
-    bool is_finished_calibrating();
-
     void evaluate_steering(const uint32_t analog_raw, const SteeringEncoderReading_s digital_data, const uint32_t current_millis);
 
     // Getters
