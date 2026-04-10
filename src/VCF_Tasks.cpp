@@ -34,6 +34,9 @@ HT_TASK::TaskResponse run_read_adc0_task(const unsigned long& sysMicros, const H
         .brake_1 = static_cast<uint32_t>(ADCInterfaceInstance::instance().brake_1().conversion),
         .brake_2 = static_cast<uint32_t>(ADCInterfaceInstance::instance().brake_2().conversion)
     });
+
+    // sample digital steering too TODO: move this to its own task maybe?
+    OrbisBRInstance::instance().sample();
     return HT_TASK::TaskResponse::YIELD;
 }
 
@@ -187,8 +190,20 @@ HT_TASK::TaskResponse enqueue_steering_data(const unsigned long& sysMicros, cons
 {
     STEERING_DATA_t msg_out = {};
 
+    // msg_out.steering_analog_raw = ADCInterfaceInstance::instance().get_steering_degrees_cw().raw;
+    // msg_out.steering_digital_raw = ADCInterfaceInstance::instance().get_steering_degrees_ccw().raw; //NOLINT TODO: once digital steering sensor works, this needs to be changed accordingly
+    
+    // TODO: change these to actually grab values from steering system
+    msg_out.steering_analog_oor = 0;
     msg_out.steering_analog_raw = ADCInterfaceInstance::instance().get_steering_degrees_cw().raw;
-    msg_out.steering_digital_raw = ADCInterfaceInstance::instance().get_steering_degrees_ccw().raw; //NOLINT TODO: once digital steering sensor works, this needs to be changed accordingly
+    msg_out.steering_both_sensors_fail = 0;
+    msg_out.steering_digital_oor = 0;
+    msg_out.steering_digital_raw = OrbisBRInstance::instance().getLastReading().rawValue;
+    msg_out.steering_dtheta_exceeded_analog = 0;
+    msg_out.steering_dtheta_exceeded_digital = 0;
+    msg_out.steering_interface_sensor_error = 0;
+    msg_out.steering_output_steering_angle_ro = 0;
+    msg_out.steering_sensor_disagreement = 0;
 
     CAN_util::enqueue_msg(&msg_out, &Pack_STEERING_DATA_hytech, VCFCANInterfaceImpl::VCFCANInterfaceObjectsInstance::instance().main_can_tx_buffer);
     return HT_TASK::TaskResponse::YIELD;
