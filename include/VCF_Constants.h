@@ -7,8 +7,8 @@
 namespace VCFInterfaceConstants {
     /* Teensy 4.1 GPIO pins */
     
+    constexpr int BTN_DIM_READ = 28; // Currently used for steering system recalibration TODO: change pin
     /* Not on Schematic
-    // constexpr int BTN_DIM_READ = 28;
     // constexpr int BTN_PRESET_READ = 31;
     // constexpr int BTN_MODE_READ = 27; // USED TO BE 26.
     */

@@ -92,7 +92,6 @@ HT_TASK::TaskResponse update_pedals_calibration_task(const unsigned long& sysMic
     return HT_TASK::TaskResponse::YIELD;
 }
 
-unsigned long ftime; //TODO: Remove after testing
 
 HT_TASK::TaskResponse update_steering_calibration_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo) {
     const uint32_t analog_raw = SteeringSystemInstance::instance().get_steering_system_data().analog_raw;
@@ -100,19 +99,7 @@ HT_TASK::TaskResponse update_steering_calibration_task(const unsigned long& sysM
 
     SteeringSystemInstance::instance().update_observed_steering_limits(analog_raw, digital_raw);
 
-
-    if (VCRInterfaceInstance::instance().is_in_pedals_calibration_state() && !SteeringSystemInstance::instance().is_finished_calibrating()) {
-        SteeringSystemInstance::instance().begin_calibrating();
-    }
-
-    //TODO: Remove after testing
-    if (millis() - ftime > 60 * 2000) {
-        SteeringSystemInstance::instance().begin_calibrating();
-        ftime = millis();
-    }
-    // end of test
-
-    if (SteeringSystemInstance::instance().is_calibrating()) {
+    if (VCRInterfaceInstance::instance().is_in_steering_calibration_state()) {
         SteeringSystemInstance::instance().recalibrate_steering_digital();
         EEPROMUtilities::write_eeprom_32bit(VCFSystemConstants::MIN_STEERING_SIGNAL_ANALOG_ADDR, SteeringSystemInstance::instance().get_steering_params().min_steering_signal_analog);
         EEPROMUtilities::write_eeprom_32bit(VCFSystemConstants::MAX_STEERING_SIGNAL_ANALOG_ADDR, SteeringSystemInstance::instance().get_steering_params().max_steering_signal_analog);
@@ -130,8 +117,6 @@ HT_TASK::TaskResponse update_steering_calibration_task(const unsigned long& sysM
         // EEPROMUtilities::write_eeprom_32bit(VCFSystemConstants::ANALOG_MAX_WITH_MARGINS_ADDR, 4095);
         // EEPROMUtilities::write_eeprom_32bit(VCFSystemConstants::DIGITAL_MIN_WITH_MARGINS_ADDR, -9);
         // EEPROMUtilities::write_eeprom_32bit(VCFSystemConstants::DIGITAL_MAX_WITH_MARGINS_ADDR, 16392);
-
-        SteeringSystemInstance::instance().end_calibrating();
     }
 
     return HT_TASK::TaskResponse::YIELD;
@@ -152,7 +137,7 @@ HT_TASK::TaskResponse update_steering_calibration_task(const unsigned long& sysM
 // {
 //     // Doing digital read on all digital inputs
 //     int dimButton = digitalRead(BTN_DIM_READ);
-//     int presetButton = digitalRead(BTN_PRESET_READ);
+  //   int presetButton = digitalRead(BTN_PRESET_READ);
 //     int mcCycleButton = digitalRead(BTN_MC_CYCLE_READ);
 //     int modeButton = digitalRead(BTN_MODE_READ);
 //     int startButton = digitalRead(BTN_START_READ);
@@ -204,10 +189,10 @@ HT_TASK::TaskResponse send_dash_data(const unsigned long& sysMicros, const HT_TA
     DashInputState_s dash_outputs = can_interfaces.dash_interface.get_dashboard_outputs();
 
     DASH_INPUT_t msg_out;
-
+    //for this, add a message for the new button when its here, for now, steering system linked to dim_button. 
+    msg_out.dim_button = dash_outputs.btn_dim_read_is_pressed;
     msg_out.preset_button = dash_outputs.preset_btn_is_pressed;
     msg_out.mode_button = 0; // dont exist but i dont wanna bother changing can msgs
-
     msg_out.motor_controller_cycle_button = dash_outputs.mc_reset_btn_is_pressed;
     msg_out.start_button = dash_outputs.start_btn_is_pressed;
     msg_out.data_button_is_pressed = dash_outputs.data_btn_is_pressed;
@@ -263,7 +248,6 @@ HT_TASK::TaskResponse enqueue_steering_data(const unsigned long& sysMicros, cons
 {
     STEERING_DATA_t msg_out;
     SteeringSystemData_s steering_system_data = SteeringSystemInstance::instance().get_steering_system_data();
-    /* TODO: Change steering_*_raw to new values we have to add to CAN library. Also add other msg_out variables for implausibilities*/
     msg_out.steering_analog_oor = steering_system_data.analog_oor_implausibility;
     msg_out.steering_both_sensors_fail = steering_system_data.both_sensors_fail;
     msg_out.steering_digital_oor = steering_system_data.digital_oor_implausibility;
@@ -340,6 +324,7 @@ HT_TASK::TaskResponse run_dash_GPIOs_task(const unsigned long& sys_micros, const
     if (!current_state.preset_btn_is_pressed) //preset_btn_is_pressed doesnt exist anymore
     {
         VCRInterfaceInstance::instance().disable_calibration_state();
+        VCRInterfaceInstance::instance().disable_steering_calibration_state(); //link to new button eventually
     }
 
     // Checks if dim btn has been clicked (falling edge)
@@ -621,8 +606,6 @@ FlexCAN_T4<CAN1, RX_SIZE_256, TX_SIZE_16> VCFCANInterfaceImpl::main_can;
 void setup_all_interfaces() {
     SPI.begin();
     Serial.begin(VCFTaskConstants::SERIAL_BAUDRATE); // NOLINT
-
-    ftime = millis();
 
     // Initialize all singletons
 
