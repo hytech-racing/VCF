@@ -474,6 +474,8 @@ namespace async_tasks
         const uint32_t analog_raw = static_cast<uint32_t>(ADCInterfaceInstance::instance().get_steering_degrees_cw().raw);
         //TODO: add ccw analog
         const SteeringEncoderReading_s digital_data = OrbisBRInstance::instance().getLastReading();
+        //digital_data.status = SteeringEncoderStatus_e::ERROR; // hardcode error for testing
+
         SteeringSystemInstance::instance().evaluate_steering(
             analog_raw,
             digital_data,
