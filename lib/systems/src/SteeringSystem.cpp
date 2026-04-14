@@ -77,8 +77,16 @@ void SteeringSystem::evaluate_steering(const uint32_t analog_raw, const Steering
 
     if (!_first_run && dt > 0) { //check that we not on the first run which would mean no previous data
         float dtheta_analog = _steeringSystemData.analog_steering_angle - _prev_analog_angle; //prev_angle established in last run
+        if (dtheta_analog < 5)//make constant in VCF constants 
+        {
+            _steeringSystemData.analog_steering_velocity_deg_s = 0; //NOLINT ms to s
+        }
+        else
+        {
+            _steeringSystemData.analog_steering_velocity_deg_s = (dtheta_analog / dt) * 1000.0f; //NOLINT ms to s
+        }
+        
         float dtheta_digital = _steeringSystemData.digital_steering_angle - _prev_digital_angle;
-        _steeringSystemData.analog_steering_velocity_deg_s = (dtheta_analog / dt) * 1000.0f; //NOLINT ms to s
         _steeringSystemData.digital_steering_velocity_deg_s = (dtheta_digital / dt) * 1000.0f; //NOLINT ms to s
 
         //Check if either sensor moved too much in one tick
@@ -131,8 +139,8 @@ void SteeringSystem::update_observed_steering_limits(const uint32_t analog_raw, 
 
 float SteeringSystem::_convert_digital_sensor(const uint32_t digital_raw) {
     // Same logic for digital
-    const int32_t offset = static_cast<int32_t>(digital_raw) - _steeringParams.digital_midpoint; //NOLINT
-    return static_cast<float>(offset) * _steeringParams.deg_per_count_digital;
+    const int32_t offset =  _steeringParams.digital_midpoint-static_cast<int32_t>(digital_raw); //NOLINT
+    return static_cast<float>(offset) * _steeringParams.deg_per_count_digital; // bc diital sensor is flipped
 }
 
 float SteeringSystem::_convert_analog_sensor(const uint32_t analog_raw) {

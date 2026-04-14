@@ -106,7 +106,7 @@ HT_TASK::TaskResponse update_steering_calibration_task(const unsigned long& sysM
     }
 
     //TODO: Remove after testing
-    if (millis() - ftime > 60 * 1000) {
+    if (millis() - ftime > 60 * 2000) {
         SteeringSystemInstance::instance().begin_calibrating();
         ftime = millis();
     }
@@ -473,8 +473,7 @@ namespace async_tasks
         OrbisBRInstance::instance().sample();
         const uint32_t analog_raw = static_cast<uint32_t>(ADCInterfaceInstance::instance().get_steering_degrees_cw().raw);
         //TODO: add ccw analog
-        const SteeringEncoderReading_s digital_data = OrbisBRInstance::instance().getLastReading();
-        //digital_data.status = SteeringEncoderStatus_e::ERROR; // hardcode error for testing
+        SteeringEncoderReading_s digital_data = OrbisBRInstance::instance().getLastReading();
 
         SteeringSystemInstance::instance().evaluate_steering(
             analog_raw,
