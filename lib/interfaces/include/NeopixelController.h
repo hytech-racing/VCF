@@ -21,11 +21,11 @@
 
 struct MinCellMonitoringThresholds_s
 {
-    float max_level = 3.8;
-    float second_level = 3.7;
-    float third_level = 3.6;
-    float fourth_level = 3.5;
-    float fifth_level = 3.45;
+    float max_level = 3.9;
+    float second_level = 3.85;
+    float third_level = 3.75;
+    float fourth_level = 3.6;
+    float fifth_level = 3.5;
     float critical_charge_level = 3.4;
 };
 
