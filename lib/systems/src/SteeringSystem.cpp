@@ -28,10 +28,11 @@ void SteeringSystem::recalibrate_steering_digital() {
     _steeringParams.error_between_sensors_tolerance = _steeringParams.analog_tol_deg + _steeringParams.digital_tol_deg;
 
     // Reset observed values
-    min_observed_digital = UINT32_MAX;
-    max_observed_digital = 0;
-    min_observed_analog = UINT32_MAX;
-    max_observed_analog = 0;
+//     min_observed_digital = UINT32_MAX;
+//     max_observed_digital = 0;
+//     min_observed_analog = UINT32_MAX;
+//     max_observed_analog = 0;
+// 
 }
 
 void SteeringSystem::evaluate_steering(const uint32_t analog_raw, const SteeringEncoderReading_s digital_data, const uint32_t current_millis) {
@@ -48,19 +49,19 @@ void SteeringSystem::evaluate_steering(const uint32_t analog_raw, const Steering
     SteeringEncoderStatus_e digital_status = digital_data.status;
     bool digital_fault = (digital_status == SteeringEncoderStatus_e::ERROR);
     _steeringSystemData.interface_sensor_error = digital_fault;
-    _steeringSystemData.digital_raw = digital_fault ? 0U : digital_raw;
+    _steeringSystemData.digital_raw = digital_raw;
 
     _steeringSystemData.analog_raw = analog_raw;
 
     //Conversion from raw ADC to degrees
     _steeringSystemData.analog_steering_angle = _convert_analog_sensor(analog_raw);
-    _steeringSystemData.digital_steering_angle = digital_fault ? 0.0f : _convert_digital_sensor(digital_raw);
+    _steeringSystemData.digital_steering_angle = _convert_digital_sensor(digital_raw);
     
     uint32_t dt = current_millis - _prev_timestamp; //current_millis is seperate data input  
 
     if (!_first_run && dt > 0) { //check that we not on the first run which would mean no previous data
         float dtheta_analog = _steeringSystemData.analog_steering_angle - _prev_analog_angle; //prev_angle established in last run
-        if (dtheta_analog < 5)//make constant in VCF constants 
+        if (dtheta_analog < 2)//make constant in VCF constants 
         {
             _steeringSystemData.analog_steering_velocity_deg_s = 0; //NOLINT ms to s
         }

@@ -1,7 +1,9 @@
 #ifndef STEERING_SYSTEM_H
 #define STEERING_SYSTEM_H
-
+ 
 #include <etl/singleton.h>
+
+
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
@@ -101,7 +103,8 @@ private:
     uint32_t min_observed_analog = UINT32_MAX;
     uint32_t max_observed_analog = 0;
 };
-
 using SteeringSystemInstance = etl::singleton<SteeringSystem>;
 
+
 #endif
+

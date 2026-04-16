@@ -1,9 +1,35 @@
 #define STEERING_SYSTEM_TEST
 #include <gtest/gtest.h>
 #include <string>
+
+// Hardcoded Steering Encoder Interface types to avoid Arduino-dependent includes in test env
+#ifndef STEERING_ENCODER_INTERFACE_H
+#define STEERING_ENCODER_INTERFACE_H
+
+enum class SteeringEncoderStatus_e
+{
+    NOMINAL = 0,
+    ERROR = 1,
+};
+
+struct EncoderErrorFlags_s
+{
+    bool dataInvalid              = false;
+    bool operatingLimit           = false;
+    bool noData                   = false;
+};
+
+struct SteeringEncoderReading_s
+{
+    float angle = 0.0f;
+    int rawValue = 0;
+    SteeringEncoderStatus_e status = SteeringEncoderStatus_e::NOMINAL;
+    EncoderErrorFlags_s errors;
+};
+#endif 
+
 #include "SteeringSystem.h"
 #include "SharedFirmwareTypes.h"
-//#include "SteeringEncoderInterface.h"
 #include <array>
 
 #include <iostream>
@@ -59,6 +85,15 @@ void debug_print_steering(const SteeringSystemData_s& data){
     
 
 }
+
+static SteeringEncoderReading_s hardcode_digital_data(int rawValue, SteeringEncoderStatus_e status = SteeringEncoderStatus_e::NOMINAL) {
+    SteeringEncoderReading_s data{};
+    data.rawValue = rawValue;
+    data.status = status;
+    data.angle = 0.0f; // Reset angle as it's calculated by the system, not the sensor
+    data.errors = {};  // Ensure no error flags are set
+    return data;
+}
 /* helper functions, however we are asserting the values in each function as variables
 static SteeringSensorData_s make_raw(uint32_t analog_adc, uint32_t digital_adc){
     SteeringSensorData_s raw{};
@@ -94,11 +129,8 @@ TEST(SteeringSystemTesting, test_adc_to_degree_conversion)
     uint32_t digital_mid = (params.min_steering_signal_digital + params.max_steering_signal_digital) / 2;
     
     //midpoints
-    uint32_t analog_raw;
-    auto digital_data = gen_digital_data();
-  //  SteeringEncoderReading_s digital_data{};
-    analog_raw = analog_mid;
-    digital_data.rawValue = digital_mid;
+    uint32_t analog_raw = analog_mid;
+    auto digital_data = hardcode_digital_data(digital_mid);
 
     steering.evaluate_steering(analog_raw, digital_data, 1000);
     auto data = steering.get_steering_system_data();
@@ -107,8 +139,7 @@ TEST(SteeringSystemTesting, test_adc_to_degree_conversion)
 
     //min values
     analog_raw = params.min_steering_signal_analog;
-    digital_data = {};
-    digital_data.rawValue = params.min_steering_signal_digital;
+    digital_data = hardcode_digital_data(params.min_steering_signal_digital);
 
     steering.evaluate_steering(analog_raw, digital_data, 1010);
     data = steering.get_steering_system_data();
@@ -121,8 +152,7 @@ TEST(SteeringSystemTesting, test_adc_to_degree_conversion)
 
     //max values
     analog_raw = params.max_steering_signal_analog;
-    digital_data = {};
-    digital_data.rawValue = params.max_steering_signal_digital;
+    digital_data = hardcode_digital_data(params.max_steering_signal_digital);
 
     steering.evaluate_steering(analog_raw, digital_data, 1020);
     data = steering.get_steering_system_data();
@@ -145,8 +175,7 @@ TEST(SteeringSystemTesting, test_out_of_bounds_raw_signals){
 
     //Check for known valid values first
     uint32_t analog_raw = analog_mid;
-    SteeringEncoderReading_s digital_data{};
-    digital_data.rawValue = digital_mid;
+    auto digital_data = hardcode_digital_data(digital_mid);
     steering.evaluate_steering(analog_raw, digital_data, 1000);
     auto data = steering.get_steering_system_data();
     EXPECT_FALSE(data.analog_oor_implausibility);
@@ -154,8 +183,7 @@ TEST(SteeringSystemTesting, test_out_of_bounds_raw_signals){
 
     //OOR High
     analog_raw = 5000;
-    digital_data = {};
-    digital_data.rawValue = 9000;
+    digital_data = hardcode_digital_data(9000);
     steering.evaluate_steering(analog_raw, digital_data, 1010);
     data = steering.get_steering_system_data();
     EXPECT_TRUE(data.analog_oor_implausibility);
@@ -164,8 +192,7 @@ TEST(SteeringSystemTesting, test_out_of_bounds_raw_signals){
     //OOR Low
     
     analog_raw = static_cast<uint32_t>(params.min_steering_signal_analog) - 50;
-    digital_data = {};
-    digital_data.rawValue = static_cast<int>(params.min_steering_signal_digital) - 10;
+    digital_data = hardcode_digital_data(static_cast<int>(params.min_steering_signal_digital) - 10);
     steering.evaluate_steering(analog_raw, digital_data, 1020);
     steering.evaluate_steering(analog_raw, digital_data, 1030);
     //data = steering.evaluate_steering(low_val, 1030);
@@ -180,8 +207,7 @@ TEST(SteeringSystemTesting, test_detect_jumps_dtheta){
     SteeringSystem steering(params);
 
     uint32_t analog_raw = 2048;
-    SteeringEncoderReading_s digital_data{};
-    digital_data.rawValue = 4000;
+    auto digital_data = hardcode_digital_data(4000);
 
     //First run (just to verify that we don't get a dtheta exceeded on the first run since we have no previous data to compare to)
     steering.evaluate_steering(analog_raw, digital_data, 1000);
@@ -190,8 +216,7 @@ TEST(SteeringSystemTesting, test_detect_jumps_dtheta){
     EXPECT_FALSE(data.dtheta_exceeded_digital);
     
     analog_raw = 4096;
-    digital_data = {};
-    digital_data.rawValue = 8000;
+    digital_data = hardcode_digital_data(8000);
     steering.evaluate_steering(analog_raw, digital_data, 1005);
     data = steering.get_steering_system_data();
     EXPECT_TRUE(data.dtheta_exceeded_analog);
@@ -200,13 +225,11 @@ TEST(SteeringSystemTesting, test_detect_jumps_dtheta){
 
     // Reset the last value of evaluate steering to baseline
     analog_raw = 2048;
-    digital_data = {};
-    digital_data.rawValue = 4000;
+    digital_data = hardcode_digital_data(4000);
     steering.evaluate_steering(analog_raw, digital_data, 1010);
     //Small motion valid
     analog_raw = 2060;
-    digital_data = {};
-    digital_data.rawValue = 4050;
+    digital_data = hardcode_digital_data(4050);
     steering.evaluate_steering(analog_raw, digital_data, 1020); //advance time by 10 ms
     data = steering.get_steering_system_data();
     EXPECT_FALSE(data.dtheta_exceeded_analog);
@@ -214,8 +237,7 @@ TEST(SteeringSystemTesting, test_detect_jumps_dtheta){
 
     //Big motion NOT valid
     analog_raw = 4096;
-    digital_data = {};
-    digital_data.rawValue = 8000;
+    digital_data = hardcode_digital_data(8000);
     steering.evaluate_steering(analog_raw, digital_data, 1030); //advance time by another 10 ms
     data = steering.get_steering_system_data();
     EXPECT_TRUE(data.dtheta_exceeded_analog);
@@ -229,14 +251,12 @@ TEST(SteeringSystemTesting, test_sensor_disagreement)
     SteeringSystem steering(params);
 
     uint32_t analog_raw = 2000;
-    SteeringEncoderReading_s digital_data{};
-    digital_data.rawValue = 4000;
+    auto digital_data = hardcode_digital_data(4000);
 
     steering.evaluate_steering(analog_raw, digital_data, 1000);
 
     //create disagreement between sensors to test
-    digital_data = {};
-    digital_data.rawValue = 7000; //large offset from analog
+    digital_data = hardcode_digital_data(7000); //large offset from analog
 
     steering.evaluate_steering(analog_raw, digital_data, 1100);
     auto data = steering.get_steering_system_data();
@@ -254,8 +274,7 @@ TEST(SteeringSystemTesting,test_sensor_output_logic){
     //When both valid and agreeing, we default to digital
     SteeringSystem steering(params);
     uint32_t analog_raw = analog_mid;
-    SteeringEncoderReading_s digital_data{};
-    digital_data.rawValue = digital_mid;
+    auto digital_data = hardcode_digital_data(digital_mid);
     steering.evaluate_steering(analog_raw, digital_data, 1000);
     steering.evaluate_steering(analog_raw, digital_data, 1100);
 
@@ -270,8 +289,7 @@ TEST(SteeringSystemTesting,test_sensor_output_logic){
     //When both valid but disagreeing, we default to digital
     SteeringSystem steering(params);
     uint32_t analog_raw = analog_mid;
-    SteeringEncoderReading_s digital_data{};
-    digital_data.rawValue = digital_mid + 3000; //large offset from analog
+    auto digital_data = hardcode_digital_data(digital_mid + 3000); //large offset from analog
     steering.evaluate_steering(analog_raw, digital_data, 1000);
     steering.evaluate_steering(analog_raw, digital_data, 1100);
     auto data = steering.get_steering_system_data();
@@ -285,8 +303,7 @@ TEST(SteeringSystemTesting,test_sensor_output_logic){
     //When analog is good but digital is bad, we put analog
     SteeringSystem steering(params);
     uint32_t analog_raw = analog_mid;
-    SteeringEncoderReading_s digital_data{};
-    digital_data.rawValue = params.max_steering_signal_digital + 1000; //bad digital
+    auto digital_data = hardcode_digital_data(params.max_steering_signal_digital + 1000); //bad digital
     steering.evaluate_steering(analog_raw, digital_data, 1000);
     steering.evaluate_steering(analog_raw, digital_data, 1100);
     auto data = steering.get_steering_system_data();
@@ -298,8 +315,7 @@ TEST(SteeringSystemTesting,test_sensor_output_logic){
     //When digital is good but analog is bad, we put digital
     SteeringSystem steering(params);
     uint32_t analog_raw = params.max_steering_signal_analog + 1000;
-    SteeringEncoderReading_s digital_data{};
-    digital_data.rawValue = digital_mid;
+    auto digital_data = hardcode_digital_data(digital_mid);
     steering.evaluate_steering(analog_raw, digital_data, 1000);
     steering.evaluate_steering(analog_raw, digital_data, 1005);
     auto data = steering.get_steering_system_data();
@@ -311,8 +327,7 @@ TEST(SteeringSystemTesting,test_sensor_output_logic){
     //When both bad, we flagging that error
     SteeringSystem steering(params);
     uint32_t analog_raw = params.max_steering_signal_analog + 1000;
-    SteeringEncoderReading_s digital_data{};
-    digital_data.rawValue = params.max_steering_signal_digital + 1000;
+    auto digital_data = hardcode_digital_data(params.max_steering_signal_digital + 1000);
     steering.evaluate_steering(analog_raw, digital_data, 1000);
     steering.evaluate_steering(analog_raw, digital_data, 1005);
     auto data = steering.get_steering_system_data();
