@@ -1,3 +1,4 @@
+#ifndef VCF_CONSTANTS
 #define VCF_CONSTANTS
 
 #include <stdint.h>
@@ -145,7 +146,7 @@ namespace VCFSystemConstants {
     // implausibility values
     constexpr float ANALOG_TOL = 0.005f; //+- 0.5% error (analog sensor tolerance according to datasheet)
     constexpr float DIGITAL_TOL_DEG = 0.2f; // +- 0.2 degrees error
-    constexpr float ERROR_BETWEEN_SENSORS_TOLERANCE = 2f;
+    constexpr float ERROR_BETWEEN_SENSORS_TOLERANCE = 2.0f;
    
     // rate of angle change
     constexpr float MAX_DTHETA_THRESHOLD = 5.0f; //maximum change in angle since last reading to consider the reading valid

@@ -736,7 +736,7 @@ void setup_all_interfaces() {
         .deg_per_count_digital = VCFSystemConstants::DEG_PER_COUNT_DIGITAL,
         .analog_tol = VCFSystemConstants::ANALOG_TOL,
         .digital_tol_deg = VCFSystemConstants::DIGITAL_TOL_DEG,
-        .max_dtheta_threshold = VCFSystemConstants::MAX_DTHETA_THRESHOLD
+        .max_dtheta_threshold = VCFSystemConstants::MAX_DTHETA_THRESHOLD,
         .error_between_sensors_tolerance = VCFSystemConstants::ERROR_BETWEEN_SENSORS_TOLERANCE
     };
     steering_params.span_signal_analog = steering_params.max_steering_signal_analog - steering_params.min_steering_signal_analog;
