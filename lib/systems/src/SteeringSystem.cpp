@@ -4,6 +4,23 @@
 #include "SteeringEncoderInterface.h"
 
 void SteeringSystem::recalibrate_steering_digital() {
+    if (min_observed_analog == 0)
+    {
+        min_observed_analog = UINT8_MAX; // clipping if it is at 0, it is likely sensor is clipping or clipped in past and reading is holding the 0 value. 
+    }
+    if (static_cast<float>(max_observed_analog) == 3686.4)
+    {
+        max_observed_analog = 0; // clipping
+    }
+    if (min_observed_digital == 0)
+    {
+        min_observed_digital = UINT8_MAX; // clipping
+    }
+    if (max_observed_digital == 16384)
+    {
+        max_observed_digital = 0; // clipping
+    }
+
     _steeringParams.min_steering_signal_analog = min_observed_analog;
     _steeringParams.max_steering_signal_analog = max_observed_analog;
     _steeringParams.min_steering_signal_digital = min_observed_digital;
@@ -24,7 +41,6 @@ void SteeringSystem::recalibrate_steering_digital() {
     _steeringParams.analog_max_with_margins = static_cast<int32_t>(_steeringParams.max_steering_signal_analog) + _steeringParams.analog_tol_deg;
     _steeringParams.digital_min_with_margins = static_cast<int32_t>(_steeringParams.min_steering_signal_digital) - _steeringParams.digital_tol_deg;
     _steeringParams.digital_max_with_margins = static_cast<int32_t>(_steeringParams.max_steering_signal_digital) + _steeringParams.digital_tol_deg;
-
 }
 
 void SteeringSystem::evaluate_steering(const uint32_t analog_raw, const SteeringEncoderReading_s digital_data, const uint32_t current_millis) {
@@ -107,10 +123,10 @@ void SteeringSystem::evaluate_steering(const uint32_t analog_raw, const Steering
 }
 
 void SteeringSystem::update_observed_steering_limits(const uint32_t analog_raw, const uint32_t digital_raw) {
-    // min_observed_analog = std::min(min_observed_analog, static_cast<uint32_t>(analog_raw));
-    // max_observed_analog = std::max(max_observed_analog, static_cast<uint32_t>(analog_raw));
-    // min_observed_digital = std::min(min_observed_digital, static_cast<uint32_t>(digital_raw)); //NOLINT should both be uint32_t
-    // max_observed_digital = std::max(max_observed_digital, static_cast<uint32_t>(digital_raw)); //NOLINT ^
+    min_observed_analog = std::min(min_observed_analog, static_cast<uint32_t>(analog_raw));
+    max_observed_analog = std::max(max_observed_analog, static_cast<uint32_t>(analog_raw));
+    min_observed_digital = std::min(min_observed_digital, static_cast<uint32_t>(digital_raw)); //NOLINT should both be uint32_t
+    max_observed_digital = std::max(max_observed_digital, static_cast<uint32_t>(digital_raw)); //NOLINT ^
 }
 
 float SteeringSystem::_convert_digital_sensor(const uint32_t digital_raw) {
