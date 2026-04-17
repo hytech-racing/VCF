@@ -30,6 +30,7 @@ HT_TASK::TaskResponse run_read_adc0_task(const unsigned long& sysMicros, const H
 {
     // Updates all eight channels.
     ADCInterfaceInstance::instance().adc0_tick();
+    OrbisBRInstance::instance().sample();
     PedalsSystemInstance::instance().set_pedals_sensor_data(PedalSensorData_s{
         .accel_1 = static_cast<uint32_t>(ADCInterfaceInstance::instance().acceleration_1().conversion),
         .accel_2 = static_cast<uint32_t>(ADCInterfaceInstance::instance().acceleration_2().conversion),
@@ -256,8 +257,8 @@ HT_TASK::TaskResponse enqueue_steering_data(const unsigned long& sysMicros, cons
     msg_out.steering_interface_sensor_error = steering_system_data.interface_sensor_error;
     msg_out.steering_output_steering_angle_ro = HYTECH_steering_output_steering_angle_ro_toS(steering_system_data.output_steering_angle);
     msg_out.steering_sensor_disagreement = steering_system_data.sensor_disagreement_implausibility;
-    msg_out.steering_analog_raw = steering_system_data.analog_steering_angle;
-    msg_out.steering_digital_raw = steering_system_data.digital_steering_angle;
+    msg_out.steering_analog_raw = steering_system_data.analog_raw;
+    msg_out.steering_digital_raw = steering_system_data.digital_raw;
 
     CAN_util::enqueue_msg(&msg_out, &Pack_STEERING_DATA_hytech, VCFCANInterfaceImpl::VCFCANInterfaceObjectsInstance::instance().main_can_tx_buffer);
     return HT_TASK::TaskResponse::YIELD;
@@ -455,14 +456,15 @@ namespace async_tasks
     HT_TASK::TaskResponse handle_async_main(const unsigned long& sys_micros, const HT_TASK::TaskInfo& task_info)
     {
         handle_async_recvs();
-        OrbisBRInstance::instance().sample();
-        const uint32_t analog_raw = static_cast<uint32_t>(ADCInterfaceInstance::instance().get_steering_degrees_cw().raw);
+      //  OrbisBRInstance::instance().sample();
+       // const uint32_t analog_raw = static_cast<uint32_t>(ADCInterfaceInstance::instance().get_steering_degrees_cw().raw);
         //TODO: add ccw analog
-        SteeringEncoderReading_s digital_data = OrbisBRInstance::instance().getLastReading();
+    //    SteeringEncoderReading_s digital_data = OrbisBRInstance::instance().getLastReading();
+
 
         SteeringSystemInstance::instance().evaluate_steering(
-            analog_raw,
-            digital_data,
+            ADCInterfaceInstance::instance().get_steering_degrees_cw().conversion,
+            OrbisBRInstance::instance().getLastReading(),
             sys_time::hal_millis()
         );
 
@@ -557,13 +559,26 @@ HT_TASK::TaskResponse debug_print(const unsigned long& sysMicros, const HT_TASK:
     // Serial.println(BuzzerController::getInstance().buzzer_is_active(sys_time::hal_millis()));
 
     Serial.println("--------------------------------------------------");
+    Serial.println("Steering System Params: ");
+    Serial.print("Minimum Value Analog: ");
+    Serial.println(SteeringSystemInstance::instance().get_steering_params().min_steering_signal_analog);
+    Serial.print("Maximum Value Analog: ");
+    Serial.println(SteeringSystemInstance::instance().get_steering_params().max_steering_signal_analog);
+    Serial.print("Minimum Value Digital: ");
+    Serial.println(SteeringSystemInstance::instance().get_steering_params().min_steering_signal_digital);
+    Serial.print("Maximum Value Digital: ");
+    Serial.println(SteeringSystemInstance::instance().get_steering_params().max_steering_signal_digital);
+    Serial.print("Analog Midpoint: ");
+    Serial.println(SteeringSystemInstance::instance().get_steering_params().analog_midpoint);
+    Serial.print("Digital Midpoint: ");
+    Serial.println(SteeringSystemInstance::instance().get_steering_params().digital_midpoint);
 
     Serial.println("Steering Sensor Data: ");
-    Serial.print("analog: ");
+    Serial.print("analog adc: ");
     Serial.print(SteeringSystemInstance::instance().get_steering_system_data().analog_raw);
     Serial.print("|");
     Serial.println(SteeringSystemInstance::instance().get_steering_system_data().analog_steering_angle);
-    Serial.print("digital: ");
+    Serial.print("digital adc: ");
     Serial.print(SteeringSystemInstance::instance().get_steering_system_data().digital_raw);
     Serial.print("|");
     Serial.println(SteeringSystemInstance::instance().get_steering_system_data().digital_steering_angle);
@@ -734,16 +749,16 @@ void setup_all_interfaces() {
         .digital_max_with_margins = EEPROMUtilities::read_eeprom_32bit(VCFSystemConstants::DIGITAL_MAX_WITH_MARGINS_ADDR),
         .deg_per_count_analog = VCFSystemConstants::DEG_PER_COUNT_ANALOG,
         .deg_per_count_digital = VCFSystemConstants::DEG_PER_COUNT_DIGITAL,
-        .analog_tol = VCFSystemConstants::ANALOG_TOL,
-        .digital_tol_deg = VCFSystemConstants::DIGITAL_TOL_DEG,
+        .analog_tolerance = VCFSystemConstants::ANALOG_TOLERANCE,
+        .digital_tolerance = VCFSystemConstants::DIGITAL_TOLERANCE,
         .max_dtheta_threshold = VCFSystemConstants::MAX_DTHETA_THRESHOLD,
         .error_between_sensors_tolerance = VCFSystemConstants::ERROR_BETWEEN_SENSORS_TOLERANCE
+    
     };
     steering_params.span_signal_analog = steering_params.max_steering_signal_analog - steering_params.min_steering_signal_analog;
     steering_params.analog_midpoint = (steering_params.max_steering_signal_analog + steering_params.min_steering_signal_analog) / 2;
     steering_params.span_signal_digital = steering_params.max_steering_signal_digital - steering_params.min_steering_signal_digital;
     steering_params.digital_midpoint = (steering_params.min_steering_signal_digital + steering_params.max_steering_signal_digital) / 2;
-    steering_params.error_between_sensors_tolerance = steering_params.analog_tol_deg + steering_params.digital_tol_deg;
 
     SteeringSystemInstance::create(steering_params);
 

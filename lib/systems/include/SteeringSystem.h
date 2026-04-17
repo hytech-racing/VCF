@@ -34,7 +34,8 @@ struct SteeringParams_s {
     float deg_per_count_digital; //based on digital readings
 
     // implausibility values
-    float analog_tol; //+- 0.5% error
+    float analog_tolerance; //+- 0.5% error
+    float digital_tolerance; // +- 0.2 degrees error
     float analog_tol_deg;
     float digital_tol_deg; // +- 0.2 degrees error
    
@@ -71,8 +72,18 @@ public:
     void set_steering_system_data(const SteeringSystemData_s &steeringSystemData) {
         _steeringSystemData = steeringSystemData;
     }
+
    
-    void update_observed_steering_limits(const uint32_t analog_raw, const uint32_t digital_raw);
+    void update_observed_steering_limits(const uint32_t analog_raw, const uint32_t digital_raw){
+        min_observed_analog = std::min(min_observed_analog, static_cast<uint32_t>(analog_raw));
+        max_observed_analog = std::max(max_observed_analog, static_cast<uint32_t>(analog_raw));
+        min_observed_digital = std::min(min_observed_digital, static_cast<uint32_t>(digital_raw)); //NOLINT should both be uint32_t
+        max_observed_digital = std::max(max_observed_digital, static_cast<uint32_t>(digital_raw)); //NOLINT ^
+    }
+    uint32_t min_observed_digital = UINT32_MAX;
+    uint32_t max_observed_digital = 0;
+    uint32_t min_observed_analog = UINT32_MAX;
+    uint32_t max_observed_analog = 0;
 private:
 
     float _convert_digital_sensor(const uint32_t digital_raw);
@@ -98,10 +109,6 @@ private:
     bool _finished_calibrating = false;
     bool _first_run = true; // skip dTheta check on the very first tick
 
-    uint32_t min_observed_digital = UINT32_MAX;
-    uint32_t max_observed_digital = 0;
-    uint32_t min_observed_analog = UINT32_MAX;
-    uint32_t max_observed_analog = 0;
 };
 using SteeringSystemInstance = etl::singleton<SteeringSystem>;
 
