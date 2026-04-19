@@ -4,19 +4,19 @@
 #include "SteeringEncoderInterface.h"
 
 void SteeringSystem::recalibrate_steering_digital() {
-    if (min_observed_analog == 0)
+    if (min_observed_analog == 0 || _steeringParams.span_signal_analog > 2000)
     {
         min_observed_analog = UINT8_MAX; // clipping if it is at 0, it is likely sensor is clipping or clipped in past and reading is holding the 0 value. 
     }
-    if (static_cast<float>(max_observed_analog) == 3686.4)
+    if (max_observed_analog > 3685 || _steeringParams.span_signal_analog > 2000) // if span is greater than 2000 (>50% span), it's likely the sensor has incorrect readings on min&maxes and should reignite recalibrate
     {
         max_observed_analog = 0; // clipping
     }
-    if (min_observed_digital == 0)
+    if (min_observed_digital == 0 || _steeringParams.span_signal_digital > 9000)
     {
-        min_observed_digital = UINT8_MAX; // clipping
+        min_observed_digital = UINT8_MAX; // clipping. LOGIC: if sensor reads a 0 as its min, that means it hangs onto that value indefinitely, if we try to turn left of the 0, clip value, it will not read the actual min reading. This ensures it resets if the value ever reaches 0. 
     }
-    if (max_observed_digital == 16384)
+    if (max_observed_digital == 16384 || _steeringParams.span_signal_digital > 9000) // if span is greater than 9000 (>50% span), it's likely the sensor has incorrect readings on min&maxes and should reignite recalibrate
     {
         max_observed_digital = 0; // clipping
     }
