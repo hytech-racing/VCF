@@ -4,19 +4,19 @@
 #include "SteeringEncoderInterface.h"
 
 void SteeringSystem::recalibrate_steering_digital() {
-    if (min_observed_analog == 0 || _steeringParams.span_signal_analog > 2000)
+    if (min_observed_analog == 0)
     {
-        min_observed_analog = UINT8_MAX; // clipping if it is at 0, it is likely sensor is clipping or clipped in past and reading is holding the 0 value. 
+        min_observed_analog = UINT32_MAX; // clipping if it is at 0, it is likely sensor is clipping or clipped in past and reading is holding the 0 value. 
     }
-    if (max_observed_analog > 3685 || _steeringParams.span_signal_analog > 2000) // if span is greater than 2000 (>50% span), it's likely the sensor has incorrect readings on min&maxes and should reignite recalibrate
+    if (max_observed_analog > 3685) 
     {
         max_observed_analog = 0; // clipping
     }
-    if (min_observed_digital == 0 || _steeringParams.span_signal_digital > 9000)
+    if (min_observed_digital == 0)
     {
-        min_observed_digital = UINT8_MAX; // clipping. LOGIC: if sensor reads a 0 as its min, that means it hangs onto that value indefinitely, if we try to turn left of the 0, clip value, it will not read the actual min reading. This ensures it resets if the value ever reaches 0. 
+        min_observed_digital = UINT32_MAX; // clipping on prior run. 
     }
-    if (max_observed_digital == 16384 || _steeringParams.span_signal_digital > 9000) // if span is greater than 9000 (>50% span), it's likely the sensor has incorrect readings on min&maxes and should reignite recalibrate
+    if (max_observed_digital == 16384) 
     {
         max_observed_digital = 0; // clipping
     }
@@ -41,6 +41,17 @@ void SteeringSystem::recalibrate_steering_digital() {
     _steeringParams.analog_max_with_margins = static_cast<int32_t>(_steeringParams.max_steering_signal_analog) + _steeringParams.analog_tol_deg;
     _steeringParams.digital_min_with_margins = static_cast<int32_t>(_steeringParams.min_steering_signal_digital) - _steeringParams.digital_tol_deg;
     _steeringParams.digital_max_with_margins = static_cast<int32_t>(_steeringParams.max_steering_signal_digital) + _steeringParams.digital_tol_deg;
+
+    if ( _steeringParams.span_signal_analog > 2000)
+    {
+        min_observed_analog = UINT32_MAX; // after calculating params, if the range is marginally greater than half the steering wheel adc, likely the min and max are clinging to a prior run that is not applicable, meaning we will need to reset the boundaries. 
+        max_observed_analog = 0;
+    }
+    if (_steeringParams.span_signal_digital > 9000)
+    {
+        min_observed_digital = UINT32_MAX; 
+        max_observed_digital = 0;
+    }
 }
 
 void SteeringSystem::evaluate_steering(const uint32_t analog_raw, const SteeringEncoderReading_s digital_data, const uint32_t current_millis) {
