@@ -62,6 +62,8 @@ void SteeringSystem::evaluate_steering(const uint32_t analog_raw, const Steering
     _steeringSystemData.dtheta_exceeded_analog = false;
     _steeringSystemData.dtheta_exceeded_digital = false;
     _steeringSystemData.both_sensors_fail = false;
+    _steeringSystemData.analog_clipped = (min_observed_analog == 0 || max_observed_analog > 3685); // assuming 12-bit ADC with 10% dropoff
+    _steeringSystemData.digital_clipped = (min_observed_digital == 0 || max_observed_digital > 16380); // assuming 14-bit ADC with minimal dropoff
 
     const uint32_t digital_raw = digital_data.rawValue;
 

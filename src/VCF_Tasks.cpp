@@ -259,6 +259,8 @@ HT_TASK::TaskResponse enqueue_steering_data(const unsigned long& sysMicros, cons
     msg_out.steering_sensor_disagreement = steering_system_data.sensor_disagreement_implausibility;
     msg_out.steering_analog_raw = steering_system_data.analog_raw;
     msg_out.steering_digital_raw = steering_system_data.digital_raw;
+    msg_out.steering_analog_clipped = steering_system_data.analog_clipped;
+    msg_out.steering_digital_clipped = steering_system_data.digital_clipped;
 
     CAN_util::enqueue_msg(&msg_out, &Pack_STEERING_DATA_hytech, VCFCANInterfaceImpl::VCFCANInterfaceObjectsInstance::instance().main_can_tx_buffer);
     return HT_TASK::TaskResponse::YIELD;
