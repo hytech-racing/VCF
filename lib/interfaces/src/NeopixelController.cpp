@@ -53,27 +53,27 @@ void NeopixelController::refresh_neopixels(const PedalsSystemData_s &pedals_data
     }
 
     LED_color_e pack_color = LED_color_e::OFF;
-    if (interfaces.acu_interface.get_cell_voltage() > _min_cell_thresholds.max_level)
+    if (interfaces.acu_interface.get_cell_voltage() > 4.1) //NOLINT 4.1 is near max voltage
     {
         pack_color = LED_color_e::PURPLE;
     }
-    else if (interfaces.acu_interface.get_cell_voltage() > _min_cell_thresholds.second_level)
+    else if (interfaces.acu_interface.get_cell_voltage() > 3.8) //NOLINT 3.8 is second from max voltage
     {
         pack_color = LED_color_e::BLUE;
     }
-    else if (interfaces.acu_interface.get_cell_voltage() > _min_cell_thresholds.third_level)
+    else if (interfaces.acu_interface.get_cell_voltage() > 3.6) //NOLINT volts
     {
         pack_color = LED_color_e::GREEN;
     }
-    else if (interfaces.acu_interface.get_cell_voltage() > _min_cell_thresholds.fourth_level)
+    else if (interfaces.acu_interface.get_cell_voltage() > 3.5) //NOLINT volts
     {
         pack_color = LED_color_e::YELLOW;
     }
-    else if (interfaces.acu_interface.get_cell_voltage() > _min_cell_thresholds.fifth_level)
+    else if (interfaces.acu_interface.get_cell_voltage() > 3.4) //NOLINT volts
     {
         pack_color = LED_color_e::ORANGE;
     }
-    else if (interfaces.acu_interface.get_cell_voltage() < _min_cell_thresholds.critical_charge_level)
+    else if (interfaces.acu_interface.get_cell_voltage() < 3.4) //NOLINT volts
     {
         pack_color = LED_color_e::RED;
     }
@@ -123,15 +123,41 @@ void NeopixelController::refresh_neopixels(const PedalsSystemData_s &pedals_data
         }
     }
 
-    bool hv_present = interfaces.vcr_interface.get_dc_bus_voltage().voltage.FL > _hv_threshold_voltage ||
-                      interfaces.vcr_interface.get_dc_bus_voltage().voltage.FR > _hv_threshold_voltage || 
-                      interfaces.vcr_interface.get_dc_bus_voltage().voltage.RL > _hv_threshold_voltage ||
-                      interfaces.vcr_interface.get_dc_bus_voltage().voltage.RR > _hv_threshold_voltage;
+    LED_color_e hv_status_color = LED_color_e::OFF;
+    switch (interfaces.vcr_interface.get_drivetrain_state())
+    {
+        case DrivetrainState_e::NOT_ENABLED_NO_HV_PRESENT:
+        case DrivetrainState_e::INVERTERS_READY:
+        {
+            hv_status_color = LED_color_e::GREEN;
+            break;
+        }
+        case DrivetrainState_e::ENABLED_DRIVE_MODE:
+        case DrivetrainState_e::INVERTERS_HV_ENABLED:
+        case DrivetrainState_e::NOT_ENABLED_HV_PRESENT:
+        {
+            hv_status_color = LED_color_e::YELLOW;
+        }
+        case DrivetrainState_e::ERROR:
+        {
+            hv_status_color = LED_color_e::RED;
+        }
+        case DrivetrainState_e::CLEARING_ERRORS:
+        {
+            hv_status_color = LED_color_e::ORANGE;
+        }
+        case DrivetrainState_e::NOT_CONNECTED:
+        default:
+        {
+            hv_status_color = LED_color_e::PURPLE;
+        }
+    }
+
 
     constexpr float glv_critical_voltage = 22.0f;
 
     /* SHUTDOWN LEDS */
-    set_neopixel_color(LED_ID_e::LATCH, hv_present ? LED_color_e::PURPLE : LED_color_e::GREEN); // Unused for now
+    set_neopixel_color(LED_ID_e::LATCH, hv_status_color); // Unused for now
     set_neopixel_color(LED_ID_e::IMD, interfaces.dash_interface.imd_ok ? LED_color_e::GREEN : LED_color_e::RED);
     set_neopixel_color(LED_ID_e::BMS, interfaces.dash_interface.bms_ok ? LED_color_e::GREEN : LED_color_e::RED);
     set_neopixel_color(LED_ID_e::SHUTDOWN, LED_color_e::OFF); // Unused for now
