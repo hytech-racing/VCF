@@ -79,12 +79,12 @@ void ADCInterface::update_filtered_values(float alpha) {
     _FL_sus_pot_filtered = iir_filter(
         alpha,
         _FL_sus_pot_filtered,
-        FL_sus_pot().conversion
+        static_cast<float>(FL_sus_pot().raw)
     );
     _FR_sus_pot_filtered = iir_filter(
         alpha,
         _FR_sus_pot_filtered,
-        FR_sus_pot().conversion
+        static_cast<float>(FR_sus_pot().raw)
     );
 }
 

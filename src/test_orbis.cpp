@@ -32,7 +32,7 @@ void setup()
     // OrbisBRInstance::instance().sample();
     // Serial.print("\n\n");
 
-    // SteeringEncoderConversion_s result = OrbisBRInstance::instance().convert();
+    // SteeringEncoderReading_s result = OrbisBRInstance::instance().convert();
     //     if (result.errors.generalError)   { Serial.println("General error"); }
     //     if (result.errors.generalWarning) { Serial.println("General warning"); }
     //     if (result.errors.noData)         { Serial.println("No data"); }

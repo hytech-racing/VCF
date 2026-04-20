@@ -7,29 +7,25 @@
 #include "etl/singleton.h"
 #include "hytech.h"
 #include "FlexCAN_T4.h"
-
-
 struct InverterErrorFlags_s{
 
     veh_vec<bool> error;
 
 };
-
-struct InverterBusVolts_s{
-    
-    veh_vec<int> voltage;
-};
-
 class VCRInterface 
 {
     public:
 
         bool is_in_pedals_calibration_state() {return _is_in_pedals_calibration_state;}
         TorqueLimit_e get_torque_limit_mode() {return _torque_limit;}
+        
+        bool is_in_steering_calibration_state() {return _is_in_steering_calibration_state;} //steering and pedals calibration states are the same, so we can use the same variable for both
 
         void receive_dash_control_data(const CAN_message_t &can_msg);
 
         void disable_calibration_state() {_is_in_pedals_calibration_state = false;}
+
+        void disable_steering_calibration_state() {_is_in_steering_calibration_state = false;}
 
         void receive_car_states_data(const CAN_message_t &can_msg);
 
@@ -43,21 +39,20 @@ class VCRInterface
 
         VehicleState_e get_vehicle_state() {return _vehicle_state_value;}
         DrivetrainState_e get_drivetrain_state() {return _drivetrain_state_value;}
-        InverterBusVolts_s get_dc_bus_voltage() {return _bus_voltages;}
-
         bool get_db_in_ctrl() {return _is_db_in_ctrl;}
         bool get_inverter_error();
 
     private: 
 
         bool _is_in_pedals_calibration_state = false;
+        bool _is_in_steering_calibration_state = false;
         VehicleState_e _vehicle_state_value;
         DrivetrainState_e _drivetrain_state_value;
         bool _is_db_in_ctrl;
         TorqueLimit_e _torque_limit = TorqueLimit_e::TCMUX_LOW_TORQUE;
         InverterErrorFlags_s _inv_error_status; //creates object that reflects the inverter error status...the object 
         //holds the error flags for each inverter, the getter above returns True if there's an error in any of the 4
-        InverterBusVolts_s _bus_voltages;        
+        
 };
 
 using VCRInterfaceInstance = etl::singleton<VCRInterface>;

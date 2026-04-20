@@ -1,8 +1,6 @@
 #ifndef STEERING_ENCODER_INTERFACE_H
 #define STEERING_ENCODER_INTERFACE_H
 
-#include <Arduino.h>
-
 enum class SteeringEncoderStatus_e
 {
     NOMINAL = 0,

@@ -6,6 +6,7 @@
 #include "ADCInterface.h"
 #include "DashboardInterface.h"
 #include "PedalsSystem.h"
+#include "SteeringSystem.h"
 
 namespace VCFEthernetInterface 
 {
@@ -16,7 +17,7 @@ namespace VCFEthernetInterface
      * @return A populated instance of the outgoing protoc struct.
      */
     // hytech_msgs_VCFData_s make_vcf_data_msg(VCFData_s &shared_state);
-    hytech_msgs_VCFData_s make_vcf_data_msg(ADCInterface &ADCInterfaceInstance, DashboardInterface &dashInstance, PedalsSystem &pedalsInstance);
+    hytech_msgs_VCFData_s make_vcf_data_msg(ADCInterface &ADCInterfaceInstance, DashboardInterface &dashInstance, PedalsSystem &pedalsInstance, SteeringSystem &steeringInstance);
 
     /**
      * Function to take a populated protoc struct from VCR and update the VCF state. This is ONLY critical
