@@ -50,7 +50,7 @@ SteeringParams_s gen_default_params(){
     params.deg_per_count_analog = 0.087890625f;
     params.deg_per_count_digital = 0.02197265625f;
 
-    params.analog_tol = 0.005f;
+    // params.analog_tol = 0.005f;
     params.analog_tol_deg = 0.11377778f;
     params.digital_tol_deg = 0.2f;
 
@@ -61,7 +61,7 @@ SteeringParams_s gen_default_params(){
     params.analog_midpoint = (params.min_steering_signal_analog + params.max_steering_signal_analog) / 2;
    
     
-    const int32_t analog_margin_counts = static_cast<int32_t>(params.analog_tol * static_cast<float>(params.span_signal_analog));
+    const int32_t analog_margin_counts = static_cast<int32_t>(params.analog_tol_deg / params.deg_per_count_analog);
     const int32_t digital_margin_counts = static_cast<int32_t>(params.digital_tol_deg / params.deg_per_count_digital);
     
     params.analog_min_with_margins = static_cast<int32_t>(params.min_steering_signal_analog) - analog_margin_counts;
