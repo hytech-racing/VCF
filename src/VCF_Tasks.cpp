@@ -36,7 +36,7 @@ HT_TASK::TaskResponse run_read_adc0_task(const unsigned long& sysMicros, const H
     });
 
     // sample digital steering too TODO: move this to its own task maybe?
-    OrbisBRInstance::instance().sample();
+    // OrbisBRInstance::instance().sample();
     return HT_TASK::TaskResponse::YIELD;
 }
 
