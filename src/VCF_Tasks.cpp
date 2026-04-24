@@ -643,9 +643,10 @@ void setup_all_interfaces() {
     //VCFCANInterfaceImpl::VCFCANInterfaceSetupInstance::create(&VCFCANInterfaceImpl::main_can, &VCFCANInterfaceImpl::faux_can, main_can_recv, faux_can_recv);
     
     const uint32_t CAN_baudrate = 1000000;
+    const uint32_t faux_CAN_baudrate = 500000;
     
     handle_CAN_setup(VCFCANInterfaceImpl::TELEM_CAN, CAN_baudrate, &VCFCANInterfaceImpl::on_main_can_recv);
-    handle_CAN_setup(VCFCANInterfaceImpl::FAUX_CAN, CAN_baudrate, &VCFCANInterfaceImpl::on_faux_can_recv);
+    handle_CAN_setup(VCFCANInterfaceImpl::FAUX_CAN, faux_CAN_baudrate, &VCFCANInterfaceImpl::on_faux_can_recv);
 
     EthernetIPDefsInstance::create();
     uint8_t mac[6]; // NOLINT (mac addresses are always 6 bytes)

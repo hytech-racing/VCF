@@ -36,43 +36,27 @@ struct CANInterfaces {
 
 using CANInterfacesInstance = etl::singleton<CANInterfaces>;
 
-struct VCFCANInterfaceObjects {
+// struct VCFCANInterfaceObjects {
 
-    VCFCANInterfaceObjects(
-        FlexCAN_T4_Base * can_line,
-        etl::delegate<void(CANInterfaces &, const CAN_message_t &, unsigned long, CANInterfaceType_e)> can_line_recv_switch,  
-        CANInterfaceType_e can_type)
-        : can(can_line), can_recv_switch(can_line_recv_switch), can_type(can_type) 
-    {} 
+//     VCFCANInterfaceObjects(
+//         FlexCAN_T4_Base * can_line,
+//         etl::delegate<void(CANInterfaces &, const CAN_message_t &, unsigned long, CANInterfaceType_e)> can_line_recv_switch,  
+//         CANInterfaceType_e can_type)
+//         : can(can_line), can_recv_switch(can_line_recv_switch), can_type(can_type) 
+//     {} 
 
-    FlexCAN_T4_Base* can;
+//     FlexCAN_T4_Base* can;
 
-    CANRXBufferType can_rx_buffer;
-    CANTXBufferType can_tx_buffer;
+//     CANRXBufferType can_rx_buffer;
+//     CANTXBufferType can_tx_buffer;
 
-    CANInterfaceType_e can_type;
+//     CANInterfaceType_e can_type;
 
-    etl::delegate<void(CANInterfaces &, const CAN_message_t &, unsigned long, CANInterfaceType_e)> can_recv_switch;
+//     etl::delegate<void(CANInterfaces &, const CAN_message_t &, unsigned long, CANInterfaceType_e)> can_recv_switch;
 
     
-};
+// };
 
-
-struct VCFCANInterfaceSetup {
-
-    VCFCANInterfaceSetup(
-        FlexCAN_T4_Base* main_can,
-        FlexCAN_T4_Base* faux_can,
-        etl::delegate<void(CANInterfaces &, const CAN_message_t &, unsigned long, CANInterfaceType_e)> telem_recv,
-        etl::delegate<void(CANInterfaces &, const CAN_message_t &, unsigned long, CANInterfaceType_e)> faux_recv
-    ) : TELEM_CAN(main_can, telem_recv, CANInterfaceType_e::TELEM),
-        FAUX_CAN(faux_can, faux_recv, CANInterfaceType_e::FAUX)
-    {}
-
-
-    VCFCANInterfaceObjects TELEM_CAN;
-    VCFCANInterfaceObjects FAUX_CAN;
-};
 
 
 
