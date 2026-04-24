@@ -2,11 +2,37 @@
 #include "BuzzerController.h"
 
 namespace VCFCANInterfaceImpl {
+
+    CANRXBufferType telem_can_rx_buffer;
+    CANTXBufferType telem_can_tx_buffer;
+
+    CANRXBufferType faux_can_rx_buffer;
+    CANTXBufferType faux_can_tx_buffer;
+    
     void on_main_can_recv(const CAN_message_t &msg)
     {
         uint8_t buf[sizeof(CAN_message_t)];
         memmove(buf, &msg, sizeof(msg)); // NOLINT (memory operations are fine)
-        VCFCANInterfaceObjectsInstance::instance().main_can_rx_buffer.push_back(buf, sizeof(CAN_message_t));
+        telem_can_rx_buffer.push_back(buf, sizeof(CAN_message_t));
+    }
+
+    void on_faux_can_recv(const CAN_message_t &msg)
+    {
+        TELEM_CAN.write(msg); //immediately forward onto telem can to view data
+        uint8_t buf[sizeof(CAN_message_t)];
+        memmove(buf, &msg, sizeof(msg)); // NOLINT (memory operations are fine)
+        faux_can_rx_buffer.push_back(buf, sizeof(CAN_message_t));
+
+        Serial.println("msg recvd");
+        Serial.print("MB: "); Serial.print(msg.mb);
+        Serial.print("  ID: 0x"); Serial.print(msg.id, HEX);
+        Serial.print("  EXT: "); Serial.print(msg.flags.extended);
+        Serial.print("  LEN: "); Serial.print(msg.len);
+        Serial.print(" DATA: ");
+        for ( uint8_t i = 0; i < 8; i++ ) {
+        Serial.print(msg.buf[i]); Serial.print(" ");
+        }
+        Serial.print("  TS: "); Serial.println(msg.timestamp);
     }
 
     void vcf_recv_switch(CANInterfaces &interfaces, const CAN_message_t &msg, unsigned long millis, CANInterfaceType_e interface_type)
@@ -53,7 +79,6 @@ namespace VCFCANInterfaceImpl {
                 interfaces.vcr_interface.receive_inverter_status_4(msg);
                 break;
             }
-
             default:
                 break;
             }

@@ -38,6 +38,9 @@
 
 #include "hytech.h"
 
+// FlexCAN_Type<CAN1> VCFCANInterfaceImpl::TELEM_CAN;
+// FlexCAN_Type<CAN2> VCFCANInterfaceImpl::FAUX_CAN;
+
 // Tasks
 HT_TASK::Task async_main(HT_TASK::DUMMY_FUNCTION, &async_tasks::handle_async_main, VCFTaskConstants::MAIN_TASK_PRIORITY, VCFTaskConstants::MAIN_TASK_PERIOD);
 HT_TASK::Task CAN_send(HT_TASK::DUMMY_FUNCTION, &handle_CAN_send, VCFTaskConstants::CAN_SEND_PRIORITY, VCFTaskConstants::CAN_SEND_PERIOD);
