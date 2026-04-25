@@ -21,9 +21,9 @@
 
 struct MinCellMonitoringThresholds_s
 {
-    float max_level = 3.9;
-    float second_level = 3.85;
-    float third_level = 3.75;
+    float max_level = 3.85;
+    float second_level = 3.7;
+    float third_level = 3.65;
     float fourth_level = 3.6;
     float fifth_level = 3.5;
     float critical_charge_level = 3.4;
@@ -31,18 +31,22 @@ struct MinCellMonitoringThresholds_s
 
 enum LED_ID_e
 {
-    SHUTDOWN = 0,
-    INVERTER_ERR = 1,
-    TORQUE_MODE = 2,
-    BRAKE = 3,
-    BMS = 4,
-    GLV = 5,
-    PACK = 6,
-    IMD = 7,
-    IMPLAUSE = 8,
-    RDY_DRIVE = 9,
-    LATCH = 10,
-    CRIT_CHARGE = 11
+    INVERTER_ERR_WING = 0,
+    BMS_WING = 1,
+    SHUTDOWN = 2,
+    INVERTER_ERR = 3,
+    TORQUE_MODE = 4,
+    BRAKE = 5,
+    BMS = 6,
+    GLV = 7,
+    PACK = 8,
+    IMD = 9,
+    IMPLAUSE = 10,
+    RDY_DRIVE = 11,
+    LATCH = 12,
+    CRIT_CHARGE = 13,
+    LATCH_WING= 14,
+    IMD_WING = 15
 };
 
 enum class LED_color_e

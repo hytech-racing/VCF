@@ -22,7 +22,7 @@ namespace VCFInterfaceConstants {
     constexpr int BTN_PRESET_READ = 28; // Pedals recal button (brightness control on schematic)
     
     constexpr int NEOPIXEL_CONTROL_PIN = 33;
-    constexpr int NEOPIXEL_COUNT = 12; // 12 neopixeles on dashboard
+    constexpr int NEOPIXEL_COUNT = 16; // 16 neopixeles on dashboard
     
     // watchdog pins
     constexpr int WATCHDOG_PIN = 36;
