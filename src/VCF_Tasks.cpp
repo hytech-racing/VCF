@@ -474,7 +474,7 @@ HT_TASK::TaskResponse debug_print(const unsigned long& sysMicros, const HT_TASK:
     // Serial.println(ADCInterfaceInstance::instance().brake_2().conversion);
 
     // ADC 1
-    // Serial.println("\nADC 1\t\t\t  Load Cells \t  Sus Pots \t Brake Pressure");
+    Serial.println("\nADC 1\t\t\t  Load Cells \t  Sus Pots \t Brake Pressure");
     // Serial.println("\tSHDN H \tSHDN D \tFL \tFR \tFR \tFL \tFront \tRear");
     // Raw ADC
     // Serial.print("Raw\t");
@@ -484,8 +484,8 @@ HT_TASK::TaskResponse debug_print(const unsigned long& sysMicros, const HT_TASK:
     // Serial.print(ADCInterfaceInstance::instance().FR_load_cell().raw); Serial.print("\t");
     // Serial.print(ADCInterfaceInstance::instance().FR_sus_pot().raw); Serial.print("\t");
     // Serial.print(ADCInterfaceInstance::instance().FL_sus_pot().raw); Serial.print("\t");
-    // Serial.print(ADCInterfaceInstance::instance().get_brake_pressure_front().raw); Serial.print("\t");
-    // Serial.println(ADCInterfaceInstance::instance().get_brake_pressure_rear().raw);
+    Serial.print(ADCInterfaceInstance::instance().get_brake_pressure_front().raw); Serial.print("\t");
+    Serial.println(ADCInterfaceInstance::instance().get_brake_pressure_rear().raw);
     // Conversion ADC
     // Serial.print("Convert\t");
     // Serial.print(ADCInterfaceInstance::instance().shdn_h().conversion); Serial.print("\t");
