@@ -16,7 +16,7 @@ void SteeringSystem::recalibrate_steering_digital() {
     {
         min_observed_digital = UINT32_MAX; // clipping on prior run. 
     }
-    if (max_observed_digital == 16384) 
+    if (max_observed_digital > 16384) 
     {
         max_observed_digital = 0; // clipping
     }
