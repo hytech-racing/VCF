@@ -93,14 +93,17 @@ HT_TASK::TaskResponse update_pedals_calibration_task(const unsigned long& sysMic
     return HT_TASK::TaskResponse::YIELD;
 }
 
-
+uint32_t last_steering_calibrate_time; // move this maybe
 HT_TASK::TaskResponse update_steering_calibration_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo) {
     const uint32_t analog_raw = SteeringSystemInstance::instance().get_steering_system_data().analog_raw;
     const uint32_t digital_raw = SteeringSystemInstance::instance().get_steering_system_data().digital_raw;
 
     SteeringSystemInstance::instance().update_observed_steering_limits(analog_raw, digital_raw);
 
-    if (VCRInterfaceInstance::instance().is_in_steering_calibration_state()) {
+
+     if (VCRInterfaceInstance::instance().is_in_steering_calibration_state() && sys_time::hal_millis() - last_steering_calibrate_time > 5000) {
+        last_steering_calibrate_time = sys_time::hal_millis();
+
         SteeringSystemInstance::instance().recalibrate_steering_digital();
         EEPROMUtilities::write_eeprom_32bit(VCFSystemConstants::MIN_STEERING_SIGNAL_ANALOG_ADDR, SteeringSystemInstance::instance().get_steering_params().min_steering_signal_analog);
         EEPROMUtilities::write_eeprom_32bit(VCFSystemConstants::MAX_STEERING_SIGNAL_ANALOG_ADDR, SteeringSystemInstance::instance().get_steering_params().max_steering_signal_analog);
@@ -566,10 +569,10 @@ HT_TASK::TaskResponse debug_print(const unsigned long& sysMicros, const HT_TASK:
     Serial.println(SteeringSystemInstance::instance().get_steering_params().min_steering_signal_analog);
     Serial.print("Maximum Value Analog: ");
     Serial.println(SteeringSystemInstance::instance().get_steering_params().max_steering_signal_analog);
-    Serial.print("Minimum Value Digital: ");
-    Serial.println(SteeringSystemInstance::instance().get_steering_params().min_steering_signal_digital);
-    Serial.print("Maximum Value Digital: ");
-    Serial.println(SteeringSystemInstance::instance().get_steering_params().max_steering_signal_digital);
+    // Serial.print("Minimum Value Digital: ");
+    // Serial.println(SteeringSystemInstance::instance().get_steering_params().min_steering_signal_digital);
+    // Serial.print("Maximum Value Digital: ");
+    // Serial.println(SteeringSystemInstance::instance().get_steering_params().max_steering_signal_digital);
     Serial.print("Analog Midpoint: ");
     Serial.println(SteeringSystemInstance::instance().get_steering_params().analog_midpoint);
     Serial.print("Digital Midpoint: ");
@@ -584,11 +587,20 @@ HT_TASK::TaskResponse debug_print(const unsigned long& sysMicros, const HT_TASK:
     Serial.print(SteeringSystemInstance::instance().get_steering_system_data().digital_raw);
     Serial.print("|");
     Serial.println(SteeringSystemInstance::instance().get_steering_system_data().digital_steering_angle);
-
+    Serial.print("min_observed_analog: ");
+    Serial.println(SteeringSystemInstance::instance().get_min_observed_analog());
+    Serial.print("max_observed_analog: ");
+    Serial.println(SteeringSystemInstance::instance().get_max_observed_analog());
     Serial.print("analog_steering_angle: ");
     Serial.println(SteeringSystemInstance::instance().get_steering_system_data().analog_steering_angle);
     Serial.print("digital_steering_angle: ");
     Serial.println(SteeringSystemInstance::instance().get_steering_system_data().digital_steering_angle);
+    Serial.print("time: ");
+    Serial.println(sys_time::hal_millis());
+    Serial.print("analog_clipped: ");
+    Serial.println(SteeringSystemInstance::instance().get_steering_system_data().analog_clipped);
+    Serial.print("digital_clipped: ");
+    Serial.println(SteeringSystemInstance::instance().get_steering_system_data().digital_clipped);
 
     Serial.print("output_steering_angle: ");
     Serial.println(SteeringSystemInstance::instance().get_steering_system_data().output_steering_angle);
@@ -625,7 +637,6 @@ void setup_all_interfaces() {
     Serial.begin(VCFTaskConstants::SERIAL_BAUDRATE); // NOLINT
 
     // Initialize all singletons
-
 
     // Create ADC interface singleton
     ADCInterfaceInstance::create(
@@ -763,14 +774,11 @@ void setup_all_interfaces() {
     steering_params.digital_midpoint = (steering_params.min_steering_signal_digital + steering_params.max_steering_signal_digital) / 2;
 
     SteeringSystemInstance::create(steering_params);
+    last_steering_calibrate_time = sys_time::hal_millis();
 
-    Serial.println("fff");
-    
     // Create Digital Steering Sensor singleton
     OrbisBRInstance::create(&Serial2);
     
-    Serial.println("fff2");
-
     // Create dashboard singleton
     DashboardGPIOs_s dashboard_gpios = {
         .BRIGHTNESS_CONTROL_PIN = VCFInterfaceConstants::BRIGHTNESS_CONTROL_PIN,

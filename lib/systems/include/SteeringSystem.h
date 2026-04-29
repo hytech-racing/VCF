@@ -73,8 +73,14 @@ public:
     }
     void update_observed_steering_limits(const uint32_t analog_raw, const uint32_t digital_raw);
 
-   private:
-
+    //DELETE
+    const uint32_t get_min_observed_analog() const {
+        return min_observed_analog;
+    }
+    const uint32_t get_max_observed_analog() const {
+        return max_observed_analog;
+    }
+private:
     float _convert_digital_sensor(const uint32_t digital_raw);
    
     float _convert_analog_sensor(const uint32_t analog_raw);
@@ -97,11 +103,11 @@ public:
     bool _calibrating = false;
     bool _finished_calibrating = false;
     bool _first_run = true; // skip dTheta check on the very first tick
-    uint32_t min_observed_analog;
-    uint32_t max_observed_analog;
-    uint32_t min_observed_digital;
-    uint32_t max_observed_digital;
-
+    uint32_t min_observed_analog = UINT32_MAX;
+    uint32_t max_observed_analog = 0;
+    uint32_t min_observed_digital = UINT32_MAX;
+    uint32_t max_observed_digital = 0;
+    
 
 };
 using SteeringSystemInstance = etl::singleton<SteeringSystem>;

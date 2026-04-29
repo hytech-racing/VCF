@@ -4,22 +4,7 @@
 #include "SteeringEncoderInterface.h"
 
 void SteeringSystem::recalibrate_steering_digital() {
-    if (min_observed_analog == 0)
-    {
-        min_observed_analog = UINT32_MAX; // clipping if it is at 0, it is likely sensor is clipping or clipped in past and reading is holding the 0 value. 
-    }
-    if (max_observed_analog > 3685) 
-    {
-        max_observed_analog = 0; // clipping
-    }
-    if (min_observed_digital == 0)
-    {
-        min_observed_digital = UINT32_MAX; // clipping on prior run. 
-    }
-    if (max_observed_digital > 16384) 
-    {
-        max_observed_digital = 0; // clipping
-    }
+
 
     _steeringParams.min_steering_signal_analog = min_observed_analog;
     _steeringParams.max_steering_signal_analog = max_observed_analog;
@@ -42,16 +27,17 @@ void SteeringSystem::recalibrate_steering_digital() {
     _steeringParams.digital_min_with_margins = static_cast<int32_t>(_steeringParams.min_steering_signal_digital) - _steeringParams.digital_tol_deg;
     _steeringParams.digital_max_with_margins = static_cast<int32_t>(_steeringParams.max_steering_signal_digital) + _steeringParams.digital_tol_deg;
 
-    if ( _steeringParams.span_signal_analog > 2000)
+    if (max_observed_analog > min_observed_analog && _steeringParams.span_signal_analog > 2000) // prevents wrap around
     {
         min_observed_analog = UINT32_MAX; // after calculating params, if the range is marginally greater than half the steering wheel adc, likely the min and max are clinging to a prior run that is not applicable, meaning we will need to reset the boundaries. 
         max_observed_analog = 0;
     }
-    if (_steeringParams.span_signal_digital > 9000)
+    if (max_observed_digital > min_observed_digital && _steeringParams.span_signal_digital > 9000)
     {
         min_observed_digital = UINT32_MAX; 
         max_observed_digital = 0;
     }
+
 }
 
 void SteeringSystem::evaluate_steering(const uint32_t analog_raw, const SteeringEncoderReading_s digital_data, const uint32_t current_millis) {
@@ -62,8 +48,6 @@ void SteeringSystem::evaluate_steering(const uint32_t analog_raw, const Steering
     _steeringSystemData.dtheta_exceeded_analog = false;
     _steeringSystemData.dtheta_exceeded_digital = false;
     _steeringSystemData.both_sensors_fail = false;
-    _steeringSystemData.analog_clipped = (min_observed_analog == 0 || max_observed_analog > 3685); // assuming 12-bit ADC with 10% dropoff
-    _steeringSystemData.digital_clipped = (min_observed_digital == 0 || max_observed_digital > 16380); // assuming 14-bit ADC with minimal dropoff
 
     const uint32_t digital_raw = digital_data.rawValue;
 
@@ -82,17 +66,17 @@ void SteeringSystem::evaluate_steering(const uint32_t analog_raw, const Steering
 
     if (!_first_run && dt > 0) { //check that we not on the first run which would mean no previous data
         float dtheta_analog = _steeringSystemData.analog_steering_angle - _prev_analog_angle; //prev_angle established in last run
-        if (dtheta_analog < 2)//make constant in VCF constants 
+        if (dtheta_analog < 2 && dtheta_analog > -2)//make constant in VCF constants 
         {
             _steeringSystemData.analog_steering_velocity_deg_s = 0; //NOLINT ms to s
         }
         else
         {
-            _steeringSystemData.analog_steering_velocity_deg_s = (dtheta_analog / dt) * 1000.0f; //NOLINT ms to s
+            _steeringSystemData.analog_steering_velocity_deg_s = (dtheta_analog / static_cast<float>(dt)) * 1000.0f; //NOLINT ms to s
         }
         
         float dtheta_digital = _steeringSystemData.digital_steering_angle - _prev_digital_angle;
-        _steeringSystemData.digital_steering_velocity_deg_s = (dtheta_digital / dt) * 1000.0f; //NOLINT ms to s
+        _steeringSystemData.digital_steering_velocity_deg_s = (dtheta_digital / static_cast<float>(dt)) * 1000.0f; //NOLINT ms to s
 
         //Check if either sensor moved too much in one tick
         _steeringSystemData.dtheta_exceeded_analog = _evaluate_steering_dtheta_exceeded(_steeringSystemData.analog_steering_velocity_deg_s);
@@ -100,7 +84,7 @@ void SteeringSystem::evaluate_steering(const uint32_t analog_raw, const Steering
 
         //Check if either sensor is out of range (pass in raw)
         _steeringSystemData.analog_oor_implausibility = _evaluate_steering_oor_analog(static_cast<uint32_t>(analog_raw));
-        _steeringSystemData.digital_oor_implausibility = _evaluate_steering_oor_digital(static_cast<uint32_t>(digital_raw)) || digital_fault;
+        _steeringSystemData.digital_oor_implausibility = _evaluate_steering_oor_digital(static_cast<uint32_t>(digital_raw));
 
         //Check if there is too much of a difference between sensor values
         float sensor_difference = std::fabs(_steeringSystemData.analog_steering_angle - _steeringSystemData.digital_steering_angle);
@@ -110,7 +94,7 @@ void SteeringSystem::evaluate_steering(const uint32_t analog_raw, const Steering
         //create an algorithm/ checklist to determine which sensor we trust more,
         //or, if we should have an algorithm to have a weighted calculation based on both values
         bool analog_valid = !_steeringSystemData.analog_oor_implausibility && !_steeringSystemData.dtheta_exceeded_analog;
-        bool digital_valid = !_steeringSystemData.digital_oor_implausibility && !_steeringSystemData.dtheta_exceeded_digital && !digital_fault;
+        bool digital_valid = !_steeringSystemData.digital_oor_implausibility && !_steeringSystemData.dtheta_exceeded_digital && !_steeringSystemData.interface_sensor_error;
 
         if (analog_valid && digital_valid) {
             //if sensors have acceptable difference, use digital as steering angle
@@ -136,10 +120,27 @@ void SteeringSystem::evaluate_steering(const uint32_t analog_raw, const Steering
 }
 
 void SteeringSystem::update_observed_steering_limits(const uint32_t analog_raw, const uint32_t digital_raw) {
+
     min_observed_analog = std::min(min_observed_analog, static_cast<uint32_t>(analog_raw));
     max_observed_analog = std::max(max_observed_analog, static_cast<uint32_t>(analog_raw));
     min_observed_digital = std::min(min_observed_digital, static_cast<uint32_t>(digital_raw)); //NOLINT should both be uint32_t
     max_observed_digital = std::max(max_observed_digital, static_cast<uint32_t>(digital_raw)); //NOLINT ^
+    if (min_observed_analog < 5)
+    {
+        min_observed_analog = UINT32_MAX; // clipping if it is at 0, it is likely sensor is clipping or clipped in past and reading is holding the 0 value. 
+    }
+    if (max_observed_analog > 3685) 
+    {
+        max_observed_analog = 0; // clipping
+    }
+    if (min_observed_digital < 5)
+    {
+        min_observed_digital = UINT32_MAX; // clipping on prior run. 
+    }
+    if (max_observed_digital > 16384) 
+    {
+        max_observed_digital = 0; // clipping
+    }
 }
 
 float SteeringSystem::_convert_digital_sensor(const uint32_t digital_raw) {

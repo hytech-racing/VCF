@@ -70,18 +70,18 @@ void setup() {
     // Schedule Tasks
     HT_SCHED::Scheduler::getInstance().schedule(kick_watchdog_task);
     HT_SCHED::Scheduler::getInstance().schedule(async_main);
-    HT_SCHED::Scheduler::getInstance().schedule(CAN_send);
-    HT_SCHED::Scheduler::getInstance().schedule(dash_CAN_enqueue);
-    HT_SCHED::Scheduler::getInstance().schedule(buzzer_control_task);
-    HT_SCHED::Scheduler::getInstance().schedule(pedals_message_enqueue);
+    // HT_SCHED::Scheduler::getInstance().schedule(CAN_send);
+    // HT_SCHED::Scheduler::getInstance().schedule(dash_CAN_enqueue);
+    // HT_SCHED::Scheduler::getInstance().schedule(buzzer_control_task);
+    // HT_SCHED::Scheduler::getInstance().schedule(pedals_message_enqueue);
     HT_SCHED::Scheduler::getInstance().schedule(adc0_sample);
     HT_SCHED::Scheduler::getInstance().schedule(adc1_sample);
-    HT_SCHED::Scheduler::getInstance().schedule(digital_steering_sample);
-    HT_SCHED::Scheduler::getInstance().schedule(read_dash_GPIOs_task);
-    HT_SCHED::Scheduler::getInstance().schedule(read_ioexpander_task);
-    HT_SCHED::Scheduler::getInstance().schedule(neopixels_task);
-    HT_SCHED::Scheduler::getInstance().schedule(steering_message_enqueue);
-    HT_SCHED::Scheduler::getInstance().schedule(front_suspension_message_enqueue);
+    // HT_SCHED::Scheduler::getInstance().schedule(digital_steering_sample);
+    // HT_SCHED::Scheduler::getInstance().schedule(read_dash_GPIOs_task);
+    // HT_SCHED::Scheduler::getInstance().schedule(read_ioexpander_task);
+    // HT_SCHED::Scheduler::getInstance().schedule(neopixels_task);
+    // HT_SCHED::Scheduler::getInstance().schedule(steering_message_enqueue);
+    // HT_SCHED::Scheduler::getInstance().schedule(front_suspension_message_enqueue);
   //  HT_SCHED::Scheduler::getInstance().schedule(pedals_calibration_task);
     HT_SCHED::Scheduler::getInstance().schedule(steering_calibration_task);
     HT_SCHED::Scheduler::getInstance().schedule(ethernet_send_task);
