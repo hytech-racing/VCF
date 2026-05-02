@@ -2,14 +2,9 @@
 #define STEERING_SYSTEM_H
  
 #include <etl/singleton.h>
-
-
-#include <algorithm>
-#include <cmath>
 #include <cstdint>
 
 #include "SharedFirmwareTypes.h"
-#include "SteeringEncoderInterface.h"
 
 struct SteeringParams_s {
     // raw ADC input signals

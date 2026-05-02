@@ -6,26 +6,26 @@
 #ifndef STEERING_ENCODER_INTERFACE_H
 #define STEERING_ENCODER_INTERFACE_H
 
-enum class SteeringEncoderStatus_e
-{
-    NOMINAL = 0,
-    ERROR = 1,
-};
+// enum class SteeringEncoderStatus_e
+// {
+//     NOMINAL = 0,
+//     ERROR = 1,
+// };
 
-struct EncoderErrorFlags_s
-{
-    bool dataInvalid              = false;
-    bool operatingLimit           = false;
-    bool noData                   = false;
-};
+// struct EncoderErrorFlags_s
+// {
+//     bool dataInvalid              = false;
+//     bool operatingLimit           = false;
+//     bool noData                   = false;
+// };
 
-struct SteeringEncoderReading_s
-{
-    float angle = 0.0f;
-    int rawValue = 0;
-    SteeringEncoderStatus_e status = SteeringEncoderStatus_e::NOMINAL;
-    EncoderErrorFlags_s errors;
-};
+// struct SteeringEncoderReading_s
+// {
+//     float angle = 0.0f;
+//     int rawValue = 0;
+//     SteeringEncoderStatus_e status = SteeringEncoderStatus_e::NOMINAL;
+//     EncoderErrorFlags_s errors;
+// };
 #endif 
 
 #include "SteeringSystem.h"
