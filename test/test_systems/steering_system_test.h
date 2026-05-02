@@ -94,32 +94,8 @@ static SteeringEncoderReading_s hardcode_digital_data(int rawValue, SteeringEnco
     data.errors = {};  // Ensure no error flags are set
     return data;
 }
-/* helper functions, however we are asserting the values in each function as variables
-static SteeringSensorData_s make_raw(uint32_t analog_adc, uint32_t digital_adc){
-    SteeringSensorData_s raw{};
-    raw.analog_steering_degrees = analog_adc;
-    raw.digital_steering_analog = digital_adc;
-}
 
-static SteeringSystemData_s tick(SteeringSystem& sys,uint32_t analog_raw, uint32_t digital_raw, uint32_t t_ms){
-    return sys.evaluate_steering(make_raw(analog_raw,digital_raw),t_ms);
-}
 
-static SteeringSystemData_s tick2(SteeringSystem & sys, uint32_t analog_raw, uint32_t digital_raw, uint32_t t0, uint32_t t1){
-    (void)tick(sys,analog_raw,digital_raw,t0);
-    return(tick(sys,analog_raw,digital_raw,t1)); //get the value of timestamp between evalute steerings
-}
-
-static float expected_angle_from_midpoint(uint32_t raw, uint32_t min, uint32_t max, float deg_per_count)
-{
-    uint32_t midpoint = (min + max) /2
-    int32_t offset = static_cast<int32_t>(raw) - static_cast<int32_t>(midpoint);
-    return static_cast<float>(offset) * deg_per_count
-}
-
-*/
-
-//FIXED
 TEST(SteeringSystemTesting, test_adc_to_degree_conversion)
 {
     auto params = gen_default_params();

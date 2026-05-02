@@ -262,8 +262,7 @@ HT_TASK::TaskResponse enqueue_steering_data(const unsigned long& sysMicros, cons
     msg_out.steering_sensor_disagreement = steering_system_data.sensor_disagreement_implausibility;
     msg_out.steering_analog_raw = steering_system_data.analog_raw;
     msg_out.steering_digital_raw = steering_system_data.digital_raw;
-    msg_out.steering_analog_clipped = steering_system_data.analog_clipped;
-    msg_out.steering_digital_clipped = steering_system_data.digital_clipped;
+
 
     CAN_util::enqueue_msg(&msg_out, &Pack_STEERING_DATA_hytech, VCFCANInterfaceImpl::VCFCANInterfaceObjectsInstance::instance().main_can_tx_buffer);
     return HT_TASK::TaskResponse::YIELD;
@@ -597,10 +596,7 @@ HT_TASK::TaskResponse debug_print(const unsigned long& sysMicros, const HT_TASK:
     Serial.println(SteeringSystemInstance::instance().get_steering_system_data().digital_steering_angle);
     Serial.print("time: ");
     Serial.println(sys_time::hal_millis());
-    Serial.print("analog_clipped: ");
-    Serial.println(SteeringSystemInstance::instance().get_steering_system_data().analog_clipped);
-    Serial.print("digital_clipped: ");
-    Serial.println(SteeringSystemInstance::instance().get_steering_system_data().digital_clipped);
+
 
     Serial.print("output_steering_angle: ");
     Serial.println(SteeringSystemInstance::instance().get_steering_system_data().output_steering_angle);
