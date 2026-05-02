@@ -27,8 +27,6 @@
 #include "WatchdogSystem.h"
 #include "EEPROMUtilities.h"
 
-
-
 /* CAN Interface stuff */
 #include "VCFCANInterfaceImpl.h"
 #include "CANInterface.h"
@@ -37,6 +35,13 @@
 #include "ht_task.hpp"
 
 #include "hytech.h"
+
+// Globals
+FlexCAN_Type<CAN1> VCFCANInterfaceImpl::TELEM_CAN;
+FlexCAN_Type<CAN2> VCFCANInterfaceImpl::FAUX_CAN;
+
+qindesign::network::EthernetUDP VCFEthernetInterface::VCF_socket;
+qindesign::network::EthernetUDP VCFEthernetInterface::VCR_socket;
 
 // Tasks
 HT_TASK::Task async_main(HT_TASK::DUMMY_FUNCTION, &async_tasks::handle_async_main, VCFTaskConstants::MAIN_TASK_PRIORITY, VCFTaskConstants::MAIN_TASK_PERIOD);

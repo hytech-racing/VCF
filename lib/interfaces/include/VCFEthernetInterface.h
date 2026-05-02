@@ -1,6 +1,7 @@
 #ifndef VCF_ETHERNET_INTERFACE_H
 #define VCF_ETHERNET_INTERFACE_H
 
+#include "QNEthernet.h"
 #include "hytech_msgs.pb.h"
 #include "SharedFirmwareTypes.h"
 #include "ADCInterface.h"
@@ -31,6 +32,10 @@ namespace VCFEthernetInterface
 
     constexpr const size_t ver_hash_len = 9;
     constexpr float SHDN_HIGH_THRESHOLD = 12.0; // threshold for shutdown being considered high
+
+    /* Ethernet sockets */
+    extern qindesign::network::EthernetUDP VCF_socket;
+    extern qindesign::network::EthernetUDP VCR_socket;
 }
 
 #endif /* VCF_ETHERNET_INTERFACE_H */
