@@ -1,9 +1,11 @@
+#include "MCP23017.h"
 #include "IOExpanderUtils.h"
 
-bool IOExpanderUtils::getBit(uint16_t data, bool port, int bit)
+/*
+ * Retrieves the bit from the data frame.
+ * Port A = 0, and is the lower byte of data. Port B = 1, and is the higher byte of data.
+ */
+bool IOExpanderUtils::getBit(uint16_t data, MCP23017Port port, uint8_t bit)
 {
-    if(!port){ //0=A
-        return (data>>bit)&1;
-    }
-    return (data>>(8+bit))&1; // NOLINT (B port is in upper 8 bits, while A port is in lower 8 bits)
+    return (data >> ((uint16_t) port * 8 + bit)) & 1;
 }
