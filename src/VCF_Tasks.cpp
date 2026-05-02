@@ -201,7 +201,7 @@ HT_TASK::TaskResponse enqueue_steering_data(const unsigned long& sysMicros, cons
 
 HT_TASK::TaskResponse init_handle_send_vcf_ethernet_data(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo) {
     qindesign::network::Ethernet.begin(EthernetIPDefsInstance::instance().vcf_ip, EthernetIPDefsInstance::instance().car_subnet, EthernetIPDefsInstance::instance().default_gateway);
-    VCF_socket.begin(EthernetIPDefsInstance::instance().VCFData_port);
+    VCFEthernetInterface::VCF_socket.begin(EthernetIPDefsInstance::instance().VCFData_port);
 
     return HT_TASK::TaskResponse::YIELD;
 }
@@ -211,7 +211,7 @@ HT_TASK::TaskResponse run_handle_send_vcf_ethernet_data(const unsigned long& sys
     if(handle_ethernet_socket_send_pb<hytech_msgs_VCFData_s_size, hytech_msgs_VCFData_s>
             (EthernetIPDefsInstance::instance().drivebrain_ip,
             EthernetIPDefsInstance::instance().VCFData_port,
-            &VCF_socket,
+            &VCFEthernetInterface::VCF_socket,
             msg,
             hytech_msgs_VCFData_s_fields)) {
     }
@@ -219,13 +219,13 @@ HT_TASK::TaskResponse run_handle_send_vcf_ethernet_data(const unsigned long& sys
 }
 
 // HT_TASK::TaskResponse init_handle_receive_vcr_ethernet_data() {
-//     VCF_socket.begin(EthernetIPDefsInstance::instance().VCFData_port);
+//     VCFEthernetInterface::VCF_socket.begin(EthernetIPDefsInstance::instance().VCFData_port);
 
 //     return HT_TASK::TaskResponse::YIELD;
 // }
 
 // HT_TASK::TaskResponse run_handle_receive_vcr_ethernet_data() {
-//     etl::optional<hytech_msgs_VCRData_s> protoc_struct = handle_ethernet_socket_receive<hytech_msgs_VCRData_s_size, hytech_msgs_VCRData_s>(&VCF_socket, &hytech_msgs_VCRData_s_msg);
+//     etl::optional<hytech_msgs_VCRData_s> protoc_struct = handle_ethernet_socket_receive<hytech_msgs_VCRData_s_size, hytech_msgs_VCRData_s>(&VCFEthernetInterface::VCF_socket, &hytech_msgs_VCRData_s_msg);
 
 //     return HT_TASK::TaskResponse::YIELD;
 // }
