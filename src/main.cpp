@@ -38,7 +38,7 @@
 #include "hytech.h"
 
 // Globals
-qindesign::network::EthernetUDP VCFEthernetInterface::VCF_socket;
+qindesign::network::EthernetUDP VCFEthernetInterface::VCF_socket; // TODO: move these out of main
 qindesign::network::EthernetUDP VCFEthernetInterface::VCR_socket;
 
 // Tasks
