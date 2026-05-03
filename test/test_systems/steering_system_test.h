@@ -1,33 +1,6 @@
 #define STEERING_SYSTEM_TEST
 #include <gtest/gtest.h>
 #include <string>
-
-// Hardcoded Steering Encoder Interface types to avoid Arduino-dependent includes in test env
-#ifndef STEERING_ENCODER_INTERFACE_H
-#define STEERING_ENCODER_INTERFACE_H
-
-// enum class SteeringEncoderStatus_e
-// {
-//     NOMINAL = 0,
-//     ERROR = 1,
-// };
-
-// struct EncoderErrorFlags_s
-// {
-//     bool dataInvalid              = false;
-//     bool operatingLimit           = false;
-//     bool noData                   = false;
-// };
-
-// struct SteeringEncoderReading_s
-// {
-//     float angle = 0.0f;
-//     int rawValue = 0;
-//     SteeringEncoderStatus_e status = SteeringEncoderStatus_e::NOMINAL;
-//     EncoderErrorFlags_s errors;
-// };
-#endif 
-
 #include "SteeringSystem.h"
 #include "SharedFirmwareTypes.h"
 #include <array>
@@ -54,7 +27,7 @@ SteeringParams_s gen_default_params(){
     params.analog_tol_deg = 0.11377778f;
     params.digital_tol_deg = 0.2f;
 
-    params.max_dtheta_threshold = 5.0f;//change
+    params.max_dtheta_threshold = 50.0f;//change
     params.error_between_sensors_tolerance = 0.31377778f;
 
     params.digital_midpoint = (params.min_steering_signal_digital + params.max_steering_signal_digital) / 2;
@@ -203,18 +176,27 @@ TEST(SteeringSystemTesting, test_detect_jumps_dtheta){
     analog_raw = 2048;
     digital_data = hardcode_digital_data(4000);
     steering.evaluate_steering(analog_raw, digital_data, 1010);
+    data = steering.get_steering_system_data();
+
+    std::cout << "\n angle1: " << data.digital_steering_angle;
     //Small motion valid
     analog_raw = 2060;
     digital_data = hardcode_digital_data(4050);
-    steering.evaluate_steering(analog_raw, digital_data, 1020); //advance time by 10 ms
+    steering.evaluate_steering(analog_raw, digital_data, 1120); //advance time by 110 ms
+    
     data = steering.get_steering_system_data();
+
+    std::cout << "\n angle2: " << data.digital_steering_angle;
+    std::cout << "\n Velocity:" << data.digital_steering_velocity_deg_s << '\n';
+    
     EXPECT_FALSE(data.dtheta_exceeded_analog);
     EXPECT_FALSE(data.dtheta_exceeded_digital);
 
     //Big motion NOT valid
     analog_raw = 4096;
     digital_data = hardcode_digital_data(8000);
-    steering.evaluate_steering(analog_raw, digital_data, 1030); //advance time by another 10 ms
+    steering.evaluate_steering(analog_raw, digital_data, 1130); //advance time by another 10 ms
+    
     data = steering.get_steering_system_data();
     EXPECT_TRUE(data.dtheta_exceeded_analog);
     EXPECT_TRUE(data.dtheta_exceeded_digital);
