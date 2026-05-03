@@ -16,6 +16,7 @@
 /* From Arduino Libraries */
 #include "hytech.h"
 #include "QNEthernet.h"
+#include "FlexCAN_T4.h"
 
 /* Local includes */
 #include "VCF_Globals.h"
@@ -37,9 +38,6 @@
 #include "hytech.h"
 
 // Globals
-FlexCAN_Type<CAN1> VCFCANInterfaceImpl::TELEM_CAN;
-FlexCAN_Type<CAN2> VCFCANInterfaceImpl::FAUX_CAN;
-
 qindesign::network::EthernetUDP VCFEthernetInterface::VCF_socket;
 qindesign::network::EthernetUDP VCFEthernetInterface::VCR_socket;
 

@@ -1,27 +1,20 @@
 #include "VCFCANInterfaceImpl.h"
 #include "BuzzerController.h"
 
-namespace VCFCANInterfaceImpl {
-
-    CANRXBufferType telem_can_rx_buffer;
-    CANTXBufferType telem_can_tx_buffer;
-
-    CANRXBufferType faux_can_rx_buffer;
-    CANTXBufferType faux_can_tx_buffer;
-    
+namespace VCFCANInterfaceImpl {    
     void on_main_can_recv(const CAN_message_t &msg)
     {
         uint8_t buf[sizeof(CAN_message_t)];
         memmove(buf, &msg, sizeof(msg)); // NOLINT (memory operations are fine)
-        telem_can_rx_buffer.push_back(buf, sizeof(CAN_message_t));
+        VCFCANInterfaceInstance::instance().telem_can_rx_buffer.push_back(buf, sizeof(CAN_message_t));
     }
 
     void on_faux_can_recv(const CAN_message_t &msg)
     {
-        TELEM_CAN.write(msg); //immediately forward onto telem can to view data
+        VCFCANInterfaceInstance::instance().TELEM_CAN.write(msg); //immediately forward onto telem can to view data
         uint8_t buf[sizeof(CAN_message_t)];
         memmove(buf, &msg, sizeof(msg)); // NOLINT (memory operations are fine)
-        faux_can_rx_buffer.push_back(buf, sizeof(CAN_message_t));
+        VCFCANInterfaceInstance::instance().front_aux_can_rx_buffer.push_back(buf, sizeof(CAN_message_t));
 
         // Serial.println("msg recvd");
         // Serial.print("MB: "); Serial.print(msg.mb);

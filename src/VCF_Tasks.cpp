@@ -136,15 +136,15 @@ HT_TASK::TaskResponse run_buzzer_control_task(const unsigned long& sysMicros, co
 
 HT_TASK::TaskResponse handle_CAN_send(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
 {
-    VCFCANInterfaceImpl::send_all_CAN_msgs(VCFCANInterfaceImpl::telem_can_tx_buffer, &VCFCANInterfaceImpl::TELEM_CAN);
-    VCFCANInterfaceImpl::send_all_CAN_msgs(VCFCANInterfaceImpl::faux_can_tx_buffer, &VCFCANInterfaceImpl::FAUX_CAN);
+    VCFCANInterfaceImpl::send_all_CAN_msgs(VCFCANInterfaceInstance::instance().telem_can_tx_buffer, &VCFCANInterfaceInstance::instance().TELEM_CAN);
+    VCFCANInterfaceImpl::send_all_CAN_msgs(VCFCANInterfaceInstance::instance().front_aux_can_tx_buffer, &VCFCANInterfaceInstance::instance().FRONT_AUX_CAN);
 
     return HT_TASK::TaskResponse::YIELD;
 }
 
 HT_TASK::TaskResponse send_dash_data(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
 {
-    CANInterfaces can_interfaces =VCFCANInterfaceImpl::CANInterfacesInstance::instance();
+    CANInterfaces can_interfaces = CANInterfacesInstance::instance();
     DashInputState_s dash_outputs = can_interfaces.dash_interface.get_dashboard_outputs();
 
     DASH_INPUT_t msg_out;
@@ -160,14 +160,14 @@ HT_TASK::TaskResponse send_dash_data(const unsigned long& sysMicros, const HT_TA
     msg_out.led_dimmer_button = dash_outputs.brightness_ctrl_btn_is_pressed;
     msg_out.dash_dial_mode = static_cast<int>(DashboardInterfaceInstance::instance().get_dashboard_outputs().dial_state);
 
-    CAN_util::enqueue_msg(&msg_out, &Pack_DASH_INPUT_hytech, VCFCANInterfaceImpl::telem_can_tx_buffer);
+    CAN_util::enqueue_msg(&msg_out, &Pack_DASH_INPUT_hytech, VCFCANInterfaceInstance::instance().telem_can_tx_buffer);
 
     return HT_TASK::TaskResponse::YIELD;
 }
 
 HT_TASK::TaskResponse enqueue_front_suspension_data(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
 {
-    CANInterfaces can_interface =VCFCANInterfaceImpl::CANInterfacesInstance::instance();
+    CANInterfaces can_interface = CANInterfacesInstance::instance();
     FRONT_SUSPENSION_t msg_out;
 
     msg_out.fr_load_cell = ADCInterfaceInstance::instance().get_filtered_FR_load_cell();
@@ -175,7 +175,7 @@ HT_TASK::TaskResponse enqueue_front_suspension_data(const unsigned long& sysMicr
     msg_out.fr_shock_pot_ro = HYTECH_fr_shock_pot_ro_toS(ADCInterfaceInstance::instance().get_filtered_FR_sus_pot());
     msg_out.fl_shock_pot_ro = HYTECH_fl_shock_pot_ro_toS(ADCInterfaceInstance::instance().get_filtered_FL_sus_pot());
 
-    CAN_util::enqueue_msg(&msg_out, &Pack_FRONT_SUSPENSION_hytech, VCFCANInterfaceImpl::telem_can_tx_buffer);
+    CAN_util::enqueue_msg(&msg_out, &Pack_FRONT_SUSPENSION_hytech, VCFCANInterfaceInstance::instance().telem_can_tx_buffer);
     return HT_TASK::TaskResponse::YIELD;
 }
 
@@ -195,7 +195,7 @@ HT_TASK::TaskResponse enqueue_steering_data(const unsigned long& sysMicros, cons
     msg_out.steering_output_steering_angle_ro = 0;
     msg_out.steering_sensor_disagreement = 0;
 
-    CAN_util::enqueue_msg(&msg_out, &Pack_STEERING_DATA_hytech, VCFCANInterfaceImpl::telem_can_tx_buffer);
+    CAN_util::enqueue_msg(&msg_out, &Pack_STEERING_DATA_hytech, VCFCANInterfaceInstance::instance().telem_can_tx_buffer);
     return HT_TASK::TaskResponse::YIELD;
 }
 
@@ -247,7 +247,7 @@ HT_TASK::TaskResponse enqueue_pedals_data(const unsigned long &sys_micros, const
     pedals_data.accel_pedal_ro = HYTECH_accel_pedal_ro_toS(PedalsSystemInstance::instance().get_pedals_system_data().accel_percent);
     pedals_data.brake_pedal_ro = HYTECH_brake_pedal_ro_toS(PedalsSystemInstance::instance().get_pedals_system_data().brake_percent);
 
-    CAN_util::enqueue_msg(&pedals_data, &Pack_PEDALS_SYSTEM_DATA_hytech, VCFCANInterfaceImpl::telem_can_tx_buffer);
+    CAN_util::enqueue_msg(&pedals_data, &Pack_PEDALS_SYSTEM_DATA_hytech, VCFCANInterfaceInstance::instance().telem_can_tx_buffer);
     return HT_TASK::TaskResponse::YIELD;
 }
 
@@ -366,7 +366,7 @@ HT_TASK::TaskResponse init_neopixels_task(const unsigned long& sys_micros, const
 
 HT_TASK::TaskResponse run_update_neopixels_task(const unsigned long& sys_micros, const HT_TASK::TaskInfo& task_info)
 {
-    NeopixelControllerInstance::instance().refresh_neopixels(PedalsSystemInstance::instance().get_pedals_system_data(),VCFCANInterfaceImpl::CANInterfacesInstance::instance());
+    NeopixelControllerInstance::instance().refresh_neopixels(PedalsSystemInstance::instance().get_pedals_system_data(), CANInterfacesInstance::instance());
     return HT_TASK::TaskResponse::YIELD;
 }
 
@@ -375,11 +375,8 @@ namespace async_tasks
     // these are async tasks. we want these to run as fast as possible p much
     void handle_async_CAN_receive() //NOLINT caps for CAN
     {
-        CANInterfaces& vcf_can_interfaces = VCFCANInterfaceImpl::CANInterfacesInstance::instance();
-        etl::delegate<void(CANInterfaces &, const CAN_message_t &, unsigned long, CANInterfaceType_e)> recv_call = etl::delegate<void(CANInterfaces &, const CAN_message_t &, unsigned long, CANInterfaceType_e)>::create<VCFCANInterfaceImpl::vcf_recv_switch>();
-
-        process_ring_buffer(VCFCANInterfaceImpl::telem_can_rx_buffer, vcf_can_interfaces, sys_time::hal_millis(), recv_call, CANInterfaceType_e::TELEM);
-        process_ring_buffer(VCFCANInterfaceImpl::faux_can_rx_buffer, vcf_can_interfaces, sys_time::hal_millis(), recv_call, CANInterfaceType_e::FAUX);
+        process_ring_buffer(VCFCANInterfaceInstance::instance().telem_can_rx_buffer, CANInterfacesInstance::instance(), sys_time::hal_millis(), VCFCANInterfaceInstance::instance().can_recv_switch, CANInterfaceType_e::TELEM);
+        process_ring_buffer(VCFCANInterfaceInstance::instance().front_aux_can_rx_buffer, CANInterfacesInstance::instance(), sys_time::hal_millis(), VCFCANInterfaceInstance::instance().can_recv_switch, CANInterfaceType_e::FAUX);
     }
 
     void handle_async_recvs()
@@ -598,9 +595,10 @@ void setup_all_interfaces() {
     VCRInterfaceInstance::create();
 
     // Create CAN singletons
-    VCFCANInterfaceImpl::CANInterfacesInstance::create(DashboardInterfaceInstance::instance(), ACUInterfaceInstance::instance(), VCRInterfaceInstance::instance());
-    handle_CAN_setup(VCFCANInterfaceImpl::TELEM_CAN, VCFInterfaceConstants::TELEM_CAN_BAUDRATE, &VCFCANInterfaceImpl::on_main_can_recv);
-    handle_CAN_setup(VCFCANInterfaceImpl::FAUX_CAN, VCFInterfaceConstants::FAUX_CAN_BAUDRATE, &VCFCANInterfaceImpl::on_faux_can_recv);
+    CANInterfacesInstance::create(DashboardInterfaceInstance::instance(), ACUInterfaceInstance::instance(), VCRInterfaceInstance::instance());
+    VCFCANInterfaceInstance::create(etl::delegate<void(CANInterfaces &, const CAN_message_t &, unsigned long, CANInterfaceType_e)>::create<VCFCANInterfaceImpl::vcf_recv_switch>());
+    handle_CAN_setup(VCFCANInterfaceInstance::instance().TELEM_CAN, VCFInterfaceConstants::TELEM_CAN_BAUDRATE, &VCFCANInterfaceImpl::on_main_can_recv);
+    handle_CAN_setup(VCFCANInterfaceInstance::instance().FRONT_AUX_CAN, VCFInterfaceConstants::FAUX_CAN_BAUDRATE, &VCFCANInterfaceImpl::on_faux_can_recv);
 
     // Create Ethernet singletons
     EthernetIPDefsInstance::create();
