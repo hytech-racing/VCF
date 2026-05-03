@@ -105,7 +105,13 @@ private:
     uint32_t min_observed_digital = UINT32_MAX;
     uint32_t max_observed_digital = 0;
     
-
+    // 2nd-order Butterworth IIR low-pass on the analog angle.
+    // Designed for fc = 8 Hz at fs = 500 Hz. Direct Form II Transposed.
+    float _filter_analog_angle(float x);
+    float _bw_z1 = 0.0f;
+    float _bw_z2 = 0.0f;
+    bool  _bw_initialized = false;
+    float _last_filtered_analog_angle = 0.0f;
 };
 using SteeringSystemInstance = etl::singleton<SteeringSystem>;
 

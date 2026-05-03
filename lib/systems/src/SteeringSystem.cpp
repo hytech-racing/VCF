@@ -2,6 +2,12 @@
 
 #include "SteeringSystem.h"
 
+constexpr float kBwB0 =  0.00235721f;
+constexpr float kBwB1 =  0.00471442f;
+constexpr float kBwB2 =  0.00235721f;
+constexpr float kBwA1 = -1.85804330f;
+constexpr float kBwA2 =  0.86747213f;
+
 void SteeringSystem::recalibrate_steering_digital() {
     _steeringParams.min_steering_signal_analog = min_observed_analog;
     _steeringParams.max_steering_signal_analog = max_observed_analog;
@@ -56,9 +62,8 @@ void SteeringSystem::evaluate_steering(const uint32_t analog_raw, const Steering
     _steeringSystemData.analog_raw = analog_raw;
 
     //Conversion from raw ADC to degrees
-    _steeringSystemData.analog_steering_angle = _convert_analog_sensor(analog_raw);
     _steeringSystemData.digital_steering_angle = _convert_digital_sensor(digital_raw);
-    
+
     uint32_t dt = 0;
     if (current_millis - _prev_timestamp > 2) {
         dt = current_millis - _prev_timestamp; //current_millis is seperate data input  
@@ -67,21 +72,21 @@ void SteeringSystem::evaluate_steering(const uint32_t analog_raw, const Steering
     if (!_first_run) { //check that we not on the first run which would mean no previous data
         
  
-        if (dt > 2 && _steeringSystemData.analog_steering_angle != _prev_analog_vel_angle ) {
-            if(std::fabs(_steeringSystemData.analog_steering_angle-_prev_analog_angle)<0.2){
-                float dtheta_analog = 0.0f;
-            }
-            else{
-                float dtheta_analog = _steeringSystemData.analog_steering_angle - _prev_analog_vel_angle; //prev_angle established in last run
-                float dtheta_digital = _steeringSystemData.digital_steering_angle - _prev_digital_vel_angle;
-                _steeringSystemData.analog_steering_velocity_deg_s = (dtheta_analog / static_cast<float>(dt)) * 1000.0f; //NOLINT ms to s
-                _steeringSystemData.digital_steering_velocity_deg_s = (dtheta_digital / static_cast<float>(dt)) * 1000.0f; //NOLINT ms to s
-            }
-            
+        if (dt >= 2) {
+            float filtered_analog_angle = _filter_analog_angle(_convert_analog_sensor(analog_raw));
+            _steeringSystemData.analog_steering_angle = filtered_analog_angle; // update the angle to the filtered value for downstream use and velocity calculation
+            float dtheta_analog = filtered_analog_angle - _prev_analog_vel_angle;
+            float dtheta_digital = _steeringSystemData.digital_steering_angle - _prev_digital_vel_angle;
+
+            _steeringSystemData.analog_steering_velocity_deg_s = (dtheta_analog / static_cast<float>(dt)) * 1000.0f;
+
+            _steeringSystemData.digital_steering_velocity_deg_s = (dtheta_digital / static_cast<float>(dt)) * 1000.0f;
+
+            _last_filtered_analog_angle = filtered_analog_angle;
+        } else {
+            _steeringSystemData.analog_steering_angle = _last_filtered_analog_angle;
         }
-    
-        
-        
+
 
         //Check if either sensor moved too much in one tick
         _steeringSystemData.dtheta_exceeded_analog = _evaluate_steering_dtheta_exceeded(_steeringSystemData.analog_steering_velocity_deg_s);
@@ -118,7 +123,7 @@ void SteeringSystem::evaluate_steering(const uint32_t analog_raw, const Steering
         }
     }
     //Update states
-    if (dt > 2) { // update at 500Hz
+    if (dt >= 2) { // update at 500Hz
         _prev_timestamp = current_millis;
         _prev_analog_vel_angle = _steeringSystemData.analog_steering_angle;
         _prev_digital_vel_angle = _steeringSystemData.digital_steering_angle;
@@ -175,4 +180,20 @@ bool SteeringSystem::_evaluate_steering_oor_digital(const uint32_t steering_digi
 
 bool SteeringSystem::_evaluate_steering_dtheta_exceeded(float steering_velocity_deg_s) {
     return (fabs(steering_velocity_deg_s) > _steeringParams.max_dtheta_threshold);
+}
+
+float SteeringSystem::_filter_analog_angle(float x) {
+    // First sample: pre-load the state so the output starts at x and
+    // there is no startup transient (otherwise the filter would ramp
+    // from 0 up to the first real value over ~50 ms).
+    if (!_bw_initialized) {
+        _bw_z1 = (1.0f - kBwB0) * x;
+        _bw_z2 = (kBwB2 - kBwA2) * x;
+        _bw_initialized = true;
+    }
+    // Direct Form II Transposed biquad: 5 multiplies, 4 adds, 2 floats of state.
+    float y = kBwB0 * x + _bw_z1;
+    _bw_z1 = kBwB1 * x - kBwA1 * y + _bw_z2;
+    _bw_z2 = kBwB2 * x - kBwA2 * y;
+    return y;
 }

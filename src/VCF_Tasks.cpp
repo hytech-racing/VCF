@@ -513,7 +513,8 @@ HT_TASK::TaskResponse debug_print(const unsigned long& sysMicros, const HT_TASK:
     // // Raw values
     // Serial.print("Raw\t");
     // Serial.print(ADCInterfaceInstance::instance().pedal_reference().raw); Serial.print("\t");
-    // Serial.print(ADCInterfaceInstance::instance().get_steering_degrees_cw().raw); Serial.print("\t");
+    // Serial.print(ADCInterfaceInstance::instance().get_steering_degrees_cw().raw); //Serial.print("\t");
+    // Serial.println();
     // Serial.print(ADCInterfaceInstance::instance().get_steering_degrees_ccw().raw); Serial.print("\t");
     // Serial.print(ADCInterfaceInstance::instance().acceleration_1().raw); Serial.print("\t");
     // Serial.print(ADCInterfaceInstance::instance().acceleration_2().raw); Serial.print("\t");
@@ -563,19 +564,19 @@ HT_TASK::TaskResponse debug_print(const unsigned long& sysMicros, const HT_TASK:
     // Serial.println(BuzzerController::getInstance().buzzer_is_active(sys_time::hal_millis()));
 
     Serial.println("--------------------------------------------------");
-    Serial.println("Steering System Params: ");
-    Serial.print("Minimum Value Analog: ");
-    Serial.println(SteeringSystemInstance::instance().get_steering_params().min_steering_signal_analog);
-    Serial.print("Maximum Value Analog: ");
-    Serial.println(SteeringSystemInstance::instance().get_steering_params().max_steering_signal_analog);
-    // Serial.print("Minimum Value Digital: ");
-    // Serial.println(SteeringSystemInstance::instance().get_steering_params().min_steering_signal_digital);
-    // Serial.print("Maximum Value Digital: ");
-    // Serial.println(SteeringSystemInstance::instance().get_steering_params().max_steering_signal_digital);
-    Serial.print("Analog Midpoint: ");
-    Serial.println(SteeringSystemInstance::instance().get_steering_params().analog_midpoint);
-    Serial.print("Digital Midpoint: ");
-    Serial.println(SteeringSystemInstance::instance().get_steering_params().digital_midpoint);
+    // Serial.println("Steering System Params: ");
+    // Serial.print("Minimum Value Analog: ");
+    // Serial.println(SteeringSystemInstance::instance().get_steering_params().min_steering_signal_analog);
+    // Serial.print("Maximum Value Analog: ");
+    // Serial.println(SteeringSystemInstance::instance().get_steering_params().max_steering_signal_analog);
+    // // Serial.print("Minimum Value Digital: ");
+    // // Serial.println(SteeringSystemInstance::instance().get_steering_params().min_steering_signal_digital);
+    // // Serial.print("Maximum Value Digital: ");
+    // // Serial.println(SteeringSystemInstance::instance().get_steering_params().max_steering_signal_digital);
+    // Serial.print("Analog Midpoint: ");
+    // Serial.println(SteeringSystemInstance::instance().get_steering_params().analog_midpoint);
+    // Serial.print("Digital Midpoint: ");
+    // Serial.println(SteeringSystemInstance::instance().get_steering_params().digital_midpoint);
 
     Serial.println("Steering Sensor Data: ");
     Serial.print("analog adc: ");
