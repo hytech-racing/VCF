@@ -59,21 +59,29 @@ void SteeringSystem::evaluate_steering(const uint32_t analog_raw, const Steering
     _steeringSystemData.analog_steering_angle = _convert_analog_sensor(analog_raw);
     _steeringSystemData.digital_steering_angle = _convert_digital_sensor(digital_raw);
     
-    uint32_t dt = current_millis - _prev_timestamp; //current_millis is seperate data input  
+    uint32_t dt = 0;
+    if (current_millis - _prev_timestamp > 2) {
+        dt = current_millis - _prev_timestamp; //current_millis is seperate data input  
+    }
 
-    if (!_first_run && dt > 0) { //check that we not on the first run which would mean no previous data
-        float dtheta_analog = _steeringSystemData.analog_steering_angle - _prev_analog_angle; //prev_angle established in last run
-        if (dtheta_analog < 2 && dtheta_analog > -2)//make constant in VCF constants 
-        {
-            _steeringSystemData.analog_steering_velocity_deg_s = 0; //NOLINT ms to s
-        }
-        else
-        {
-            _steeringSystemData.analog_steering_velocity_deg_s = (dtheta_analog / static_cast<float>(dt)) * 1000.0f; //NOLINT ms to s
-        }
+    if (!_first_run) { //check that we not on the first run which would mean no previous data
         
-        float dtheta_digital = _steeringSystemData.digital_steering_angle - _prev_digital_angle;
-        _steeringSystemData.digital_steering_velocity_deg_s = (dtheta_digital / static_cast<float>(dt)) * 1000.0f; //NOLINT ms to s
+ 
+        if (dt > 2 && _steeringSystemData.analog_steering_angle != _prev_analog_vel_angle ) {
+            if(std::fabs(_steeringSystemData.analog_steering_angle-_prev_analog_angle)<0.2){
+                float dtheta_analog = 0.0f;
+            }
+            else{
+                float dtheta_analog = _steeringSystemData.analog_steering_angle - _prev_analog_vel_angle; //prev_angle established in last run
+                float dtheta_digital = _steeringSystemData.digital_steering_angle - _prev_digital_vel_angle;
+                _steeringSystemData.analog_steering_velocity_deg_s = (dtheta_analog / static_cast<float>(dt)) * 1000.0f; //NOLINT ms to s
+                _steeringSystemData.digital_steering_velocity_deg_s = (dtheta_digital / static_cast<float>(dt)) * 1000.0f; //NOLINT ms to s
+            }
+            
+        }
+    
+        
+        
 
         //Check if either sensor moved too much in one tick
         _steeringSystemData.dtheta_exceeded_analog = _evaluate_steering_dtheta_exceeded(_steeringSystemData.analog_steering_velocity_deg_s);
@@ -110,9 +118,14 @@ void SteeringSystem::evaluate_steering(const uint32_t analog_raw, const Steering
         }
     }
     //Update states
+    if (dt > 2) { // update at 500Hz
+        _prev_timestamp = current_millis;
+        _prev_analog_vel_angle = _steeringSystemData.analog_steering_angle;
+        _prev_digital_vel_angle = _steeringSystemData.digital_steering_angle;
+    }
+
     _prev_analog_angle = _steeringSystemData.analog_steering_angle;
     _prev_digital_angle = _steeringSystemData.digital_steering_angle;
-    _prev_timestamp = current_millis;
     _first_run = false;
 }
 

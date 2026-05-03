@@ -94,6 +94,8 @@ private:
     //track the state of our system from the previous tick to compare against current state for implausibility checks
     float _prev_analog_angle = 0.0f;
     float _prev_digital_angle = 0.0f;
+    float _prev_digital_vel_angle = 0.0f;
+    float _prev_analog_vel_angle = 0.0f;
     uint32_t _prev_timestamp = 0;
     bool _calibrating = false;
     bool _finished_calibrating = false;
