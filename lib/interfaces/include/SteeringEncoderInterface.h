@@ -1,5 +1,6 @@
 #ifndef STEERING_ENCODER_INTERFACE_H
 #define STEERING_ENCODER_INTERFACE_H
+#include "SharedFirmwareTypes.h"
 
 // enum class SteeringEncoderStatus_e
 // {

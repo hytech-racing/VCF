@@ -21,7 +21,7 @@
 #include <EEPROM.h>
 #include "FlexCAN_T4.h"
 #include "Orbis_BR.h"
-//#include "SteeringEncoderInterface.h"
+#include "SteeringEncoderInterface.h"
 
 #include "WatchdogSystem.h"
 #include "Arduino.h"
@@ -30,7 +30,7 @@ HT_TASK::TaskResponse run_read_adc0_task(const unsigned long& sysMicros, const H
 {
     // Updates all eight channels.
     ADCInterfaceInstance::instance().adc0_tick();
-    OrbisBRInstance::instance().sample();
+    // OrbisBRInstance::instance().sample();
     PedalsSystemInstance::instance().set_pedals_sensor_data(PedalSensorData_s{
         .accel_1 = static_cast<uint32_t>(ADCInterfaceInstance::instance().acceleration_1().conversion),
         .accel_2 = static_cast<uint32_t>(ADCInterfaceInstance::instance().acceleration_2().conversion),
@@ -52,7 +52,7 @@ HT_TASK::TaskResponse run_read_adc1_task(const unsigned long& sysMicros, const H
 HT_TASK::TaskResponse run_read_digital_steering_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
 {
     // sample the sensor
-    OrbisBRInstance::instance().sample();
+    // OrbisBRInstance::instance().sample();
     return HT_TASK::TaskResponse::YIELD;
 }
 
@@ -468,7 +468,7 @@ namespace async_tasks
 
         SteeringSystemInstance::instance().evaluate_steering(
             ADCInterfaceInstance::instance().get_steering_degrees_cw().conversion,
-            OrbisBRInstance::instance().getLastReading(),
+             OrbisBRInstance::instance().getLastReading(),
             sys_time::hal_millis()
         );
 
@@ -773,7 +773,7 @@ void setup_all_interfaces() {
     last_steering_calibrate_time = sys_time::hal_millis();
 
     // Create Digital Steering Sensor singleton
-    OrbisBRInstance::create(&Serial2);
+     OrbisBRInstance::create(&Serial2);
     
     // Create dashboard singleton
     DashboardGPIOs_s dashboard_gpios = {
