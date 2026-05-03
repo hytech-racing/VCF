@@ -101,6 +101,9 @@ namespace VCFInterfaceConstants {
     constexpr float BRAKE_PRESSURE_REAR_SCALE = 1.0;
     constexpr float BRAKE_PRESSURE_REAR_OFFSET = 0;
 
+    /* VCF CAN Constants */
+    constexpr uint32_t TELEM_CAN_BAUDRATE = 1000000; // 1 000 000 = 1 Mbit/s
+    constexpr uint32_t FAUX_CAN_BAUDRATE = 500000; // 500 000 = 500 Kbit/s
 }
 
 // calibration and processing constants
