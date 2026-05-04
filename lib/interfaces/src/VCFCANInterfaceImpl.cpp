@@ -11,21 +11,10 @@ namespace VCFCANInterfaceImpl {
 
     void on_faux_can_recv(const CAN_message_t &msg)
     {
-        VCFCANInterfaceInstance::instance().TELEM_CAN.write(msg); //immediately forward onto telem can to view data
+        // VCFCANInterfaceInstance::instance().TELEM_CAN.write(msg); //immediately forward onto telem can to view data
         uint8_t buf[sizeof(CAN_message_t)];
         memmove(buf, &msg, sizeof(msg)); // NOLINT (memory operations are fine)
         VCFCANInterfaceInstance::instance().front_aux_can_rx_buffer.push_back(buf, sizeof(CAN_message_t));
-
-        // Serial.println("msg recvd");
-        // Serial.print("MB: "); Serial.print(msg.mb);
-        // Serial.print("  ID: 0x"); Serial.print(msg.id, HEX);
-        // Serial.print("  EXT: "); Serial.print(msg.flags.extended);
-        // Serial.print("  LEN: "); Serial.print(msg.len);
-        // Serial.print(" DATA: ");
-        // for ( uint8_t i = 0; i < 8; i++ ) {
-        // Serial.print(msg.buf[i]); Serial.print(" ");
-        // }
-        // Serial.print("  TS: "); Serial.println(msg.timestamp);
     }
 
     void vcf_recv_switch(CANInterfaces &interfaces, const CAN_message_t &msg, unsigned long millis, CANInterfaceType_e interface_type)
@@ -72,6 +61,18 @@ namespace VCFCANInterfaceImpl {
                 interfaces.vcr_interface.receive_inverter_status_4(msg);
                 break;
             }
+            case FL_BRAKE_ROTOR_SENSOR_TEMP_CANID:
+            case FL_BRAKE_ROTOR_TEMP_CH1_CH4_CANID:
+            case FL_BRAKE_ROTOR_TEMP_CH5_CH8_CANID:
+            case FL_BRAKE_ROTOR_TEMP_CH9_CH12_CANID:
+            case FL_BRAKE_ROTOR_TEMP_CH13_CH16_CANID:
+            case FR_BRAKE_ROTOR_SENSOR_TEMP_CANID:
+            case FR_BRAKE_ROTOR_TEMP_CH1_CH4_CANID:
+            case FR_BRAKE_ROTOR_TEMP_CH5_CH8_CANID:
+            case FR_BRAKE_ROTOR_TEMP_CH9_CH12_CANID:
+            case FR_BRAKE_ROTOR_TEMP_CH13_CH16_CANID:
+                interfaces.brake_rotor_temp_interface.receiveBrakeRotorTempData(msg);
+                break;
             default:
                 break;
             }
