@@ -47,7 +47,7 @@ class BrakeRotorTemp
     private:
         BrakeTempData_s _temp_data;
 
-        void _updateCalculatedValues(bool sensor);
+        void _updateCalculatedValues(bool FR);
 };
 
 using BrakeRotorTempInstance = etl::singleton<BrakeRotorTemp>;
