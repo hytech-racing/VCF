@@ -20,6 +20,7 @@
 #include <EEPROM.h>
 #include "FlexCAN_T4.h"
 #include "Orbis_BR.h"
+#include "BrakeRotorTemp.h"
 
 #include "WatchdogSystem.h"
 #include "Arduino.h"
@@ -478,6 +479,32 @@ HT_TASK::TaskResponse debug_print(const unsigned long& sysMicros, const HT_TASK:
     Serial.print(DashboardInterfaceInstance::instance().get_dashboard_outputs().data_btn_is_pressed); Serial.print("\t");
     Serial.println(BuzzerController::getInstance().buzzer_is_active(sys_time::hal_millis()));
 
+    /* Brake Rotor Temp Info */
+    Serial.println("\nBrake Rotor Temps:");
+    Serial.println("Sensor\tMax\tAvg\tCH0\tCH1\tCH2\tCH3\tCH4\tCH5\tCH6\tCH7\tCH8\tCH9\tCH10\tCH11\tCH12\tCH13\tCH14\tCH15");
+
+    // Sensor 1
+    Serial.print("FL\t");
+    Serial.print(BrakeRotorTempInstance::instance().getBrakeRotorTempData().fl_sensor.max_temp); Serial.print("\t");
+    Serial.print(BrakeRotorTempInstance::instance().getBrakeRotorTempData().fl_sensor.avg_temp); Serial.print("\t");
+
+    for (int i = 0; i < 16; ++i) {
+        Serial.print(BrakeRotorTempInstance::instance().getBrakeRotorTempData().fl_sensor.channel_data[i]);
+        Serial.print("\t");
+    }
+    Serial.println();
+
+    // Sensor 2
+    Serial.print("FR\t");
+    Serial.print(BrakeRotorTempInstance::instance().getBrakeRotorTempData().fr_sensor.max_temp); Serial.print("\t");
+    Serial.print(BrakeRotorTempInstance::instance().getBrakeRotorTempData().fr_sensor.avg_temp); Serial.print("\t");
+
+    for (int i = 0; i < 16; ++i) {
+        Serial.print(BrakeRotorTempInstance::instance().getBrakeRotorTempData().fr_sensor.channel_data[i]);
+        Serial.print("\t");
+    }
+    Serial.println();
+
     return HT_TASK::TaskResponse::YIELD;
 }
 
@@ -595,7 +622,7 @@ void setup_all_interfaces() {
     VCRInterfaceInstance::create();
 
     // Create CAN singletons
-    CANInterfacesInstance::create(DashboardInterfaceInstance::instance(), ACUInterfaceInstance::instance(), VCRInterfaceInstance::instance());
+    CANInterfacesInstance::create(DashboardInterfaceInstance::instance(), ACUInterfaceInstance::instance(), VCRInterfaceInstance::instance(), BrakeRotorTempInstance::instance());
     VCFCANInterfaceInstance::create(etl::delegate<void(CANInterfaces &, const CAN_message_t &, unsigned long, CANInterfaceType_e)>::create<VCFCANInterfaceImpl::vcf_recv_switch>());
     handle_CAN_setup(VCFCANInterfaceInstance::instance().TELEM_CAN, VCFInterfaceConstants::TELEM_CAN_BAUDRATE, &VCFCANInterfaceImpl::on_main_can_recv);
     handle_CAN_setup(VCFCANInterfaceInstance::instance().FRONT_AUX_CAN, VCFInterfaceConstants::FAUX_CAN_BAUDRATE, &VCFCANInterfaceImpl::on_faux_can_recv);

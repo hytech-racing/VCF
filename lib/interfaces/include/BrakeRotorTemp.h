@@ -22,6 +22,9 @@ struct BrakeTempData_s {
     BrakeTempSensorData_s fr_sensor;
 };
 
+/**
+ * Interface to receive messages from the Izze Racing IRTS-60deg-v3 sensor
+ */
 class BrakeRotorTemp
 {
     public:

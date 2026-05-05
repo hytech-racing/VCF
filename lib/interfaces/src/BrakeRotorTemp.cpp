@@ -21,7 +21,7 @@ void BrakeRotorTemp::receiveBrakeRotorTempData(const CAN_message_t &msg) {
             std::get<3>(_temp_data.fl_sensor.channel_data) = HYTECH_brake_temp_channel_4_ro_fromS(unpacked_msg.brake_temp_channel_4_ro);
 
             // update FL outputs
-            _updateCalculatedValues(0);
+            _updateCalculatedValues(false);
             break;
         }
 
@@ -38,7 +38,7 @@ void BrakeRotorTemp::receiveBrakeRotorTempData(const CAN_message_t &msg) {
             std::get<7>(_temp_data.fl_sensor.channel_data) = HYTECH_brake_temp_channel_8_ro_fromS(unpacked_msg.brake_temp_channel_8_ro);
 
             // update FL outputs
-            _updateCalculatedValues(0);
+            _updateCalculatedValues(false);
             break;
         }
 
@@ -55,7 +55,7 @@ void BrakeRotorTemp::receiveBrakeRotorTempData(const CAN_message_t &msg) {
             std::get<11>(_temp_data.fl_sensor.channel_data) = HYTECH_brake_temp_channel_12_ro_fromS(unpacked_msg.brake_temp_channel_12_ro);
 
             // update FL outputs
-            _updateCalculatedValues(0);
+            _updateCalculatedValues(false);
             break;
         }
 
@@ -72,7 +72,7 @@ void BrakeRotorTemp::receiveBrakeRotorTempData(const CAN_message_t &msg) {
             std::get<15>(_temp_data.fl_sensor.channel_data) = HYTECH_brake_temp_channel_16_ro_fromS(unpacked_msg.brake_temp_channel_16_ro);
 
             // update FL outputs
-            _updateCalculatedValues(0);
+            _updateCalculatedValues(false);
             break;
         }
 
@@ -89,7 +89,7 @@ void BrakeRotorTemp::receiveBrakeRotorTempData(const CAN_message_t &msg) {
             std::get<3>(_temp_data.fr_sensor.channel_data) = HYTECH_brake_temp_channel_4_ro_fromS(unpacked_msg.brake_temp_channel_4_ro);
 
             // update FR outputs
-            _updateCalculatedValues(1);
+            _updateCalculatedValues(true);
             break;
         }
 
@@ -106,7 +106,7 @@ void BrakeRotorTemp::receiveBrakeRotorTempData(const CAN_message_t &msg) {
             std::get<7>(_temp_data.fr_sensor.channel_data) = HYTECH_brake_temp_channel_8_ro_fromS(unpacked_msg.brake_temp_channel_8_ro);
 
             // update FR outputs
-            _updateCalculatedValues(1);
+            _updateCalculatedValues(true);
             break;
         }
 
@@ -123,7 +123,7 @@ void BrakeRotorTemp::receiveBrakeRotorTempData(const CAN_message_t &msg) {
             std::get<11>(_temp_data.fr_sensor.channel_data) = HYTECH_brake_temp_channel_12_ro_fromS(unpacked_msg.brake_temp_channel_12_ro);
 
             // update FR outputs
-            _updateCalculatedValues(1);
+            _updateCalculatedValues(true);
             break;
         }
 
@@ -140,7 +140,7 @@ void BrakeRotorTemp::receiveBrakeRotorTempData(const CAN_message_t &msg) {
             std::get<15>(_temp_data.fr_sensor.channel_data) = HYTECH_brake_temp_channel_16_ro_fromS(unpacked_msg.brake_temp_channel_16_ro);
 
             // update FR outputs
-            _updateCalculatedValues(1);
+            _updateCalculatedValues(true);
             break;
         }
         
