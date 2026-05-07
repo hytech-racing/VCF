@@ -4,7 +4,7 @@
 #include "hytech_msgs_version.h"
 #include "device_fw_version.h"
 
-hytech_msgs_VCFData_s VCFEthernetInterface::make_vcf_data_msg(ADCInterface &ADCInterfaceInstance, DashboardInterface &dashInstance, PedalsSystem &pedalsInstance)
+hytech_msgs_VCFData_s VCFEthernetInterface::make_vcf_data_msg(ADCInterface &ADCInterfaceInstance, DashboardInterface &dashInstance, PedalsSystem &pedalsInstance, BrakeRotorTemp &brakeRotorTempInstance)
 {
 	hytech_msgs_VCFData_s out;
 
@@ -17,6 +17,7 @@ hytech_msgs_VCFData_s VCFEthernetInterface::make_vcf_data_msg(ADCInterface &ADCI
     out.has_vcf_ethernet_link_data = true;
     out.has_vcf_shutdown_data = true;
     out.has_brake_pressure_data = true;
+    out.has_brake_rotor_temp_data = true;
 
     // Load cells
     out.front_loadcell_data.FL_loadcell_analog = static_cast<uint32_t>(ADCInterfaceInstance.get_filtered_FL_load_cell());
@@ -63,6 +64,12 @@ hytech_msgs_VCFData_s VCFEthernetInterface::make_vcf_data_msg(ADCInterface &ADCI
     // Brake pressure
     out.brake_pressure_data.front_brake_pressure = ADCInterfaceInstance.get_brake_pressure_front().conversion;
     out.brake_pressure_data.rear_brake_pressure = ADCInterfaceInstance.get_brake_pressure_rear().conversion;
+
+    // Brake rotor temps
+    out.brake_rotor_temp_data.fl_max_brake_rotor_temp = brakeRotorTempInstance.getBrakeRotorTempData().fl_sensor.max_temp;
+    out.brake_rotor_temp_data.fl_avg_brake_rotor_temp = brakeRotorTempInstance.getBrakeRotorTempData().fl_sensor.avg_temp;
+    out.brake_rotor_temp_data.fr_max_brake_rotor_temp = brakeRotorTempInstance.getBrakeRotorTempData().fr_sensor.max_temp;
+    out.brake_rotor_temp_data.fr_avg_brake_rotor_temp = brakeRotorTempInstance.getBrakeRotorTempData().fr_sensor.avg_temp;
 
     // Shutdown Senses
     out.vcf_shutdown_data.d_inertia_switch_out_read = ADCInterfaceInstance.shdn_d().conversion;
