@@ -44,14 +44,14 @@ class DashboardInterface
         DashInputState_s get_dashboard_outputs();
 
         // Stores outputs
-        DashInputState_s DashboardInterface::get_dashboard_stored_state();
+        DashInputState_s get_dashboard_stored_state();
         
         /**
          * Syncs stored outputs with last read outputs.
          * Used to store previous state of buttons to determine if they are clicked or not.
          * In other words, to find the falling edge.
          */
-        void DashboardInterface::sync_dashboard_stored_state();
+        void sync_dashboard_stored_state();
 
         // Receiving
         void receive_ACU_OK(const CAN_message_t &can_msg);

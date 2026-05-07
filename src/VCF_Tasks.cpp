@@ -168,7 +168,6 @@ HT_TASK::TaskResponse send_dash_data(const unsigned long& sysMicros, const HT_TA
 
 HT_TASK::TaskResponse enqueue_front_suspension_data(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
 {
-    CANInterfaces can_interface = CANInterfacesInstance::instance();
     FRONT_SUSPENSION_t msg_out;
 
     msg_out.fr_load_cell = ADCInterfaceInstance::instance().get_filtered_FR_load_cell();
@@ -208,7 +207,7 @@ HT_TASK::TaskResponse init_handle_send_vcf_ethernet_data(const unsigned long& sy
 }
 
 HT_TASK::TaskResponse run_handle_send_vcf_ethernet_data(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo) {
-    hytech_msgs_VCFData_s msg = VCFEthernetInterface::make_vcf_data_msg(ADCInterfaceInstance::instance(), DashboardInterfaceInstance::instance(), PedalsSystemInstance::instance());
+    hytech_msgs_VCFData_s msg = VCFEthernetInterface::make_vcf_data_msg(ADCInterfaceInstance::instance(), DashboardInterfaceInstance::instance(), PedalsSystemInstance::instance(), BrakeRotorTempInstance::instance());
     if(handle_ethernet_socket_send_pb<hytech_msgs_VCFData_s_size, hytech_msgs_VCFData_s>
             (EthernetIPDefsInstance::instance().drivebrain_ip,
             EthernetIPDefsInstance::instance().VCFData_port,
@@ -488,7 +487,7 @@ HT_TASK::TaskResponse debug_print(const unsigned long& sysMicros, const HT_TASK:
     Serial.print(BrakeRotorTempInstance::instance().getBrakeRotorTempData().fl_sensor.max_temp); Serial.print("\t");
     Serial.print(BrakeRotorTempInstance::instance().getBrakeRotorTempData().fl_sensor.avg_temp); Serial.print("\t");
 
-    for (int i = 0; i < 16; ++i) {
+    for (size_t i = 0; i < BrakeRotorTempDefaultParams::channels_within_brake_temp_sensor; ++i) {
         Serial.print(BrakeRotorTempInstance::instance().getBrakeRotorTempData().fl_sensor.channel_data[i]);
         Serial.print("\t");
     }
@@ -499,7 +498,7 @@ HT_TASK::TaskResponse debug_print(const unsigned long& sysMicros, const HT_TASK:
     Serial.print(BrakeRotorTempInstance::instance().getBrakeRotorTempData().fr_sensor.max_temp); Serial.print("\t");
     Serial.print(BrakeRotorTempInstance::instance().getBrakeRotorTempData().fr_sensor.avg_temp); Serial.print("\t");
 
-    for (int i = 0; i < 16; ++i) {
+    for (size_t i = 0; i < BrakeRotorTempDefaultParams::channels_within_brake_temp_sensor; ++i) {
         Serial.print(BrakeRotorTempInstance::instance().getBrakeRotorTempData().fr_sensor.channel_data[i]);
         Serial.print("\t");
     }

@@ -12,7 +12,7 @@ void BrakeRotorTemp::receiveBrakeRotorTempData(const CAN_message_t &msg) {
         {
             // unpack the msg
             FL_BRAKE_ROTOR_TEMP_CH1_CH4_t unpacked_msg;
-            Unpack_FL_BRAKE_ROTOR_TEMP_CH1_CH4_hytech(&unpacked_msg, msg.buf, msg.len);
+            Unpack_FL_BRAKE_ROTOR_TEMP_CH1_CH4_hytech(&unpacked_msg, msg.buf, msg.len); // NOLINT array decay to pointer
 
             // copy data over to interface data
             std::get<0>(_temp_data.fl_sensor.channel_data) = HYTECH_brake_temp_channel_1_ro_fromS(unpacked_msg.brake_temp_channel_1_ro);
@@ -29,7 +29,7 @@ void BrakeRotorTemp::receiveBrakeRotorTempData(const CAN_message_t &msg) {
         {
             // unpack the msg
             FL_BRAKE_ROTOR_TEMP_CH5_CH8_t unpacked_msg;
-            Unpack_FL_BRAKE_ROTOR_TEMP_CH5_CH8_hytech(&unpacked_msg, msg.buf, msg.len);
+            Unpack_FL_BRAKE_ROTOR_TEMP_CH5_CH8_hytech(&unpacked_msg, msg.buf, msg.len); // NOLINT array decay to pointer
 
             // copy data over to interface data
             std::get<4>(_temp_data.fl_sensor.channel_data) = HYTECH_brake_temp_channel_5_ro_fromS(unpacked_msg.brake_temp_channel_5_ro);
@@ -46,7 +46,7 @@ void BrakeRotorTemp::receiveBrakeRotorTempData(const CAN_message_t &msg) {
         {
             // unpack the msg
             FL_BRAKE_ROTOR_TEMP_CH9_CH12_t unpacked_msg;
-            Unpack_FL_BRAKE_ROTOR_TEMP_CH9_CH12_hytech(&unpacked_msg, msg.buf, msg.len);
+            Unpack_FL_BRAKE_ROTOR_TEMP_CH9_CH12_hytech(&unpacked_msg, msg.buf, msg.len); // NOLINT array decay to pointer
 
             // copy data over to interface data
             std::get<8>(_temp_data.fl_sensor.channel_data) = HYTECH_brake_temp_channel_9_ro_fromS(unpacked_msg.brake_temp_channel_9_ro);
@@ -63,7 +63,7 @@ void BrakeRotorTemp::receiveBrakeRotorTempData(const CAN_message_t &msg) {
         {
             // unpack the msg
             FL_BRAKE_ROTOR_TEMP_CH13_CH16_t unpacked_msg;
-            Unpack_FL_BRAKE_ROTOR_TEMP_CH13_CH16_hytech(&unpacked_msg, msg.buf, msg.len);
+            Unpack_FL_BRAKE_ROTOR_TEMP_CH13_CH16_hytech(&unpacked_msg, msg.buf, msg.len); // NOLINT array decay to pointer
 
             // copy data over to interface data
             std::get<12>(_temp_data.fl_sensor.channel_data) = HYTECH_brake_temp_channel_13_ro_fromS(unpacked_msg.brake_temp_channel_13_ro);
@@ -80,7 +80,7 @@ void BrakeRotorTemp::receiveBrakeRotorTempData(const CAN_message_t &msg) {
         {
             // unpack the msg
             FR_BRAKE_ROTOR_TEMP_CH1_CH4_t unpacked_msg;
-            Unpack_FR_BRAKE_ROTOR_TEMP_CH1_CH4_hytech(&unpacked_msg, msg.buf, msg.len);
+            Unpack_FR_BRAKE_ROTOR_TEMP_CH1_CH4_hytech(&unpacked_msg, msg.buf, msg.len); // NOLINT array decay to pointer
 
             // copy data over to interface data
             std::get<0>(_temp_data.fr_sensor.channel_data) = HYTECH_brake_temp_channel_1_ro_fromS(unpacked_msg.brake_temp_channel_1_ro);
@@ -97,7 +97,7 @@ void BrakeRotorTemp::receiveBrakeRotorTempData(const CAN_message_t &msg) {
         {
             // unpack the msg
             FR_BRAKE_ROTOR_TEMP_CH5_CH8_t unpacked_msg;
-            Unpack_FR_BRAKE_ROTOR_TEMP_CH5_CH8_hytech(&unpacked_msg, msg.buf, msg.len);
+            Unpack_FR_BRAKE_ROTOR_TEMP_CH5_CH8_hytech(&unpacked_msg, msg.buf, msg.len); // NOLINT array decay to pointer
 
             // copy data over to interface data
             std::get<4>(_temp_data.fr_sensor.channel_data) = HYTECH_brake_temp_channel_5_ro_fromS(unpacked_msg.brake_temp_channel_5_ro);
@@ -114,7 +114,7 @@ void BrakeRotorTemp::receiveBrakeRotorTempData(const CAN_message_t &msg) {
         {
             // unpack the msg
             FR_BRAKE_ROTOR_TEMP_CH9_CH12_t unpacked_msg;
-            Unpack_FR_BRAKE_ROTOR_TEMP_CH9_CH12_hytech(&unpacked_msg, msg.buf, msg.len);
+            Unpack_FR_BRAKE_ROTOR_TEMP_CH9_CH12_hytech(&unpacked_msg, msg.buf, msg.len); // NOLINT array decay to pointer
 
             // copy data over to interface data
             std::get<8>(_temp_data.fr_sensor.channel_data) = HYTECH_brake_temp_channel_9_ro_fromS(unpacked_msg.brake_temp_channel_9_ro);
@@ -131,7 +131,7 @@ void BrakeRotorTemp::receiveBrakeRotorTempData(const CAN_message_t &msg) {
         {
             // unpack the msg
             FR_BRAKE_ROTOR_TEMP_CH13_CH16_t unpacked_msg;
-            Unpack_FR_BRAKE_ROTOR_TEMP_CH13_CH16_hytech(&unpacked_msg, msg.buf, msg.len);
+            Unpack_FR_BRAKE_ROTOR_TEMP_CH13_CH16_hytech(&unpacked_msg, msg.buf, msg.len); // NOLINT array decay to pointer
 
             // copy data over to interface data
             std::get<12>(_temp_data.fr_sensor.channel_data) = HYTECH_brake_temp_channel_13_ro_fromS(unpacked_msg.brake_temp_channel_13_ro);
