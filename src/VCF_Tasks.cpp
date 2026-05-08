@@ -36,7 +36,7 @@ HT_TASK::TaskResponse run_read_adc0_task(const unsigned long& sysMicros, const H
     });
 
     // sample digital steering too TODO: move this to its own task maybe?
-    // OrbisBRInstance::instance().sample();
+    OrbisBRInstance::instance().sample();
     return HT_TASK::TaskResponse::YIELD;
 }
 
@@ -394,6 +394,9 @@ HT_TASK::TaskResponse debug_print(const unsigned long& sysMicros, const HT_TASK:
     Serial.print(DashboardInterfaceInstance::instance().get_dashboard_outputs().start_btn_is_pressed); Serial.print("\t");
     Serial.print(DashboardInterfaceInstance::instance().get_dashboard_outputs().data_btn_is_pressed); Serial.print("\t");
     Serial.println(BuzzerController::getInstance().buzzer_is_active(sys_time::hal_millis()));
+
+    Serial.println("Digital Steering:");
+    Serial.println(OrbisBRInstance::instance().getLastReading().rawValue);
 
     return HT_TASK::TaskResponse::YIELD;
 }
