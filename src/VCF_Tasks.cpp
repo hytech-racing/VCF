@@ -30,7 +30,7 @@ HT_TASK::TaskResponse run_read_adc0_task(const unsigned long& sysMicros, const H
 {
     // Updates all eight channels.
     ADCInterfaceInstance::instance().adc0_tick();
-    // OrbisBRInstance::instance().sample();
+    OrbisBRInstance::instance().sample();
     PedalsSystemInstance::instance().set_pedals_sensor_data(PedalSensorData_s{
         .accel_1 = static_cast<uint32_t>(ADCInterfaceInstance::instance().acceleration_1().conversion),
         .accel_2 = static_cast<uint32_t>(ADCInterfaceInstance::instance().acceleration_2().conversion),
@@ -93,7 +93,6 @@ HT_TASK::TaskResponse update_pedals_calibration_task(const unsigned long& sysMic
     return HT_TASK::TaskResponse::YIELD;
 }
 
-uint32_t last_steering_calibrate_time; // move this maybe
 HT_TASK::TaskResponse update_steering_calibration_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo) {
     const uint32_t analog_raw = SteeringSystemInstance::instance().get_steering_system_data().analog_raw;
     const uint32_t digital_raw = SteeringSystemInstance::instance().get_steering_system_data().digital_raw;
@@ -101,8 +100,7 @@ HT_TASK::TaskResponse update_steering_calibration_task(const unsigned long& sysM
     SteeringSystemInstance::instance().update_observed_steering_limits(analog_raw, digital_raw);
 
 
-     if (VCRInterfaceInstance::instance().is_in_steering_calibration_state() && sys_time::hal_millis() - last_steering_calibrate_time > 5000) {
-        last_steering_calibrate_time = sys_time::hal_millis();
+     if (VCRInterfaceInstance::instance().is_in_steering_calibration_state()) {
 
         SteeringSystemInstance::instance().recalibrate_steering_digital();
         EEPROMUtilities::write_eeprom_32bit(VCFSystemConstants::MIN_STEERING_SIGNAL_ANALOG_ADDR, SteeringSystemInstance::instance().get_steering_params().min_steering_signal_analog);
@@ -326,10 +324,14 @@ HT_TASK::TaskResponse run_dash_GPIOs_task(const unsigned long& sys_micros, const
     bool was_dim_btn_pressed = DashboardInterfaceInstance::instance().get_dashboard_stored_state().brightness_ctrl_btn_is_pressed; //NOLINT (linter thinks variable uninitialized)
     DashInputState_s current_state = DashboardInterfaceInstance::instance().get_dashboard_outputs();
 
-    if (!current_state.preset_btn_is_pressed) //preset_btn_is_pressed doesnt exist anymore
+    if (!current_state.preset_btn_is_pressed) //preset btn tied to brightness control on schematic
     {
         VCRInterfaceInstance::instance().disable_calibration_state();
-        VCRInterfaceInstance::instance().disable_steering_calibration_state(); //link to new button eventually
+    }
+    
+    if (!current_state.data_btn_is_pressed)
+    {
+        VCRInterfaceInstance::instance().disable_steering_calibration_state();
     }
 
     // Checks if dim btn has been clicked (falling edge)
@@ -580,7 +582,8 @@ HT_TASK::TaskResponse debug_print(const unsigned long& sysMicros, const HT_TASK:
 
     Serial.println("Steering Sensor Data: ");
     Serial.print("analog adc: ");
-    Serial.print(SteeringSystemInstance::instance().get_steering_system_data().analog_raw);
+    Serial.print(SteeringSystemInstance::instance().get_steering_system_data().analog_raw); Serial.print(" ");
+    Serial.print(ADCInterfaceInstance::instance().get_steering_degrees_cw().raw);
     Serial.print("|");
     Serial.println(SteeringSystemInstance::instance().get_steering_system_data().analog_steering_angle);
     Serial.print("digital adc: ");
@@ -771,7 +774,6 @@ void setup_all_interfaces() {
     steering_params.digital_midpoint = (steering_params.min_steering_signal_digital + steering_params.max_steering_signal_digital) / 2;
 
     SteeringSystemInstance::create(steering_params);
-    last_steering_calibrate_time = sys_time::hal_millis();
 
     // Create Digital Steering Sensor singleton
      OrbisBRInstance::create(&Serial2);
