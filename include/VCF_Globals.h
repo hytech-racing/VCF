@@ -27,18 +27,7 @@
 /* From MCP23017 Library */
 #include "MCP23017.h"
 
-
-/* Interface and system data structs */
-// using VCFData_sInstance = etl::singleton<VCFData_s>;
-
 /* IOExpander setup */
 using IOExpanderInstance = etl::singleton<MCP23017>;
-
-/* Digital Steering Setup */
-using OrbisBRInstance = etl::singleton<OrbisBR>;
-
-/* Ethernet sockets */
-extern qindesign::network::EthernetUDP VCF_socket;
-extern qindesign::network::EthernetUDP VCR_socket;
 
 #endif /* VCF_GLOBALS */

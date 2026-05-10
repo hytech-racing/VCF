@@ -20,7 +20,10 @@
 /* Globally accessible types */
 using CANRXBufferType = Circular_Buffer<uint8_t, (uint32_t)16, sizeof(CAN_message_t)>;
 using CANTXBufferType = Circular_Buffer<uint8_t, (uint32_t)128, sizeof(CAN_message_t)>;
-template <CAN_DEV_TABLE CAN_DEV> using FlexCAN_Type = FlexCAN_T4<CAN_DEV, RX_SIZE_256, TX_SIZE_16>;
+
+// Definitions of VCF CAN bus types
+using TelemCAN_t = FlexCAN_T4<CAN1, RX_SIZE_256, TX_SIZE_16>;
+using FrontAuxCAN_t = FlexCAN_T4<CAN2, RX_SIZE_256, TX_SIZE_16>;
 
 /* Interfaces accessible to this one */
 struct CANInterfaces {
@@ -33,30 +36,33 @@ struct CANInterfaces {
     ACUInterface &acu_interface;
     VCRInterface &vcr_interface;
 };
+using CANInterfacesInstance = etl::singleton<CANInterfaces>;
 
-struct VCFCANInterfaceObjects {
+struct VCFCANInterface {
+    VCFCANInterface(etl::delegate<void (CANInterfaces &, const CAN_message_t &, unsigned long, CANInterfaceType_e)> recv_switch_func) 
+        : can_recv_switch(recv_switch_func) 
+        {}
 
-    VCFCANInterfaceObjects(etl::delegate<void(CANInterfaces &, const CAN_message_t &, unsigned long, CANInterfaceType_e)> recv_switch, FlexCAN_T4_Base * main_can): MAIN_CAN(main_can),can_recv_switch(recv_switch) 
-    {} 
+    TelemCAN_t TELEM_CAN;
 
-    
-    FlexCAN_T4_Base* MAIN_CAN;
-    // TODO fix this. needs to be a pointer to an in-main global created instance of CAN3. this also cannot be a base type.
-    CANRXBufferType main_can_rx_buffer;
-    CANTXBufferType main_can_tx_buffer;
-    etl::delegate<void(CANInterfaces &, const CAN_message_t &, unsigned long, CANInterfaceType_e)> can_recv_switch;
-    
+    CANRXBufferType telem_can_rx_buffer;
+    CANTXBufferType telem_can_tx_buffer;
+
+    FrontAuxCAN_t FRONT_AUX_CAN;
+
+    CANRXBufferType front_aux_can_rx_buffer;
+    CANTXBufferType front_aux_can_tx_buffer;
+
+    etl::delegate<void (CANInterfaces &, const CAN_message_t &, unsigned long, CANInterfaceType_e)> can_recv_switch;
 };
+using VCFCANInterfaceInstance = etl::singleton<VCFCANInterface>;
 
 namespace VCFCANInterfaceImpl {
     void on_main_can_recv(const CAN_message_t &msg);
-    void vcf_recv_switch(CANInterfaces &interfaces, const CAN_message_t &msg, unsigned long millis, CANInterfaceType_e interface_type);
+    void on_faux_can_recv(const CAN_message_t &msg);
+    
+    void vcf_recv_switch(CANInterfaces &interfaces, const CAN_message_t &msg, unsigned long millis, CANInterfaceType_e interface_type); //vcf can receive
     void send_all_CAN_msgs(CANTXBufferType &buffer, FlexCAN_T4_Base *can_interface);
-
-    extern FlexCAN_T4<CAN1, RX_SIZE_256, TX_SIZE_16> main_can;
-
-    using VCFCANInterfaceObjectsInstance = etl::singleton<VCFCANInterfaceObjects>;
-    using CANInterfacesInstance = etl::singleton<CANInterfaces>;
 }
 
 #endif // VCFCANINTERFACEIMPL_H
