@@ -2,6 +2,7 @@
 #include <gmock/gmock.h>
 #include "pedals_system_test.h"
 #include "test_buzzer.h"
+#include "steering_system_test.h"
 
 int main(int argc, char **argv)
 {

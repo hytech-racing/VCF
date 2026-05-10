@@ -18,7 +18,6 @@
 #include "etl/singleton.h"
 #include "VCFCANInterfaceImpl.h"
 
-
 struct MinCellMonitoringThresholds_s
 {
     float max_level = 3.85;

@@ -34,6 +34,7 @@
 #include "VCFCANInterfaceImpl.h"
 #include "VCFEthernetInterface.h"
 #include "PedalsSystem.h"
+#include "SteeringSystem.h"
 #include "ht_sched.hpp"
 #include "ht_task.hpp"
 #include "BuzzerController.h"
@@ -42,6 +43,7 @@
 #include "WatchdogSystem.h"
 #include "ADCInterface.h"
 #include "CANInterface.h"
+#include "SteeringEncoderInterface.h"
 
 /**
  * The read_adc0 task will command the ADCInterface to sample, convert, and store 
@@ -60,6 +62,7 @@ HT_TASK::TaskResponse run_kick_watchdog(const unsigned long& sysMicros, const HT
 
 HT_TASK::TaskResponse update_pedals_calibration_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
 
+HT_TASK::TaskResponse update_steering_calibration_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
 /**
  * The buzzer_control task will control the buzzer control pin. This function
  * relies on the buzzer_control pin definition in VCF_Constants.h;
@@ -77,20 +80,9 @@ HT_TASK::TaskResponse run_buzzer_control_task(const unsigned long& sysMicros, co
 HT_TASK::TaskResponse init_handle_send_vcf_ethernet_data(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
 HT_TASK::TaskResponse run_handle_send_vcf_ethernet_data(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
 
-/**
- * The handle_receive_VCR_ethernet_data task will receive a protobuf message
- * from VCR. This function relies on the VCF (receiving) socket and vcf_data
- * defined in VCFGlobals.h, and Ethernet constants defined in
- * EthernetAddressDefs.h.
- *
- */
-HT_TASK::TaskResponse init_handle_receive_vcr_ethernet_data(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
-HT_TASK::TaskResponse run_handle_receive_vcr_ethernet_data(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
-
 // this task attempts to send any data that is enqueued at 250hz. this will be the max rate that you can send over the CAN bus.
 // you dont have to enqeue at this rate, but this allows us to have 2 layers of rate limiting on CAN sending
 HT_TASK::TaskResponse handle_CAN_send(const unsigned long &sysMicros, const HT_TASK::TaskInfo &taskInfo); // NOLINT (capitalization of CAN)
-HT_TASK::TaskResponse handle_CAN_receive(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo); // NOLINT (capitalization of CAN)
 
 HT_TASK::TaskResponse run_dash_GPIOs_task(const unsigned long& sys_micros, const HT_TASK::TaskInfo& task_info); // NOLINT (capitalization of GPIOs)
 HT_TASK::TaskResponse send_dash_data(const unsigned long &sysMicros, const HT_TASK::TaskInfo &taskInfo);

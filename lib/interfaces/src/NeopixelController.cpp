@@ -36,7 +36,7 @@ void NeopixelController::set_neopixel(uint16_t id, uint32_t c)
 void NeopixelController::refresh_neopixels(const PedalsSystemData_s &pedals_data, CANInterfaces &interfaces) 
 {
     // If we are in pedals recalibration state, LIGHT UP DASHBOARD ALL RED.
-    if (interfaces.vcr_interface.is_in_pedals_calibration_state()) {
+    if (interfaces.vcr_interface.is_in_pedals_calibration_state() || interfaces.vcr_interface.is_in_steering_calibration_state()) {
         set_neopixel_color(LED_ID_e::BRAKE, LED_color_e::RED);
         set_neopixel_color(LED_ID_e::TORQUE_MODE, LED_color_e::RED);
         set_neopixel_color(LED_ID_e::LATCH, LED_color_e::RED);
@@ -136,10 +136,11 @@ void NeopixelController::refresh_neopixels(const PedalsSystemData_s &pedals_data
                       interfaces.vcr_interface.get_dc_bus_voltage().voltage.RL > _hv_threshold_voltage ||
                       interfaces.vcr_interface.get_dc_bus_voltage().voltage.RR > _hv_threshold_voltage;
 
+
     constexpr float glv_critical_voltage = 22.0f;
 
     /* SHUTDOWN LEDS */
-    set_neopixel_color(LED_ID_e::LATCH, hv_present ? LED_color_e::PURPLE : LED_color_e::GREEN); // Unused for now
+    set_neopixel_color(LED_ID_e::LATCH, hv_present ? LED_color_e::PURPLE : LED_color_e::GREEN);
     set_neopixel_color(LED_ID_e::IMD, interfaces.dash_interface.imd_ok ? LED_color_e::GREEN : LED_color_e::RED);
     set_neopixel_color(LED_ID_e::BMS, interfaces.dash_interface.bms_ok ? LED_color_e::GREEN : LED_color_e::RED);
     set_neopixel_color(LED_ID_e::SHUTDOWN, LED_color_e::OFF); // Unused for now

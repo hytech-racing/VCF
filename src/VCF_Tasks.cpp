@@ -13,6 +13,7 @@
 #include "VCRInterface.h"
 #include "SystemTimeInterface.h"
 #include "PedalsSystem.h"
+#include "SteeringSystem.h"
 #include "WatchdogSystem.h"
 #include "DashboardInterface.h"
 #include "VCFEthernetInterface.h"
@@ -20,6 +21,7 @@
 #include <EEPROM.h>
 #include "FlexCAN_T4.h"
 #include "Orbis_BR.h"
+#include "SteeringEncoderInterface.h"
 
 #include "WatchdogSystem.h"
 #include "Arduino.h"
@@ -28,15 +30,14 @@ HT_TASK::TaskResponse run_read_adc0_task(const unsigned long& sysMicros, const H
 {
     // Updates all eight channels.
     ADCInterfaceInstance::instance().adc0_tick();
+    OrbisBRInstance::instance().sample();
     PedalsSystemInstance::instance().set_pedals_sensor_data(PedalSensorData_s{
         .accel_1 = static_cast<uint32_t>(ADCInterfaceInstance::instance().acceleration_1().conversion),
         .accel_2 = static_cast<uint32_t>(ADCInterfaceInstance::instance().acceleration_2().conversion),
         .brake_1 = static_cast<uint32_t>(ADCInterfaceInstance::instance().brake_1().conversion),
         .brake_2 = static_cast<uint32_t>(ADCInterfaceInstance::instance().brake_2().conversion)
     });
-
-    // sample digital steering too TODO: move this to its own task maybe?
-    OrbisBRInstance::instance().sample();
+  
     return HT_TASK::TaskResponse::YIELD;
 }
 
@@ -57,7 +58,7 @@ HT_TASK::TaskResponse init_kick_watchdog(const unsigned long& sysMicros, const H
 }
 
 HT_TASK::TaskResponse run_kick_watchdog(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo) {
-    digitalWrite(VCFInterfaceConstants::SOFTWARE_OK_PIN , HIGH);
+    digitalWrite(VCFInterfaceConstants::SOFTWARE_OK_PIN, HIGH);
     digitalWrite(VCFInterfaceConstants::WATCHDOG_PIN, WatchdogInstance::instance().get_watchdog_state(sys_time::hal_millis()));
     return HT_TASK::TaskResponse::YIELD;
 }
@@ -85,6 +86,28 @@ HT_TASK::TaskResponse update_pedals_calibration_task(const unsigned long& sysMic
     return HT_TASK::TaskResponse::YIELD;
 }
 
+HT_TASK::TaskResponse update_steering_calibration_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo) {
+    const uint32_t analog_raw = SteeringSystemInstance::instance().get_steering_system_data().analog_raw; // NOLINT thinks this is not initialized
+    const uint32_t digital_raw = SteeringSystemInstance::instance().get_steering_system_data().digital_raw; // NOLINT thinks this is not initialized
+
+    SteeringSystemInstance::instance().update_observed_steering_limits(analog_raw, digital_raw);
+
+
+     if (VCRInterfaceInstance::instance().is_in_steering_calibration_state()) {
+
+        SteeringSystemInstance::instance().recalibrate_steering_digital();
+        EEPROMUtilities::write_eeprom_32bit(VCFSystemConstants::MIN_STEERING_SIGNAL_ANALOG_ADDR, SteeringSystemInstance::instance().get_steering_params().min_steering_signal_analog);
+        EEPROMUtilities::write_eeprom_32bit(VCFSystemConstants::MAX_STEERING_SIGNAL_ANALOG_ADDR, SteeringSystemInstance::instance().get_steering_params().max_steering_signal_analog);
+        EEPROMUtilities::write_eeprom_32bit(VCFSystemConstants::MIN_STEERING_SIGNAL_DIGITAL_ADDR, SteeringSystemInstance::instance().get_steering_params().min_steering_signal_digital);
+        EEPROMUtilities::write_eeprom_32bit(VCFSystemConstants::MAX_STEERING_SIGNAL_DIGITAL_ADDR, SteeringSystemInstance::instance().get_steering_params().max_steering_signal_digital);
+        EEPROMUtilities::write_eeprom_32bit(VCFSystemConstants::ANALOG_MIN_WITH_MARGINS_ADDR, SteeringSystemInstance::instance().get_steering_params().analog_min_with_margins);
+        EEPROMUtilities::write_eeprom_32bit(VCFSystemConstants::ANALOG_MAX_WITH_MARGINS_ADDR, SteeringSystemInstance::instance().get_steering_params().analog_max_with_margins);
+        EEPROMUtilities::write_eeprom_32bit(VCFSystemConstants::DIGITAL_MIN_WITH_MARGINS_ADDR, SteeringSystemInstance::instance().get_steering_params().digital_min_with_margins);
+        EEPROMUtilities::write_eeprom_32bit(VCFSystemConstants::DIGITAL_MAX_WITH_MARGINS_ADDR, SteeringSystemInstance::instance().get_steering_params().digital_max_with_margins);
+    }
+
+    return HT_TASK::TaskResponse::YIELD;
+}
 // bool init_read_gpio_task()
 // {
 //     // Setting digital/analog buttons D10-D6, A8 as inputs
@@ -130,7 +153,6 @@ HT_TASK::TaskResponse run_buzzer_control_task(const unsigned long& sysMicros, co
     bool buzzer_is_active = BuzzerController::getInstance().buzzer_is_active(sys_time::hal_millis()); //NOLINT
 
     digitalWrite(VCFInterfaceConstants::BUZZER_CONTROL_PIN, buzzer_is_active);
-
     return HT_TASK::TaskResponse::YIELD;
 }
 
@@ -149,9 +171,9 @@ HT_TASK::TaskResponse send_dash_data(const unsigned long& sysMicros, const HT_TA
 
     DASH_INPUT_t msg_out;
 
+    msg_out.dim_button = dash_outputs.btn_dim_read_is_pressed;
     msg_out.preset_button = dash_outputs.preset_btn_is_pressed;
     msg_out.mode_button = 0; // dont exist but i dont wanna bother changing can msgs
-
     msg_out.motor_controller_cycle_button = dash_outputs.mc_reset_btn_is_pressed;
     msg_out.start_button = dash_outputs.start_btn_is_pressed;
     msg_out.data_button_is_pressed = dash_outputs.data_btn_is_pressed;
@@ -181,19 +203,19 @@ HT_TASK::TaskResponse enqueue_front_suspension_data(const unsigned long& sysMicr
 
 HT_TASK::TaskResponse enqueue_steering_data(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
 {
-    STEERING_DATA_t msg_out = {};
-    
-    // TODO: change these to actually grab values from steering system
-    msg_out.steering_analog_oor = 0;
-    msg_out.steering_analog_raw = ADCInterfaceInstance::instance().get_steering_degrees_cw().raw;
-    msg_out.steering_both_sensors_fail = 0;
-    msg_out.steering_digital_oor = 0;
-    msg_out.steering_digital_raw = OrbisBRInstance::instance().getLastReading().rawValue;
-    msg_out.steering_dtheta_exceeded_analog = 0;
-    msg_out.steering_dtheta_exceeded_digital = 0;
-    msg_out.steering_interface_sensor_error = 0;
-    msg_out.steering_output_steering_angle_ro = 0;
-    msg_out.steering_sensor_disagreement = 0;
+    STEERING_DATA_t msg_out;
+    SteeringSystemData_s steering_system_data = SteeringSystemInstance::instance().get_steering_system_data();
+
+    msg_out.steering_analog_oor = steering_system_data.analog_oor_implausibility;
+    msg_out.steering_both_sensors_fail = steering_system_data.both_sensors_fail;
+    msg_out.steering_digital_oor = steering_system_data.digital_oor_implausibility;
+    msg_out.steering_dtheta_exceeded_analog = steering_system_data.dtheta_exceeded_analog;
+    msg_out.steering_dtheta_exceeded_digital = steering_system_data.dtheta_exceeded_digital;
+    msg_out.steering_interface_sensor_error = steering_system_data.interface_sensor_error;
+    msg_out.steering_output_steering_angle_ro = HYTECH_steering_output_steering_angle_ro_toS(steering_system_data.output_steering_angle);
+    msg_out.steering_sensor_disagreement = steering_system_data.sensor_disagreement_implausibility;
+    msg_out.steering_analog_raw = steering_system_data.analog_raw;
+    msg_out.steering_digital_raw = steering_system_data.digital_raw;
 
     CAN_util::enqueue_msg(&msg_out, &Pack_STEERING_DATA_hytech, VCFCANInterfaceInstance::instance().telem_can_tx_buffer);
     return HT_TASK::TaskResponse::YIELD;
@@ -207,7 +229,7 @@ HT_TASK::TaskResponse init_handle_send_vcf_ethernet_data(const unsigned long& sy
 }
 
 HT_TASK::TaskResponse run_handle_send_vcf_ethernet_data(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo) {
-    hytech_msgs_VCFData_s msg = VCFEthernetInterface::make_vcf_data_msg(ADCInterfaceInstance::instance(), DashboardInterfaceInstance::instance(), PedalsSystemInstance::instance());
+    hytech_msgs_VCFData_s msg = VCFEthernetInterface::make_vcf_data_msg(ADCInterfaceInstance::instance(), DashboardInterfaceInstance::instance(), PedalsSystemInstance::instance(), SteeringSystemInstance::instance());
     if(handle_ethernet_socket_send_pb<hytech_msgs_VCFData_s_size, hytech_msgs_VCFData_s>
             (EthernetIPDefsInstance::instance().drivebrain_ip,
             EthernetIPDefsInstance::instance().VCFData_port,
@@ -256,9 +278,14 @@ HT_TASK::TaskResponse run_dash_GPIOs_task(const unsigned long& sys_micros, const
     bool was_dim_btn_pressed = DashboardInterfaceInstance::instance().get_dashboard_stored_state().brightness_ctrl_btn_is_pressed; //NOLINT (linter thinks variable uninitialized)
     DashInputState_s current_state = DashboardInterfaceInstance::instance().get_dashboard_outputs();
 
-    if (!current_state.preset_btn_is_pressed) //preset_btn_is_pressed doesnt exist anymore
+    if (!current_state.preset_btn_is_pressed) //preset btn tied to brightness control on schematic
     {
         VCRInterfaceInstance::instance().disable_calibration_state();
+    }
+    
+    if (!current_state.data_btn_is_pressed)
+    {
+        VCRInterfaceInstance::instance().disable_steering_calibration_state();
     }
 
     // Checks if dim btn has been clicked (falling edge)
@@ -299,13 +326,20 @@ namespace async_tasks
     void handle_async_recvs()
     {
         // ethernet, etc...
-
+       
         handle_async_CAN_receive();
     }
 
     HT_TASK::TaskResponse handle_async_main(const unsigned long& sys_micros, const HT_TASK::TaskInfo& task_info)
     {
         handle_async_recvs();
+
+        SteeringSystemInstance::instance().evaluate_steering(
+            ADCInterfaceInstance::instance().get_steering_degrees_cw().conversion,
+             OrbisBRInstance::instance().getLastReading(),
+            sys_time::hal_millis()
+        );
+
         PedalsSystemInstance::instance().evaluate_pedals(
             PedalsSystemInstance::instance().get_pedals_sensor_data(),
             sys_time::hal_millis()
@@ -313,6 +347,7 @@ namespace async_tasks
         return HT_TASK::TaskResponse::YIELD;
     }
 };
+
 
 HT_TASK::TaskResponse debug_print(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
 {
@@ -337,7 +372,52 @@ HT_TASK::TaskResponse debug_print(const unsigned long& sysMicros, const HT_TASK:
     Serial.print(PedalsSystemInstance::instance().get_brake_params().max_pedal_1); Serial.print("\t");
     Serial.print(PedalsSystemInstance::instance().get_brake_params().min_pedal_2); Serial.print("\t");
     Serial.println(PedalsSystemInstance::instance().get_brake_params().max_pedal_2);
+    
+    /* Steering System Data */
+    Serial.println("Steering Sensor Data: ");
+    Serial.print("analog adc: ");
+    Serial.print(SteeringSystemInstance::instance().get_steering_system_data().analog_raw); Serial.print(" ");
+    Serial.print(ADCInterfaceInstance::instance().get_steering_degrees_cw().raw);
+    Serial.print("|");
+    Serial.println(SteeringSystemInstance::instance().get_steering_system_data().analog_steering_angle);
+    Serial.print("digital adc: ");
+    Serial.print(SteeringSystemInstance::instance().get_steering_system_data().digital_raw);
+    Serial.print("|");
+    Serial.println(SteeringSystemInstance::instance().get_steering_system_data().digital_steering_angle);
+    Serial.print("min_observed_analog: ");
+    Serial.println(SteeringSystemInstance::instance().get_min_observed_analog());
+    Serial.print("max_observed_analog: ");
+    Serial.println(SteeringSystemInstance::instance().get_max_observed_analog());
+    Serial.print("analog_steering_angle: ");
+    Serial.println(SteeringSystemInstance::instance().get_steering_system_data().analog_steering_angle);
+    Serial.print("digital_steering_angle: ");
+    Serial.println(SteeringSystemInstance::instance().get_steering_system_data().digital_steering_angle);
+    Serial.print("time: ");
+    Serial.println(sys_time::hal_millis());
 
+    Serial.print("output_steering_angle: ");
+    Serial.println(SteeringSystemInstance::instance().get_steering_system_data().output_steering_angle);
+
+    Serial.print("analog_steering_velocity_deg_s: ");
+    Serial.println(SteeringSystemInstance::instance().get_steering_system_data().analog_steering_velocity_deg_s);
+    Serial.print("digital_steering_velocity_deg_s: ");
+    Serial.println(SteeringSystemInstance::instance().get_steering_system_data().digital_steering_velocity_deg_s);
+
+    Serial.print("digital_oor_implausibility: ");
+    Serial.println(SteeringSystemInstance::instance().get_steering_system_data().digital_oor_implausibility);
+    Serial.print("analog_oor_implausibility: ");
+    Serial.println(SteeringSystemInstance::instance().get_steering_system_data().analog_oor_implausibility);
+    Serial.print("sensor_disagreement_implausibility: ");
+    Serial.println(SteeringSystemInstance::instance().get_steering_system_data().sensor_disagreement_implausibility);
+    Serial.print("dtheta_exceeded_analog: ");
+    Serial.println(SteeringSystemInstance::instance().get_steering_system_data().dtheta_exceeded_analog);
+    Serial.print("dtheta_exceeded_digital: ");
+    Serial.println(SteeringSystemInstance::instance().get_steering_system_data().dtheta_exceeded_digital);
+    Serial.print("both_sensors_fail: ");
+    Serial.println(SteeringSystemInstance::instance().get_steering_system_data().both_sensors_fail);
+    Serial.print("interface_sensor_error: ");
+    Serial.println(SteeringSystemInstance::instance().get_steering_system_data().interface_sensor_error);
+    
     /* ADC Values */
     Serial.println("\nADC Vals:");
     // ADC 0
@@ -394,9 +474,6 @@ HT_TASK::TaskResponse debug_print(const unsigned long& sysMicros, const HT_TASK:
     Serial.print(DashboardInterfaceInstance::instance().get_dashboard_outputs().start_btn_is_pressed); Serial.print("\t");
     Serial.print(DashboardInterfaceInstance::instance().get_dashboard_outputs().data_btn_is_pressed); Serial.print("\t");
     Serial.println(BuzzerController::getInstance().buzzer_is_active(sys_time::hal_millis()));
-
-    Serial.println("Digital Steering:");
-    Serial.println(OrbisBRInstance::instance().getLastReading().rawValue);
 
     return HT_TASK::TaskResponse::YIELD;
 }
@@ -498,9 +575,32 @@ void setup_all_interfaces() {
     };
     PedalsSystemInstance::create(accel_params, brake_params); //pass in the two different params
 
+    SteeringParams_s steering_params = {
+        .min_steering_signal_analog = EEPROMUtilities::read_eeprom_32bit(VCFSystemConstants::MIN_STEERING_SIGNAL_ANALOG_ADDR),
+        .max_steering_signal_analog = EEPROMUtilities::read_eeprom_32bit(VCFSystemConstants::MAX_STEERING_SIGNAL_ANALOG_ADDR),
+        .min_steering_signal_digital = EEPROMUtilities::read_eeprom_32bit(VCFSystemConstants::MIN_STEERING_SIGNAL_DIGITAL_ADDR),
+        .max_steering_signal_digital = EEPROMUtilities::read_eeprom_32bit(VCFSystemConstants::MAX_STEERING_SIGNAL_DIGITAL_ADDR),
+        .analog_min_with_margins = EEPROMUtilities::read_eeprom_32bit(VCFSystemConstants::ANALOG_MIN_WITH_MARGINS_ADDR), // NOLINT this is prev saved value so it is ok
+        .analog_max_with_margins = EEPROMUtilities::read_eeprom_32bit(VCFSystemConstants::ANALOG_MAX_WITH_MARGINS_ADDR), // NOLINT this is prev saved value so it is ok
+        .digital_min_with_margins = EEPROMUtilities::read_eeprom_32bit(VCFSystemConstants::DIGITAL_MIN_WITH_MARGINS_ADDR), // NOLINT this is prev saved value so it is ok
+        .digital_max_with_margins = EEPROMUtilities::read_eeprom_32bit(VCFSystemConstants::DIGITAL_MAX_WITH_MARGINS_ADDR), // NOLINT this is prev saved value so it is ok
+        .deg_per_count_analog = VCFSystemConstants::DEG_PER_COUNT_ANALOG,
+        .deg_per_count_digital = VCFSystemConstants::DEG_PER_COUNT_DIGITAL,
+        .analog_tolerance = VCFSystemConstants::ANALOG_TOLERANCE,
+        .digital_tolerance = VCFSystemConstants::DIGITAL_TOLERANCE,
+        .max_dtheta_threshold = VCFSystemConstants::MAX_DTHETA_THRESHOLD,
+        .error_between_sensors_tolerance = VCFSystemConstants::ERROR_BETWEEN_SENSORS_TOLERANCE
+    
+    };
+    steering_params.span_signal_analog = steering_params.max_steering_signal_analog - steering_params.min_steering_signal_analog;
+    steering_params.analog_midpoint = (steering_params.max_steering_signal_analog + steering_params.min_steering_signal_analog) / 2;
+    steering_params.span_signal_digital = steering_params.max_steering_signal_digital - steering_params.min_steering_signal_digital;
+    steering_params.digital_midpoint = (steering_params.min_steering_signal_digital + steering_params.max_steering_signal_digital) / 2;
+    SteeringSystemInstance::create(steering_params); // NOLINT thinks steering params is not initialized
+
     // Create Digital Steering Sensor singleton
     OrbisBRInstance::create(&Serial2);
-
+    
     // Create dashboard singleton
     DashboardGPIOs_s dashboard_gpios = {
         .BRIGHTNESS_CONTROL_PIN = VCFInterfaceConstants::BRIGHTNESS_CONTROL_PIN,
@@ -525,5 +625,4 @@ void setup_all_interfaces() {
     uint8_t mac[6]; // NOLINT (mac addresses are always 6 bytes)
     qindesign::network::Ethernet.macAddress(&mac[0]);
     qindesign::network::Ethernet.begin(mac, EthernetIPDefsInstance::instance().vcf_ip, EthernetIPDefsInstance::instance().default_dns, EthernetIPDefsInstance::instance().default_gateway, EthernetIPDefsInstance::instance().car_subnet);
-
 }
