@@ -8,6 +8,7 @@
 #include "DashboardInterface.h"
 #include "PedalsSystem.h"
 #include "BrakeRotorTemp.h"
+#include "SteeringSystem.h"
 
 namespace VCFEthernetInterface 
 {
@@ -21,6 +22,7 @@ namespace VCFEthernetInterface
     hytech_msgs_VCFData_s make_vcf_data_msg(ADCInterface &ADCInterfaceInstance,
                                             DashboardInterface &dashInstance,
                                             PedalsSystem &pedalsInstance,
+                                            SteeringSystem &steeringInstance,
                                             BrakeRotorTemp &brakeRotorTempInstance);
 
     /**
