@@ -11,7 +11,7 @@ namespace VCFCANInterfaceImpl {
 
     void on_faux_can_recv(const CAN_message_t &msg)
     {
-        VCFCANInterfaceInstance::instance().TELEM_CAN.write(msg); //immediately forward onto telem can to view data
+        // VCFCANInterfaceInstance::instance().TELEM_CAN.write(msg); //immediately forward onto telem can to view data
         uint8_t buf[sizeof(CAN_message_t)];
         memmove(buf, &msg, sizeof(msg)); // NOLINT (memory operations are fine)
         VCFCANInterfaceInstance::instance().front_aux_can_rx_buffer.push_back(buf, sizeof(CAN_message_t));
@@ -61,6 +61,18 @@ namespace VCFCANInterfaceImpl {
                 interfaces.vcr_interface.receive_inverter_status_4(msg);
                 break;
             }
+            case FL_BRAKE_ROTOR_SENSOR_TEMP_CANID:
+            case FL_BRAKE_ROTOR_TEMP_CH1_CH4_CANID:
+            case FL_BRAKE_ROTOR_TEMP_CH5_CH8_CANID:
+            case FL_BRAKE_ROTOR_TEMP_CH9_CH12_CANID:
+            case FL_BRAKE_ROTOR_TEMP_CH13_CH16_CANID:
+            case FR_BRAKE_ROTOR_SENSOR_TEMP_CANID:
+            case FR_BRAKE_ROTOR_TEMP_CH1_CH4_CANID:
+            case FR_BRAKE_ROTOR_TEMP_CH5_CH8_CANID:
+            case FR_BRAKE_ROTOR_TEMP_CH9_CH12_CANID:
+            case FR_BRAKE_ROTOR_TEMP_CH13_CH16_CANID:
+                interfaces.brake_rotor_temp_interface.receiveBrakeRotorTempData(msg);
+                break;
             default:
                 break;
             }

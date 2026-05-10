@@ -12,6 +12,7 @@
 #include "DashboardInterface.h"
 #include "ACUInterface.h"
 #include "VCRInterface.h"
+#include "BrakeRotorTemp.h"
 
 #include "SharedFirmwareTypes.h"
 
@@ -27,14 +28,16 @@ using FrontAuxCAN_t = FlexCAN_T4<CAN2, RX_SIZE_256, TX_SIZE_16>;
 
 /* Interfaces accessible to this one */
 struct CANInterfaces {
-    explicit CANInterfaces(DashboardInterface &dash_int, ACUInterface &acu_int, VCRInterface &vcr_int)
+    explicit CANInterfaces(DashboardInterface &dash_int, ACUInterface &acu_int, VCRInterface &vcr_int, BrakeRotorTemp &brake_rotor_temp_int)
         : dash_interface(dash_int),
           acu_interface(acu_int),
-          vcr_interface(vcr_int) {}
+          vcr_interface(vcr_int),
+          brake_rotor_temp_interface(brake_rotor_temp_int) {}
 
     DashboardInterface &dash_interface;
     ACUInterface &acu_interface;
     VCRInterface &vcr_interface;
+    BrakeRotorTemp &brake_rotor_temp_interface;
 };
 using CANInterfacesInstance = etl::singleton<CANInterfaces>;
 
