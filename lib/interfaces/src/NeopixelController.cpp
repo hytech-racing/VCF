@@ -61,27 +61,27 @@ void NeopixelController::refresh_neopixels(const PedalsSystemData_s &pedals_data
     }
 
     LED_color_e pack_color = LED_color_e::OFF;
-    if (interfaces.acu_interface.get_cell_voltage() > _min_cell_thresholds.max_level) //NOLINT 4.1 is near max voltage
+    if (interfaces.acu_interface.get_cell_voltage() > _min_cell_thresholds.max_level)
     {
         pack_color = LED_color_e::PURPLE;
     }
-    else if (interfaces.acu_interface.get_cell_voltage() > _min_cell_thresholds.second_level) //NOLINT 3.8 is second from max voltage
+    else if (interfaces.acu_interface.get_cell_voltage() > _min_cell_thresholds.second_level)
     {
         pack_color = LED_color_e::BLUE;
     }
-    else if (interfaces.acu_interface.get_cell_voltage() > _min_cell_thresholds.third_level) //NOLINT volts
+    else if (interfaces.acu_interface.get_cell_voltage() > _min_cell_thresholds.third_level)
     {
         pack_color = LED_color_e::GREEN;
     }
-    else if (interfaces.acu_interface.get_cell_voltage() > _min_cell_thresholds.fourth_level) //NOLINT volts
+    else if (interfaces.acu_interface.get_cell_voltage() > _min_cell_thresholds.fourth_level)
     {
         pack_color = LED_color_e::YELLOW;
     }
-    else if (interfaces.acu_interface.get_cell_voltage() > _min_cell_thresholds.fifth_level) //NOLINT volts
+    else if (interfaces.acu_interface.get_cell_voltage() > _min_cell_thresholds.fifth_level)
     {
         pack_color = LED_color_e::ORANGE;
     }
-    else if (interfaces.acu_interface.get_cell_voltage() < _min_cell_thresholds.critical_charge_level) //NOLINT volts
+    else if (interfaces.acu_interface.get_cell_voltage() < _min_cell_thresholds.critical_charge_level)
     {
         pack_color = LED_color_e::RED;
     }
