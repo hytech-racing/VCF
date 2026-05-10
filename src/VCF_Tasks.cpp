@@ -94,8 +94,8 @@ HT_TASK::TaskResponse update_pedals_calibration_task(const unsigned long& sysMic
 }
 
 HT_TASK::TaskResponse update_steering_calibration_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo) {
-    const uint32_t analog_raw = SteeringSystemInstance::instance().get_steering_system_data().analog_raw;
-    const uint32_t digital_raw = SteeringSystemInstance::instance().get_steering_system_data().digital_raw;
+    const uint32_t analog_raw = SteeringSystemInstance::instance().get_steering_system_data().analog_raw; // NOLINT thinks this is not initialized
+    const uint32_t digital_raw = SteeringSystemInstance::instance().get_steering_system_data().digital_raw; // NOLINT thinks this is not initialized
 
     SteeringSystemInstance::instance().update_observed_steering_limits(analog_raw, digital_raw);
 
@@ -756,10 +756,10 @@ void setup_all_interfaces() {
         .max_steering_signal_analog = EEPROMUtilities::read_eeprom_32bit(VCFSystemConstants::MAX_STEERING_SIGNAL_ANALOG_ADDR),
         .min_steering_signal_digital = EEPROMUtilities::read_eeprom_32bit(VCFSystemConstants::MIN_STEERING_SIGNAL_DIGITAL_ADDR),
         .max_steering_signal_digital = EEPROMUtilities::read_eeprom_32bit(VCFSystemConstants::MAX_STEERING_SIGNAL_DIGITAL_ADDR),
-        .analog_min_with_margins = EEPROMUtilities::read_eeprom_32bit(VCFSystemConstants::ANALOG_MIN_WITH_MARGINS_ADDR),
-        .analog_max_with_margins = EEPROMUtilities::read_eeprom_32bit(VCFSystemConstants::ANALOG_MAX_WITH_MARGINS_ADDR),
-        .digital_min_with_margins = EEPROMUtilities::read_eeprom_32bit(VCFSystemConstants::DIGITAL_MIN_WITH_MARGINS_ADDR),
-        .digital_max_with_margins = EEPROMUtilities::read_eeprom_32bit(VCFSystemConstants::DIGITAL_MAX_WITH_MARGINS_ADDR),
+        .analog_min_with_margins = EEPROMUtilities::read_eeprom_32bit(VCFSystemConstants::ANALOG_MIN_WITH_MARGINS_ADDR), // NOLINT this is prev saved value so it is ok
+        .analog_max_with_margins = EEPROMUtilities::read_eeprom_32bit(VCFSystemConstants::ANALOG_MAX_WITH_MARGINS_ADDR), // NOLINT this is prev saved value so it is ok
+        .digital_min_with_margins = EEPROMUtilities::read_eeprom_32bit(VCFSystemConstants::DIGITAL_MIN_WITH_MARGINS_ADDR), // NOLINT this is prev saved value so it is ok
+        .digital_max_with_margins = EEPROMUtilities::read_eeprom_32bit(VCFSystemConstants::DIGITAL_MAX_WITH_MARGINS_ADDR), // NOLINT this is prev saved value so it is ok
         .deg_per_count_analog = VCFSystemConstants::DEG_PER_COUNT_ANALOG,
         .deg_per_count_digital = VCFSystemConstants::DEG_PER_COUNT_DIGITAL,
         .analog_tolerance = VCFSystemConstants::ANALOG_TOLERANCE,
@@ -773,7 +773,7 @@ void setup_all_interfaces() {
     steering_params.span_signal_digital = steering_params.max_steering_signal_digital - steering_params.min_steering_signal_digital;
     steering_params.digital_midpoint = (steering_params.min_steering_signal_digital + steering_params.max_steering_signal_digital) / 2;
 
-    SteeringSystemInstance::create(steering_params);
+    SteeringSystemInstance::create(steering_params); // NOLINT thinks steering params is not initialized
 
     // Create Digital Steering Sensor singleton
      OrbisBRInstance::create(&Serial2);

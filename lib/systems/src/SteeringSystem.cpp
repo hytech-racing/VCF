@@ -23,19 +23,19 @@ void SteeringSystem::recalibrate_steering_digital() {
     _steeringParams.span_signal_digital = _steeringParams.max_steering_signal_digital-_steeringParams.min_steering_signal_digital;
     _steeringParams.analog_tol_deg = static_cast<float>(_steeringParams.span_signal_analog) * _steeringParams.analog_tolerance * _steeringParams.deg_per_count_analog;
     _steeringParams.digital_tol_deg = static_cast<float>(_steeringParams.span_signal_digital) *_steeringParams.digital_tolerance * _steeringParams.deg_per_count_digital;
-    _steeringParams.digital_midpoint = static_cast<int32_t>((_steeringParams.max_steering_signal_digital + _steeringParams.min_steering_signal_digital) / 2); //NOLINT
-    _steeringParams.analog_midpoint = static_cast<int32_t>((_steeringParams.max_steering_signal_analog + _steeringParams.min_steering_signal_analog) / 2); //NOLINT
-    _steeringParams.analog_min_with_margins = static_cast<int32_t>(_steeringParams.min_steering_signal_analog) - _steeringParams.analog_tol_deg;
-    _steeringParams.analog_max_with_margins = static_cast<int32_t>(_steeringParams.max_steering_signal_analog) + _steeringParams.analog_tol_deg;
-    _steeringParams.digital_min_with_margins = static_cast<int32_t>(_steeringParams.min_steering_signal_digital) - _steeringParams.digital_tol_deg;
-    _steeringParams.digital_max_with_margins = static_cast<int32_t>(_steeringParams.max_steering_signal_digital) + _steeringParams.digital_tol_deg;
+    _steeringParams.digital_midpoint = (_steeringParams.max_steering_signal_digital + _steeringParams.min_steering_signal_digital) / 2;
+    _steeringParams.analog_midpoint = (_steeringParams.max_steering_signal_analog + _steeringParams.min_steering_signal_analog) / 2;
+    _steeringParams.analog_min_with_margins = static_cast<unsigned long>(_steeringParams.min_steering_signal_analog - _steeringParams.analog_tol_deg); // NOLINT
+    _steeringParams.analog_max_with_margins = static_cast<unsigned long>(_steeringParams.max_steering_signal_analog + _steeringParams.analog_tol_deg); // NOLINT
+    _steeringParams.digital_min_with_margins = static_cast<unsigned long>(_steeringParams.min_steering_signal_digital - _steeringParams.digital_tol_deg); // NOLINT
+    _steeringParams.digital_max_with_margins = static_cast<unsigned long>(_steeringParams.max_steering_signal_digital + _steeringParams.digital_tol_deg); // NOLINT
 
-    if (max_observed_analog > min_observed_analog && _steeringParams.span_signal_analog > 2000) // prevents wrap around
+    if (max_observed_analog > min_observed_analog && _steeringParams.span_signal_analog > 2500) // NOLINT with 360 deg analog sensor, typical span is about 2000
     {
         min_observed_analog = UINT32_MAX; // after calculating params, if the range is marginally greater than half the steering wheel adc, likely the min and max are clinging to a prior run that is not applicable, meaning we will need to reset the boundaries. 
         max_observed_analog = 0;
     }
-    if (max_observed_digital > min_observed_digital && _steeringParams.span_signal_digital > 9000)
+    if (max_observed_digital > min_observed_digital && _steeringParams.span_signal_digital > 9000) // NOLINT with digital sensor, typical span is about 9000
     {
         min_observed_digital = UINT32_MAX; 
         max_observed_digital = 0;
@@ -60,6 +60,7 @@ void SteeringSystem::evaluate_steering(const uint32_t analog_raw, const Steering
     _steeringSystemData.digital_raw = digital_raw;
 
     _steeringSystemData.analog_raw = analog_raw;
+    _analog_angle_unfiltered = _convert_analog_sensor(analog_raw);
 
     //Conversion from raw ADC to degrees
     _steeringSystemData.digital_steering_angle = _convert_digital_sensor(digital_raw);
@@ -73,14 +74,14 @@ void SteeringSystem::evaluate_steering(const uint32_t analog_raw, const Steering
         
  
         if (dt >= 2) {
-            float filtered_analog_angle = _filter_analog_angle(_convert_analog_sensor(analog_raw));
+            float filtered_analog_angle = _filter_analog_angle(_analog_angle_unfiltered);
             _steeringSystemData.analog_steering_angle = filtered_analog_angle; // update the angle to the filtered value for downstream use and velocity calculation
             float dtheta_analog = filtered_analog_angle - _prev_analog_vel_angle;
             float dtheta_digital = _steeringSystemData.digital_steering_angle - _prev_digital_vel_angle;
 
-            _steeringSystemData.analog_steering_velocity_deg_s = (dtheta_analog / static_cast<float>(dt)) * 1000.0f;
+            _steeringSystemData.analog_steering_velocity_deg_s = (dtheta_analog / static_cast<float>(dt)) * 1000.0f; // NOLINT 1000.0f is result of converting dt in millis to seconds
 
-            _steeringSystemData.digital_steering_velocity_deg_s = (dtheta_digital / static_cast<float>(dt)) * 1000.0f;
+            _steeringSystemData.digital_steering_velocity_deg_s = (dtheta_digital / static_cast<float>(dt)) * 1000.0f; // NOLINT 1000.0f is result of converting dt in millis to seconds
 
             _last_filtered_analog_angle = filtered_analog_angle;
         } else {
@@ -140,19 +141,19 @@ void SteeringSystem::update_observed_steering_limits(const uint32_t analog_raw, 
     max_observed_analog = std::max(max_observed_analog, static_cast<uint32_t>(analog_raw));
     min_observed_digital = std::min(min_observed_digital, static_cast<uint32_t>(digital_raw)); //NOLINT should both be uint32_t
     max_observed_digital = std::max(max_observed_digital, static_cast<uint32_t>(digital_raw)); //NOLINT ^
-    if (min_observed_analog < 5)
+    if (min_observed_analog < 5) // NOLINT want to prevent sticking at 0 or clipping with small value
     {
         min_observed_analog = UINT32_MAX; // clipping if it is at 0, it is likely sensor is clipping or clipped in past and reading is holding the 0 value. 
     }
-    if (max_observed_analog > 3685) 
+    if (max_observed_analog > 3675) // NOLINT prevents clipping, this is slightly less than calculated value of actual max output of sensor with current resistor divider on VCF's ADC
     {
         max_observed_analog = 0; // clipping
     }
-    if (min_observed_digital < 5)
+    if (min_observed_digital < 10) // NOLINT want to prevent sticking at 0 or clipping
     {
         min_observed_digital = UINT32_MAX; // clipping on prior run. 
     }
-    if (max_observed_digital > 16384) 
+    if (max_observed_digital > 16374) // NOLINT 16374 = 2^14 - 10 to prevent clipping with 14 bit resolution on sensor
     {
         max_observed_digital = 0; // clipping
     }

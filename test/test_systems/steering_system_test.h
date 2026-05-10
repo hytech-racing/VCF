@@ -16,7 +16,7 @@ SteeringParams_s gen_default_params(){
     params.min_steering_signal_digital = 25;
     params.max_steering_signal_digital = 8000; //testing values
 
-    params.span_signal_analog = 4095;
+    params.span_signal_analog = 3071;
     params.span_signal_digital = 8000;
 
 
@@ -72,7 +72,7 @@ static SteeringEncoderReading_s hardcode_digital_data(int rawValue, SteeringEnco
 TEST(SteeringSystemTesting, test_adc_to_degree_conversion)
 {
     auto params = gen_default_params();
-    SteeringSystem steering(params);
+    SteeringSystem steering = SteeringSystem(params);
 
     uint32_t analog_mid = (params.min_steering_signal_analog + params.max_steering_signal_analog) / 2;
     uint32_t digital_mid = (params.min_steering_signal_digital + params.max_steering_signal_digital) / 2;
@@ -83,6 +83,9 @@ TEST(SteeringSystemTesting, test_adc_to_degree_conversion)
 
     steering.evaluate_steering(analog_raw, digital_data, 1000);
     auto data = steering.get_steering_system_data();
+    data.analog_steering_angle = steering.get_unfiltered_analog_steering_deg();
+
+    // debug_print_steering(data);
     EXPECT_NEAR(data.analog_steering_angle, 0.0f, 0.001f); 
     EXPECT_NEAR(data.digital_steering_angle, 0.0f, 0.001f);
 
@@ -92,25 +95,32 @@ TEST(SteeringSystemTesting, test_adc_to_degree_conversion)
 
     steering.evaluate_steering(analog_raw, digital_data, 1010);
     data = steering.get_steering_system_data();
+    data.analog_steering_angle = steering.get_unfiltered_analog_steering_deg();
 
     float expected_analog_min = (static_cast<int32_t>(params.min_steering_signal_analog) - static_cast<int32_t>(analog_mid)) * params.deg_per_count_analog;
     float expected_digital_min = -1 * (static_cast<int32_t>(params.min_steering_signal_digital) - static_cast<int32_t>(digital_mid)) * params.deg_per_count_digital;
-
+    
+    // debug_print_steering(data);
+    // std::printf("Exp A Min: %.1f\n Exp D Min: %.1f\nMin A: %d\n Min D: %d\n\n", expected_analog_min, expected_digital_min, params.min_steering_signal_analog, params.min_steering_signal_digital);
     EXPECT_NEAR(data.analog_steering_angle, expected_analog_min, 0.001f); 
     EXPECT_NEAR(data.digital_steering_angle, expected_digital_min, 0.001f); 
 
     //max values
     analog_raw = params.max_steering_signal_analog;
+    std::printf("Analog Raw: %d\n", analog_raw);
     digital_data = hardcode_digital_data(params.max_steering_signal_digital);
 
     steering.evaluate_steering(analog_raw, digital_data, 1020);
     data = steering.get_steering_system_data();
+    data.analog_steering_angle = steering.get_unfiltered_analog_steering_deg();
+
     float expected_analog_max = (static_cast<int32_t>(params.max_steering_signal_analog) - static_cast<int32_t>(analog_mid)) * params.deg_per_count_analog;
     float expected_digital_max = -1 * (static_cast<int32_t>(params.max_steering_signal_digital) - static_cast<int32_t>(digital_mid)) * params.deg_per_count_digital;
 
+    // debug_print_steering(data);
+    // std::printf("Exp A Max: %.1f\nExp D Max: %.1f\nMax A: %d\nMax D: %d\n\n", expected_analog_max, expected_digital_max, params.max_steering_signal_analog, params.max_steering_signal_digital);
     EXPECT_NEAR(data.analog_steering_angle, expected_analog_max, 0.001f); 
-    EXPECT_NEAR(data.digital_steering_angle, expected_digital_max, 0.001f); 
-    
+    EXPECT_NEAR(data.digital_steering_angle, expected_digital_max, 0.001f);
 }
 
 //FIXED

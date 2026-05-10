@@ -13,15 +13,15 @@ struct SteeringParams_s {
     uint32_t min_steering_signal_digital; //Raw ADC value from digital sensor at minimum (left) steering angle
     uint32_t max_steering_signal_digital; //Raw ADC value from digital sensor at maximum (right) steering angle
 
-    int32_t analog_min_with_margins;
-    int32_t analog_max_with_margins;
-    int32_t digital_min_with_margins;
-    int32_t digital_max_with_margins;
+    int32_t analog_min_with_margins; // Added margins to min raw value
+    int32_t analog_max_with_margins; // Added margins to max raw value
+    int32_t digital_min_with_margins; // Added margins to min raw value
+    int32_t digital_max_with_margins; // Added margins to max raw value
 
-    uint32_t span_signal_analog;
-    uint32_t span_signal_digital;
-    int32_t digital_midpoint;
-    int32_t analog_midpoint;
+    uint32_t span_signal_analog; // range of the analog sensor in counts
+    uint32_t span_signal_digital; // range of the digital sensor in counts
+    uint32_t digital_midpoint; // midpoint of raw values
+    uint32_t analog_midpoint; // midpoint of raw values
 
     // conversion rates
     // float deg_per_count_analog = 0.0439f; //hard coded for analog (180)
@@ -58,6 +58,11 @@ public:
     const SteeringSystemData_s &get_steering_system_data() const {
         return _steeringSystemData;
     }
+
+    float get_unfiltered_analog_steering_deg() const {
+        return _analog_angle_unfiltered;
+    }
+
     // Setters
     void set_steering_params(const SteeringParams_s &steeringParams) {
         _steeringParams = steeringParams;
@@ -92,6 +97,7 @@ private:
     SteeringSystemData_s _steeringSystemData {};
     SteeringParams_s _steeringParams;
     //track the state of our system from the previous tick to compare against current state for implausibility checks
+    float _analog_angle_unfiltered = 0.0f;
     float _prev_analog_angle = 0.0f;
     float _prev_digital_angle = 0.0f;
     float _prev_digital_vel_angle = 0.0f;
