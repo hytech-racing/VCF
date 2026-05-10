@@ -5,7 +5,7 @@
 #include "SharedFirmwareTypes.h"
 #include "EthernetAddressDefs.h"
 #include "hytech_msgs.pb.h"
-#include "VCF_Globals.h"
+
 
 
 #include <array>
