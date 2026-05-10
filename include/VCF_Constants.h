@@ -12,7 +12,7 @@ namespace VCFInterfaceConstants {
     // constexpr int BTN_PRESET_READ = 31;
     // constexpr int BTN_MODE_READ = 27; // USED TO BE 26.
     */
-
+    /* Dashboard Buttons */
     constexpr int BTN_MC_CYCLE_READ = 31; // DB/MC_RESET on schematic
     constexpr int BTN_START_READ = 29; // RTD on schematic
     constexpr int BTN_DATA_READ = 30; // DATA_MARK on schematic
@@ -20,6 +20,9 @@ namespace VCFInterfaceConstants {
     constexpr int BRIGHTNESS_CONTROL_PIN = 26; //BUTTON_1 on schematic
     constexpr int BUTTON_2 = 27; // BUTTON_2 on schematic
     constexpr int BTN_PRESET_READ = 28; // Pedals recal button (brightness control on schematic)
+
+    /* Dashboard IOExpander Setup */
+    constexpr uint8_t IO_EXPANDER_ADDR = 0x20;
     
     constexpr int NEOPIXEL_CONTROL_PIN = 33;
     constexpr int NEOPIXEL_COUNT = 16; // 16 neopixeles on dashboard

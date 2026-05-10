@@ -1,6 +1,6 @@
 #include "VCF_Tasks.h"
 #include "SharedFirmwareTypes.h"
-#include "VCF_Globals.h"
+#include "EthernetAddressDefs.h"
 #include "VCF_Constants.h"
 #include <QNEthernet.h>
 #include "ProtobufMsgInterface.h"
@@ -37,6 +37,7 @@ HT_TASK::TaskResponse run_read_adc0_task(const unsigned long& sysMicros, const H
         .brake_1 = static_cast<uint32_t>(ADCInterfaceInstance::instance().brake_1().conversion),
         .brake_2 = static_cast<uint32_t>(ADCInterfaceInstance::instance().brake_2().conversion)
     });
+  
     return HT_TASK::TaskResponse::YIELD;
 }
 
@@ -293,92 +294,9 @@ HT_TASK::TaskResponse run_dash_GPIOs_task(const unsigned long& sys_micros, const
         NeopixelControllerInstance::instance().dim_neopixels();
     }
 
+    DashboardInterfaceInstance::instance().read_ioexpander();
+
     DashboardInterfaceInstance::instance().sync_dashboard_stored_state();
-
-    return HT_TASK::TaskResponse::YIELD;
-}
-
-HT_TASK::TaskResponse create_ioexpander(const unsigned long& sys_micros, const HT_TASK::TaskInfo& task_info)
-{
-    Wire2.begin();
-    IOExpanderInstance::create(0x20, Wire2);
-    IOExpanderInstance::instance().init();
-
-    IOExpanderInstance::instance().portMode(MCP23017Port::A, 0b00000000);
-    IOExpanderInstance::instance().portMode(MCP23017Port::B, 0b01111111);
-
-    // IOExpanderInstance::instance().writeRegister(MCP23017Register::GPIO_A, 0x00);  //Reset port A
-    // IOExpanderInstance::instance().writeRegister(MCP23017Register::GPIO_B, 0x00);  //Reset port B
-
-    IOExpanderInstance::instance().writeRegister(MCP23017Register::GPPU_B, 0xFF);  //Internal pull-ups
-
-    IOExpanderInstance::instance().writeRegister(MCP23017Register::IPOL_B, 0xFF);  //Polarity (inverted)
-
-    return HT_TASK::TaskResponse::YIELD;
-}
-
-HT_TASK::TaskResponse read_ioexpander(const unsigned long& sys_micros, const HT_TASK::TaskInfo& task_info)
-{
-    uint16_t in = IOExpanderInstance::instance().read(); // NOLINT (linter thinks variable uninitialized)
-    // for (int i = 0; i < 8; ++i) {
-    //     Serial.printf("%d ", in & 0x01);
-    //     in = in >> 1;
-    // }
-    // Serial.println("");
-
-    //TODO: Double check the harnessing is not wrong this time
-    if (IOExpanderUtils::getBit(in, 1, 0)) {
-        DashboardInterfaceInstance::instance().set_dial_state(ControllerMode_e::MODE_0);
-    } else if (IOExpanderUtils::getBit(in, 1, 1)) {
-        DashboardInterfaceInstance::instance().set_dial_state(ControllerMode_e::MODE_1);
-    } else if (IOExpanderUtils::getBit(in, 1, 2)) {
-        DashboardInterfaceInstance::instance().set_dial_state(ControllerMode_e::MODE_2);
-    } else if (IOExpanderUtils::getBit(in, 1, 3)) { // NOLINT (pin is magic number)
-        DashboardInterfaceInstance::instance().set_dial_state(ControllerMode_e::MODE_3);
-    } else if (IOExpanderUtils::getBit(in, 1, 4)) { // NOLINT (pin is magic number)
-        DashboardInterfaceInstance::instance().set_dial_state(ControllerMode_e::MODE_4);
-    } else if (IOExpanderUtils::getBit(in, 1, 5)) { // NOLINT (pin is magic number)
-        DashboardInterfaceInstance::instance().set_dial_state(ControllerMode_e::MODE_5);
-    }
-
-    ControllerMode_e state = DashboardInterfaceInstance::instance().get_dashboard_outputs().dial_state; // NOLINT (linter thinks state uninitialized)
-    switch (state) {
-        case ControllerMode_e::MODE_0:
-        {
-            IOExpanderInstance::instance().writePort(MCP23017Port::A, 0b00000010);
-            break;
-        }
-        case ControllerMode_e::MODE_1:
-        {
-            IOExpanderInstance::instance().writePort(MCP23017Port::A, 0b01010111);
-            break;
-        }
-        case ControllerMode_e::MODE_2:
-        {
-            IOExpanderInstance::instance().writePort(MCP23017Port::A, 0b00011000);
-            break;
-        }
-        case ControllerMode_e::MODE_3:
-        {
-            IOExpanderInstance::instance().writePort(MCP23017Port::A, 0b00010100);
-            break;
-        }
-        case ControllerMode_e::MODE_4:
-        {
-            IOExpanderInstance::instance().writePort(MCP23017Port::A, 0b01000101);
-            break;
-        }
-        case ControllerMode_e::MODE_5:
-        {
-            IOExpanderInstance::instance().writePort(MCP23017Port::A, 0b00100100);
-            break;
-        }
-        default:
-        {
-            IOExpanderInstance::instance().writePort(MCP23017Port::A, 0b11110000);
-            break;
-        }
-    }
 
     return HT_TASK::TaskResponse::YIELD;
 }
@@ -557,7 +475,6 @@ HT_TASK::TaskResponse debug_print(const unsigned long& sysMicros, const HT_TASK:
     Serial.print(DashboardInterfaceInstance::instance().get_dashboard_outputs().data_btn_is_pressed); Serial.print("\t");
     Serial.println(BuzzerController::getInstance().buzzer_is_active(sys_time::hal_millis()));
 
-
     return HT_TASK::TaskResponse::YIELD;
 }
 
@@ -693,7 +610,7 @@ void setup_all_interfaces() {
         .DATA_BUTTON = VCFInterfaceConstants::BTN_DATA_READ,
         .BUTTON_2 = VCFInterfaceConstants::BUTTON_2
     };
-    DashboardInterfaceInstance::create(dashboard_gpios); //NOLINT
+    DashboardInterfaceInstance::create(dashboard_gpios, VCFInterfaceConstants::IO_EXPANDER_ADDR, Wire2); //NOLINT
     ACUInterfaceInstance::create();
     VCRInterfaceInstance::create();
 

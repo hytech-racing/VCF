@@ -19,7 +19,7 @@
 #include "FlexCAN_T4.h"
 
 /* Local includes */
-#include "VCF_Globals.h"
+
 #include "VCF_Constants.h"
 #include "VCF_Tasks.h"
 #include "PedalsSystem.h"
@@ -51,7 +51,6 @@ HT_TASK::Task adc0_sample(HT_TASK::DUMMY_FUNCTION, &run_read_adc0_task, VCFTaskC
 HT_TASK::Task adc1_sample(HT_TASK::DUMMY_FUNCTION, &run_read_adc1_task, VCFTaskConstants::PEDALS_PRIORITY, VCFTaskConstants::PEDALS_SAMPLE_PERIOD);
 HT_TASK::Task buzzer_control_task(&init_buzzer_control_task, &run_buzzer_control_task, VCFTaskConstants::BUZZER_PRIORITY, VCFTaskConstants::BUZZER_WRITE_PERIOD);
 HT_TASK::Task read_dash_GPIOs_task(HT_TASK::DUMMY_FUNCTION, &run_dash_GPIOs_task, VCFTaskConstants::DASH_SAMPLE_PRIORITY, VCFTaskConstants::DASH_SAMPLE_PERIOD);
-HT_TASK::Task read_ioexpander_task(&create_ioexpander, &read_ioexpander, VCFTaskConstants::DASH_SAMPLE_PRIORITY, VCFTaskConstants::DASH_SAMPLE_PERIOD);
 HT_TASK::Task neopixels_task(&init_neopixels_task, &run_update_neopixels_task, VCFTaskConstants::NEOPIXEL_UPDATE_PRIORITY, VCFTaskConstants::NEOPIXEL_UPDATE_PERIOD);
 HT_TASK::Task ethernet_send_task(init_handle_send_vcf_ethernet_data, run_handle_send_vcf_ethernet_data, VCFTaskConstants::ETHERNET_SEND_PRIORITY, VCFTaskConstants::ETHERNET_SEND_PERIOD);
 HT_TASK::Task steering_message_enqueue(HT_TASK::DUMMY_FUNCTION, &enqueue_steering_data, VCFTaskConstants::STEERING_SEND_PRIORITY, VCFTaskConstants::STEERING_SEND_PERIOD);
@@ -79,7 +78,6 @@ void setup() {
     HT_SCHED::Scheduler::getInstance().schedule(adc0_sample);
     HT_SCHED::Scheduler::getInstance().schedule(adc1_sample);
     HT_SCHED::Scheduler::getInstance().schedule(read_dash_GPIOs_task);
-    HT_SCHED::Scheduler::getInstance().schedule(read_ioexpander_task);
     HT_SCHED::Scheduler::getInstance().schedule(neopixels_task);
     HT_SCHED::Scheduler::getInstance().schedule(steering_message_enqueue);
     HT_SCHED::Scheduler::getInstance().schedule(front_suspension_message_enqueue);
