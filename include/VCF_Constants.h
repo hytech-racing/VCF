@@ -91,10 +91,10 @@ namespace VCFInterfaceConstants {
     constexpr float FR_LOADCELL_SCALE =  1.0; //Values 
     constexpr float FR_LOADCELL_OFFSET = 0.0;
 
-    constexpr float FR_SUS_POT_SCALE = 1.0;
-    constexpr float FR_SUS_POT_OFFSET = 0;
-    constexpr float FL_SUS_POT_SCALE = 1.0;
-    constexpr float FL_SUS_POT_OFFSET = 0;
+    constexpr float FR_SUS_POT_SCALE = 0.01396; // Calibrated for mm between mounting bolts
+    constexpr float FR_SUS_POT_OFFSET = 150.0;
+    constexpr float FL_SUS_POT_SCALE = 0.01396; // Same as FR
+    constexpr float FL_SUS_POT_OFFSET = 150.0;
 
     constexpr float BRAKE_PRESSURE_FRONT_SCALE = 1.0;
     constexpr float BRAKE_PRESSURE_FRONT_OFFSET = 0;
@@ -136,7 +136,7 @@ namespace VCFSystemConstants {
     constexpr float BRAKE_MECHANICAL_ACTIVATION_PERCENTAGE = 0.5f;
 
     // Steering System Constants
-    constexpr uint32_t MIN_STEERING_SIGNAL_ANALOG_ADDR = 56; //Raw ADC value from analog sensor at minimum (left) steering angle (calibration) TODO: test and find real values for min&max
+    constexpr uint32_t MIN_STEERING_SIGNAL_ANALOG_ADDR = 56; //Raw ADC value from analog sensor at minimum (left) steering angle (calibration)
     constexpr uint32_t MAX_STEERING_SIGNAL_ANALOG_ADDR = 60; //Raw ADC value from analog sensor at maximum (right) steering angle
     constexpr uint32_t MIN_STEERING_SIGNAL_DIGITAL_ADDR = 32; //Raw ADC value from digital sensor at minimum (left) steering angle
     constexpr uint32_t MAX_STEERING_SIGNAL_DIGITAL_ADDR = 36; //Raw ADC value from digital sensor at maximum (right) steering angle
@@ -171,43 +171,45 @@ namespace VCFTaskConstants {
     constexpr unsigned long CAN_SEND_PRIORITY = 10;
     constexpr unsigned long CAN_SEND_PERIOD = 2000;               // 2 000 us = 500 Hz
 
-    constexpr unsigned long PEDALS_PRIORITY = 5;
-    constexpr unsigned long PEDALS_SEND_PERIOD = 4000;            // 4 000 us = 250 Hz
-    constexpr unsigned long PEDALS_SAMPLE_PERIOD = 500;           // 500 us = 2 kHz
-
+    
     constexpr unsigned long BUZZER_PRIORITY = 20;
     constexpr unsigned long BUZZER_WRITE_PERIOD = 100000;         // 100 000 us = 10 Hz
-
+    
     constexpr unsigned long DASH_SAMPLE_PRIORITY = 21;
     constexpr unsigned long DASH_SAMPLE_PERIOD = 100000;          // 100 000 us = 10 Hz
-
+    
     constexpr unsigned long DASH_SEND_PRIORITY = 7;
     constexpr unsigned long DASH_SEND_PERIOD = 100000;            // 100 000 us = 10 Hz
-
+    
     constexpr unsigned long DEBUG_PRIORITY = 100;
     constexpr unsigned long DEBUG_PERIOD = 10000;                 // 10 000 us = 2 Hz
-
+    
     constexpr unsigned long NEOPIXEL_UPDATE_PRIORITY = 90;
     constexpr unsigned long NEOPIXEL_UPDATE_PERIOD = 100000;      // 100 000 us = 10 Hz
-
-    constexpr unsigned long STEERING_SEND_PRIORITY = 25;
-    constexpr unsigned long STEERING_SEND_PERIOD = 4000;          // 4 000 us = 250 Hz
-
-    constexpr unsigned long STEERING_SAMPLE_PERIOD = 1000;         // 2000 us = 500 Hz
-    constexpr unsigned long STEERING_SAMPLE_PRIORITY = 10;
-
+    
+    
     constexpr unsigned long LOADCELL_SAMPLE_PRIORITY = 24;
     constexpr unsigned long LOADCELL_SAMPLE_PERIOD = 250;         // 250 us = 4 kHz
     constexpr unsigned long LOADCELL_SEND_PRIORITY = 25;
     constexpr unsigned long LOADCELL_SEND_PERIOD = 4000;          // 4 000 us = 250 Hz
-
+    
     constexpr unsigned long ETHERNET_SEND_PRIORITY = 20;
     constexpr unsigned long ETHERNET_SEND_PERIOD = 100000;        // 100 000 us = 10Hz
-
+    
+    constexpr unsigned long PEDALS_PRIORITY = 5;
+    constexpr unsigned long PEDALS_SEND_PERIOD = 4000;            // 4 000 us = 250 Hz
+    constexpr unsigned long PEDALS_SAMPLE_PERIOD = 500;           // 500 us = 2 kHz
+    
     constexpr unsigned long PEDALS_RECALIBRATION_PRIORITY = 150;
     constexpr unsigned long PEDALS_RECALIBRATION_PERIOD = 100000; // 100 000 us = 10 Hz
+
+    constexpr unsigned long STEERING_SEND_PRIORITY = 25;
+    constexpr unsigned long STEERING_SEND_PERIOD = 4000;          // 4 000 us = 250 Hz
     
-    constexpr unsigned long STEERING_RECALIBRATION_PRIORITY = 150; // TODO: Determine real values for these
+    constexpr unsigned long STEERING_SAMPLE_PERIOD = 1000;         // 2000 us = 500 Hz
+    constexpr unsigned long STEERING_SAMPLE_PRIORITY = 10;
+    
+    constexpr unsigned long STEERING_RECALIBRATION_PRIORITY = 150;
     constexpr unsigned long STEERING_RECALIBRATION_PERIOD = 100000;
 
     // IIR filter alphas

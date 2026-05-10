@@ -36,7 +36,6 @@ HT_TASK::TaskResponse run_read_adc0_task(const unsigned long& sysMicros, const H
         .accel_2 = static_cast<uint32_t>(ADCInterfaceInstance::instance().acceleration_2().conversion),
         .brake_1 = static_cast<uint32_t>(ADCInterfaceInstance::instance().brake_1().conversion),
         .brake_2 = static_cast<uint32_t>(ADCInterfaceInstance::instance().brake_2().conversion),
-        .pedal_pressure = 0 // TODO: Need changes to support both brake pressure sensors
     });
     return HT_TASK::TaskResponse::YIELD;
 }
@@ -46,13 +45,6 @@ HT_TASK::TaskResponse run_read_adc1_task(const unsigned long& sysMicros, const H
     // Samples all eight channels.
     ADCInterfaceInstance::instance().adc1_tick();
     ADCInterfaceInstance::instance().update_filtered_values(VCFTaskConstants::LOADCELL_IIR_FILTER_ALPHA);
-    return HT_TASK::TaskResponse::YIELD;
-}
-
-HT_TASK::TaskResponse run_read_digital_steering_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
-{
-    // sample the sensor
-    // OrbisBRInstance::instance().sample();
     return HT_TASK::TaskResponse::YIELD;
 }
 
@@ -131,11 +123,12 @@ HT_TASK::TaskResponse update_steering_calibration_task(const unsigned long& sysM
 // {
 //     // Doing digital read on all digital inputs
 //     int dimButton = digitalRead(BTN_DIM_READ);
-  //   int presetButton = digitalRead(BTN_PRESET_READ);
+//     int presetButton = digitalRead(BTN_PRESET_READ);
 //     int mcCycleButton = digitalRead(BTN_MC_CYCLE_READ);
 //     int modeButton = digitalRead(BTN_MODE_READ);
 //     int startButton = digitalRead(BTN_START_READ);
 //     int dataButton = digitalRead(BTN_DATA_READ);
+
 //     vcf_data.interface_data.dash_input_state.dim_btn_is_pressed = dimButton;
 //     vcf_data.interface_data.dash_input_state.preset_btn_is_pressed = presetButton;
 //     vcf_data.interface_data.dash_input_state.mc_reset_btn_is_pressed = mcCycleButton;
@@ -176,7 +169,7 @@ HT_TASK::TaskResponse send_dash_data(const unsigned long& sysMicros, const HT_TA
     DashInputState_s dash_outputs = can_interfaces.dash_interface.get_dashboard_outputs();
 
     DASH_INPUT_t msg_out;
-    //for this, add a message for the new button when its here, for now, steering system linked to dim_button. 
+
     msg_out.dim_button = dash_outputs.btn_dim_read_is_pressed;
     msg_out.preset_button = dash_outputs.preset_btn_is_pressed;
     msg_out.mode_button = 0; // dont exist but i dont wanna bother changing can msgs
@@ -200,8 +193,8 @@ HT_TASK::TaskResponse enqueue_front_suspension_data(const unsigned long& sysMicr
 
     msg_out.fr_load_cell = ADCInterfaceInstance::instance().get_filtered_FR_load_cell();
     msg_out.fl_load_cell = ADCInterfaceInstance::instance().get_filtered_FL_load_cell();
-    // msg_out.fr_shock_pot = ADCInterfaceInstance::instance().get_filtered_FR_sus_pot();
-    // msg_out.fl_shock_pot = ADCInterfaceInstance::instance().get_filtered_FL_sus_pot();
+    msg_out.fr_shock_pot_ro = HYTECH_fr_shock_pot_ro_toS(ADCInterfaceInstance::instance().get_filtered_FR_sus_pot());
+    msg_out.fl_shock_pot_ro = HYTECH_fl_shock_pot_ro_toS(ADCInterfaceInstance::instance().get_filtered_FL_sus_pot());
 
     CAN_util::enqueue_msg(&msg_out, &Pack_FRONT_SUSPENSION_hytech, VCFCANInterfaceInstance::instance().telem_can_tx_buffer);
     return HT_TASK::TaskResponse::YIELD;
@@ -211,6 +204,7 @@ HT_TASK::TaskResponse enqueue_steering_data(const unsigned long& sysMicros, cons
 {
     STEERING_DATA_t msg_out;
     SteeringSystemData_s steering_system_data = SteeringSystemInstance::instance().get_steering_system_data();
+
     msg_out.steering_analog_oor = steering_system_data.analog_oor_implausibility;
     msg_out.steering_both_sensors_fail = steering_system_data.both_sensors_fail;
     msg_out.steering_digital_oor = steering_system_data.digital_oor_implausibility;
@@ -439,101 +433,29 @@ namespace async_tasks
 
 HT_TASK::TaskResponse debug_print(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
 {
-    // /* Pedals Info */
-    // Serial.println("\n\nPedals Info:");
-    // Serial.println("\tPercent Pressed Implaus Min 1 \tMax 1 \tMin 2 \tMax 2");
-    // // Accel
-    // Serial.print("Accel: \t");
-    // Serial.print(PedalsSystemInstance::instance().get_pedals_system_data().accel_percent); Serial.print("\t");
-    // Serial.print(PedalsSystemInstance::instance().get_pedals_system_data().accel_is_pressed); Serial.print("\t");
-    // Serial.print(PedalsSystemInstance::instance().get_pedals_system_data().accel_is_implausible); Serial.print("\t");
-    // Serial.print(PedalsSystemInstance::instance().get_accel_params().min_pedal_1); Serial.print("\t");
-    // Serial.print(PedalsSystemInstance::instance().get_accel_params().max_pedal_1); Serial.print("\t");
-    // Serial.print(PedalsSystemInstance::instance().get_accel_params().min_pedal_2); Serial.print("\t");
-    // Serial.println(PedalsSystemInstance::instance().get_accel_params().max_pedal_2);
-    // // Brake
-    // Serial.print("Brake: \t");
-    // Serial.print(PedalsSystemInstance::instance().get_pedals_system_data().brake_percent); Serial.print("\t");
-    // Serial.print(PedalsSystemInstance::instance().get_pedals_system_data().brake_is_pressed); Serial.print("\t");
-    // Serial.print(PedalsSystemInstance::instance().get_pedals_system_data().brake_is_implausible); Serial.print("\t");
-    // Serial.print(PedalsSystemInstance::instance().get_brake_params().min_pedal_1); Serial.print("\t");
-    // Serial.print(PedalsSystemInstance::instance().get_brake_params().max_pedal_1); Serial.print("\t");
-    // Serial.print(PedalsSystemInstance::instance().get_brake_params().min_pedal_2); Serial.print("\t");
-    // Serial.println(PedalsSystemInstance::instance().get_brake_params().max_pedal_2);
-
-    // /* ADC Values */
-    // Serial.println("\nADC Vals:");
-    // // ADC 0
-    // Serial.println("ADC 0\t\t  Steering");
-    // Serial.println("\t2V5 Ref CW \tCCW \tAccel 1 Accel 2 Brake 1 Brake 2");
-    // // Raw values
-    // Serial.print("Raw\t");
-    // Serial.print(ADCInterfaceInstance::instance().pedal_reference().raw); Serial.print("\t");
-    // Serial.print(ADCInterfaceInstance::instance().get_steering_degrees_cw().raw); //Serial.print("\t");
-    // Serial.println();
-    // Serial.print(ADCInterfaceInstance::instance().get_steering_degrees_ccw().raw); Serial.print("\t");
-    // Serial.print(ADCInterfaceInstance::instance().acceleration_1().raw); Serial.print("\t");
-    // Serial.print(ADCInterfaceInstance::instance().acceleration_2().raw); Serial.print("\t");
-    // Serial.print(ADCInterfaceInstance::instance().brake_1().raw); Serial.print("\t");
-    // Serial.println(ADCInterfaceInstance::instance().brake_2().raw);
-    // // Converted values
-    // Serial.print("Convert\t");
-    // Serial.print(ADCInterfaceInstance::instance().pedal_reference().conversion); Serial.print("\t");
-    // Serial.print(ADCInterfaceInstance::instance().get_steering_degrees_cw().conversion); Serial.print("\t");
-    // Serial.print(ADCInterfaceInstance::instance().get_steering_degrees_ccw().conversion); Serial.print("\t");
-    // Serial.print(ADCInterfaceInstance::instance().acceleration_1().conversion); Serial.print("\t");
-    // Serial.print(ADCInterfaceInstance::instance().acceleration_2().conversion); Serial.print("\t");
-    // Serial.print(ADCInterfaceInstance::instance().brake_1().conversion); Serial.print("\t");
-    // Serial.println(ADCInterfaceInstance::instance().brake_2().conversion);
-
-    // // ADC 1
-    // Serial.println("\nADC 1\t\t\t  Load Cells \t  Sus Pots \t Brake Pressure");
-    // Serial.println("\tSHDN H \tSHDN D \tFL \tFR \tFR \tFL \tFront \tRear");
-    // // Raw ADC
-    // Serial.print("Raw\t");
-    // Serial.print(ADCInterfaceInstance::instance().shdn_h().raw); Serial.print("\t");
-    // Serial.print(ADCInterfaceInstance::instance().shdn_d().raw); Serial.print("\t");
-    // Serial.print(ADCInterfaceInstance::instance().FL_load_cell().raw); Serial.print("\t");
-    // Serial.print(ADCInterfaceInstance::instance().FR_load_cell().raw); Serial.print("\t");
-    // Serial.print(ADCInterfaceInstance::instance().FR_sus_pot().raw); Serial.print("\t");
-    // Serial.print(ADCInterfaceInstance::instance().FL_sus_pot().raw); Serial.print("\t");
-    // Serial.print(ADCInterfaceInstance::instance().get_brake_pressure_front().raw); Serial.print("\t");
-    // Serial.println(ADCInterfaceInstance::instance().get_brake_pressure_rear().raw);
-    // // Conversion ADC
-    // Serial.print("Convert\t");
-    // Serial.print(ADCInterfaceInstance::instance().shdn_h().conversion); Serial.print("\t");
-    // Serial.print(ADCInterfaceInstance::instance().shdn_d().conversion); Serial.print("\t");
-    // Serial.print(ADCInterfaceInstance::instance().get_filtered_FL_load_cell()); Serial.print("\t");
-    // Serial.print(ADCInterfaceInstance::instance().get_filtered_FR_load_cell()); Serial.print("\t");
-    // Serial.print(ADCInterfaceInstance::instance().get_filtered_FR_sus_pot()); Serial.print("\t");
-    // Serial.print(ADCInterfaceInstance::instance().get_filtered_FL_sus_pot()); Serial.print("\t");
-    // Serial.print(ADCInterfaceInstance::instance().get_brake_pressure_front().conversion); Serial.print("\t");
-    // Serial.println(ADCInterfaceInstance::instance().get_brake_pressure_rear().conversion);
-
-    // /* Dashboard Info */
-    // Serial.println("\nDash Buttons / Buzzer:");
-    // Serial.println("Preset \tReset \tStart \tData \tBuzzer");
-    // Serial.print(DashboardInterfaceInstance::instance().get_dashboard_outputs().preset_btn_is_pressed); Serial.print("\t");
-    // Serial.print(DashboardInterfaceInstance::instance().get_dashboard_outputs().mc_reset_btn_is_pressed); Serial.print("\t");
-    // Serial.print(DashboardInterfaceInstance::instance().get_dashboard_outputs().start_btn_is_pressed); Serial.print("\t");
-    // Serial.print(DashboardInterfaceInstance::instance().get_dashboard_outputs().data_btn_is_pressed); Serial.print("\t");
-    // Serial.println(BuzzerController::getInstance().buzzer_is_active(sys_time::hal_millis()));
-
-    Serial.println("--------------------------------------------------");
-    // Serial.println("Steering System Params: ");
-    // Serial.print("Minimum Value Analog: ");
-    // Serial.println(SteeringSystemInstance::instance().get_steering_params().min_steering_signal_analog);
-    // Serial.print("Maximum Value Analog: ");
-    // Serial.println(SteeringSystemInstance::instance().get_steering_params().max_steering_signal_analog);
-    // // Serial.print("Minimum Value Digital: ");
-    // // Serial.println(SteeringSystemInstance::instance().get_steering_params().min_steering_signal_digital);
-    // // Serial.print("Maximum Value Digital: ");
-    // // Serial.println(SteeringSystemInstance::instance().get_steering_params().max_steering_signal_digital);
-    // Serial.print("Analog Midpoint: ");
-    // Serial.println(SteeringSystemInstance::instance().get_steering_params().analog_midpoint);
-    // Serial.print("Digital Midpoint: ");
-    // Serial.println(SteeringSystemInstance::instance().get_steering_params().digital_midpoint);
-
+    /* Pedals Info */
+    Serial.println("\n\nPedals Info:");
+    Serial.println("\tPercent Pressed Implaus Min 1 \tMax 1 \tMin 2 \tMax 2");
+    // Accel
+    Serial.print("Accel: \t");
+    Serial.print(PedalsSystemInstance::instance().get_pedals_system_data().accel_percent); Serial.print("\t");
+    Serial.print(PedalsSystemInstance::instance().get_pedals_system_data().accel_is_pressed); Serial.print("\t");
+    Serial.print(PedalsSystemInstance::instance().get_pedals_system_data().accel_is_implausible); Serial.print("\t");
+    Serial.print(PedalsSystemInstance::instance().get_accel_params().min_pedal_1); Serial.print("\t");
+    Serial.print(PedalsSystemInstance::instance().get_accel_params().max_pedal_1); Serial.print("\t");
+    Serial.print(PedalsSystemInstance::instance().get_accel_params().min_pedal_2); Serial.print("\t");
+    Serial.println(PedalsSystemInstance::instance().get_accel_params().max_pedal_2);
+    // Brake
+    Serial.print("Brake: \t");
+    Serial.print(PedalsSystemInstance::instance().get_pedals_system_data().brake_percent); Serial.print("\t");
+    Serial.print(PedalsSystemInstance::instance().get_pedals_system_data().brake_is_pressed); Serial.print("\t");
+    Serial.print(PedalsSystemInstance::instance().get_pedals_system_data().brake_is_implausible); Serial.print("\t");
+    Serial.print(PedalsSystemInstance::instance().get_brake_params().min_pedal_1); Serial.print("\t");
+    Serial.print(PedalsSystemInstance::instance().get_brake_params().max_pedal_1); Serial.print("\t");
+    Serial.print(PedalsSystemInstance::instance().get_brake_params().min_pedal_2); Serial.print("\t");
+    Serial.println(PedalsSystemInstance::instance().get_brake_params().max_pedal_2);
+    
+    /* Steering System Data */
     Serial.println("Steering Sensor Data: ");
     Serial.print("analog adc: ");
     Serial.print(SteeringSystemInstance::instance().get_steering_system_data().analog_raw); Serial.print(" ");
@@ -554,7 +476,6 @@ HT_TASK::TaskResponse debug_print(const unsigned long& sysMicros, const HT_TASK:
     Serial.println(SteeringSystemInstance::instance().get_steering_system_data().digital_steering_angle);
     Serial.print("time: ");
     Serial.println(sys_time::hal_millis());
-
 
     Serial.print("output_steering_angle: ");
     Serial.println(SteeringSystemInstance::instance().get_steering_system_data().output_steering_angle);
@@ -578,6 +499,64 @@ HT_TASK::TaskResponse debug_print(const unsigned long& sysMicros, const HT_TASK:
     Serial.println(SteeringSystemInstance::instance().get_steering_system_data().both_sensors_fail);
     Serial.print("interface_sensor_error: ");
     Serial.println(SteeringSystemInstance::instance().get_steering_system_data().interface_sensor_error);
+    
+    /* ADC Values */
+    Serial.println("\nADC Vals:");
+    // ADC 0
+    Serial.println("ADC 0\t\t  Steering");
+    Serial.println("\t2V5 Ref CW \tCCW \tAccel 1 Accel 2 Brake 1 Brake 2");
+    // Raw values
+    Serial.print("Raw\t");
+    Serial.print(ADCInterfaceInstance::instance().pedal_reference().raw); Serial.print("\t");
+    Serial.print(ADCInterfaceInstance::instance().get_steering_degrees_cw().raw); Serial.print("\t");
+    Serial.print(ADCInterfaceInstance::instance().get_steering_degrees_ccw().raw); Serial.print("\t");
+    Serial.print(ADCInterfaceInstance::instance().acceleration_1().raw); Serial.print("\t");
+    Serial.print(ADCInterfaceInstance::instance().acceleration_2().raw); Serial.print("\t");
+    Serial.print(ADCInterfaceInstance::instance().brake_1().raw); Serial.print("\t");
+    Serial.println(ADCInterfaceInstance::instance().brake_2().raw);
+    // Converted values
+    Serial.print("Convert\t");
+    Serial.print(ADCInterfaceInstance::instance().pedal_reference().conversion); Serial.print("\t");
+    Serial.print(ADCInterfaceInstance::instance().get_steering_degrees_cw().conversion); Serial.print("\t");
+    Serial.print(ADCInterfaceInstance::instance().get_steering_degrees_ccw().conversion); Serial.print("\t");
+    Serial.print(ADCInterfaceInstance::instance().acceleration_1().conversion); Serial.print("\t");
+    Serial.print(ADCInterfaceInstance::instance().acceleration_2().conversion); Serial.print("\t");
+    Serial.print(ADCInterfaceInstance::instance().brake_1().conversion); Serial.print("\t");
+    Serial.println(ADCInterfaceInstance::instance().brake_2().conversion);
+
+    // ADC 1
+    Serial.println("\nADC 1\t\t\t  Load Cells \t  Sus Pots \t Brake Pressure");
+    Serial.println("\tSHDN H \tSHDN D \tFL \tFR \tFR \tFL \tFront \tRear");
+    // Raw ADC
+    Serial.print("Raw\t");
+    Serial.print(ADCInterfaceInstance::instance().shdn_h().raw); Serial.print("\t");
+    Serial.print(ADCInterfaceInstance::instance().shdn_d().raw); Serial.print("\t");
+    Serial.print(ADCInterfaceInstance::instance().FL_load_cell().raw); Serial.print("\t");
+    Serial.print(ADCInterfaceInstance::instance().FR_load_cell().raw); Serial.print("\t");
+    Serial.print(ADCInterfaceInstance::instance().FR_sus_pot().raw); Serial.print("\t");
+    Serial.print(ADCInterfaceInstance::instance().FL_sus_pot().raw); Serial.print("\t");
+    Serial.print(ADCInterfaceInstance::instance().get_brake_pressure_front().raw); Serial.print("\t");
+    Serial.println(ADCInterfaceInstance::instance().get_brake_pressure_rear().raw);
+    // Conversion ADC
+    Serial.print("Convert\t");
+    Serial.print(ADCInterfaceInstance::instance().shdn_h().conversion); Serial.print("\t");
+    Serial.print(ADCInterfaceInstance::instance().shdn_d().conversion); Serial.print("\t");
+    Serial.print(ADCInterfaceInstance::instance().get_filtered_FL_load_cell()); Serial.print("\t");
+    Serial.print(ADCInterfaceInstance::instance().get_filtered_FR_load_cell()); Serial.print("\t");
+    Serial.print(ADCInterfaceInstance::instance().get_filtered_FR_sus_pot()); Serial.print("\t");
+    Serial.print(ADCInterfaceInstance::instance().get_filtered_FL_sus_pot()); Serial.print("\t");
+    Serial.print(ADCInterfaceInstance::instance().get_brake_pressure_front().conversion); Serial.print("\t");
+    Serial.println(ADCInterfaceInstance::instance().get_brake_pressure_rear().conversion);
+
+    /* Dashboard Info */
+    Serial.println("\nDash Buttons / Buzzer:");
+    Serial.println("Preset \tReset \tStart \tData \tBuzzer");
+    Serial.print(DashboardInterfaceInstance::instance().get_dashboard_outputs().preset_btn_is_pressed); Serial.print("\t");
+    Serial.print(DashboardInterfaceInstance::instance().get_dashboard_outputs().mc_reset_btn_is_pressed); Serial.print("\t");
+    Serial.print(DashboardInterfaceInstance::instance().get_dashboard_outputs().start_btn_is_pressed); Serial.print("\t");
+    Serial.print(DashboardInterfaceInstance::instance().get_dashboard_outputs().data_btn_is_pressed); Serial.print("\t");
+    Serial.println(BuzzerController::getInstance().buzzer_is_active(sys_time::hal_millis()));
+
 
     return HT_TASK::TaskResponse::YIELD;
 }
@@ -602,7 +581,6 @@ void setup_all_interfaces() {
         VCFInterfaceConstants::BRAKE_1_CHANNEL,
         VCFInterfaceConstants::BRAKE_2_CHANNEL,
 
-
         VCFInterfaceConstants::SHDN_H_CHANNEL,
         VCFInterfaceConstants::SHDN_D_CHANNEL,
         VCFInterfaceConstants::FL_LOADCELL_CHANNEL,
@@ -621,7 +599,6 @@ void setup_all_interfaces() {
         VCFInterfaceConstants::BRAKE_1_SCALE,
         VCFInterfaceConstants::BRAKE_2_SCALE,
 
-
         VCFInterfaceConstants::SHDN_H_SCALE,
         VCFInterfaceConstants::SHDN_D_SCALE,
         VCFInterfaceConstants::FL_LOADCELL_SCALE,
@@ -639,7 +616,6 @@ void setup_all_interfaces() {
         VCFInterfaceConstants::ACCEL_2_OFFSET,
         VCFInterfaceConstants::BRAKE_1_OFFSET,
         VCFInterfaceConstants::BRAKE_2_OFFSET,
-
 
         VCFInterfaceConstants::SHDN_H_OFFSET,
         VCFInterfaceConstants::SHDN_D_OFFSET,
@@ -703,11 +679,10 @@ void setup_all_interfaces() {
     steering_params.analog_midpoint = (steering_params.max_steering_signal_analog + steering_params.min_steering_signal_analog) / 2;
     steering_params.span_signal_digital = steering_params.max_steering_signal_digital - steering_params.min_steering_signal_digital;
     steering_params.digital_midpoint = (steering_params.min_steering_signal_digital + steering_params.max_steering_signal_digital) / 2;
-
     SteeringSystemInstance::create(steering_params); // NOLINT thinks steering params is not initialized
 
     // Create Digital Steering Sensor singleton
-     OrbisBRInstance::create(&Serial2);
+    OrbisBRInstance::create(&Serial2);
     
     // Create dashboard singleton
     DashboardGPIOs_s dashboard_gpios = {
@@ -733,7 +708,4 @@ void setup_all_interfaces() {
     uint8_t mac[6]; // NOLINT (mac addresses are always 6 bytes)
     qindesign::network::Ethernet.macAddress(&mac[0]);
     qindesign::network::Ethernet.begin(mac, EthernetIPDefsInstance::instance().vcf_ip, EthernetIPDefsInstance::instance().default_dns, EthernetIPDefsInstance::instance().default_gateway, EthernetIPDefsInstance::instance().car_subnet);
-
-
-    
 }

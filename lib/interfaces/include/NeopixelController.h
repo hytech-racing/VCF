@@ -83,7 +83,8 @@ class NeopixelController
     Adafruit_NeoPixel _neopixels;
     uint8_t _current_brightness;
     uint8_t _neopixel_count;
-
+    const uint8_t _hv_threshold_voltage = 60;
+    MinCellMonitoringThresholds_s _min_cell_thresholds;
 };
 
 using NeopixelControllerInstance = etl::singleton<NeopixelController>;

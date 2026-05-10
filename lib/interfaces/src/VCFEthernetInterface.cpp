@@ -14,8 +14,10 @@ hytech_msgs_VCFData_s VCFEthernetInterface::make_vcf_data_msg(ADCInterface &ADCI
     out.has_front_suspot_data = true;
     out.has_pedals_system_data = true;
     out.has_steering_data = true;
+    out.has_steering_system_data = true;
     out.has_vcf_ethernet_link_data = true;
     out.has_vcf_shutdown_data = true;
+    out.has_brake_pressure_data = true;
 
     // Load cells
     out.front_loadcell_data.FL_loadcell_analog = static_cast<uint32_t>(ADCInterfaceInstance.get_filtered_FL_load_cell());
@@ -44,7 +46,6 @@ hytech_msgs_VCFData_s VCFEthernetInterface::make_vcf_data_msg(ADCInterface &ADCI
     out.steering_system_data.dtheta_exceeded_digital = steeringInstance.get_steering_system_data().dtheta_exceeded_digital;
     out.steering_system_data.both_sensors_fail = steeringInstance.get_steering_system_data().both_sensors_fail;
     out.steering_system_data.interface_sensor_error = steeringInstance.get_steering_system_data().interface_sensor_error;
-
 
     //TODO: MODIFY ETH STRUCT
     // Dash
@@ -75,6 +76,10 @@ hytech_msgs_VCFData_s VCFEthernetInterface::make_vcf_data_msg(ADCInterface &ADCI
     out.pedals_system_data.accel_percent = pedalsInstance.get_pedals_system_data().accel_percent;
     out.pedals_system_data.brake_percent = pedalsInstance.get_pedals_system_data().brake_percent;
     out.pedals_system_data.regen_percent = pedalsInstance.get_pedals_system_data().regen_percent;
+
+    // Brake pressure
+    out.brake_pressure_data.front_brake_pressure = ADCInterfaceInstance.get_brake_pressure_front().conversion;
+    out.brake_pressure_data.rear_brake_pressure = ADCInterfaceInstance.get_brake_pressure_rear().conversion;
 
     // Shutdown Senses
     out.vcf_shutdown_data.d_inertia_switch_out_read = ADCInterfaceInstance.shdn_d().conversion;
