@@ -160,7 +160,7 @@ namespace VCFSystemConstants {
 
     // degrees per bit
     constexpr float DEG_PER_COUNT_DIGITAL = 360.0f / 16384.0f;
-    constexpr float DEG_PER_COUNT_ANALOG = 360.0f / 3768.1f;
+    constexpr float DEG_PER_COUNT_ANALOG = 360.0f / 3603.6f;
 }
 
 // software configuration constants
