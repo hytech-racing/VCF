@@ -31,7 +31,7 @@ HT_TASK::TaskResponse run_read_adc0_task(const unsigned long& sysMicros, const H
 {
     // Updates all eight channels.
     ADCInterfaceInstance::instance().adc0_tick();
-    OrbisBRInstance::instance().sample();
+    // OrbisBRInstance::instance().sample();
     PedalsSystemInstance::instance().set_pedals_sensor_data(PedalSensorData_s{
         .accel_1 = static_cast<uint32_t>(ADCInterfaceInstance::instance().acceleration_1().conversion),
         .accel_2 = static_cast<uint32_t>(ADCInterfaceInstance::instance().acceleration_2().conversion),
