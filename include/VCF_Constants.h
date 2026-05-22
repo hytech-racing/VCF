@@ -149,7 +149,6 @@ namespace VCFSystemConstants {
     constexpr int32_t DIGITAL_MIN_WITH_MARGINS_ADDR = 48;
     constexpr int32_t DIGITAL_MAX_WITH_MARGINS_ADDR = 52;
 
-
     // implausibility values
     constexpr float ANALOG_TOLERANCE = 0.05f; //+- 0.5% error (analog sensor tolerance according to datasheet)
     constexpr float DIGITAL_TOLERANCE = 0.05f; // +- 0.2 degrees error
@@ -157,10 +156,11 @@ namespace VCFSystemConstants {
    
     // rate of angle change
     constexpr float MAX_DTHETA_THRESHOLD = 50.0f; //maximum change in angle since last reading to consider the reading valid
+    // TODO: find best value for this threshold
 
     // degrees per bit
-    constexpr float DEG_PER_COUNT_DIGITAL = 360.0f / 16384.0f;
-    constexpr float DEG_PER_COUNT_ANALOG = 360.0f / 3603.6f;
+    constexpr float DEG_PER_COUNT_DIGITAL = 360.0f / 16384.0f; // based on datasheet
+    constexpr float DEG_PER_COUNT_ANALOG = 360.0f / 3603.6f; // based on VCF Rev3 readings
 }
 
 // software configuration constants
