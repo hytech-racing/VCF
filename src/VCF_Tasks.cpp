@@ -96,7 +96,7 @@ HT_TASK::TaskResponse update_steering_calibration_task(const unsigned long& sysM
 
      if (VCRInterfaceInstance::instance().is_in_steering_calibration_state()) {
 
-        SteeringSystemInstance::instance().recalibrate_steering_digital();
+        SteeringSystemInstance::instance().recalibrate_steering_system();
         EEPROMUtilities::write_eeprom_32bit(VCFSystemConstants::MIN_STEERING_SIGNAL_ANALOG_ADDR, SteeringSystemInstance::instance().get_steering_params().min_steering_signal_analog);
         EEPROMUtilities::write_eeprom_32bit(VCFSystemConstants::MAX_STEERING_SIGNAL_ANALOG_ADDR, SteeringSystemInstance::instance().get_steering_params().max_steering_signal_analog);
         EEPROMUtilities::write_eeprom_32bit(VCFSystemConstants::MIN_STEERING_SIGNAL_DIGITAL_ADDR, SteeringSystemInstance::instance().get_steering_params().min_steering_signal_digital);
