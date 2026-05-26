@@ -46,7 +46,7 @@ public:
     SteeringSystem(const SteeringParams_s &steeringParams) : _steeringParams(steeringParams) {}
 
     // Functions
-    void recalibrate_steering_digital();
+    void recalibrate_steering_system();
 
     void evaluate_steering(const uint32_t analog_raw, const SteeringEncoderReading_s digital_data, const uint32_t current_millis);
 
@@ -73,7 +73,6 @@ public:
     }
     void update_observed_steering_limits(const uint32_t analog_raw, const uint32_t digital_raw);
 
-    //DELETE
     const uint32_t get_min_observed_analog() const {
         return min_observed_analog;
     }

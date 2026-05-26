@@ -8,7 +8,7 @@ constexpr float kBwB2 =  0.00235721f;
 constexpr float kBwA1 = -1.85804330f;
 constexpr float kBwA2 =  0.86747213f;
 
-void SteeringSystem::recalibrate_steering_digital() {
+void SteeringSystem::recalibrate_steering_system() {
     _steeringParams.min_steering_signal_analog = min_observed_analog;
     _steeringParams.max_steering_signal_analog = max_observed_analog;
     _steeringParams.min_steering_signal_digital = min_observed_digital;
@@ -77,7 +77,7 @@ void SteeringSystem::evaluate_steering(const uint32_t analog_raw, const Steering
 
     if (!_first_run) { //check that we not on the first run which would mean no previous data
         
- 
+        // block dtheta calcs if dt is too small
         if (dt >= 2) {
             float filtered_analog_angle = _filter_analog_angle(_analog_angle_unfiltered);
             _steeringSystemData.analog_steering_angle = filtered_analog_angle; // update the angle to the filtered value for downstream use and velocity calculation
@@ -93,7 +93,6 @@ void SteeringSystem::evaluate_steering(const uint32_t analog_raw, const Steering
             _steeringSystemData.analog_steering_angle = _last_filtered_analog_angle;
         }
 
-
         //Check if either sensor moved too much in one tick
         _steeringSystemData.dtheta_exceeded_analog = _evaluate_steering_dtheta_exceeded(_steeringSystemData.analog_steering_velocity_deg_s);
         _steeringSystemData.dtheta_exceeded_digital = _evaluate_steering_dtheta_exceeded(_steeringSystemData.digital_steering_velocity_deg_s); // use digital velocity for dtheta check since it's more precise and we are concerned about large changes in angle that could be caused by noise in the analog sensor
@@ -104,28 +103,39 @@ void SteeringSystem::evaluate_steering(const uint32_t analog_raw, const Steering
 
         //Check if there is too much of a difference between sensor values
         float sensor_difference = std::fabs(_steeringSystemData.analog_steering_angle - _steeringSystemData.digital_steering_angle);
-        bool sensors_agree = (sensor_difference <= _steeringParams.error_between_sensors_tolerance); //steeringParams.error
-        _steeringSystemData.sensor_disagreement_implausibility = !sensors_agree;
+        bool sensors_agree = (sensor_difference <= _steeringParams.error_between_sensors_tolerance);
+        _steeringSystemData.sensor_disagreement_implausibility = !sensors_agree; // flag sensors disagree
 
         //create an algorithm/ checklist to determine which sensor we trust more,
         //or, if we should have an algorithm to have a weighted calculation based on both values
         bool analog_valid = !_steeringSystemData.analog_oor_implausibility && !_steeringSystemData.dtheta_exceeded_analog;
         bool digital_valid = !_steeringSystemData.digital_oor_implausibility && !_steeringSystemData.dtheta_exceeded_digital && !_steeringSystemData.interface_sensor_error;
 
-        if (analog_valid && digital_valid) {
-            //if sensors have acceptable difference, use digital as steering angle
-            if (sensors_agree) {
-                _steeringSystemData.output_steering_angle = _steeringSystemData.digital_steering_angle;
-            } else {
-                _steeringSystemData.output_steering_angle = _steeringSystemData.digital_steering_angle; //default to original, but we need to consider what we really want to put here
-            }
+        // if (analog_valid && digital_valid) {
+        //     //if sensors have acceptable difference, use digital as steering angle
+        //     if (sensors_agree) {
+        //         _steeringSystemData.output_steering_angle = _steeringSystemData.digital_steering_angle;
+        //     } else {
+        //         _steeringSystemData.output_steering_angle = _steeringSystemData.digital_steering_angle; //default to original, but we need to consider what we really want to put here
+        //     }
+        // } else if (analog_valid) {
+        //     _steeringSystemData.output_steering_angle = _steeringSystemData.analog_steering_angle;
+        // } else if (digital_valid) {
+        //     _steeringSystemData.output_steering_angle = _steeringSystemData.digital_steering_angle;
+        // } else { // if both sensors fail
+        //     _steeringSystemData.output_steering_angle = _prev_digital_angle;
+        //     _steeringSystemData.both_sensors_fail = true;
+        // }
+        
+        // Prioritize digital sensor if valid. If not, use analog. If both fail, flag output and set output angle to zero
+        // TODO: test this to see if it works well
+        if (digital_valid) {
+            _steeringSystemData.output_steering_angle = _steeringSystemData.digital_steering_angle;
         } else if (analog_valid) {
             _steeringSystemData.output_steering_angle = _steeringSystemData.analog_steering_angle;
-        } else if (digital_valid) {
-            _steeringSystemData.output_steering_angle = _steeringSystemData.digital_steering_angle;
-        } else { // if both sensors fail
-            _steeringSystemData.output_steering_angle = _prev_digital_angle;
-            _steeringSystemData.both_sensors_fail = true;
+        } else {
+            _steeringSystemData.both_sensors_fail = true; // flag that both sensors are bad
+            _steeringSystemData.output_steering_angle = 0.0f; // keep output at zero to prevent erroneous outputs.
         }
     }
     //Update states
