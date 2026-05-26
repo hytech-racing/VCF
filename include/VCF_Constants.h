@@ -63,13 +63,13 @@ namespace VCFInterfaceConstants {
     constexpr float PEDAL_REF_2V5_SCALE = 1.0;
     constexpr float PEDAL_REF_2V5_OFFSET = 0;
 
-    constexpr float STEERING_1_SCALE = 1.0; // TODO: Figure out what these mean
+    constexpr float STEERING_1_SCALE = 1.0;
     constexpr float STEERING_1_OFFSET = 0;
-    constexpr float STEERING_2_SCALE = 1.0; // TODO: Figure out if steering 2 = steering 1
+    constexpr float STEERING_2_SCALE = 1.0;
     constexpr float STEERING_2_OFFSET = 0;
     // Scale for steering sensor = 0.02197265 . Offset has to be mechanically determined
 
-    constexpr float ACCEL_1_SCALE = 1.0; // TODO: Figure out what these should be
+    constexpr float ACCEL_1_SCALE = 1.0;
     constexpr float ACCEL_1_OFFSET = 0;
     constexpr float ACCEL_2_SCALE = 1.0;
     constexpr float ACCEL_2_OFFSET = 0;
@@ -155,8 +155,7 @@ namespace VCFSystemConstants {
     constexpr float ERROR_BETWEEN_SENSORS_TOLERANCE = 5.0f;
    
     // rate of angle change
-    constexpr float MAX_DTHETA_THRESHOLD = 50.0f; //maximum change in angle since last reading to consider the reading valid
-    // TODO: find best value for this threshold
+    constexpr float MAX_DTHETA_THRESHOLD = 150.0f; //maximum change in angle since last reading to consider the reading valid, based on actual data
 
     // degrees per bit
     constexpr float DEG_PER_COUNT_DIGITAL = 360.0f / 16384.0f; // based on datasheet

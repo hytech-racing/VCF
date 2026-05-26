@@ -30,10 +30,10 @@ void SteeringSystem::recalibrate_steering_digital() {
     _steeringParams.digital_tol_deg = digital_tol_counts * _steeringParams.deg_per_count_digital;
     _steeringParams.digital_midpoint = (_steeringParams.max_steering_signal_digital + _steeringParams.min_steering_signal_digital) / 2;
     _steeringParams.analog_midpoint = (_steeringParams.max_steering_signal_analog + _steeringParams.min_steering_signal_analog) / 2;
-    _steeringParams.analog_min_with_margins = static_cast<int32_t>(_steeringParams.min_steering_signal_analog - analog_tol_counts);
-    _steeringParams.analog_max_with_margins = static_cast<int32_t>(_steeringParams.max_steering_signal_analog + analog_tol_counts);
-    _steeringParams.digital_min_with_margins = static_cast<int32_t>(_steeringParams.min_steering_signal_digital - digital_tol_counts);
-    _steeringParams.digital_max_with_margins = static_cast<int32_t>(_steeringParams.max_steering_signal_digital + digital_tol_counts);
+    _steeringParams.analog_min_with_margins = static_cast<int32_t>(_steeringParams.min_steering_signal_analog - analog_tol_counts); // NOLINT we wont see numbers out of range
+    _steeringParams.analog_max_with_margins = static_cast<int32_t>(_steeringParams.max_steering_signal_analog + analog_tol_counts); // NOLINT we wont see numbers out of range
+    _steeringParams.digital_min_with_margins = static_cast<int32_t>(_steeringParams.min_steering_signal_digital - digital_tol_counts); // NOLINT we wont see numbers out of range
+    _steeringParams.digital_max_with_margins = static_cast<int32_t>(_steeringParams.max_steering_signal_digital + digital_tol_counts); // NOLINT we wont see numbers out of range
 
     if (max_observed_analog > min_observed_analog && _steeringParams.span_signal_analog > 2500) // NOLINT with 360 deg analog sensor, typical span is about 2000
     {
