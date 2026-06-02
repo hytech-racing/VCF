@@ -65,10 +65,10 @@ static const IPAddress MY_IP     (192, 168, 1,  10);
 static const IPAddress PEER_IP   (192, 168, 1,  11);
 static const IPAddress SUBNET    (255, 255, 255,  0);
 static const IPAddress GATEWAY   (192, 168, 1,   1);
-static constexpr uint16_t PORT   = 5010;
+static constexpr uint16_t PORT   = 5005;
 static constexpr uint32_t SEND_INTERVAL_MS = 500;
 
-// ── Globals ───────────────────────────────────────────────────────────────────
+// Globals
 EthernetUDP udp;
 uint32_t    lastSend  = 0;
 uint32_t    sendCount = 0;
@@ -99,7 +99,7 @@ void setup() {
 }
 
 void loop() {
-  // ── Receive ──────────────────────────────────────────────────────────────
+  // Receive
   int pktSize = udp.parsePacket();
   if (pktSize > 0) {
     char buf[256];
@@ -114,7 +114,7 @@ void loop() {
     Serial.println("\"");
   }
 
-  // ── Send every SEND_INTERVAL_MS ──────────────────────────────────────────
+  // Send every SEND_INTERVAL_MS
   if (millis() - lastSend >= SEND_INTERVAL_MS) {
     lastSend = millis();
     sendCount++;
