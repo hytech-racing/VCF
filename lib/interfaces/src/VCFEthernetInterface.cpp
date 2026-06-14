@@ -31,22 +31,22 @@ hytech_msgs_VCFData_s VCFEthernetInterface::make_vcf_data_msg(ADCInterface &ADCI
     // Steering
     out.steering_data.analog_steering_degrees = ADCInterfaceInstance.get_steering_degrees_cw().conversion;
     out.steering_data.digital_steering_analog = ADCInterfaceInstance.get_steering_degrees_ccw().conversion;
-    
+
     //SteeringSystem
-    out.steering_system_data.analog_raw = steeringInstance.get_steering_system_data().analog_raw;
-    out.steering_system_data.digital_raw = steeringInstance.get_steering_system_data().digital_raw;
-    out.steering_system_data.analog_steering_angle = steeringInstance.get_steering_system_data().analog_steering_angle;
-    out.steering_system_data.digital_steering_angle = steeringInstance.get_steering_system_data().digital_steering_angle;
-    out.steering_system_data.output_steering_angle = steeringInstance.get_steering_system_data().output_steering_angle;
-    out.steering_system_data.analog_steering_velocity_deg_s = steeringInstance.get_steering_system_data().analog_steering_velocity_deg_s;
-    out.steering_system_data.digital_steering_velocity_deg_s = steeringInstance.get_steering_system_data().digital_steering_velocity_deg_s;
-    out.steering_system_data.digital_oor_implausibility = steeringInstance.get_steering_system_data().digital_oor_implausibility;
-    out.steering_system_data.analog_oor_implausibility = steeringInstance.get_steering_system_data().analog_oor_implausibility;
-    out.steering_system_data.sensor_disagreement_implausibility = steeringInstance.get_steering_system_data().sensor_disagreement_implausibility;
-    out.steering_system_data.dtheta_exceeded_analog = steeringInstance.get_steering_system_data().dtheta_exceeded_analog;
-    out.steering_system_data.dtheta_exceeded_digital = steeringInstance.get_steering_system_data().dtheta_exceeded_digital;
-    out.steering_system_data.both_sensors_fail = steeringInstance.get_steering_system_data().both_sensors_fail;
-    out.steering_system_data.interface_sensor_error = steeringInstance.get_steering_system_data().interface_sensor_error;
+    // out.steering_system_data.analog_raw = steeringInstance.get_steering_system_data().analog_raw;
+    // out.steering_system_data.digital_raw = steeringInstance.get_steering_system_data().digital_raw;
+    // out.steering_system_data.analog_steering_angle = steeringInstance.get_steering_system_data().analog_steering_angle;
+    // out.steering_system_data.digital_steering_angle = steeringInstance.get_steering_system_data().digital_steering_angle;
+    // out.steering_system_data.output_steering_angle = steeringInstance.get_steering_system_data().output_steering_angle;
+    // out.steering_system_data.analog_steering_velocity_deg_s = steeringInstance.get_steering_system_data().analog_steering_velocity_deg_s;
+    // out.steering_system_data.digital_steering_velocity_deg_s = steeringInstance.get_steering_system_data().digital_steering_velocity_deg_s;
+    // out.steering_system_data.digital_oor_implausibility = steeringInstance.get_steering_system_data().digital_oor_implausibility;
+    // out.steering_system_data.analog_oor_implausibility = steeringInstance.get_steering_system_data().analog_oor_implausibility;
+    // out.steering_system_data.sensor_disagreement_implausibility = steeringInstance.get_steering_system_data().sensor_disagreement_implausibility;
+    // out.steering_system_data.dtheta_exceeded_analog = steeringInstance.get_steering_system_data().dtheta_exceeded_analog;
+    // out.steering_system_data.dtheta_exceeded_digital = steeringInstance.get_steering_system_data().dtheta_exceeded_digital;
+    // out.steering_system_data.both_sensors_fail = steeringInstance.get_steering_system_data().both_sensors_fail;
+    // out.steering_system_data.interface_sensor_error = steeringInstance.get_steering_system_data().interface_sensor_error;
 
     //TODO: MODIFY ETH STRUCT
     // Dash

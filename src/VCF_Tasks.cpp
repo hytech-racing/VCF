@@ -334,11 +334,11 @@ namespace async_tasks
     {
         handle_async_recvs();
 
-        SteeringSystemInstance::instance().evaluate_steering(
-            ADCInterfaceInstance::instance().get_steering_degrees_cw().conversion,
-             OrbisBRInstance::instance().getLastReading(),
-            sys_time::hal_millis()
-        );
+        // SteeringSystemInstance::instance().evaluate_steering(
+        //     ADCInterfaceInstance::instance().get_steering_degrees_cw().conversion,
+        //     OrbisBRInstance::instance().getLastReading(),
+        //     sys_time::hal_millis()
+        // );
 
         PedalsSystemInstance::instance().evaluate_pedals(
             PedalsSystemInstance::instance().get_pedals_sensor_data(),
@@ -625,8 +625,13 @@ void setup_all_interfaces() {
     SteeringSystemInstance::create(steering_params); // NOLINT thinks steering params is not initialized
 
     // Create Digital Steering Sensor singleton
+<<<<<<< Updated upstream
     OrbisBRInstance::create(&Serial2);
     
+=======
+    // OrbisBRInstance::create(&Serial2);
+
+>>>>>>> Stashed changes
     // Create dashboard singleton
     DashboardGPIOs_s dashboard_gpios = {
         .BRIGHTNESS_CONTROL_PIN = VCFInterfaceConstants::BRIGHTNESS_CONTROL_PIN,
