@@ -87,6 +87,7 @@ HT_TASK::TaskResponse update_pedals_calibration_task(const unsigned long& sysMic
     return HT_TASK::TaskResponse::YIELD;
 }
 
+// this task is commented out
 HT_TASK::TaskResponse update_steering_calibration_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo) {
     const uint32_t analog_raw = SteeringSystemInstance::instance().get_steering_system_data().analog_raw; // NOLINT thinks this is not initialized
     const uint32_t digital_raw = SteeringSystemInstance::instance().get_steering_system_data().digital_raw; // NOLINT thinks this is not initialized
@@ -204,18 +205,30 @@ HT_TASK::TaskResponse enqueue_front_suspension_data(const unsigned long& sysMicr
 HT_TASK::TaskResponse enqueue_steering_data(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
 {
     STEERING_DATA_t msg_out;
-    SteeringSystemData_s steering_system_data = SteeringSystemInstance::instance().get_steering_system_data();
+    // SteeringSystemData_s steering_system_data = SteeringSystemInstance::instance().get_steering_system_data();
 
-    msg_out.steering_analog_oor = steering_system_data.analog_oor_implausibility;
-    msg_out.steering_both_sensors_fail = steering_system_data.both_sensors_fail;
-    msg_out.steering_digital_oor = steering_system_data.digital_oor_implausibility;
-    msg_out.steering_dtheta_exceeded_analog = steering_system_data.dtheta_exceeded_analog;
-    msg_out.steering_dtheta_exceeded_digital = steering_system_data.dtheta_exceeded_digital;
-    msg_out.steering_interface_sensor_error = steering_system_data.interface_sensor_error;
-    msg_out.steering_output_steering_angle_ro = HYTECH_steering_output_steering_angle_ro_toS(steering_system_data.output_steering_angle);
-    msg_out.steering_sensor_disagreement = steering_system_data.sensor_disagreement_implausibility;
-    msg_out.steering_analog_raw = steering_system_data.analog_raw;
-    msg_out.steering_digital_raw = steering_system_data.digital_raw;
+    // msg_out.steering_analog_oor = steering_system_data.analog_oor_implausibility;
+    // msg_out.steering_both_sensors_fail = steering_system_data.both_sensors_fail;
+    // msg_out.steering_digital_oor = steering_system_data.digital_oor_implausibility;
+    // msg_out.steering_dtheta_exceeded_analog = steering_system_data.dtheta_exceeded_analog;
+    // msg_out.steering_dtheta_exceeded_digital = steering_system_data.dtheta_exceeded_digital;
+    // msg_out.steering_interface_sensor_error = steering_system_data.interface_sensor_error;
+    // msg_out.steering_output_steering_angle_ro = HYTECH_steering_output_steering_angle_ro_toS(steering_system_data.output_steering_angle);
+    // msg_out.steering_sensor_disagreement = steering_system_data.sensor_disagreement_implausibility;
+    // msg_out.steering_analog_raw = steering_system_data.analog_raw;
+    // msg_out.steering_digital_raw = steering_system_data.digital_raw;
+
+    msg_out.steering_analog_oor = 0;
+    msg_out.steering_both_sensors_fail = 0;
+    msg_out.steering_digital_oor = 0;
+    msg_out.steering_dtheta_exceeded_analog = 0;
+    msg_out.steering_dtheta_exceeded_digital = 0;
+    msg_out.steering_interface_sensor_error = 0;
+    msg_out.steering_output_steering_angle_ro = HYTECH_steering_output_steering_angle_ro_toS(0.0f);
+    msg_out.steering_sensor_disagreement = 0;
+    msg_out.steering_analog_raw = ADCInterfaceInstance::instance().get_steering_degrees_cw().conversion;
+    msg_out.steering_digital_raw = ADCInterfaceInstance::instance().get_steering_degrees_ccw().conversion; // could use this to also get both channels of the analog sensor
+    // msg_out.steering_digital_raw = 0; // if we don't use above, just set to zero
 
     CAN_util::enqueue_msg(&msg_out, &Pack_STEERING_DATA_hytech, VCFCANInterfaceInstance::instance().telem_can_tx_buffer);
     return HT_TASK::TaskResponse::YIELD;
@@ -625,13 +638,8 @@ void setup_all_interfaces() {
     SteeringSystemInstance::create(steering_params); // NOLINT thinks steering params is not initialized
 
     // Create Digital Steering Sensor singleton
-<<<<<<< Updated upstream
-    OrbisBRInstance::create(&Serial2);
-    
-=======
     // OrbisBRInstance::create(&Serial2);
 
->>>>>>> Stashed changes
     // Create dashboard singleton
     DashboardGPIOs_s dashboard_gpios = {
         .BRIGHTNESS_CONTROL_PIN = VCFInterfaceConstants::BRIGHTNESS_CONTROL_PIN,

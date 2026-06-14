@@ -47,6 +47,8 @@ hytech_msgs_VCFData_s VCFEthernetInterface::make_vcf_data_msg(ADCInterface &ADCI
     // out.steering_system_data.dtheta_exceeded_digital = steeringInstance.get_steering_system_data().dtheta_exceeded_digital;
     // out.steering_system_data.both_sensors_fail = steeringInstance.get_steering_system_data().both_sensors_fail;
     // out.steering_system_data.interface_sensor_error = steeringInstance.get_steering_system_data().interface_sensor_error;
+    out.steering_system_data.analog_raw = ADCInterfaceInstance::instance().get_steering_degrees_cw().conversion;
+    out.steering_system_data.digital_raw = ADCInterfaceInstance::instance().get_steering_degrees_ccw().conversion;
 
     //TODO: MODIFY ETH STRUCT
     // Dash
