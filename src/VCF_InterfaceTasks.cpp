@@ -4,6 +4,10 @@ void initialize_all_interfaces()
 {
     
 
+    /* Dashboard Interface */
+    DashboardInterfaceInstance::create();
+    DashboardInterfaceInstance::instance().init();
+
 }
 
 HT_TASK::TaskResponse run_read_adc0_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
