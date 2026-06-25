@@ -1,8 +1,10 @@
 #include "NeopixelController.h"
 
-void NeopixelController::init_neopixels() {
+void NeopixelController::init_neopixels()
+{
     _neopixels.begin();
     _neopixels.setBrightness(_current_brightness);
+
     //set init color for every led
     for (int i = 0; i < _neopixel_count; i++)
     {
@@ -54,9 +56,12 @@ void NeopixelController::refresh_neopixels(const PedalsSystemData_s &pedals_data
     }
 
     LED_color_e brake_light_color = LED_color_e::OFF;
-    if (pedals_data.brake_is_pressed && !pedals_data.implausibility_has_exceeded_max_duration) {
+    if (pedals_data.brake_is_pressed && !pedals_data.implausibility_has_exceeded_max_duration)
+    {
         brake_light_color = LED_color_e::GREEN;
-    } else if (pedals_data.implausibility_has_exceeded_max_duration) {
+    }
+    else if (pedals_data.implausibility_has_exceeded_max_duration)
+    {
         brake_light_color = LED_color_e::RED;
     }
 

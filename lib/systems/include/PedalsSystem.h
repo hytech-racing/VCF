@@ -1,10 +1,12 @@
 #ifndef PEDALSSYSTEM
 #define PEDALSSYSTEM
-#include <math.h>
-#include <tuple>
+
+/* ETL Library */
 #include <etl/singleton.h>
 
-
+/* External Includes */
+#include <math.h>
+#include <tuple>
 #include "SharedFirmwareTypes.h"
 
 
@@ -15,7 +17,7 @@ const float ACCELERATION_PERCENT_LIMIT = static_cast<float>(0.05); // accelerati
 /**
  * Pedals params struct that holds min/max values that will be used for evaluation. The accel and brake sensors
  * will each have one version of PedalsParam.
- * 
+ *
  * NOTE: Please take note of the meaning of min/max! They are not the min/max outputs of the pedal sensor, they
  *       the values at min/max travel. So, for negative slope coefficient sensors, "min" will be greater than "max".
  */
@@ -47,16 +49,17 @@ public:
 
     /// @param accelParams Accel pedal parameters. By rules, 2 sensors must be used for redundancy and evaluated w.r.t each other
     /// @param brakeParams Brake pedal params. When used with only one pedal sensor, the pedal parameter evaluation for brakes only looks at the min and max for min_pedal_1 / max_pedal_1
-    PedalsSystem(const PedalsParams &accelParams,
-                 const PedalsParams &brakeParams) : _accelParams(accelParams), _brakeParams(brakeParams), _implausibilityStartTime(0)
-    { }
+    PedalsSystem(const PedalsParams &accelParams, const PedalsParams &brakeParams) :
+        _accelParams(accelParams),
+        _brakeParams(brakeParams),
+        _implausibilityStartTime(0)
+    {};
 
-    void set_params(const PedalsParams &accelParams,
-                   const PedalsParams &brakeParams)
+    void set_params(const PedalsParams &accelParams, const PedalsParams &brakeParams)
     {
         _accelParams = accelParams;
         _brakeParams = brakeParams;
-        
+
     }
 
     void set_pedals_sensor_data(const PedalSensorData_s &pedal_data)
@@ -216,7 +219,7 @@ private:
     /// @param check_mech_activation if this is true, function will check percentages against the mechanical activation percentage
     /// @return true or false accordingly
     bool _pedal_is_active(float pedal1ConvertedData, float pedal2ConvertedData, const PedalsParams &params, bool check_mech_activation);
-    
+
 private:
     PedalsSystemData_s _systemData{};
     PedalSensorData_s _sensorData{};
@@ -229,4 +232,3 @@ private:
 using PedalsSystemInstance = etl::singleton<PedalsSystem>;
 
 #endif /* PEDALSSYSTEM */
- 

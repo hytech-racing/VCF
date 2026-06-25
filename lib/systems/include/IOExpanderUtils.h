@@ -1,9 +1,10 @@
 #ifndef IO_EXPANDER_UTILS_H
 #define IO_EXPANDER_UTILS_H
 
-/* Standard int library */
+/* Standard Library */
 #include <stdint.h>
 #include <stdbool.h>
+
 
 namespace IOExpanderUtils
 {

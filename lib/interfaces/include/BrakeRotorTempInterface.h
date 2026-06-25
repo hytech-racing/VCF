@@ -1,23 +1,27 @@
 #ifndef BRAKEROTORTEMPINTERFACE_H
 #define BRAKEROTORTEMPINTERFACE_H
 
-/* External libraries */
-#include "FlexCAN_T4.h"
+/* ETL Library */
 #include "etl/singleton.h"
 
+/* External Includes */
+#include "FlexCAN_T4.h"
 
-namespace BrakeRotorTempDefaultParams {
+
+namespace brake_rotor_temp_default_params
+{
     constexpr size_t channels_within_brake_temp_sensor = 16; // TODO: check if our sensors are actually 16 channel
 }
 
-struct BrakeTempSensorData_s {
+struct BrakeTempSensorData_s
+{
     float max_temp;
     float avg_temp;
-
-    std::array<float, BrakeRotorTempDefaultParams::channels_within_brake_temp_sensor> channel_data;
+    std::array<float, brake_rotor_temp_default_params::channels_within_brake_temp_sensor> channel_data;
 };
 
-struct BrakeTempData_s {
+struct BrakeTempData_s
+{
     BrakeTempSensorData_s fl_sensor;
     BrakeTempSensorData_s fr_sensor;
 };

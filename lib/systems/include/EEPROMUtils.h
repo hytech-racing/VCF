@@ -1,7 +1,10 @@
 #ifndef EEPROM_UTILITIES_H
 #define EEPROM_UTILITIES_H
 
+/* Standard Library */
 #include <stdint.h>
+
+/* External Includes */
 #include <EEPROM.h>
 #include "Logger.h"
 
