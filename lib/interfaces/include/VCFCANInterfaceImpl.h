@@ -31,11 +31,16 @@ using FlexCAN_t = FlexCAN_T4<CAN_DEV, RX_SIZE_256, TX_SIZE_16>;
  */
 struct CANInterfaces_s
 {
-    explicit CANInterfaces_s(ACUInterface &acu_int, BrakeRotorTemp &brake_rotor_temp_int, DashboardInterface &dash_int, VCRInterface &vcr_int)
-        : acu_interface(acu_int),
-          brake_rotor_temp_interface(brake_rotor_temp_int),
-          dash_interface(dash_int),
-          vcr_interface(vcr_int)
+    explicit CANInterfaces_s(
+        ACUInterface &acu_int,
+        BrakeRotorTemp &brake_rotor_temp_int,
+        DashboardInterface &dash_int,
+        VCRInterface &vcr_int
+    ) :
+        acu_interface(acu_int),
+        brake_rotor_temp_interface(brake_rotor_temp_int),
+        dash_interface(dash_int),
+        vcr_interface(vcr_int)
     {}
 
     ACUInterface &acu_interface;
@@ -48,11 +53,9 @@ using CANInterfacesInstance = etl::singleton<CANInterfaces_s>;
 /**
  * @brief This struct holds the FlexCAN peripheral instances and their associated RX/TX ring buffers.
  */
-struct VCFCANInterface
+struct VCFCANInterface_s
 {
-    explicit VCFCANInterface(etl::delegate<void (CANInterfaces_s &, const CAN_message_t &, uint32_t, CANInterfaceType_e)> recv_switch_func)
-        : can_recv_switch(recv_switch_func)
-    {}
+    explicit VCFCANInterface_s(etl::delegate<void (CANInterfaces_s &, const CAN_message_t &, uint32_t, CANInterfaceType_e)> recv_switch_func) : can_recv_switch(recv_switch_func) {}
 
     FlexCAN_t<CAN1> TELEM_CAN;
     CANRXBuffer_t telem_can_rx_buffer;
@@ -64,7 +67,7 @@ struct VCFCANInterface
 
     etl::delegate<void (CANInterfaces_s &, const CAN_message_t &, uint32_t, CANInterfaceType_e)> can_recv_switch;
 };
-using VCFCANInterfaceInstance = etl::singleton<VCFCANInterface>;
+using VCFCANInterfaceInstance = etl::singleton<VCFCANInterface_s>;
 
 namespace VCFCANInterfaceImpl
 {
