@@ -163,7 +163,7 @@ void BrakeRotorTempInterface::_updateCalculatedValues(bool FR) {
 
         // update avg value
         float sum = std::accumulate(begin_iterator, end_iterator, 0.0f); // find sum
-        _temp_data.fr_sensor.avg_temp = sum / static_cast<float>(BrakeRotorTempDefaultParams::channels_within_brake_temp_sensor);
+        _temp_data.fr_sensor.avg_temp = sum / static_cast<float>(brake_rotor_temp_default_params::channels_within_brake_temp_sensor);
     } else { // otherwise update FL
         auto begin_iterator = _temp_data.fl_sensor.channel_data.begin();
         auto end_iterator = _temp_data.fl_sensor.channel_data.end();
@@ -173,6 +173,6 @@ void BrakeRotorTempInterface::_updateCalculatedValues(bool FR) {
 
         // update avg value
         float sum = std::accumulate(begin_iterator, end_iterator, 0.0f); // find sum
-        _temp_data.fl_sensor.avg_temp = sum / static_cast<float>(BrakeRotorTempDefaultParams::channels_within_brake_temp_sensor);
+        _temp_data.fl_sensor.avg_temp = sum / static_cast<float>(brake_rotor_temp_default_params::channels_within_brake_temp_sensor);
     }
 }
