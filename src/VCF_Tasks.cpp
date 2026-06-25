@@ -38,7 +38,7 @@ HT_TASK::TaskResponse run_read_adc0_task(const unsigned long& sysMicros, const H
         .brake_1 = static_cast<uint32_t>(ADCInterfaceInstance::instance().brake_1().conversion),
         .brake_2 = static_cast<uint32_t>(ADCInterfaceInstance::instance().brake_2().conversion)
     });
-  
+
     return HT_TASK::TaskResponse::YIELD;
 }
 
@@ -282,7 +282,7 @@ HT_TASK::TaskResponse run_dash_GPIOs_task(const unsigned long& sys_micros, const
     {
         VCRInterfaceInstance::instance().disable_calibration_state();
     }
-    
+
     if (!current_state.data_btn_is_pressed)
     {
         VCRInterfaceInstance::instance().disable_steering_calibration_state();
@@ -326,7 +326,7 @@ namespace async_tasks
     void handle_async_recvs()
     {
         // ethernet, etc...
-       
+
         handle_async_CAN_receive();
     }
 
@@ -372,7 +372,7 @@ HT_TASK::TaskResponse debug_print(const unsigned long& sysMicros, const HT_TASK:
     Serial.print(PedalsSystemInstance::instance().get_brake_params().max_pedal_1); Serial.print("\t");
     Serial.print(PedalsSystemInstance::instance().get_brake_params().min_pedal_2); Serial.print("\t");
     Serial.println(PedalsSystemInstance::instance().get_brake_params().max_pedal_2);
-    
+
     /* Steering System Data */
     Serial.println("Steering Sensor Data: ");
     Serial.print("analog adc: ");
@@ -417,7 +417,7 @@ HT_TASK::TaskResponse debug_print(const unsigned long& sysMicros, const HT_TASK:
     Serial.println(SteeringSystemInstance::instance().get_steering_system_data().both_sensors_fail);
     Serial.print("interface_sensor_error: ");
     Serial.println(SteeringSystemInstance::instance().get_steering_system_data().interface_sensor_error);
-    
+
     /* ADC Values */
     Serial.println("\nADC Vals:");
     // ADC 0
@@ -616,7 +616,7 @@ void setup_all_interfaces() {
         .digital_tolerance = VCFSystemConstants::DIGITAL_TOLERANCE,
         .max_dtheta_threshold = VCFSystemConstants::MAX_DTHETA_THRESHOLD,
         .error_between_sensors_tolerance = VCFSystemConstants::ERROR_BETWEEN_SENSORS_TOLERANCE
-    
+
     };
     steering_params.span_signal_analog = steering_params.max_steering_signal_analog - steering_params.min_steering_signal_analog;
     steering_params.analog_midpoint = (steering_params.max_steering_signal_analog + steering_params.min_steering_signal_analog) / 2;
@@ -625,8 +625,8 @@ void setup_all_interfaces() {
     SteeringSystemInstance::create(steering_params); // NOLINT thinks steering params is not initialized
 
     // Create Digital Steering Sensor singleton
-    OrbisBRInstance::create(&Serial2);
-    
+    // OrbisBRInstance::create(&Serial2);
+
     // Create dashboard singleton
     DashboardGPIOs_s dashboard_gpios = {
         .BRIGHTNESS_CONTROL_PIN = VCFInterfaceConstants::BRIGHTNESS_CONTROL_PIN,
