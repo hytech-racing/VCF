@@ -13,7 +13,7 @@
 
 /* Local Interface Includes */
 #include "ACUInterface.h"
-#include "BrakeRotorTemp.h"
+#include "BrakeRotorTempInterface.h"
 #include "DashboardInterface.h"
 #include "VCRInterface.h"
 
@@ -33,7 +33,7 @@ struct CANInterfaces_s
 {
     explicit CANInterfaces_s(
         ACUInterface &acu_int,
-        BrakeRotorTemp &brake_rotor_temp_int,
+        BrakeRotorTempInterface &brake_rotor_temp_int,
         DashboardInterface &dash_int,
         VCRInterface &vcr_int
     ) :
@@ -44,7 +44,7 @@ struct CANInterfaces_s
     {}
 
     ACUInterface &acu_interface;
-    BrakeRotorTemp &brake_rotor_temp_interface;
+    BrakeRotorTempInterface &brake_rotor_temp_interface;
     DashboardInterface &dash_interface;
     VCRInterface &vcr_interface;
 };

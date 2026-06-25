@@ -4,7 +4,6 @@
 /* Library Includes */
 #include <Arduino.h>
 #include <etl/singleton.h>
-#include "SteeringEncoderInterface.h"
 
 /* --- Constants --- */
 namespace OrbisConstants {
@@ -82,14 +81,12 @@ public:
     OrbisBR(HardwareSerial* serial);
 
 //Fields
-    SteeringEncoderReading_s getLastReading() override; // Override a virtual function from the base class.
     OrbisErrorFlags_s getOrbisDetailedErrors() const { return _orbisErrors; }
 
 // Functions
     bool performSelfCalibration();
     void setEncoderOffset();
     void saveConfiguration();
-    void sample() override;
     void factoryReset();
 
 

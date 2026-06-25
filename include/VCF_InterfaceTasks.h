@@ -27,26 +27,34 @@
  * functions, too)
  */
 
-#ifndef VCF_TASKS
-#define VCF_TASKS
+#ifndef VCF_INTERFACETASKS
+#define VCF_INTERFACETASKS
 
+#include "VCF_Constants.h"
 #include "SharedFirmwareTypes.h"
+
+/* Local Interface Includes */
+#include "ACUInterface.h"
+#include "ADCInterface.h"
+#include "BrakeRotorTempInterface.h"
+#include "DashboardInterface.h"
+#include "OrbisInterface.h"
+#include "SystemTimeInterface.h"
 #include "VCFCANInterfaceImpl.h"
 #include "VCFEthernetInterface.h"
-#include "PedalsSystem.h"
-#include "SteeringSystem.h"
+#include "VCRInterface.h"
+
+/* Scheduling */
 #include "ht_sched.hpp"
-#include "ht_task.hpp"
-#include "BuzzerController.h"
-#include "IOExpanderUtils.h"
-#include "NeopixelController.h"
-#include "WatchdogSystem.h"
-#include "ADCInterface.h"
-#include "CANInterface.h"
-#include "SteeringEncoderInterface.h"
+#include <ht_task.hpp>
 
 /**
- * The read_adc0 task will command the ADCInterface to sample, convert, and store 
+ * Init Functions - to be called in setup@
+ */
+void initialize_all_interfaces();
+
+/**
+ * The read_adc0 task will command the ADCInterface to sample, convert, and store
  * data from all eight channels of adc0.
  */
 HT_TASK::TaskResponse run_read_adc0_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
@@ -103,4 +111,4 @@ namespace async_tasks {
 
 void setup_all_interfaces();
 
-#endif /* VCF_TASKS */
+#endif

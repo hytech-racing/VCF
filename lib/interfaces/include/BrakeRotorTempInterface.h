@@ -1,5 +1,5 @@
-#ifndef BRAKEROTORTEMP_H
-#define BRAKEROTORTEMP_H
+#ifndef BRAKEROTORTEMPINTERFACE_H
+#define BRAKEROTORTEMPINTERFACE_H
 
 /* External libraries */
 #include "FlexCAN_T4.h"
@@ -25,31 +25,31 @@ struct BrakeTempData_s {
 /**
  * Interface to receive messages from the Izze Racing IRTS-60deg-v3 sensor
  */
-class BrakeRotorTemp
+class BrakeRotorTempInterface
 {
     public:
         // default empty constructor will init state to zeros
-        BrakeRotorTemp() {}
+        BrakeRotorTempInterface() {}
 
         /**
          * Retrieves the latest data that has been sent from the sensors
          * @return the latest temp data
          */
         BrakeTempData_s getBrakeRotorTempData() const;
-        
+
         /**
          * CAN receive function to parse the new CAN msg and update internal state
          * Called by VCF's recv switch
          * @param msg the CAN msg to parse
          */
         void receiveBrakeRotorTempData(const CAN_message_t &msg);
-    
+
     private:
         BrakeTempData_s _temp_data;
 
         void _updateCalculatedValues(bool FR);
 };
 
-using BrakeRotorTempInstance = etl::singleton<BrakeRotorTemp>;
+using BrakeRotorTempInterfaceInstance = etl::singleton<BrakeRotorTempInterface>;
 
 #endif // BRAKEROTORTEMP_H

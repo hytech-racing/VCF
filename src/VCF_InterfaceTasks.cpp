@@ -1,31 +1,10 @@
-#include "VCF_Tasks.h"
-#include "SharedFirmwareTypes.h"
-#include "EthernetAddressDefs.h"
-#include "VCF_Constants.h"
-#include <QNEthernet.h>
-#include "ProtobufMsgInterface.h"
-#include "EEPROMUtilities.h"
-#include "ht_task.hpp"
-#include "hytech.h"
-#include "hytech_msgs.pb.h"
-#include "VCFCANInterfaceImpl.h"
-#include "CANInterface.h"
-#include "VCRInterface.h"
-#include "SystemTimeInterface.h"
-#include "PedalsSystem.h"
-#include "SteeringSystem.h"
-#include "WatchdogSystem.h"
-#include "DashboardInterface.h"
-#include "VCFEthernetInterface.h"
-#include "ACUInterface.h"
-#include <EEPROM.h>
-#include "FlexCAN_T4.h"
-#include "Orbis_BR.h"
-#include "BrakeRotorTemp.h"
-#include "SteeringEncoderInterface.h"
+#include "VCF_InterfaceTasks.h"
 
-#include "WatchdogSystem.h"
-#include "Arduino.h"
+void initialize_all_interfaces()
+{
+    
+
+}
 
 HT_TASK::TaskResponse run_read_adc0_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
 {
@@ -221,10 +200,9 @@ HT_TASK::TaskResponse enqueue_steering_data(const unsigned long& sysMicros, cons
     return HT_TASK::TaskResponse::YIELD;
 }
 
-HT_TASK::TaskResponse init_handle_send_vcf_ethernet_data(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo) {
-    qindesign::network::Ethernet.begin(EthernetIPDefsInstance::instance().vcf_ip, EthernetIPDefsInstance::instance().car_subnet, EthernetIPDefsInstance::instance().default_gateway);
-    VCFEthernetInterface::VCF_socket.begin(EthernetIPDefsInstance::instance().VCFData_port);
-
+HT_TASK::TaskResponse init_handle_send_vcf_ethernet_data(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
+{
+    VCFEthernetInterfaceInstance::instance().init_ethernet_device();
     return HT_TASK::TaskResponse::YIELD;
 }
 
@@ -602,7 +580,7 @@ void setup_all_interfaces() {
     PedalsSystemInstance::create(accel_params, brake_params); //pass in the two different params
 
     SteeringParams_s steering_params = {
-        .min_steering_signal_analog = EEPROMUtilities::read_eeprom_32bit(VCFSystemConstants::MIN_STEERING_SIGNAL_ANALOG_ADDR),
+        .min_steering_signal_analog = EEPROMUtils::read_eeprom_32bit(VCFSystemConstants::MIN_STEERING_SIGNAL_ANALOG_ADDR),
         .max_steering_signal_analog = EEPROMUtilities::read_eeprom_32bit(VCFSystemConstants::MAX_STEERING_SIGNAL_ANALOG_ADDR),
         .min_steering_signal_digital = EEPROMUtilities::read_eeprom_32bit(VCFSystemConstants::MIN_STEERING_SIGNAL_DIGITAL_ADDR),
         .max_steering_signal_digital = EEPROMUtilities::read_eeprom_32bit(VCFSystemConstants::MAX_STEERING_SIGNAL_DIGITAL_ADDR),
