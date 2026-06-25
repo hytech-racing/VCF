@@ -71,15 +71,15 @@ class NeopixelController
     {};
 
     NeopixelController() = delete;
-    
+
     void init_neopixels();
     void dim_neopixels();
     void set_neopixel(uint16_t id, uint32_t c);
-    void refresh_neopixels(const PedalsSystemData_s &pedals_data, CANInterfaces &interfaces);
+    void refresh_neopixels(const PedalsSystemData_s &pedals_data, CANInterfaces_s &interfaces);
     void set_neopixel_color(LED_ID_e led, LED_color_e color);
 
     private:
-    
+
     Adafruit_NeoPixel _neopixels;
     uint8_t _current_brightness;
     uint8_t _neopixel_count;

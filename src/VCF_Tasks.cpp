@@ -167,7 +167,7 @@ HT_TASK::TaskResponse handle_CAN_send(const unsigned long& sysMicros, const HT_T
 
 HT_TASK::TaskResponse send_dash_data(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
 {
-    CANInterfaces can_interfaces = CANInterfacesInstance::instance();
+    CANInterfaces_s can_interfaces = CANInterfacesInstance::instance();
     DashInputState_s dash_outputs = can_interfaces.dash_interface.get_dashboard_outputs();
 
     DASH_INPUT_t msg_out;
@@ -641,10 +641,10 @@ void setup_all_interfaces() {
     VCRInterfaceInstance::create();
 
     // Create CAN singletons
-    CANInterfacesInstance::create(DashboardInterfaceInstance::instance(), ACUInterfaceInstance::instance(), VCRInterfaceInstance::instance(), BrakeRotorTempInstance::instance());
-    VCFCANInterfaceInstance::create(etl::delegate<void(CANInterfaces &, const CAN_message_t &, unsigned long, CANInterfaceType_e)>::create<VCFCANInterfaceImpl::vcf_recv_switch>());
-    handle_CAN_setup(VCFCANInterfaceInstance::instance().TELEM_CAN, VCFInterfaceConstants::TELEM_CAN_BAUDRATE, &VCFCANInterfaceImpl::on_main_can_recv);
-    handle_CAN_setup(VCFCANInterfaceInstance::instance().FRONT_AUX_CAN, VCFInterfaceConstants::FAUX_CAN_BAUDRATE, &VCFCANInterfaceImpl::on_faux_can_recv);
+    CANInterfacesInstance::create(ACUInterfaceInstance::instance(), BrakeRotorTempInstance::instance(), DashboardInterfaceInstance::instance(), VCRInterfaceInstance::instance());
+    VCFCANInterfaceInstance::create(etl::delegate<void(CANInterfaces_s &, const CAN_message_t &, uint32_t, CANInterfaceType_e)>::create<VCFCANInterfaceImpl::vcf_recv_switch>());
+    handle_CAN_setup(VCFCANInterfaceInstance::instance().TELEM_CAN, VCFInterfaceConstants::TELEM_CAN_BAUDRATE, &VCFCANInterfaceImpl::on_telem_can_recv);
+    handle_CAN_setup(VCFCANInterfaceInstance::instance().FRONT_AUX_CAN, VCFInterfaceConstants::FAUX_CAN_BAUDRATE, &VCFCANInterfaceImpl::on_front_aux_can_recv);
 
     // Create Ethernet singletons
     EthernetIPDefsInstance::create();

@@ -1,41 +1,41 @@
 #include "VCFCANInterfaceImpl.h"
-#include "BuzzerController.h"
 
-namespace VCFCANInterfaceImpl {    
-    void on_main_can_recv(const CAN_message_t &msg)
+namespace VCFCANInterfaceImpl
+{
+    void on_telem_can_recv(const CAN_message_t &msg)
     {
-        uint8_t buf[sizeof(CAN_message_t)];
-        memmove(buf, &msg, sizeof(msg)); // NOLINT (memory operations are fine)
-        VCFCANInterfaceInstance::instance().telem_can_rx_buffer.push_back(buf, sizeof(CAN_message_t));
+        std::array<uint8_t, CAN_MSG_SIZE> buf;
+        memmove(buf.data(), &msg, CAN_MSG_SIZE);
+        VCFCANInterfaceInstance::instance().telem_can_rx_buffer.push_back(buf.data(), CAN_MSG_SIZE);
     }
 
-    void on_faux_can_recv(const CAN_message_t &msg)
+    void on_front_aux_can_recv(const CAN_message_t &msg)
     {
         // VCFCANInterfaceInstance::instance().TELEM_CAN.write(msg); //immediately forward onto telem can to view data
-        uint8_t buf[sizeof(CAN_message_t)];
-        memmove(buf, &msg, sizeof(msg)); // NOLINT (memory operations are fine)
-        VCFCANInterfaceInstance::instance().front_aux_can_rx_buffer.push_back(buf, sizeof(CAN_message_t));
+        std::array<uint8_t, CAN_MSG_SIZE> buf;
+        memmove(buf.data(), &msg, CAN_MSG_SIZE);
+        VCFCANInterfaceInstance::instance().front_aux_can_rx_buffer.push_back(buf.data(), CAN_MSG_SIZE);
     }
 
-    void vcf_recv_switch(CANInterfaces &interfaces, const CAN_message_t &msg, unsigned long millis, CANInterfaceType_e interface_type)
+    void vcf_recv_switch(CANInterfaces_s &interfaces, const CAN_message_t &msg, uint32_t millis, CANInterfaceType_e interface_type)
     {
-        switch (msg.id) 
+        switch (msg.id)
         {
             case DASHBOARD_BUZZER_CONTROL_CANID:
             {
                 interfaces.vcr_interface.receive_dash_control_data(msg);
                 break;
-            } 
+            }
             case BMS_VOLTAGES_CANID:
             {
                 interfaces.acu_interface.receive_ACU_voltages(msg);
                 break;
             }
-            case ACU_OK_CANID: 
+            case ACU_OK_CANID:
             {
                 interfaces.dash_interface.receive_ACU_OK(msg);
                 break;
-            }    
+            }
             case CAR_STATES_CANID:
             {
                 interfaces.vcr_interface.receive_car_states_data(msg);
@@ -74,21 +74,22 @@ namespace VCFCANInterfaceImpl {
                 interfaces.brake_rotor_temp_interface.receiveBrakeRotorTempData(msg);
                 break;
             default:
+            {
                 break;
             }
+        }
 
     }
 
-    void send_all_CAN_msgs(CANTXBufferType &buffer, FlexCAN_T4_Base *can_interface)
+    void send_all_CAN_msgs(CANTXBuffer_t &buffer, FlexCAN_T4_Base *can_interface)
     {
         CAN_message_t msg;
-        while (buffer.available()) {
-            CAN_message_t msg;
-            uint8_t buf[sizeof(CAN_message_t)];
-            buffer.pop_front(buf, sizeof(CAN_message_t));
-            memmove(&msg, buf, sizeof(msg)); // NOLINT (memory operations are fine)
+        while (buffer.available())
+        {
+            std::array<uint8_t, CAN_MSG_SIZE> buf;
+            buffer.pop_front(buf.data(), CAN_MSG_SIZE);
+            memmove(&msg, buf.data(), CAN_MSG_SIZE);
             can_interface->write(msg);
         }
     }
-
 }
