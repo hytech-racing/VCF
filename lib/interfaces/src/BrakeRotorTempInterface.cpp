@@ -1,12 +1,11 @@
-#include "BrakeRotorTemp.h"
-
+#include "BrakeRotorTempInterface.h"
 #include "hytech.h"
 
-BrakeTempData_s BrakeRotorTemp::getBrakeRotorTempData() const {
+BrakeTempData_s BrakeRotorTempInterface::getBrakeRotorTempData() const {
     return _temp_data;
 }
 
-void BrakeRotorTemp::receiveBrakeRotorTempData(const CAN_message_t &msg) {
+void BrakeRotorTempInterface::receiveBrakeRotorTempData(const CAN_message_t &msg) {
     switch (msg.id) {
         case FL_BRAKE_ROTOR_TEMP_CH1_CH4_CANID:
         {
@@ -143,37 +142,37 @@ void BrakeRotorTemp::receiveBrakeRotorTempData(const CAN_message_t &msg) {
             _updateCalculatedValues(true);
             break;
         }
-        
+
         default:
         break;
     }
 }
 
 /**
- * Helper method to update the calculated values of max and avg temps for each sensor after new data is 
+ * Helper method to update the calculated values of max and avg temps for each sensor after new data is
  * received. Will only update for the specified sensor.
  * @param sensor corresponds to which sensor was updated. FL = 0, FR = 1
  */
-void BrakeRotorTemp::_updateCalculatedValues(bool FR) {
+void BrakeRotorTempInterface::_updateCalculatedValues(bool FR) {
     if (FR) { // check if FR needs to be updated
         auto begin_iterator = _temp_data.fr_sensor.channel_data.begin();
         auto end_iterator = _temp_data.fr_sensor.channel_data.end();
 
         // update maximum value
         _temp_data.fr_sensor.max_temp = *std::max_element(begin_iterator, end_iterator);
-    
+
         // update avg value
         float sum = std::accumulate(begin_iterator, end_iterator, 0.0f); // find sum
-        _temp_data.fr_sensor.avg_temp = sum / static_cast<float>(BrakeRotorTempDefaultParams::channels_within_brake_temp_sensor);
+        _temp_data.fr_sensor.avg_temp = sum / static_cast<float>(brake_rotor_temp_default_params::channels_within_brake_temp_sensor);
     } else { // otherwise update FL
         auto begin_iterator = _temp_data.fl_sensor.channel_data.begin();
         auto end_iterator = _temp_data.fl_sensor.channel_data.end();
 
         // update maximum value
         _temp_data.fl_sensor.max_temp = *std::max_element(begin_iterator, end_iterator);
-    
+
         // update avg value
         float sum = std::accumulate(begin_iterator, end_iterator, 0.0f); // find sum
-        _temp_data.fl_sensor.avg_temp = sum / static_cast<float>(BrakeRotorTempDefaultParams::channels_within_brake_temp_sensor);
+        _temp_data.fl_sensor.avg_temp = sum / static_cast<float>(brake_rotor_temp_default_params::channels_within_brake_temp_sensor);
     }
 }

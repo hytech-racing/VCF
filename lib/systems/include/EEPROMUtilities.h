@@ -1,9 +1,12 @@
 #ifndef EEPROM_UTILITIES_H
 #define EEPROM_UTILITIES_H
 
+/* Standard Library Includes */
 #include <stdint.h>
+
+/* External Includes */
 #include <EEPROM.h>
-#include "Logger.h"
+#include <Logger.h>
 
 
 namespace EEPROMUtilities
@@ -33,7 +36,6 @@ namespace EEPROMUtilities
         EEPROM.write(address + 2, third_msb);
         EEPROM.write(address + 3, lsb);
     }
-
 }
 
 #endif /* EEPROM_UTILITIES_H */

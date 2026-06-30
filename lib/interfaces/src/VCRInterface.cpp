@@ -3,9 +3,10 @@
 void VCRInterface::receive_dash_control_data(const CAN_message_t &can_msg)
 {
     DASHBOARD_BUZZER_CONTROL_t unpacked_msg;
-    Unpack_DASHBOARD_BUZZER_CONTROL_hytech(&unpacked_msg, can_msg.buf, can_msg.len);    //NOLINT         
+    Unpack_DASHBOARD_BUZZER_CONTROL_hytech(&unpacked_msg, can_msg.buf, can_msg.len); //NOLINT
 
-    if (unpacked_msg.dash_buzzer_flag) {
+    if (unpacked_msg.dash_buzzer_flag)
+    {
         BuzzerController::getInstance().activate(millis());
     }
 
@@ -34,6 +35,7 @@ void VCRInterface::receive_inverter_status_1(const CAN_message_t &can_msg)
     _inv_error_status.error.FL = unpacked_msg.error;
     _bus_voltages.voltage.FL = unpacked_msg.dc_bus_voltage;
 }
+
 void VCRInterface::receive_inverter_status_2(const CAN_message_t &can_msg)
 {
     INV2_STATUS_t unpacked_msg;
@@ -41,6 +43,7 @@ void VCRInterface::receive_inverter_status_2(const CAN_message_t &can_msg)
     _inv_error_status.error.FR = unpacked_msg.error;
     _bus_voltages.voltage.FR = unpacked_msg.dc_bus_voltage;
 }
+
 void VCRInterface::receive_inverter_status_3(const CAN_message_t &can_msg)
 {
     INV3_STATUS_t unpacked_msg;
@@ -48,6 +51,7 @@ void VCRInterface::receive_inverter_status_3(const CAN_message_t &can_msg)
     _inv_error_status.error.RL = unpacked_msg.error;
     _bus_voltages.voltage.RL = unpacked_msg.dc_bus_voltage;
 }
+
 void VCRInterface::receive_inverter_status_4(const CAN_message_t &can_msg)
 {
     INV4_STATUS_t unpacked_msg;
@@ -60,6 +64,3 @@ bool VCRInterface::get_inverter_error()
 {
     return _inv_error_status.error.FL || _inv_error_status.error.FR || _inv_error_status.error.RL || _inv_error_status.error.RR;
 }
-
-
-

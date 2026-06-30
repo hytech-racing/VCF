@@ -1,17 +1,20 @@
 #include "NeopixelController.h"
 
-void NeopixelController::init_neopixels() {
+
+void NeopixelController::init_neopixels()
+{
     _neopixels.begin();
     _neopixels.setBrightness(_current_brightness);
+
     //set init color for every led
-    for (int i = 0; i < _neopixel_count; i++) 
+    for (int i = 0; i < _neopixel_count; i++)
     {
         // BMS and IMD are off according to rules
-        if (i == LED_ID_e::BMS || i == LED_ID_e::IMD || i == LED_ID_e::BMS_WING || i == LED_ID_e::IMD_WING) 
+        if (i == LED_ID_e::BMS || i == LED_ID_e::IMD || i == LED_ID_e::BMS_WING || i == LED_ID_e::IMD_WING)
         {
             _neopixels.setPixelColor(i, (uint32_t) LED_color_e::OFF);
-        } 
-        else 
+        }
+        else
         {
             _neopixels.setPixelColor(i, (uint32_t) LED_color_e::INIT_COLOR);
         }
@@ -20,7 +23,7 @@ void NeopixelController::init_neopixels() {
     _neopixels.show();
 }
 
-void NeopixelController::dim_neopixels() 
+void NeopixelController::dim_neopixels()
 {
     _current_brightness -= STEP_BRIGHTNESS;
     // set current brightness to 0xFF (255) if less than min brightness - sid :) DO NOT CHANGE
@@ -28,15 +31,16 @@ void NeopixelController::dim_neopixels()
     _neopixels.setBrightness(_current_brightness);
 }
 
-void NeopixelController::set_neopixel(uint16_t id, uint32_t c) 
+void NeopixelController::set_neopixel(uint16_t id, uint32_t c)
 {
     _neopixels.setPixelColor(id, c);
 }
 
-void NeopixelController::refresh_neopixels(const PedalsSystemData_s &pedals_data, CANInterfaces &interfaces) 
+void NeopixelController::refresh_neopixels(const PedalsSystemData_s &pedals_data, CANInterfaces_s &interfaces)
 {
     // If we are in pedals recalibration state, LIGHT UP DASHBOARD ALL RED.
-    if (interfaces.vcr_interface.is_in_pedals_calibration_state() || interfaces.vcr_interface.is_in_steering_calibration_state()) {
+    if (interfaces.vcr_interface.is_in_pedals_calibration_state() || interfaces.vcr_interface.is_in_steering_calibration_state())
+    {
         set_neopixel_color(LED_ID_e::BRAKE, LED_color_e::RED);
         set_neopixel_color(LED_ID_e::TORQUE_MODE, LED_color_e::RED);
         set_neopixel_color(LED_ID_e::LATCH, LED_color_e::RED);
@@ -54,9 +58,12 @@ void NeopixelController::refresh_neopixels(const PedalsSystemData_s &pedals_data
     }
 
     LED_color_e brake_light_color = LED_color_e::OFF;
-    if (pedals_data.brake_is_pressed && !pedals_data.implausibility_has_exceeded_max_duration) {
+    if (pedals_data.brake_is_pressed && !pedals_data.implausibility_has_exceeded_max_duration)
+    {
         brake_light_color = LED_color_e::GREEN;
-    } else if (pedals_data.implausibility_has_exceeded_max_duration) {
+    }
+    else if (pedals_data.implausibility_has_exceeded_max_duration)
+    {
         brake_light_color = LED_color_e::RED;
     }
 
@@ -132,7 +139,7 @@ void NeopixelController::refresh_neopixels(const PedalsSystemData_s &pedals_data
     }
 
     bool hv_present = interfaces.vcr_interface.get_dc_bus_voltage().voltage.FL > _hv_threshold_voltage ||
-                      interfaces.vcr_interface.get_dc_bus_voltage().voltage.FR > _hv_threshold_voltage || 
+                      interfaces.vcr_interface.get_dc_bus_voltage().voltage.FR > _hv_threshold_voltage ||
                       interfaces.vcr_interface.get_dc_bus_voltage().voltage.RL > _hv_threshold_voltage ||
                       interfaces.vcr_interface.get_dc_bus_voltage().voltage.RR > _hv_threshold_voltage;
 
@@ -146,7 +153,7 @@ void NeopixelController::refresh_neopixels(const PedalsSystemData_s &pedals_data
     set_neopixel_color(LED_ID_e::SHUTDOWN, LED_color_e::OFF); // Unused for now
     set_neopixel_color(LED_ID_e::IMD_WING, interfaces.dash_interface.imd_ok ? LED_color_e::GREEN : LED_color_e::RED);
     set_neopixel_color(LED_ID_e::BMS_WING, interfaces.dash_interface.bms_ok ? LED_color_e::GREEN : LED_color_e::RED);
-    
+
     /* DRIVETRAIN LEDS */
     set_neopixel_color(LED_ID_e::BRAKE, brake_light_color);
     set_neopixel_color(LED_ID_e::INVERTER_ERR, interfaces.vcr_interface.get_inverter_error() ? LED_color_e::RED : LED_color_e::GREEN);
@@ -164,7 +171,6 @@ void NeopixelController::refresh_neopixels(const PedalsSystemData_s &pedals_data
 
 
     _neopixels.show();
-
 }
 
 void NeopixelController::set_neopixel_color(LED_ID_e led, LED_color_e color)

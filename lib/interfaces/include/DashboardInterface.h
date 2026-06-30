@@ -1,22 +1,26 @@
 #ifndef DASHBOARD_INTERFACE_H
 #define DASHBOARD_INTERFACE_H
 
-#include "Arduino.h"
-#include "etl/singleton.h"
-#include "MCP23017.h"
-#include <Wire.h>
-#include "FlexCAN_T4.h"
+/* ETL Library Includes */
+#include <etl/singleton.h>
 
-#include "hytech_msgs.pb.h"
+/* External Includes */
+#include <MCP23017.h>
+#include <Wire.h>
 #include "SharedFirmwareTypes.h"
 #include "hytech.h"
+#include "FlexCAN_T4.h"
 
+/* Local Interface Includes */
 #include "SystemTimeInterface.h"
+
+/* Local System Includes */
+#include "IOExpanderUtilities.h"
 
 
 // Struct representing dashboard gpios
-struct DashboardGPIOs_s {
-
+struct DashboardGPIOs_s
+{
     // GPIO
     uint8_t BRIGHTNESS_CONTROL_PIN;
     uint8_t PRESET_BUTTON;
@@ -26,70 +30,50 @@ struct DashboardGPIOs_s {
     uint8_t BUTTON_2;
 };
 
-class DashboardInterface 
+class DashboardInterface
 {
-    public: 
-        DashboardInterface() = delete; 
+public:
+    DashboardInterface(DashboardGPIOs_s gpios,
+                    uint8_t io_expander_addr,
+                    TwoWire &i2c_bus
+    ) : _dashboard_gpios(gpios),
+        _io_expander(MCP23017(io_expander_addr, i2c_bus)),
+        _i2c_bus(i2c_bus)
+    {};
 
-        DashboardInterface(DashboardGPIOs_s gpios, 
-                uint8_t io_expander_addr, TwoWire &i2c_bus)
-            : _dashboard_gpios(gpios), _io_expander(MCP23017(io_expander_addr, i2c_bus))
-        {
-            pinMode(_dashboard_gpios.START_BUTTON, INPUT_PULLUP);
-            pinMode(_dashboard_gpios.PRESET_BUTTON, INPUT_PULLUP); 
-            pinMode(_dashboard_gpios.MC_CYCLE_BUTTON, INPUT_PULLUP);
-            pinMode(_dashboard_gpios.BRIGHTNESS_CONTROL_PIN, INPUT_PULLUP); 
-            pinMode(_dashboard_gpios.DATA_BUTTON, INPUT_PULLUP); 
-            pinMode(_dashboard_gpios.BUTTON_2, INPUT_PULLUP);
+    /**
+     * @brief Initializes GPIO pins and IO expander.
+     */
+    void init();
 
-            _dash_created_millis = sys_time::hal_millis();
+    /**
+     * @brief Syncs stored outputs with last read outputs.
+     */
+    void sync_dashboard_stored_state();
 
-            i2c_bus.begin();
-            _initIOExpander();
-        }
+    bool bms_ok = true;
+    bool imd_ok = true;
+    void receive_ACU_OK(const CAN_message_t &can_msg);
 
-        // Reading gpios 
-        DashInputState_s get_dashboard_outputs();
+    void set_dial_state(ControllerMode_e mode);
 
-        // Stores outputs
-        DashInputState_s get_dashboard_stored_state();
-        
-        /**
-         * Syncs stored outputs with last read outputs.
-         * Used to store previous state of buttons to determine if they are clicked or not.
-         * In other words, to find the falling edge.
-         */
-        void sync_dashboard_stored_state();
+    void read_ioexpander();
 
-        // Receiving
-        void receive_ACU_OK(const CAN_message_t &can_msg);
+    DashInputState_s get_dashboard_outputs();
 
-        bool bms_ok = true;
-        bool imd_ok = true;
+    DashInputState_s get_dashboard_stored_state();
 
-        void set_dial_state(ControllerMode_e mode);
+private:
 
-        void read_ioexpander();
-    
-    private: 
+    DashboardGPIOs_s _dashboard_gpios;
+    DashInputState_s _dashboard_outputs; // curr state, what the buttons are doing right now
+    DashInputState_s _dashboard_stored_state; // previous state, what the buttons were doing last tick
+    MCP23017 _io_expander;
+    TwoWire &_i2c_bus;
+    unsigned long _dash_created_millis;
 
-        DashboardGPIOs_s _dashboard_gpios;
-        DashInputState_s _dashboard_outputs;
-        DashInputState_s _dashboard_stored_state;
+    void _init_ioexpander();
 
-        MCP23017 _io_expander;
-
-        unsigned long _dash_created_millis;
-
-        inline void _initIOExpander() {
-            _io_expander.init();
-
-            _io_expander.portMode(MCP23017Port::A, 0b00000000); // 0b0000 0000 = 0
-            _io_expander.portMode(MCP23017Port::B, 0b01111111); // 0b0111 1111 = 127
-
-            _io_expander.writeRegister(MCP23017Register::GPPU_B, 0xFF); // Internal pull-ups
-            _io_expander.writeRegister(MCP23017Register::IPOL_B, 0xFF); // Polarity (inverted)
-        }
 };
 
 using DashboardInterfaceInstance = etl::singleton<DashboardInterface>;
