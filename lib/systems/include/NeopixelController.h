@@ -13,11 +13,11 @@
 // define a new type of struct, add an arg to the constructor, etc.
 // - this is how it was implemented on STM32 dash and I want to be fast :)
 
-/* ETL Library */
-#include "etl/singleton.h"
+/* ETL Library Includes */
+#include <etl/singleton.h>
 
 /* External Includes */
-#include "Adafruit_NeoPixel.h"
+#include <Adafruit_NeoPixel.h>
 #include "SharedFirmwareTypes.h"
 
 /* Local Interface Includes */
@@ -70,16 +70,22 @@ enum class LED_color_e
 class NeopixelController
 {
 public:
-    NeopixelController(uint32_t neopixel_count, uint32_t neopixel_pin) :
-        _neopixels(neopixel_count, neopixel_pin, NEO_GRBW + NEO_KHZ800),
+
+    NeopixelController(uint32_t neopixel_count,
+                    uint32_t neopixel_pin
+    ) : _neopixels(neopixel_count, neopixel_pin, NEO_GRBW + NEO_KHZ800),
         _current_brightness(64),
         _neopixel_count(neopixel_count)
     {};
 
     void init_neopixels();
+
     void dim_neopixels();
+
     void set_neopixel(uint16_t id, uint32_t c);
+
     void refresh_neopixels(const PedalsSystemData_s &pedals_data, CANInterfaces_s &interfaces);
+
     void set_neopixel_color(LED_ID_e led, LED_color_e color);
 
 private:
@@ -89,6 +95,7 @@ private:
     uint8_t _neopixel_count;
     const uint8_t _hv_threshold_voltage = 60;
     MinCellMonitoringThresholds_s _min_cell_thresholds;
+    
 };
 
 using NeopixelControllerInstance = etl::singleton<NeopixelController>;

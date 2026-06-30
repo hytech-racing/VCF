@@ -1,37 +1,11 @@
-/**
- * This file includes all of the Task definitions required for the Task
- * Scheduler. See the Task Scheduler GitHub
- * (https://github.com/hytech-racing/HT_SCHED) and the relevant BookStack page
- * (https://wiki.hytechracing.org/books/ht09-design/page/ht-task-scheduler) for
- * usage directions.
- *
- * Generally, defining a task takes three steps:
- * 1) Define the "init" function. Name this function init_<taskname>. This init
- * funciton's inputs MUST be the same for all init functions, taking in
- * sysMicros and a taskInfo reference. 2) Define the "run" function. Name this
- * function run_<taskname>. Similar to the init function, this function's inputs
- * MUST be sysMicros and taskInfo. 3) Define the function itself. This requires
- * using the HT_TASK::Task constructor and passing in your init function, your
- * run function, a priority level, and a loop interval (in micros). 4) Add the
- * function to your scheduler.
- *
- */
-
-/* -------------------------------------------------- */
-/*                   TASK PRIORITIES                  */
-/* -------------------------------------------------- */
-/*
- * (1-10) - Car-critical functions (watchdog, shutdown circuit)
- * (11-100) - Performance-critical functions (reading pedals, interfacing w/
- * inverters, etc) (100+) - Telemetry, logging functions (could be idle
- * functions, too)
- */
-
 #ifndef VCF_INTERFACETASKS
 #define VCF_INTERFACETASKS
 
 #include "VCF_Constants.h"
-#include "SharedFirmwareTypes.h"
+
+/* External Includes */
+#include <ht_task.hpp>
+#include "CANInterface.h"
 
 /* Local Interface Includes */
 #include "ACUInterface.h"
@@ -43,10 +17,11 @@
 #include "VCFCANInterfaceImpl.h"
 #include "VCFEthernetInterface.h"
 #include "VCRInterface.h"
+#include "WatchdogInterface.h"
 
-/* Scheduling */
-#include "ht_sched.hpp"
-#include <ht_task.hpp>
+/* Local System Includes */
+#include "NeopixelController.h"
+
 
 /**
  * Init Functions - to be called in setup@
@@ -57,26 +32,23 @@ void initialize_all_interfaces();
  * The read_adc0 task will command the ADCInterface to sample, convert, and store
  * data from all eight channels of adc0.
  */
-HT_TASK::TaskResponse run_read_adc0_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
+::HT_TASK::TaskResponse run_read_adc0_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
 
 /**
  * The read_adc0 task will command the ADCInterface to sample, convert, and store
  * data from all eight channels of adc1.
  */
-HT_TASK::TaskResponse run_read_adc1_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
+::HT_TASK::TaskResponse run_read_adc1_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
 
-HT_TASK::TaskResponse init_kick_watchdog(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
-HT_TASK::TaskResponse run_kick_watchdog(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
 
-HT_TASK::TaskResponse update_pedals_calibration_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
+::HT_TASK::TaskResponse run_kick_watchdog(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
 
-HT_TASK::TaskResponse update_steering_calibration_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
 /**
  * The buzzer_control task will control the buzzer control pin. This function
  * relies on the buzzer_control pin definition in VCF_Constants.h;
  */
-HT_TASK::TaskResponse init_buzzer_control_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
-HT_TASK::TaskResponse run_buzzer_control_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
+::HT_TASK::TaskResponse init_buzzer_control_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
+::HT_TASK::TaskResponse run_buzzer_control_task(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
 
 /**
  * The handle_send_VCF_ethernet_data task will send a protobuf message from VCF
@@ -95,20 +67,14 @@ HT_TASK::TaskResponse handle_CAN_send(const unsigned long &sysMicros, const HT_T
 HT_TASK::TaskResponse run_dash_GPIOs_task(const unsigned long& sys_micros, const HT_TASK::TaskInfo& task_info); // NOLINT (capitalization of GPIOs)
 HT_TASK::TaskResponse send_dash_data(const unsigned long &sysMicros, const HT_TASK::TaskInfo &taskInfo);
 
-HT_TASK::TaskResponse init_neopixels_task(const unsigned long& sys_micros, const HT_TASK::TaskInfo& task_info);
-HT_TASK::TaskResponse run_update_neopixels_task(const unsigned long& sys_micros, const HT_TASK::TaskInfo& task_info);
-
 HT_TASK::TaskResponse enqueue_front_suspension_data(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
-HT_TASK::TaskResponse enqueue_pedals_data(const unsigned long &sys_micros, const HT_TASK::TaskInfo& task_info);
-HT_TASK::TaskResponse enqueue_steering_data(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
 
 HT_TASK::TaskResponse debug_print(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo);
 
-namespace async_tasks {
+namespace async_tasks
+{
     // the others in the VCF Tasks can just stay there, they dont need forward declarations.
     HT_TASK::TaskResponse handle_async_main(const unsigned long& sys_micros, const HT_TASK::TaskInfo& task_info);
 }
-
-void setup_all_interfaces();
 
 #endif

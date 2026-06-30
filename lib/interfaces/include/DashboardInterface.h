@@ -1,19 +1,21 @@
 #ifndef DASHBOARD_INTERFACE_H
 #define DASHBOARD_INTERFACE_H
 
-/* ETL Library */
-#include "etl/singleton.h"
+/* ETL Library Includes */
+#include <etl/singleton.h>
 
 /* External Includes */
-#include "MCP23017.h"
+#include <MCP23017.h>
 #include <Wire.h>
-#include "FlexCAN_T4.h"
-#include "hytech.h"
 #include "SharedFirmwareTypes.h"
+#include "hytech.h"
+#include "FlexCAN_T4.h"
 
-/* Local Includes */
+/* Local Interface Includes */
 #include "SystemTimeInterface.h"
-#include "IOExpanderUtils.h"
+
+/* Local System Includes */
+#include "IOExpanderUtilities.h"
 
 
 // Struct representing dashboard gpios
@@ -30,49 +32,50 @@ struct DashboardGPIOs_s
 
 class DashboardInterface
 {
-    public:
-        DashboardInterface(
-            DashboardGPIOs_s gpios,
-            uint8_t io_expander_addr,
-            TwoWire &i2c_bus
-        ) :
-            _dashboard_gpios(gpios),
-            _io_expander(MCP23017(io_expander_addr, i2c_bus)),
-            _i2c_bus(i2c_bus)
-        {}
+public:
+    DashboardInterface(DashboardGPIOs_s gpios,
+                    uint8_t io_expander_addr,
+                    TwoWire &i2c_bus
+    ) : _dashboard_gpios(gpios),
+        _io_expander(MCP23017(io_expander_addr, i2c_bus)),
+        _i2c_bus(i2c_bus)
+    {};
 
-        /**
-         * @brief Initializes GPIO pins and IO expander.
-         */
-        void init();
+    /**
+     * @brief Initializes GPIO pins and IO expander.
+     */
+    void init();
 
-        /**
-         * @brief Syncs stored outputs with last read outputs.
-         */
-        void sync_dashboard_stored_state();
+    /**
+     * @brief Syncs stored outputs with last read outputs.
+     */
+    void sync_dashboard_stored_state();
 
-        bool bms_ok = true;
-        bool imd_ok = true;
-        void receive_ACU_OK(const CAN_message_t &can_msg);
+    bool bms_ok = true;
+    bool imd_ok = true;
+    void receive_ACU_OK(const CAN_message_t &can_msg);
 
-        void set_dial_state(ControllerMode_e mode);
+    void set_dial_state(ControllerMode_e mode);
 
-        void read_ioexpander();
+    void read_ioexpander();
 
-        DashInputState_s get_dashboard_outputs();
-        DashInputState_s get_dashboard_stored_state();
+    DashInputState_s get_dashboard_outputs();
 
-    private:
+    DashInputState_s get_dashboard_stored_state();
 
-        DashboardGPIOs_s _dashboard_gpios;
-        DashInputState_s _dashboard_outputs; // curr state, what the buttons are doing right now
-        DashInputState_s _dashboard_stored_state; // previous state, what the buttons were doing last tick
-        MCP23017 _io_expander;
-        TwoWire &_i2c_bus;
-        unsigned long _dash_created_millis;
+private:
 
-        void _init_ioexpander();
+    DashboardGPIOs_s _dashboard_gpios;
+    DashInputState_s _dashboard_outputs; // curr state, what the buttons are doing right now
+    DashInputState_s _dashboard_stored_state; // previous state, what the buttons were doing last tick
+    MCP23017 _io_expander;
+    TwoWire &_i2c_bus;
+    unsigned long _dash_created_millis;
+
+    void _init_ioexpander();
+
 };
+
 using DashboardInterfaceInstance = etl::singleton<DashboardInterface>;
 
 #endif /* DASHBOARD_INTERFACE_H */

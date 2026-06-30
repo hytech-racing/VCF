@@ -1,12 +1,12 @@
-#ifndef IO_EXPANDER_UTILS_H
-#define IO_EXPANDER_UTILS_H
+#ifndef IO_EXPANDER_UTILITIES_H
+#define IO_EXPANDER_UTILITIES_H
 
-/* Standard Library */
+/* Standard Library Includes */
 #include <stdint.h>
 #include <stdbool.h>
 
 
-namespace IOExpanderUtils
+namespace IOExpanderUtilities
 {
     /**
     IOExpander's read() only reads.

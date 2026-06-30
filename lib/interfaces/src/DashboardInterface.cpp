@@ -45,27 +45,27 @@ void DashboardInterface::read_ioexpander()
     ControllerMode_e new_mode = ControllerMode_e::MODE_0; // default to mode 0
 
     // check for value of dial
-    if (IOExpanderUtils::getBit(data, (bool) MCP23017Port::B, 0)) // NOLINT 0 is pos of bit
+    if (IOExpanderUtilities::getBit(data, (bool) MCP23017Port::B, 0)) // NOLINT 0 is pos of bit
     {
         new_mode = ControllerMode_e::MODE_0;
     }
-    else if (IOExpanderUtils::getBit(data, (bool) MCP23017Port::B, 1)) // NOLINT 1 is pos of bit
+    else if (IOExpanderUtilities::getBit(data, (bool) MCP23017Port::B, 1)) // NOLINT 1 is pos of bit
     {
         new_mode = ControllerMode_e::MODE_1;
     }
-    else if (IOExpanderUtils::getBit(data, (bool) MCP23017Port::B, 2)) // NOLINT 2 is pos of bit
+    else if (IOExpanderUtilities::getBit(data, (bool) MCP23017Port::B, 2)) // NOLINT 2 is pos of bit
     {
         new_mode = ControllerMode_e::MODE_2;
     }
-    else if (IOExpanderUtils::getBit(data, (bool) MCP23017Port::B, 3)) // NOLINT 3 is pos of bit
+    else if (IOExpanderUtilities::getBit(data, (bool) MCP23017Port::B, 3)) // NOLINT 3 is pos of bit
     {
         new_mode = ControllerMode_e::MODE_3;
     }
-    else if (IOExpanderUtils::getBit(data, (bool) MCP23017Port::B, 4)) // NOLINT 4 is pos of bit
+    else if (IOExpanderUtilities::getBit(data, (bool) MCP23017Port::B, 4)) // NOLINT 4 is pos of bit
     {
         new_mode = ControllerMode_e::MODE_4;
     }
-    else if (IOExpanderUtils::getBit(data, (bool) MCP23017Port::B, 5)) // NOLINT 5 is pos of bit
+    else if (IOExpanderUtilities::getBit(data, (bool) MCP23017Port::B, 5)) // NOLINT 5 is pos of bit
     {
         new_mode = ControllerMode_e::MODE_5;
     }

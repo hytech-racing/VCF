@@ -2,13 +2,13 @@
 #define VCR_INTERFACE_H
 
 /* ETL Library */
-#include "etl/singleton.h"
+#include <etl/singleton.h>
 
 /* External Includes */
-#include "Arduino.h"
+#include <Arduino.h>
 #include "SharedFirmwareTypes.h"
 #include "hytech.h"
-#include "FlexCAN_T4.h"
+#include <FlexCAN_T4.h>
 
 /* Local System Includes */
 #include "BuzzerController.h"
@@ -76,6 +76,7 @@ private:
     InverterErrorFlags_s _inv_error_status;
 
 };
+
 using VCRInterfaceInstance = etl::singleton<VCRInterface>;
 
 #endif /* VCR_INTERFACE_H */

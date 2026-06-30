@@ -1,11 +1,11 @@
 #ifndef BRAKEROTORTEMPINTERFACE_H
 #define BRAKEROTORTEMPINTERFACE_H
 
-/* ETL Library */
-#include "etl/singleton.h"
+/* ETL Library Includes */
+#include <etl/singleton.h>
 
 /* External Includes */
-#include "FlexCAN_T4.h"
+#include <FlexCAN_T4.h>
 
 
 namespace brake_rotor_temp_default_params
@@ -31,27 +31,29 @@ struct BrakeTempData_s
  */
 class BrakeRotorTempInterface
 {
-    public:
-        // default empty constructor will init state to zeros
-        BrakeRotorTempInterface() {}
+public:
 
-        /**
-         * Retrieves the latest data that has been sent from the sensors
-         * @return the latest temp data
-         */
-        BrakeTempData_s getBrakeRotorTempData() const;
+// default empty constructor will init state to zeros
+    BrakeRotorTempInterface() {}
 
-        /**
-         * CAN receive function to parse the new CAN msg and update internal state
-         * Called by VCF's recv switch
-         * @param msg the CAN msg to parse
-         */
-        void receiveBrakeRotorTempData(const CAN_message_t &msg);
+    /**
+     * Retrieves the latest data that has been sent from the sensors
+     * @return the latest temp data
+     */
+    BrakeTempData_s getBrakeRotorTempData() const;
 
-    private:
-        BrakeTempData_s _temp_data;
+    /**
+     * CAN receive function to parse the new CAN msg and update internal state
+     * Called by VCF's recv switch
+     * @param msg the CAN msg to parse
+     */
+    void receiveBrakeRotorTempData(const CAN_message_t &msg);
 
-        void _updateCalculatedValues(bool FR);
+private:
+
+    BrakeTempData_s _temp_data;
+
+    void _updateCalculatedValues(bool FR);
 };
 
 using BrakeRotorTempInterfaceInstance = etl::singleton<BrakeRotorTempInterface>;

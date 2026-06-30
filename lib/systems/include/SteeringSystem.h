@@ -49,10 +49,13 @@ struct SteeringParams_s
 class SteeringSystem
 {
 public:
+
     SteeringSystem(const SteeringParams_s &params) : _params(params) {}
 
     void recalibrate_steering_digital();
+
     void evaluate_steering(const uint32_t analog_raw, const SteeringEncoderReading_s digital_data, const uint32_t current_millis);
+
     void update_observed_steering_limits(const uint32_t analog_raw, const uint32_t digital_raw);
 
     /* Getters */
@@ -65,25 +68,6 @@ public:
     void set_steering_system_data(const SteeringSystemData_s &system_data) { _system_data = system_data; }
 
 private:
-
-    float _convert_digital_sensor(const uint32_t digital_raw);
-    float _convert_analog_sensor(const uint32_t analog_raw);
-    float _filter_analog_angle(float x);
-
-    /**
-     * @brief returns true if steering_analog is outside of the range defined by min and max sensor values
-     */
-    bool _evaluate_steering_oor_analog(const uint32_t steering_analog);
-
-    /**
-     * @brief returns true if steering_digital is outside the range defined by min and max sensor values
-     */
-    bool _evaluate_steering_oor_digital(const uint32_t steering_digital);
-
-    /**
-     * @brief returns true if change in angle exceeds maximum change per reading ( max_dtheta_threshold )
-     */
-    bool _evaluate_steering_dtheta_exceeded(float dtheta);
 
     SteeringSystemData_s _system_data {};
     SteeringParams_s _params;
@@ -116,7 +100,30 @@ private:
     static constexpr float kBwB2 =  0.00235721f;
     static constexpr float kBwA1 = -1.85804330f;
     static constexpr float kBwA2 =  0.86747213f;
+
+    float _convert_digital_sensor(const uint32_t digital_raw);
+
+    float _convert_analog_sensor(const uint32_t analog_raw);
+
+    float _filter_analog_angle(float x);
+
+    /**
+     * @brief returns true if steering_analog is outside of the range defined by min and max sensor values
+     */
+    bool _evaluate_steering_oor_analog(const uint32_t steering_analog);
+
+    /**
+     * @brief returns true if steering_digital is outside the range defined by min and max sensor values
+     */
+    bool _evaluate_steering_oor_digital(const uint32_t steering_digital);
+
+    /**
+     * @brief returns true if change in angle exceeds maximum change per reading ( max_dtheta_threshold )
+     */
+    bool _evaluate_steering_dtheta_exceeded(float dtheta);
+
 };
+
 using SteeringSystemInstance = etl::singleton<SteeringSystem>;
 
 

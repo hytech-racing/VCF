@@ -1,5 +1,6 @@
 #include "NeopixelController.h"
 
+
 void NeopixelController::init_neopixels()
 {
     _neopixels.begin();
@@ -38,7 +39,8 @@ void NeopixelController::set_neopixel(uint16_t id, uint32_t c)
 void NeopixelController::refresh_neopixels(const PedalsSystemData_s &pedals_data, CANInterfaces_s &interfaces)
 {
     // If we are in pedals recalibration state, LIGHT UP DASHBOARD ALL RED.
-    if (interfaces.vcr_interface.is_in_pedals_calibration_state() || interfaces.vcr_interface.is_in_steering_calibration_state()) {
+    if (interfaces.vcr_interface.is_in_pedals_calibration_state() || interfaces.vcr_interface.is_in_steering_calibration_state())
+    {
         set_neopixel_color(LED_ID_e::BRAKE, LED_color_e::RED);
         set_neopixel_color(LED_ID_e::TORQUE_MODE, LED_color_e::RED);
         set_neopixel_color(LED_ID_e::LATCH, LED_color_e::RED);
@@ -169,7 +171,6 @@ void NeopixelController::refresh_neopixels(const PedalsSystemData_s &pedals_data
 
 
     _neopixels.show();
-
 }
 
 void NeopixelController::set_neopixel_color(LED_ID_e led, LED_color_e color)

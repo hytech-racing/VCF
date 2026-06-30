@@ -1,19 +1,21 @@
 #ifndef VCF_CONSTANTS
 #define VCF_CONSTANTS
 
-#include <cstddef>
-#include <cstdint>
+/* External Includes */
+#include "SharedFirmwareTypes.h"
 
+using pin = uint8_t;
 using degree  = float;
+using time_us = uint32_t;
 
-namespace VCFInterfaceConstants
+namespace VCFInterfaces
 {
     /* Serial */
     constexpr size_t SERIAL_BAUDRATE = 115200;
 
     /* IIR Filter Alphas */
     constexpr float LOADCELL_IIR_FILTER_ALPHA = 0.01f;
-    
+
     /* ADC chip selects */
     constexpr int ADC0_CS = 10; // MCP3208 — steering, sus pots, load cells
     constexpr int ADC1_CS = 38; // MCP3208 — pedal position sensors
@@ -93,21 +95,20 @@ namespace VCFInterfaceConstants
     constexpr int BTN_MC_CYCLE_READ       = 31; // DB/MC_RESET on schematic
     constexpr int BUZZER_CONTROL_PIN      = 32;
 
-    // watchdog pins
-    constexpr int WATCHDOG_PIN = 36;
-    constexpr int SOFTWARE_OK_PIN = 37; // Watchdog's !MR pin
-
-    // watchdog kick interval
-    constexpr unsigned long WATCHDOG_KICK_INTERVAL_MS = 10UL; // 10 ms = 100 Hz
-
-    /* CAN baudrates */
-    constexpr uint32_t TELEM_CAN_BAUDRATE = 1000000; // 1 000 000 = 1 Mbit/s
-    constexpr uint32_t FAUX_CAN_BAUDRATE = 500000; // 500 000 = 500 Kbit/s
+    /* Watchdog Interface */
+    constexpr pin WATCHDOG_KICK_PIN = 36;
+    constexpr pin SOFTWARE_OK_PIN = 37; // Watchdog's !MR pin
 }
 
 // calibration and processing constants
-namespace VCFSystemConstants
+namespace VCFSystems
 {
+    /* IO Expander */
+    constexpr uint8_t IO_EXPANDER_ADDR = 0x20;
+
+    /* Neopixel Controller */
+    constexpr int NEOPIXEL_CONTROL_PIN = 33;
+    constexpr int NEOPIXEL_COUNT = 16; // 16 neopixeles on dashboard
 
     /* EEPROM addresses */
     constexpr uint32_t ACCEL_1_MIN_ADDR = 0;
@@ -120,8 +121,18 @@ namespace VCFSystemConstants
     constexpr uint32_t BRAKE_1_MAX_ADDR = 24;
     constexpr uint32_t BRAKE_2_MAX_ADDR = 28;
 
-    // Steering System Constants
+    constexpr uint32_t ACCEL_MIN_SENSOR_PEDAL_1 = 90;
+    constexpr uint32_t ACCEL_MIN_SENSOR_PEDAL_2 = 90;
+    constexpr uint32_t ACCEL_MAX_SENSOR_PEDAL_1 = 4000;
+    constexpr uint32_t ACCEL_MAX_SENSOR_PEDAL_2 = 4000;
 
+    constexpr uint32_t BRAKE_MIN_SENSOR_PEDAL_1 = 90;
+    constexpr uint32_t BRAKE_MIN_SENSOR_PEDAL_2 = 90;
+    constexpr uint32_t BRAKE_MAX_SENSOR_PEDAL_1 = 4000;
+    constexpr uint32_t BRAKE_MAX_SENSOR_PEDAL_2 = 4000;
+
+
+    // Steering System Constants
     /* Steering */
     constexpr float ANALOG_TOLERANCE = 0.05f;  // +/- 5% sensor tolerance
     constexpr float DIGITAL_TOLERANCE = 0.05f;  // +/- 0.2 degree error
@@ -151,67 +162,66 @@ namespace VCFSystemConstants
     /* Load cells */
     constexpr float LBS_TO_NEWTONS = 4.4482216153f;
 
-
-     /* IO Expander */
-    constexpr uint8_t IO_EXPANDER_ADDR = 0x20;
-
-    /* Neopixel */
-    constexpr int NEOPIXEL_CONTROL_PIN = 33;
-    constexpr int NEOPIXEL_COUNT = 16; // 16 neopixeles on dashboard
 }
 
 // software configuration constants
 namespace VCFConstants
 {
-
     /* Task Times */
-    constexpr uint16_t WATCHDOG_PRIORITY = 1;
-    constexpr uint32_t WATCHDOG_KICK_PERIOD_US = 10000; // 10 000 us = 100 Hz
+    constexpr uint8_t WATCHDOG_PRIORITY = 1;
+    constexpr time_us WATCHDOG_KICK_PERIOD_US = 10000; // 10 000 us = 100 Hz
 
-    constexpr uint16_t PEDALS_SAMPLE_PRIORITY = 2;
-    constexpr uint32_t PEDALS_SAMPLE_PERIOD_US = 500; // 500 us = 2 kHz
+    constexpr uint8_t ASYNC_MAIN_PRIORITY = 2;
+    constexpr time_us ASYNC_MAIN_PERIOD_US = 100; // 100 us = 10 kHz
 
-    constexpr uint16_t STEERING_SAMPLE_PRIORITY = 3;
-    constexpr uint32_t STEERING_SAMPLE_PERIOD_US = 1000; // 1 000 us = 1 kHz
+    constexpr uint8_t PEDALS_SAMPLE_PRIORITY = 3;
+    constexpr time_us PEDALS_SAMPLE_PERIOD_US = 500; // 500 us = 2 kHz
 
-    constexpr uint16_t LOADCELL_SAMPLE_PRIORITY = 4;
-    constexpr uint32_t LOADCELL_SAMPLE_PERIOD_US = 250; // 250 us = 4 kHz
+    constexpr uint8_t STEERING_SAMPLE_PRIORITY = 4;
+    constexpr time_us STEERING_SAMPLE_PERIOD_US = 1000; // 1 000 us = 1 kHz
 
-    constexpr uint16_t PEDALS_SEND_PRIORITY = 5;
-    constexpr uint32_t PEDALS_SEND_PERIOD_US = 4000; // 4 000 us = 250 Hz
+    constexpr uint8_t LOADCELL_SAMPLE_PRIORITY = 5;
+    constexpr time_us LOADCELL_SAMPLE_PERIOD_US = 250; // 250 us = 4 kHz
 
-    constexpr uint16_t STEERING_SEND_PRIORITY = 6;
-    constexpr uint32_t STEERING_SEND_PERIOD_US = 4000; // 4 000 us = 250 Hz
+    constexpr uint8_t PEDALS_SEND_PRIORITY = 6;
+    constexpr time_us PEDALS_SEND_PERIOD_US = 4000; // 4 000 us = 250 Hz
 
-    constexpr uint16_t LOADCELL_SEND_PRIORITY = 7;
-    constexpr uint32_t LOADCELL_SEND_PERIOD_US = 4000; // 4 000 = 250 Hz
+    constexpr uint8_t STEERING_SEND_PRIORITY = 7;
+    constexpr time_us STEERING_SEND_PERIOD_US = 4000; // 4 000 us = 250 Hz
 
-    constexpr uint16_t CAN_SEND_PRIORITY = 8;
-    constexpr uint32_t CAN_SEND_PERIOD_US = 2000; // 2 000 us = 500 Hz
+    constexpr uint8_t LOADCELL_SEND_PRIORITY = 8;
+    constexpr time_us LOADCELL_SEND_PERIOD_US = 4000; // 4 000 = 250 Hz
 
-    constexpr uint16_t DASH_SEND_PRIORITY = 9;
-    constexpr uint32_t DASH_SEND_PERIOD_US = 100000; // 100 000 us = 10 Hz
+    constexpr uint8_t CAN_SEND_PRIORITY = 9;
+    constexpr time_us CAN_SEND_PERIOD_US = 2000; // 2 000 us = 500 Hz
 
-    constexpr uint16_t DASH_SAMPLE_PRIORITY = 10;
-    constexpr uint32_t DASH_SAMPLE_PERIOD_US = 100000; // 100 000 us = 10 Hz
+    constexpr uint8_t DASH_SEND_PRIORITY = 10;
+    constexpr time_us DASH_SEND_PERIOD_US = 100000; // 100 000 us = 10 Hz
 
-    constexpr uint16_t ETHERNET_SEND_PRIORITY = 11;
-    constexpr uint32_t ETHERNET_SEND_PERIOD = 100000; // 100 000 us = 10Hz
+    constexpr uint8_t DASH_SAMPLE_PRIORITY = 11;
+    constexpr time_us DASH_SAMPLE_PERIOD_US = 100000; // 100 000 us = 10 Hz
 
-    constexpr uint16_t BUZZER_PRIORITY = 12;
-    constexpr uint32_t BUZZER_WRITE_PERIOD_US = 100000; // 100 000 us = 10 Hz
+    constexpr uint8_t ETHERNET_SEND_PRIORITY = 12;
+    constexpr time_us ETHERNET_SEND_PERIOD_US = 100000; // 100 000 us = 10Hz
 
-    constexpr uint16_t NEOPIXEL_UPDATE_PRIORITY_US = 13;
-    constexpr uint32_t NEOPIXEL_UPDATE_PERIOD_US = 100000; // 100 000 us = 10 Hz
+    constexpr uint8_t BUZZER_PRIORITY = 13;
+    constexpr time_us BUZZER_WRITE_PERIOD_US = 100000; // 100 000 us = 10 Hz
 
-    constexpr uint16_t PEDALS_RECALIBRATION_PRIORITY = 20;
-    constexpr uint32_t PEDALS_RECALIBRATION_PERIOD = 100000; // 100 000 us = 10 Hz
+    constexpr uint8_t NEOPIXEL_UPDATE_PRIORITY = 14;
+    constexpr time_us NEOPIXEL_UPDATE_PERIOD_US = 100000; // 100 000 us = 10 Hz
 
-    constexpr uint16_t STEERING_RECALIBRATION_PRIORITY = 21;
-    constexpr uint32_t STEERING_RECALIBRATION_PERIOD = 100000; // 100 000 us = 10 Hz
+    constexpr uint8_t PEDALS_RECALIBRATION_PRIORITY = 20;
+    constexpr time_us PEDALS_RECALIBRATION_PERIOD_US = 100000; // 100 000 us = 10 Hz
 
-    constexpr uint16_t DEBUG_PRIORITY = 50;
-    constexpr uint32_t DEBUG_PERIOD_US = 10000; // 10 000 us = 2 Hz
+    constexpr uint8_t STEERING_RECALIBRATION_PRIORITY = 21;
+    constexpr time_us STEERING_RECALIBRATION_PERIOD_US = 100000; // 100 000 us = 10 Hz
+
+    constexpr uint8_t DEBUG_PRIORITY = 50;
+    constexpr time_us DEBUG_PERIOD_US = 10000; // 10 000 us = 2 Hz
+
+    /* CAN Constants */
+    constexpr uint32_t TELEM_CAN_BAUDRATE = 1000000; // 1 000 000 = 1 Mbit/s
+    constexpr uint32_t FAUX_CAN_BAUDRATE = 500000; // 500 000 = 500 Kbit/s
 }
 
 #endif /* VCF_CONSTANTS */
