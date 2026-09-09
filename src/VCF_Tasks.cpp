@@ -221,6 +221,17 @@ HT_TASK::TaskResponse enqueue_steering_data(const unsigned long& sysMicros, cons
     return HT_TASK::TaskResponse::YIELD;
 }
 
+HT_TASK::TaskResponse enqueue_aux_sensor_data(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo)
+{
+    // create the brake pressure msg
+    BRAKE_PRESSURE_t brake_pressure_msg = {};
+
+    brake_pressure_msg.brake_pressure_1 = ADCInterfaceInstance::instance().get_brake_pressure_front().conversion;
+    brake_pressure_msg.brake_pressure_2 = ADCInterfaceInstance::instance().get_brake_pressure_rear().conversion;
+
+    CAN_util::enqueue_msg(&brake_pressure_msg, &Pack_BRAKE_PRESSURE_hytech, VCFCANInterfaceInstance::instance().telem_can_tx_buffer);
+}
+
 HT_TASK::TaskResponse init_handle_send_vcf_ethernet_data(const unsigned long& sysMicros, const HT_TASK::TaskInfo& taskInfo) {
     qindesign::network::Ethernet.begin(EthernetIPDefsInstance::instance().vcf_ip, EthernetIPDefsInstance::instance().car_subnet, EthernetIPDefsInstance::instance().default_gateway);
     VCFEthernetInterface::VCF_socket.begin(EthernetIPDefsInstance::instance().VCFData_port);

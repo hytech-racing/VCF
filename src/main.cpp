@@ -47,12 +47,13 @@ HT_TASK::Task async_main(HT_TASK::DUMMY_FUNCTION, &async_tasks::handle_async_mai
 HT_TASK::Task CAN_send(HT_TASK::DUMMY_FUNCTION, &handle_CAN_send, VCFTaskConstants::CAN_SEND_PRIORITY, VCFTaskConstants::CAN_SEND_PERIOD);
 HT_TASK::Task dash_CAN_enqueue(HT_TASK::DUMMY_FUNCTION, &send_dash_data, VCFTaskConstants::DASH_SEND_PRIORITY, VCFTaskConstants::DASH_SEND_PERIOD);
 HT_TASK::Task pedals_message_enqueue(HT_TASK::DUMMY_FUNCTION, &enqueue_pedals_data, VCFTaskConstants::PEDALS_PRIORITY, VCFTaskConstants::PEDALS_SEND_PERIOD);
+HT_TASK::Task aux_sensor_messages_enqueue(HT_TASK::DUMMY_FUNCTION, &enqueue_aux_sensor_data, VCFTaskConstants::AUX_SENSORS_SEND_PRIORITY, VCFTaskConstants::AUX_SENSORS_SEND_PERIOD);
 HT_TASK::Task adc0_sample(HT_TASK::DUMMY_FUNCTION, &run_read_adc0_task, VCFTaskConstants::LOADCELL_SAMPLE_PRIORITY, VCFTaskConstants::LOADCELL_SAMPLE_PERIOD);
 HT_TASK::Task adc1_sample(HT_TASK::DUMMY_FUNCTION, &run_read_adc1_task, VCFTaskConstants::PEDALS_PRIORITY, VCFTaskConstants::PEDALS_SAMPLE_PERIOD);
 HT_TASK::Task buzzer_control_task(&init_buzzer_control_task, &run_buzzer_control_task, VCFTaskConstants::BUZZER_PRIORITY, VCFTaskConstants::BUZZER_WRITE_PERIOD);
 HT_TASK::Task read_dash_GPIOs_task(HT_TASK::DUMMY_FUNCTION, &run_dash_GPIOs_task, VCFTaskConstants::DASH_SAMPLE_PRIORITY, VCFTaskConstants::DASH_SAMPLE_PERIOD);
 HT_TASK::Task neopixels_task(&init_neopixels_task, &run_update_neopixels_task, VCFTaskConstants::NEOPIXEL_UPDATE_PRIORITY, VCFTaskConstants::NEOPIXEL_UPDATE_PERIOD);
-HT_TASK::Task ethernet_send_task(init_handle_send_vcf_ethernet_data, run_handle_send_vcf_ethernet_data, VCFTaskConstants::ETHERNET_SEND_PRIORITY, VCFTaskConstants::ETHERNET_SEND_PERIOD);
+HT_TASK::Task ethernet_send_task(&init_handle_send_vcf_ethernet_data, &run_handle_send_vcf_ethernet_data, VCFTaskConstants::ETHERNET_SEND_PRIORITY, VCFTaskConstants::ETHERNET_SEND_PERIOD);
 HT_TASK::Task steering_message_enqueue(HT_TASK::DUMMY_FUNCTION, &enqueue_steering_data, VCFTaskConstants::STEERING_SEND_PRIORITY, VCFTaskConstants::STEERING_SEND_PERIOD);
 HT_TASK::Task front_suspension_message_enqueue(HT_TASK::DUMMY_FUNCTION, &enqueue_front_suspension_data, VCFTaskConstants::LOADCELL_SEND_PRIORITY, VCFTaskConstants::LOADCELL_SEND_PERIOD);
 

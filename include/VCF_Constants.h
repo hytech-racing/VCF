@@ -184,8 +184,8 @@ namespace VCFTaskConstants {
     constexpr unsigned long DASH_SEND_PRIORITY = 7;
     constexpr unsigned long DASH_SEND_PERIOD = 100000;            // 100 000 us = 10 Hz
     
-    constexpr unsigned long DEBUG_PRIORITY = 100;
-    constexpr unsigned long DEBUG_PERIOD = 10000;                 // 10 000 us = 2 Hz
+    constexpr unsigned long DEBUG_PRIORITY = 125;
+    constexpr unsigned long DEBUG_PERIOD = 200000;                 // 200 000 us = 5 Hz
     
     constexpr unsigned long NEOPIXEL_UPDATE_PRIORITY = 90;
     constexpr unsigned long NEOPIXEL_UPDATE_PERIOD = 100000;      // 100 000 us = 10 Hz
@@ -214,6 +214,9 @@ namespace VCFTaskConstants {
     
     constexpr unsigned long STEERING_RECALIBRATION_PRIORITY = 150;
     constexpr unsigned long STEERING_RECALIBRATION_PERIOD = 100000;
+
+    constexpr unsigned long AUX_SENSORS_SEND_PRIORITY = 100;
+    constexpr unsigned long AUX_SENSORS_SEND_PERIOD = 10000; // 10 000 us = 100 Hz
 
     // IIR filter alphas
     constexpr float LOADCELL_IIR_FILTER_ALPHA = 0.01f;
